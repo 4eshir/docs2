@@ -15,13 +15,20 @@ class UserWork extends User
         string $patronymic = null,
         string $authKey = null,
         string $passwordResetToken = null,
-        string $authKey = null,
-        string $authKey = null,
-        string $authKey = null,
-        string $authKey = null,
-        string $authKey = null
+        int $aka = null
     )
     {
+        $entity = new static();
+        $entity->firstname = $firstname;
+        $entity->secondname = $secondname;
+        $entity->patronymic = $patronymic;
+        $entity->username = $username;
+        $entity->password_hash = $passwordHash;
+        $entity->email = $email;
+        $entity->auth_key = $authKey;
+        $entity->password_reset_token = $passwordResetToken;
+        $entity->aka = $aka;
 
+        return $entity;
     }
 }

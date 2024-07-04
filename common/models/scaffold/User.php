@@ -10,7 +10,7 @@ namespace common\models\scaffold;
  * @property string $secondname
  * @property string|null $patronymic
  * @property string $username
- * @property string $auth_key
+ * @property string|null $auth_key
  * @property string $password_hash
  * @property string|null $password_reset_token
  * @property string|null $email
@@ -30,6 +30,8 @@ namespace common\models\scaffold;
  * @property DocumentOut[] $documentOuts
  * @property DocumentOut[] $documentOuts0
  * @property User $lastEdit
+ * @property PermissionToken[] $permissionTokens
+ * @property UserPermissionFunction[] $userPermissionFunctions
  * @property User[] $users
  * @property User[] $users0
  */
@@ -49,7 +51,7 @@ class User extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['firstname', 'secondname', 'username', 'auth_key', 'password_hash'], 'required'],
+            [['firstname', 'secondname', 'username', 'password_hash'], 'required'],
             [['aka', 'status', 'creator_id', 'last_edit_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['firstname', 'secondname', 'patronymic', 'username', 'password_hash', 'password_reset_token', 'email'], 'string', 'max' => 256],
@@ -172,6 +174,26 @@ class User extends \yii\db\ActiveRecord
     public function getLastEdit()
     {
         return $this->hasOne(User::class, ['id' => 'last_edit_id']);
+    }
+
+    /**
+     * Gets query for [[PermissionTokens]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPermissionTokens()
+    {
+        return $this->hasMany(PermissionToken::class, ['user_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[UserPermissionFunctions]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserPermissionFunctions()
+    {
+        return $this->hasMany(UserPermissionFunction::class, ['user_id' => 'id']);
     }
 
     /**

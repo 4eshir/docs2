@@ -1,33 +1,51 @@
 <?php
 
-namespace controllers;
+namespace console\controllers;
 
 use common\models\LoginForm;
+use common\models\work\general\UserWork;
+use common\repositories\general\UserRepository;
 use Yii;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\Response;
+use yii\console\Controller;
 
-/**
- * Site controller
- */
 class UserController extends Controller
 {
+    private UserRepository $userRepository;
+
+    public function __construct(
+        $id,
+        $module,
+        UserRepository $userRepository,
+        $config = [])
+    {
+        parent::__construct($id, $module, $config);
+        $this->userRepository = $userRepository;
+    }
+
     public function actionCreate()
     {
         $splitFio = [];
 
         while (count($splitFio) < 2) {
-            $fio = $this->prompt('Введите ФИО пользователя через пробел: ');
+            $fio = $this->prompt('Введите ФИО пользователя через пробел:');
             $splitFio = explode(' ', $fio);
         }
 
-        $login = $this->prompt('Введите логин пользователя: ');
-        $password = $this->prompt('Введите пароль пользователя: ');
+        $login = $this->prompt('Введите логин пользователя:');
+        $email = $this->prompt('Введите email пользователя:');
+        $password = $this->prompt('Введите пароль пользователя:');
 
         $password = Yii::$app->security->generatePasswordHash($password);
 
+        $entityId = $this->userRepository->save(UserWork::fill(
+            $splitFio[0],
+            $splitFio[1],
+            $login,
+            $password,
+            $email,
+            $splitFio[2] ?? null,
+        ));
 
+        echo "Пользователь $login успешно создан. ID: $entityId";
     }
 }
