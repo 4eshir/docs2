@@ -21,6 +21,8 @@ class m240620_110736_first_wave extends Migration
             'id' => $this->primaryKey(),
             'name' => $this->string(128)->notNull(),
             'path' => $this->string(256)->notNull(),
+            'created_at' => $this->timestamp(),
+            'updated_at' => $this->timestamp(),
         ]);
 
         $this->createTable('characteristic_object', [
@@ -32,22 +34,30 @@ class m240620_110736_first_wave extends Migration
         $this->createTable('complex', [
             'id' => $this->primaryKey(),
             'name' => $this->string(256)->notNull(),
+            'created_at' => $this->timestamp(),
+            'updated_at' => $this->timestamp(),
         ]);
 
         $this->createTable('entry', [
             'id' => $this->primaryKey(),
             'amount' => $this->integer()->notNull(),
+            'created_at' => $this->timestamp(),
+            'updated_at' => $this->timestamp(),
         ]);
 
         $this->createTable('errors', [
             'id' => $this->primaryKey(),
             'number' => $this->string(16)->notNull(),
             'description' => $this->string(128),
+            'created_at' => $this->timestamp(),
+            'updated_at' => $this->timestamp(),
         ]);
 
         $this->createTable('event_external', [
             'id' => $this->primaryKey(),
             'name' => $this->string(256)->notNull(),
+            'created_at' => $this->timestamp(),
+            'updated_at' => $this->timestamp(),
         ]);
 
         $this->createTable('foreign_event_participants', [
@@ -60,6 +70,8 @@ class m240620_110736_first_wave extends Migration
             'is_true' => $this->smallInteger(),
             'guaranteed_true' => $this->smallInteger(),
             'email' => $this->string(256)->notNull(),
+            'created_at' => $this->timestamp(),
+            'updated_at' => $this->timestamp(),
         ]);
 
         $this->createTable('patchnotes', [
@@ -68,11 +80,15 @@ class m240620_110736_first_wave extends Migration
             'second_number' => $this->integer()->notNull(),
             'date' => $this->date()->notNull(),
             'text' => $this->text()->notNull(),
+            'created_at' => $this->timestamp(),
+            'updated_at' => $this->timestamp(),
         ]);
 
         $this->createTable('position', [
             'id' => $this->primaryKey(),
             'name' => $this->string(128)->notNull(),
+            'created_at' => $this->timestamp(),
+            'updated_at' => $this->timestamp(),
         ]);
 
         $this->createTable('product_union', [
@@ -82,12 +98,16 @@ class m240620_110736_first_wave extends Migration
             'average_price' => $this->double(),
             'average_cost' => $this->double(),
             'date' => $this->date(),
+            'created_at' => $this->timestamp(),
+            'updated_at' => $this->timestamp(),
         ]);
 
         $this->createTable('project_theme', [
             'id' => $this->primaryKey(),
             'name' => $this->string(128)->notNull(),
             'description' => $this->string(256)->notNull(),
+            'created_at' => $this->timestamp(),
+            'updated_at' => $this->timestamp(),
         ]);
 
         $this->createTable('russian_names', [
