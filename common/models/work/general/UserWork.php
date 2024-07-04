@@ -10,7 +10,16 @@ class UserWork extends User
         string $firstname,
         string $secondname,
         string $username,
-        string $patronymic,
+        string $passwordHash,
+        string $email,
+        string $patronymic = null,
+        string $authKey = null,
+        string $passwordResetToken = null,
+        string $authKey = null,
+        string $authKey = null,
+        string $authKey = null,
+        string $authKey = null,
+        string $authKey = null
     )
     {
 

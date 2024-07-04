@@ -75,7 +75,7 @@ class m240621_081719_document_in_out extends Migration
             'auth_key' => $this->string(32),
             'password_hash' => $this->string(256)->notNull(),
             'password_reset_token' => $this->string(256),
-            'email' => $this->string(256),
+            'email' => $this->string(256)->notNull(),
             'aka' => $this->integer(),
             'status' => $this->integer()->defaultValue(10),
             'created_at' => $this->timestamp(),
