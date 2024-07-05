@@ -2,9 +2,12 @@
 
 namespace common\repositories\rac;
 
+use common\models\work\rac\PermissionFunctionWork;
 use common\models\work\rac\PermissionTemplateFunctionWork;
 use common\models\work\rac\PermissionTemplateWork;
+use DomainException;
 use yii\base\InvalidValueException;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 class PermissionFunctionRepository
@@ -17,11 +20,17 @@ class PermissionFunctionRepository
      */
     public function getTemplateLinkedPermissions($templateName)
     {
-        if (array_key_exists($templateName, PermissionTemplateWork::getTemplateNames())) {
-            $templateId = PermissionTemplateWork::find()->where(['name' => $templateName])->one()->id;
-            return PermissionTemplateFunctionWork::find()->where(['template_id' => $templateId])->all();
+        $templateId = PermissionTemplateWork::find()->where(['name' => $templateName])->one()->id;
+        $functionsId = ArrayHelper::getColumn(PermissionTemplateFunctionWork::find()->where(['template_id' => $templateId])->all(), 'function_id');
+        return PermissionFunctionWork::find()->where(['IN', 'id', $functionsId])->all();
+    }
+
+    public function save(PermissionFunctionWork $function)
+    {
+        if (!$function->save()) {
+            throw new DomainException('Ошибка привязки правила к пользователю. Проблемы: '.json_encode($function->getErrors()));
         }
 
-        throw new NotFoundHttpException("Неизвестный тип шаблона - $templateName");
+        return $function->id;
     }
 }

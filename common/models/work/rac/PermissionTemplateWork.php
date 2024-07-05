@@ -28,4 +28,12 @@ class PermissionTemplateWork extends PermissionTemplate
             self::TEMPLATE_ADMIN => 'Администратор',
         ];
     }
+
+    public static function fill($name)
+    {
+        $entity = new static();
+        $entity->name = $name;
+
+        return $entity;
+    }
 }

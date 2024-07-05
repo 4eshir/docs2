@@ -1,6 +1,6 @@
 <?php
 
-namespace common\dictionaries;
+namespace common\components\dictionaries;
 
 class BranchDictionary extends BaseDictionary
 {

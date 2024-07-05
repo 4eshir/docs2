@@ -31,6 +31,9 @@ return [
                 ],
             ],
         ],
+        'branches' => [
+            'class' => 'common\\components\\dictionaries\\BranchDictionary',
+        ],
     ],
     'params' => $params,
 ];

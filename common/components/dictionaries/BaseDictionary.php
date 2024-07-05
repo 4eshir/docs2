@@ -1,12 +1,12 @@
 <?php
 
-namespace common\dictionaries;
+namespace common\components\dictionaries;
 
 abstract class BaseDictionary
 {
     protected $list;
 
-    public function __construct(array $list)
+    public function __construct(array $list = [])
     {
         $this->list = $list;
     }
