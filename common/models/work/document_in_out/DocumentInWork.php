@@ -86,7 +86,7 @@ class DocumentInWork extends DocumentIn
         return $this->hasOne(CompanyWork::class, ['id' => 'company_id']);
     }
 
-    public function getInOutDocsWork()
+    public function getInOutDocumentsWork()
     {
         return $this->hasMany(InOutDocumentsWork::class, ['document_in_id' => 'id']);
     }

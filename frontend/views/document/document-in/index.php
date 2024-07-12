@@ -69,6 +69,7 @@ $tempArchive = $session->get("archiveIn");
             'filterModel' => $searchModel,
             'summary' => false,
             'rowOptions' => function($data) {
+                var_dump($data->inOutDocumentsWork);die();
                 $links = \app\models\work\InOutDocsWork::find()->where(['document_in_id' => $data['id']])->one();
                 if ($links == null || $links->document_out_id !== null)
                     return ['class' => 'default'];

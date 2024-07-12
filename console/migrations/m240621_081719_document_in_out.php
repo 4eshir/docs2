@@ -69,7 +69,7 @@ class m240621_081719_document_in_out extends Migration
         $this->createTable('user', [
             'id' => $this->primaryKey(),
             'firstname' => $this->string(256)->notNull(),
-            'secondname' => $this->string(256)->notNull(),
+            'surname' => $this->string(256)->notNull(),
             'patronymic' => $this->string(256),
             'username' => $this->string(256)->notNull(),
             'auth_key' => $this->string(32),
@@ -120,7 +120,7 @@ class m240621_081719_document_in_out extends Migration
             'RESTRICT',
         );
 
-        $this->createTable('document_in_out', [
+        $this->createTable('document_in', [
             'id' => $this->primaryKey(),
             'local_number' => $this->integer()->notNull(),
             'local_postfix' => $this->smallInteger(),
@@ -142,7 +142,7 @@ class m240621_081719_document_in_out extends Migration
         ]);
 
         $this->addForeignKey(
-            'fk-document_in_out-1',
+            'fk-document_in-1',
             'document_in_out',
             'correspondent_id',
             'people',
@@ -151,7 +151,7 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in_out-2',
+            'fk-document_in-2',
             'document_in_out',
             'position_id',
             'position',
@@ -160,7 +160,7 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in_out-3',
+            'fk-document_in-3',
             'document_in_out',
             'company_id',
             'company',
@@ -169,7 +169,7 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in_out-4',
+            'fk-document_in-4',
             'document_in_out',
             'signed_id',
             'people',
@@ -178,7 +178,7 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in_out-5',
+            'fk-document_in-5',
             'document_in_out',
             'get_id',
             'user',
@@ -187,7 +187,7 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in_out-6',
+            'fk-document_in-6',
             'document_in_out',
             'creator_id',
             'user',
@@ -196,7 +196,7 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in_out-7',
+            'fk-document_in-7',
             'document_in_out',
             'last_edit_id',
             'user',
@@ -299,7 +299,7 @@ class m240621_081719_document_in_out extends Migration
         $this->createTable('in_out_documents', [
             'id' => $this->primaryKey(),
             'document_in_id' => $this->integer()->notNull(),
-            'document_out_id' => $this->integer()->notNull(),
+            'document_out_id' => $this->integer(),
             'date' => $this->date(),
             'responsible_id' => $this->integer(),
         ]);
@@ -337,13 +337,13 @@ class m240621_081719_document_in_out extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('fk-document_in_out-7', 'document_in_out');
-        $this->dropForeignKey('fk-document_in_out-6', 'document_in_out');
-        $this->dropForeignKey('fk-document_in_out-5', 'document_in_out');
-        $this->dropForeignKey('fk-document_in_out-4', 'document_in_out');
-        $this->dropForeignKey('fk-document_in_out-3', 'document_in_out');
-        $this->dropForeignKey('fk-document_in_out-2', 'document_in_out');
-        $this->dropForeignKey('fk-document_in_out-1', 'document_in_out');
+        $this->dropForeignKey('fk-document_in-7', 'document_in');
+        $this->dropForeignKey('fk-document_in-6', 'document_in');
+        $this->dropForeignKey('fk-document_in-5', 'document_in');
+        $this->dropForeignKey('fk-document_in-4', 'document_in');
+        $this->dropForeignKey('fk-document_in-3', 'document_in');
+        $this->dropForeignKey('fk-document_in-2', 'document_in');
+        $this->dropForeignKey('fk-document_in-1', 'document_in');
 
         $this->dropTable('files');
 
