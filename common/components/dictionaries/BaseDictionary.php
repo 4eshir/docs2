@@ -2,6 +2,8 @@
 
 namespace common\components\dictionaries;
 
+use InvalidArgumentException;
+
 abstract class BaseDictionary
 {
     protected $list;
@@ -14,6 +16,18 @@ abstract class BaseDictionary
     public function getList()
     {
         return $this->list;
+    }
+
+    public function get($index)
+    {
+        if (!$index) {
+            return null;
+        }
+
+        if (array_key_exists($index, $this->list)) {
+            return $this->list[$index];
+        }
+        throw new InvalidArgumentException('Неизвестный индекс');
     }
 
     /**

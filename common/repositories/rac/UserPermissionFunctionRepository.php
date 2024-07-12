@@ -2,10 +2,12 @@
 
 namespace common\repositories\rac;
 
+use common\models\work\rac\PermissionFunctionWork;
 use common\models\work\rac\PermissionTemplateWork;
 use common\models\work\rac\UserPermissionFunctionWork;
 use DomainException;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 class UserPermissionFunctionRepository
@@ -37,6 +39,17 @@ class UserPermissionFunctionRepository
         }
 
         throw new NotFoundHttpException("Неизвестный тип шаблона - $templateName или неизвестный отдел - $branch");
+    }
+
+    /**
+     * Возвращает список PermissionFunctionWork для пользователя с ID = userId
+     * @param $userId
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getPermissionsByUser($userId)
+    {
+        $userPermissions = ArrayHelper::getColumn(UserPermissionFunctionWork::find()->where(['user_id' => $userId])->all(), 'function_id');
+        return PermissionFunctionWork::find()->where(['IN', 'id', $userPermissions])->all();
     }
 
     public function save(UserPermissionFunctionWork $userFunction)

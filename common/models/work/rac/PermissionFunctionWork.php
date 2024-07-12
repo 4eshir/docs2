@@ -6,7 +6,7 @@ use common\models\scaffold\PermissionFunction;
 
 class PermissionFunctionWork extends PermissionFunction
 {
-    public static function fill($name)
+    public static function fill($name, $shortCode)
     {
         $entity = new static();
         $entity->name = $name;

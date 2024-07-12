@@ -25,6 +25,11 @@ class PermissionFunctionRepository
         return PermissionFunctionWork::find()->where(['IN', 'id', $functionsId])->all();
     }
 
+    public function getAllPermissions()
+    {
+        return PermissionFunctionWork::find()->all();
+    }
+
     public function save(PermissionFunctionWork $function)
     {
         if (!$function->save()) {

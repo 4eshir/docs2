@@ -2,14 +2,13 @@
 
 namespace common\models\scaffold;
 
-use app\scaffold\Position;
 
 /**
  * This is the model class for table "people".
  *
  * @property int $id
  * @property string $firstname
- * @property string $secondname
+ * @property string $surname
  * @property string|null $patronymic
  * @property int|null $company_id
  * @property int|null $position_id
@@ -17,7 +16,7 @@ use app\scaffold\Position;
  * @property int|null $branch
  * @property string|null $birthdate
  * @property int|null $sex
- * @property string|null $genitive_secondname
+ * @property string|null $genitive_surname
  * @property string|null $created_at
  * @property string|null $updated_at
  *
@@ -46,10 +45,10 @@ class People extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['firstname', 'secondname'], 'required'],
+            [['firstname', 'surname'], 'required'],
             [['company_id', 'position_id', 'branch', 'sex'], 'integer'],
             [['birthdate', 'created_at', 'updated_at'], 'safe'],
-            [['firstname', 'secondname', 'patronymic', 'genitive_secondname'], 'string', 'max' => 256],
+            [['firstname', 'surname', 'patronymic', 'genitive_surname'], 'string', 'max' => 256],
             [['short'], 'string', 'max' => 10],
             [['company_id'], 'exist', 'skipOnError' => true, 'targetClass' => Company::class, 'targetAttribute' => ['company_id' => 'id']],
             [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::class, 'targetAttribute' => ['position_id' => 'id']],
@@ -64,7 +63,7 @@ class People extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'firstname' => 'Firstname',
-            'secondname' => 'Secondname',
+            'surname' => 'surname',
             'patronymic' => 'Patronymic',
             'company_id' => 'Company ID',
             'position_id' => 'Position ID',
@@ -72,7 +71,7 @@ class People extends \yii\db\ActiveRecord
             'branch' => 'Branch',
             'birthdate' => 'Birthdate',
             'sex' => 'Sex',
-            'genitive_secondname' => 'Genitive Secondname',
+            'genitive_surname' => 'Genitive surname',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];

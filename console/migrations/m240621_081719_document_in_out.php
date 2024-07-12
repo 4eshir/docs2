@@ -35,7 +35,7 @@ class m240621_081719_document_in_out extends Migration
         $this->createTable('people', [
             'id' => $this->primaryKey(),
             'firstname' => $this->string(256)->notNull(),
-            'secondname' => $this->string(256)->notNull(),
+            'surname' => $this->string(256)->notNull(),
             'patronymic' => $this->string(256),
             'company_id' => $this->integer(),
             'position_id' => $this->integer(),
@@ -43,7 +43,7 @@ class m240621_081719_document_in_out extends Migration
             'branch' => $this->smallInteger(),
             'birthdate' => $this->date(),
             'sex' => $this->smallInteger(),
-            'genitive_secondname' => $this->string(256),
+            'genitive_surname' => $this->string(256),
             'created_at' => $this->timestamp(),
             'updated_at' => $this->timestamp(),
         ]);
@@ -120,7 +120,7 @@ class m240621_081719_document_in_out extends Migration
             'RESTRICT',
         );
 
-        $this->createTable('document_in', [
+        $this->createTable('document_in_out', [
             'id' => $this->primaryKey(),
             'local_number' => $this->integer()->notNull(),
             'local_postfix' => $this->smallInteger(),
@@ -142,8 +142,8 @@ class m240621_081719_document_in_out extends Migration
         ]);
 
         $this->addForeignKey(
-            'fk-document_in-1',
-            'document_in',
+            'fk-document_in_out-1',
+            'document_in_out',
             'correspondent_id',
             'people',
             'id',
@@ -151,8 +151,8 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in-2',
-            'document_in',
+            'fk-document_in_out-2',
+            'document_in_out',
             'position_id',
             'position',
             'id',
@@ -160,8 +160,8 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in-3',
-            'document_in',
+            'fk-document_in_out-3',
+            'document_in_out',
             'company_id',
             'company',
             'id',
@@ -169,8 +169,8 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in-4',
-            'document_in',
+            'fk-document_in_out-4',
+            'document_in_out',
             'signed_id',
             'people',
             'id',
@@ -178,8 +178,8 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in-5',
-            'document_in',
+            'fk-document_in_out-5',
+            'document_in_out',
             'get_id',
             'user',
             'id',
@@ -187,8 +187,8 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in-6',
-            'document_in',
+            'fk-document_in_out-6',
+            'document_in_out',
             'creator_id',
             'user',
             'id',
@@ -196,8 +196,8 @@ class m240621_081719_document_in_out extends Migration
         );
 
         $this->addForeignKey(
-            'fk-document_in-7',
-            'document_in',
+            'fk-document_in_out-7',
+            'document_in_out',
             'last_edit_id',
             'user',
             'id',
@@ -308,7 +308,7 @@ class m240621_081719_document_in_out extends Migration
             'fk-in_out_documents-1',
             'in_out_documents',
             'document_in_id',
-            'document_in',
+            'document_in_out',
             'id',
             'RESTRICT',
         );
@@ -337,13 +337,13 @@ class m240621_081719_document_in_out extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey('fk-document_in-7', 'document_in');
-        $this->dropForeignKey('fk-document_in-6', 'document_in');
-        $this->dropForeignKey('fk-document_in-5', 'document_in');
-        $this->dropForeignKey('fk-document_in-4', 'document_in');
-        $this->dropForeignKey('fk-document_in-3', 'document_in');
-        $this->dropForeignKey('fk-document_in-2', 'document_in');
-        $this->dropForeignKey('fk-document_in-1', 'document_in');
+        $this->dropForeignKey('fk-document_in_out-7', 'document_in_out');
+        $this->dropForeignKey('fk-document_in_out-6', 'document_in_out');
+        $this->dropForeignKey('fk-document_in_out-5', 'document_in_out');
+        $this->dropForeignKey('fk-document_in_out-4', 'document_in_out');
+        $this->dropForeignKey('fk-document_in_out-3', 'document_in_out');
+        $this->dropForeignKey('fk-document_in_out-2', 'document_in_out');
+        $this->dropForeignKey('fk-document_in_out-1', 'document_in_out');
 
         $this->dropTable('files');
 
@@ -361,7 +361,7 @@ class m240621_081719_document_in_out extends Migration
 
         $this->dropTable('document_out');
         $this->dropTable('user');
-        $this->dropTable('document_in');
+        $this->dropTable('document_in_out');
         $this->dropTable('people');
         $this->dropTable('company');
 

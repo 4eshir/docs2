@@ -7,6 +7,7 @@ namespace common\models\scaffold;
  *
  * @property int $id
  * @property string|null $name
+ * @property string|null $short_code
  *
  * @property PermissionTemplateFunction[] $permissionTemplateFunctions
  * @property PermissionToken[] $permissionTokens
@@ -29,6 +30,7 @@ class PermissionFunction extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'string', 'max' => 64],
+            [['short_code'], 'string', 'max' => 32],
         ];
     }
 
@@ -40,6 +42,7 @@ class PermissionFunction extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Name',
+            'short_code' => 'Short Code',
         ];
     }
 
