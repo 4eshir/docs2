@@ -143,7 +143,7 @@ class m240621_081719_document_in_out extends Migration
 
         $this->addForeignKey(
             'fk-document_in-1',
-            'document_in_out',
+            'document_in',
             'correspondent_id',
             'people',
             'id',
@@ -152,7 +152,7 @@ class m240621_081719_document_in_out extends Migration
 
         $this->addForeignKey(
             'fk-document_in-2',
-            'document_in_out',
+            'document_in',
             'position_id',
             'position',
             'id',
@@ -161,7 +161,7 @@ class m240621_081719_document_in_out extends Migration
 
         $this->addForeignKey(
             'fk-document_in-3',
-            'document_in_out',
+            'document_in',
             'company_id',
             'company',
             'id',
@@ -170,7 +170,7 @@ class m240621_081719_document_in_out extends Migration
 
         $this->addForeignKey(
             'fk-document_in-4',
-            'document_in_out',
+            'document_in',
             'signed_id',
             'people',
             'id',
@@ -179,7 +179,7 @@ class m240621_081719_document_in_out extends Migration
 
         $this->addForeignKey(
             'fk-document_in-5',
-            'document_in_out',
+            'document_in',
             'get_id',
             'user',
             'id',
@@ -188,7 +188,7 @@ class m240621_081719_document_in_out extends Migration
 
         $this->addForeignKey(
             'fk-document_in-6',
-            'document_in_out',
+            'document_in',
             'creator_id',
             'user',
             'id',
@@ -197,7 +197,7 @@ class m240621_081719_document_in_out extends Migration
 
         $this->addForeignKey(
             'fk-document_in-7',
-            'document_in_out',
+            'document_in',
             'last_edit_id',
             'user',
             'id',
@@ -308,7 +308,7 @@ class m240621_081719_document_in_out extends Migration
             'fk-in_out_documents-1',
             'in_out_documents',
             'document_in_id',
-            'document_in_out',
+            'document_in',
             'id',
             'RESTRICT',
         );
@@ -361,7 +361,7 @@ class m240621_081719_document_in_out extends Migration
 
         $this->dropTable('document_out');
         $this->dropTable('user');
-        $this->dropTable('document_in_out');
+        $this->dropTable('document_in');
         $this->dropTable('people');
         $this->dropTable('company');
 
