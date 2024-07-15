@@ -11,14 +11,18 @@ class SendMethodDictionary extends BaseDictionary
     const WHATSAPP = 5;
     const SBIS = 6;
 
-    protected $list = [
-        self::PERSONALLY => 'Лично',
-        self::POST => 'Почта',
-        self::EMAIL => 'E-mail',
-        self::FAX => 'Факс',
-        self::WHATSAPP => 'WhatsApp',
-        self::SBIS => 'СБИС',
-    ];
+    public function __construct()
+    {
+        parent::__construct();
+        $this->list = [
+            self::PERSONALLY => 'Лично',
+            self::POST => 'Почта',
+            self::EMAIL => 'E-mail',
+            self::FAX => 'Факс',
+            self::WHATSAPP => 'WhatsApp',
+            self::SBIS => 'СБИС',
+        ];
+    }
 
     public function customSort()
     {

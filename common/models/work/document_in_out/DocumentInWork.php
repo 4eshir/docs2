@@ -46,6 +46,26 @@ class DocumentInWork extends DocumentIn
         return Yii::$app->sendMethods->get($this->send_method);
     }
 
+    public function getRealDate()
+    {
+        return $this->real_date;
+    }
+
+    public function getLocalDate()
+    {
+        return $this->local_date;
+    }
+
+    public function getRealNumber()
+    {
+        return $this->real_number;
+    }
+
+    public function getDocumentTheme()
+    {
+        return $this->document_theme;
+    }
+
     /**
      * Возвращает строку с отображением необходимости ответа на входящий документ
      * @param int $format формат возвращаемого значения (при наличии такой опции) @see StringFormatter

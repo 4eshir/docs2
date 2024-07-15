@@ -25,6 +25,19 @@ class InOutDocumentsWork extends InOutDocuments
         return $this->date == null;
     }
 
+    public function getRowClass()
+    {
+        if ($this->document_out_id !== null) {
+            return ['class' => 'default'];
+        }
+        else if ($this->date !== null && $this->date < date("Y-m-d")) {
+            return ['class' => 'danger'];
+        }
+        else {
+            return ['class' => 'warning'];
+        }
+    }
+
     // --relationships--
 
     public function getResponsibleWork()
