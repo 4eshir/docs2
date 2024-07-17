@@ -2,18 +2,31 @@
 
 namespace common\models\work\document_in_out;
 
+use common\helpers\FilesHelper;
 use common\helpers\StringFormatter;
 use common\models\scaffold\DocumentIn;
 use common\models\work\general\CompanyWork;
+use common\models\work\general\FilesWork;
 use common\models\work\general\PeopleWork;
+use common\models\work\general\PositionWork;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\document_in_out\InOutDocumentsRepository;
-use PHPUnit\Framework\InvalidArgumentException;
+use common\repositories\general\FilesRepository;
 use Yii;
 use yii\helpers\Url;
+use InvalidArgumentException;
 
+/**
+ * @property PeopleWork $correspondentWork
+ * @property PositionWork $positionWork
+ * @property CompanyWork $companyWork
+ */
 class DocumentInWork extends DocumentIn
 {
+    public $scan;
+    public $doc;
+    public $app;
+
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
@@ -25,6 +38,13 @@ class DocumentInWork extends DocumentIn
             'documentTheme' => 'Тема документа',
             'sendMethodName' => 'Способ получения',
             'needAnswer' => 'Ответ',
+        ]);
+    }
+
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            [['scan', 'doc'], 'required'],
         ]);
     }
 
@@ -64,6 +84,27 @@ class DocumentInWork extends DocumentIn
     public function getDocumentTheme()
     {
         return $this->document_theme;
+    }
+
+    public function getFileLinks($filetype)
+    {
+        if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
+            throw new InvalidArgumentException('Неизвестный тип файла');
+        }
+
+        $files = (Yii::createObject(FilesRepository::class))->get(self::tableName(), $this->id, $filetype);
+        $links = [];
+        if (count($files) > 0) {
+            foreach ($files as $file) {
+                /** @var FilesWork $file */
+                $links[] = StringFormatter::stringAsLink(
+                    StringFormatter::getFilenameFromPath($file->filepath),
+                    Url::to(['get-file', 'filepath' => $file->filepath])
+                );
+            }
+        }
+
+        return $links;
     }
 
     /**
@@ -106,8 +147,18 @@ class DocumentInWork extends DocumentIn
         return $this->hasOne(CompanyWork::class, ['id' => 'company_id']);
     }
 
+    public function getPositionWork()
+    {
+        return $this->hasOne(PositionWork::class, ['id' => 'position_id']);
+    }
+
     public function getInOutDocumentsWork()
     {
         return $this->hasMany(InOutDocumentsWork::class, ['document_in_id' => 'id']);
+    }
+
+    public function getCorrespondentWork()
+    {
+        return $this->hasOne(PeopleWork::class, ['id' => 'correspondent_id']);
     }
 }

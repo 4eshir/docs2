@@ -2,7 +2,7 @@
 
 namespace common\models\search;
 
-use common\components\traits\DataFormatTrait;
+use common\helpers\DateFormatter;
 use common\models\work\document_in_out\DocumentInWork;
 use Yii;
 use yii\base\Model;
@@ -13,8 +13,6 @@ use yii\data\ActiveDataProvider;
  */
 class SearchDocumentIn extends DocumentInWork
 {
-    use DataFormatTrait;
-
     public $fullNumber;
     public $companyName;
     public $sendMethodName;
@@ -60,16 +58,17 @@ class SearchDocumentIn extends DocumentInWork
             ->joinWith('company');
 
         if ($this->localDate !== '' && $this->localDate !== null) {
-            $dates = $this->splitDates($this->localDate);
-            $query->andWhere(['BETWEEN', 'local_date', $this->format($dates[0], self::$dmy_dot, self::$Ymd_dash), $this->format($dates[1], self::$dmy_dot, self::$Ymd_dash)]);
+            $dates = DateFormatter::splitDates($this->localDate);
+            $query->andWhere(
+                ['BETWEEN', 'local_date',
+                    DateFormatter::format($dates[0], DateFormatter::dmy_dot, DateFormatter::Ymd_dash),
+                    DateFormatter::format($dates[1], DateFormatter::dmy_dot, DateFormatter::Ymd_dash)]);
         }
 
         if ($this->realDate !== '' && $this->realDate !== null) {
-            $dates = $this->splitDates($this->realDate);
+            $dates = DateFormatter::splitDates($this->realDate);
             $query->andWhere(['BETWEEN', 'real_date', $dates[0], $dates[1]]);
         }
-
-        //var_dump($query->createCommand()->getRawSql());
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -124,22 +123,15 @@ class SearchDocumentIn extends DocumentInWork
 
         // строгие фильтры
         $query->andFilterWhere([
-            /*'documentTheme' => $this->document_theme,
-            'localNumber' => $this->local_number,
-            'localDate' => $this->local_date,
-            'realNumber' => $this->real_number,
-            'realDate' => $this->real_date,
-            'position_id' => $this->position_id,
-            'company_id' => $this->company_id,
-            'correspondent_id' => $this->correspondent_id,
-            'signed_id' => $this->signed_id,
-            'get_id' => $this->get_id,
-            'creator_id' => $this->creator_id,*/
+            'send_method' => $this->sendMethodName,
         ]);
 
         // гибкие фильтры Like
-        $query
-            ->andFilterWhere(['like', 'document_theme', $this->documentTheme]);
+        $query->andFilterWhere(['like', "CONCAT(local_number, '/', local_postfix)", $this->fullNumber])
+            ->andFilterWhere(['like', 'real_number', $this->realNumber])
+            ->andFilterWhere(['like', 'company.name', $this->companyName])
+            ->andFilterWhere(['like', 'document_theme', $this->documentTheme])
+            ->andFilterWhere(['like', 'real_number', $this->realNumber]);
 
         return $dataProvider;
     }

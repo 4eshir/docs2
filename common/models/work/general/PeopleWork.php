@@ -42,7 +42,9 @@ class PeopleWork extends People
 
     private function getSurnameInitials()
     {
-        return $this->surname . ' ' . substr($this->firstname, 0, 1) . ' ' . substr($this->patronymic, 0, 1);
+        return $this->surname
+            . ' ' . substr($this->firstname, 0, 1)
+            . '. ' . $this->patronymic ? substr($this->patronymic, 0, 1) . '.' : '';
     }
 
     private function getFioPosition()

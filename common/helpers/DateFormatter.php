@@ -1,28 +1,28 @@
 <?php
 
-namespace common\components\traits;
+namespace common\helpers;
 
 use DateTime;
 use InvalidArgumentException;
 
-trait DataFormatTrait
+class DateFormatter
 {
-    public static $Ymd_dash = 1;
-    public static $Ymd_dot = 2;
-    public static $dmY_dash = 3;
-    public static $dmY_dot = 4;
-    public static $dmy_dash = 5;
-    public static $dmy_dot = 6;
+    const Ymd_dash = 1;
+    const Ymd_dot = 2;
+    const dmY_dash = 3;
+    const dmY_dot = 4;
+    const dmy_dash = 5;
+    const dmy_dot = 6;
 
     public static function getFormats()
     {
         return [
-            self::$Ymd_dash => 'Y-m-d',
-            self::$Ymd_dot => 'Y.m.d',
-            self::$dmY_dash => 'd-m-Y',
-            self::$dmY_dot => 'd.m.Y',
-            self::$dmy_dash => 'd-m-y',
-            self::$dmy_dot => 'd.m.y',
+            self::Ymd_dash => 'Y-m-d',
+            self::Ymd_dot => 'Y.m.d',
+            self::dmY_dash => 'd-m-Y',
+            self::dmY_dot => 'd.m.Y',
+            self::dmy_dash => 'd-m-y',
+            self::dmy_dot => 'd.m.y',
         ];
     }
 
@@ -36,7 +36,7 @@ trait DataFormatTrait
         return $formats[$index];
     }
 
-    public function splitDates($dates)
+    public static function splitDates($dates)
     {
         $pairDates = explode(' - ', $dates);
         if (count($pairDates) != 2) {
@@ -46,7 +46,7 @@ trait DataFormatTrait
         return $pairDates;
     }
 
-    public function format($data, $baseType, $targetType)
+    public static function format($data, $baseType, $targetType)
     {
         $datetime = DateTime::createFromFormat(self::get($baseType), $data);
         return $datetime->format(self::get($targetType));

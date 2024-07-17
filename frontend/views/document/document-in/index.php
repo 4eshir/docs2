@@ -132,7 +132,10 @@ $tempArchive = $session->get("archiveIn");
 
                 ['attribute' => 'companyName', 'encodeLabel' => false],
                 ['attribute' => 'documentTheme', 'encodeLabel' => false],
-                ['attribute' => 'sendMethodName'],
+                [
+                    'attribute' => 'sendMethodName',
+                    'filter' => Yii::$app->sendMethods->getList(),
+                ],
                 ['attribute' => 'needAnswer', 'value' => function(DocumentInWork $model) {
                     return $model->getNeedAnswer(StringFormatter::FORMAT_LINK);
                 }, 'format' => 'raw'],
