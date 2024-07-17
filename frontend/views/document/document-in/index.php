@@ -2,12 +2,16 @@
 
 use common\helpers\StringFormatter;
 use common\models\work\document_in_out\DocumentInWork;
+use common\models\work\document_in_out\InOutDocumentsWork;
+use kartik\daterange\DateRangePicker;
 use kartik\export\ExportMenu;
+use kartik\grid\GridViewInterface;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\jui\DatePicker;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\common\models\search\SearchDocumentIn */
+/* @var $searchModel common\models\search\SearchDocumentIn */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Входящая документация';
@@ -69,24 +73,66 @@ $tempArchive = $session->get("archiveIn");
             'filterModel' => $searchModel,
             'summary' => false,
             'rowOptions' => function($data) {
-                var_dump($data->inOutDocumentsWork);die();
-                $links = \app\models\work\InOutDocsWork::find()->where(['document_in_id' => $data['id']])->one();
-                if ($links == null || $links->document_out_id !== null)
+                /** @var InOutDocumentsWork $links */
+                $links = count($data->inOutDocumentsWork) > 0 ? $data->inOutDocumentsWork[0] : null;
+                if (!$links) {
                     return ['class' => 'default'];
-                else if ($links->date !== null && $links->date < date("Y-m-d"))
-                    return ['class' => 'danger'];
-                else
-                    return ['class' => 'warning'];
+                }
+                else {
+                    return $links->getRowClass();
+                }
             },
             'columns' => [
                 ['attribute' => 'fullNumber'],
-                ['attribute' => 'localDate', 'encodeLabel' => false],
-                ['attribute' => 'realDate', 'encodeLabel' => false],
+                [
+                    'attribute' => 'localDate',
+                    'filter' => DateRangePicker::widget([
+                        'language' => 'ru',
+                        'model' => $searchModel,
+                        'attribute' => 'localDate',
+                        'convertFormat' => true,
+                        'pluginOptions' => [
+                            'timePicker' => false,
+                            'timePickerIncrement' => 365,
+                            'locale' => [
+                                'format' => 'd.m.y',
+                                'cancelLabel' => 'Закрыть',
+                                'applyLabel' => 'Найти',
+                            ]
+                        ]
+                    ]),
+                    'value' => function(DocumentInWork $model) {
+                        return date('d.m.y', strtotime($model->local_date));
+                    },
+                    'encodeLabel' => false,
+                ],
+                [
+                    'attribute' => 'realDate',
+                    'filter' => DateRangePicker::widget([
+                        'language' => 'ru',
+                        'model' => $searchModel,
+                        'attribute' => 'realDate',
+                        'convertFormat' => true,
+                        'pluginOptions' => [
+                            'timePicker' => false,
+                            'timePickerIncrement' => 365,
+                            'locale' => [
+                                'format' => 'd.m.y',
+                                'cancelLabel' => 'Закрыть',
+                                'applyLabel' => 'Найти',
+                            ]
+                        ]
+                    ]),
+                    'encodeLabel' => false,
+                    'value' => function(DocumentInWork $model) {
+                        return date('d.m.y', strtotime($model->real_date));
+                    },
+                ],
                 ['attribute' => 'realNumber', 'encodeLabel' => false],
 
                 ['attribute' => 'companyName', 'encodeLabel' => false],
                 ['attribute' => 'documentTheme', 'encodeLabel' => false],
-                ['attribute' => 'sendMethodName', 'value' => 'sendMethod.name'],
+                ['attribute' => 'sendMethodName'],
                 ['attribute' => 'needAnswer', 'value' => function(DocumentInWork $model) {
                     return $model->getNeedAnswer(StringFormatter::FORMAT_LINK);
                 }, 'format' => 'raw'],

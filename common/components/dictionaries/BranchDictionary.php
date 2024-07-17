@@ -10,13 +10,17 @@ class BranchDictionary extends BaseDictionary
     const COD = 'cod';
     const MOBILE_QUANTUM = 'mob_quant';
 
-    protected $list = [
-        self::TECHNOPARK => 'Технопарк',
-        self::QUANTORIUM => 'Кванториум',
-        self::CDNTT => 'ЦДНТТ',
-        self::COD => 'ЦОД',
-        self::MOBILE_QUANTUM => 'Мобильный Кванториум',
-    ];
+    public function __construct()
+    {
+        parent::__construct();
+        $this->list = [
+            self::TECHNOPARK => 'Технопарк',
+            self::QUANTORIUM => 'Кванториум',
+            self::CDNTT => 'ЦДНТТ',
+            self::COD => 'ЦОД',
+            self::MOBILE_QUANTUM => 'Мобильный Кванториум',
+        ];
+    }
 
     public function customSort()
     {
