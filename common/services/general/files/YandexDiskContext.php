@@ -6,7 +6,7 @@ use Arhitector\Yandex\Disk;
 
 class YandexDiskContext
 {
-    const OAUTH_TOKEN = "y0_AgAEA7qkEK7HAAn5LwAAAADkMhh1CPjqd4DtS52DG7Vyd3i0JNf-NxY";
+    const OAUTH_TOKEN = /*"y0_AgAEA7qkEK7HAAn5LwAAAADkMhh1CPjqd4DtS52DG7Vyd3i0JNf-NxY"*/'';
 
     static public function CheckSameFile($filepath)
     {
