@@ -14,8 +14,6 @@ class YandexDiskContext
 
         $resource = $disk->getResource('disk:/'.$filepath);
 
-        var_dump($filepath);
-
         return $resource->has();
     }
 
