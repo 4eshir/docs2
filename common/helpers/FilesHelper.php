@@ -8,6 +8,9 @@ class FilesHelper
     const TYPE_DOC = 'doc';
     const TYPE_APP = 'app';
 
+    const FILE_SERVER = 'server';
+    const FILE_YADI = 'yadi';
+
     public static function getFileTypes()
     {
         return [
@@ -15,5 +18,11 @@ class FilesHelper
             self::TYPE_DOC => 'Редактируемые файлы документов',
             self::TYPE_APP => 'Приложения к документам'
         ];
+    }
+
+    public static function getFilenameFromPath($filepath)
+    {
+        $parts = explode('/', $filepath);
+        return end($parts);
     }
 }

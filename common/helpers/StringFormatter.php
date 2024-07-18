@@ -21,10 +21,4 @@ class StringFormatter
     {
         return Html::a($name, $url);
     }
-
-    public static function getFilenameFromPath($filepath)
-    {
-        $parts = explode('/', $filepath);
-        return end($parts);
-    }
 }

@@ -98,7 +98,7 @@ class DocumentInWork extends DocumentIn
             foreach ($files as $file) {
                 /** @var FilesWork $file */
                 $links[] = StringFormatter::stringAsLink(
-                    StringFormatter::getFilenameFromPath($file->filepath),
+                    FilesHelper::getFilenameFromPath($file->filepath),
                     Url::to(['get-file', 'filepath' => $file->filepath])
                 );
             }
