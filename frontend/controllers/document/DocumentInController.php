@@ -4,10 +4,12 @@ namespace frontend\controllers\document;
 
 use common\helpers\FilesHelper;
 use common\models\search\SearchDocumentIn;
+use common\models\work\document_in_out\DocumentInWork;
 use common\repositories\document_in_out\DocumentInRepository;
 use common\services\general\files\FileService;
 use Yii;
 use yii\web\Controller;
+use yii\web\UploadedFile;
 
 class DocumentInController extends Controller
 {
@@ -41,6 +43,38 @@ class DocumentInController extends Controller
     {
         return $this->render('view', [
             'model' => $this->repository->get($id)
+        ]);
+    }
+
+    public function actionCreate()
+    {
+        $model = new DocumentInWork();
+
+
+        if ($model->load(Yii::$app->request->post())) {
+            $model->fill();
+
+            $model->scan = UploadedFile::getInstance($model, 'scan');
+            $model->app = UploadedFile::getInstances($model, 'app');
+            $model->doc = UploadedFile::getInstances($model, 'doc');
+            if ($model->validate())
+            {
+                $model->generateDocumentNumber();
+                if ($model->scanFile != null)
+                    $model->uploadScanFile();
+                if ($model->applicationFiles != null)
+                    $model->uploadApplicationFiles();
+                if ($model->docFiles != null)
+                    $model->uploadDocFiles();
+
+                $model->save(false);
+                Logger::WriteLog(Yii::$app->user->identity->getId(), 'Добавлен входящий документ '.$model->document_theme);
+            }
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('create', [
+            'model' => $model,
         ]);
     }
 

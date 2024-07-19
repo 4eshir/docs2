@@ -9,6 +9,7 @@ use common\models\work\general\CompanyWork;
 use common\models\work\general\FilesWork;
 use common\models\work\general\PeopleWork;
 use common\models\work\general\PositionWork;
+use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\document_in_out\InOutDocumentsRepository;
 use common\repositories\general\FilesRepository;
@@ -20,6 +21,9 @@ use InvalidArgumentException;
  * @property PeopleWork $correspondentWork
  * @property PositionWork $positionWork
  * @property CompanyWork $companyWork
+ * @property InOutDocumentsWork $inOutDocumentsWork
+ * @property PeopleWork $creatorWork
+ * @property PeopleWork $lastUpdateWork
  */
 class DocumentInWork extends DocumentIn
 {
@@ -46,6 +50,16 @@ class DocumentInWork extends DocumentIn
         return array_merge(parent::rules(), [
             [['scan', 'doc'], 'required'],
         ]);
+    }
+
+    public static function fill($localNumber = 0, $creatorId = null, $app = '', $doc = '', $scan = '')
+    {
+        $entity = new static();
+        $entity->creator_id = $creatorId ?: Yii::$app->user->identity->getId();
+        $entity->local_number = $localNumber;
+        $entity->app = $app;
+        $entity->doc = $doc;
+        $entity->scan = $scan;
     }
 
     public function getFullNumber()
@@ -139,6 +153,50 @@ class DocumentInWork extends DocumentIn
         throw new \InvalidArgumentException('Неизвестный формат строки');
     }
 
+    public function generateDocumentNumber()
+    {
+        $repository = Yii::createObject(DocumentInRepository::class);
+        $docs = $repository->getAllDocumentsDescDate();
+        if (date('Y') !== substr($docs[0]->local_date, 0, 4)) {
+            $this->local_number = 1;
+        }
+        else {
+            $docs = $repository->getAllDocumentsInYear();
+            if (end($docs)->local_date > $this->local_date && $this->document_theme != 'Резерв') {
+                $tempId = 0;
+                $tempPre = 0;
+                if (count($docs) == 0) {
+                    $tempId = 1;
+                }
+                for ($i = count($docs) - 1; $i >= 0; $i--) {
+                    if ($docs[$i]->local_date <= $this->local_date) {
+                        $tempId = $docs[$i]->local_number;
+                        if ($docs[$i]->local_postfix != null) {
+                            $tempPre = $docs[$i]->local_postfix + 1;
+                        }
+                        else {
+                            $tempPre = 1;
+                        }
+                        break;
+                    }
+                }
+
+                $this->local_number = $tempId;
+                $this->local_postfix = $tempPre;
+                Yii::$app->session->addFlash('warning', 'Добавленный документ должен был быть зарегистрирован раньше. Номер документа: '.$this->local_number.'/'.$this->local_postfix);
+            }
+            else
+            {
+                if (count($docs) == 0) {
+                    $this->local_number = 1;
+                }
+                else {
+                    $this->local_number = end($docs)->local_number + 1;
+                }
+            }
+        }
+    }
+
 
     // --relationships--
 
@@ -160,5 +218,15 @@ class DocumentInWork extends DocumentIn
     public function getCorrespondentWork()
     {
         return $this->hasOne(PeopleWork::class, ['id' => 'correspondent_id']);
+    }
+
+    public function getCreatorWork()
+    {
+        return $this->hasOne(PeopleWork::class, ['id' => 'creator_id']);
+    }
+
+    public function getLastUpdateWork()
+    {
+        return $this->hasOne(PeopleWork::class, ['id' => 'last_update_id']);
     }
 }

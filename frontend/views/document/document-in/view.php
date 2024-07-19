@@ -2,6 +2,7 @@
 
 use common\helpers\DateFormatter;
 use common\helpers\FilesHelper;
+use common\helpers\StringFormatter;
 use common\models\work\document_in_out\DocumentInWork;
 use common\models\work\general\PeopleWork;
 use yii\helpers\Html;
@@ -46,43 +47,34 @@ $this->params['breadcrumbs'][] = $this->title;
             ['label' => 'ФИО корреспондента', 'attribute' => 'correspondent_id', 'value' => function(DocumentInWork $model) {
                 return $model->correspondentWork ? $model->correspondentWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
             }],
-            ['label' => 'Должность корреспондента', 'attribute' => 'position_id', 'value' => $model->positionWork->name],
-            ['label' => 'Организация корреспондента', 'attribute' => 'company_id', 'value' => $model->companyWork->name],
+            ['label' => 'Должность корреспондента', 'attribute' => 'position_id', 'value' => function(DocumentInWork $model) {
+                return $model->positionWork ? $model->positionWork->name : '';
+            }],
+            ['label' => 'Организация корреспондента', 'attribute' => 'company_id', 'value' => function(DocumentInWork $model) {
+                return $model->companyWork ? $model->companyWork->name : '';
+            }],
             ['label' => 'Тема документа', 'attribute' => 'document_theme'],
             ['label' => 'Способ получения', 'attribute' => 'send_method', 'value' => Yii::$app->sendMethods->get($model->send_method)],
             ['label' => 'Скан документа', 'attribute' => 'scan', 'value' => function (DocumentInWork $model) {
                 return implode('<br>', $model->getFileLinks(FilesHelper::TYPE_SCAN));
             }, 'format' => 'raw'],
-            /*['label' => 'Редактируемые документы', 'attribute' => 'docFiles', 'value' => function ($model) {
-                $split = explode(" ", $model->doc);
-                $result = '';
-                for ($i = 0; $i < count($split); $i++)
-                    $result = $result.Html::a($split[$i], \yii\helpers\Url::to(['document-in/get-file', 'fileName' => $split[$i], 'modelId' => $model->id, 'type' => 'docs'])).'<br>';
-                return $result;
-                //return Html::a($model->Scan, 'index.php?r=docs-out/get-file&filename='.$model->Scan);
+            ['label' => 'Редактируемые документы', 'attribute' => 'docFiles', 'value' => function ($model) {
+                return implode('<br>', $model->getFileLinks(FilesHelper::TYPE_DOC));
             }, 'format' => 'raw'],
             ['label' => 'Приложения', 'attribute' => 'applications', 'value' => function ($model) {
-                $split = explode(" ", $model->applications);
-                $result = '';
-                for ($i = 0; $i < count($split); $i++)
-                    $result = $result.Html::a($split[$i], \yii\helpers\Url::to(['document-in/get-file', 'fileName' => $split[$i], 'modelId' => $model->id, 'type' => 'apps'])).'<br>';
-                return $result;
-                //return Html::a($model->Scan, 'index.php?r=docs-out/get-file&filename='.$model->Scan);
+                return implode('<br>', $model->getFileLinks(FilesHelper::TYPE_APP));
             }, 'format' => 'raw'],
             ['label' => 'Ключевые слова', 'attribute' => 'key_words'],
-            ['attribute' => 'needAnswer', 'label' => 'Ответ', 'value' => function($model){
-                $links = \app\models\work\InOutDocsWork::find()->where(['document_in_id' => $model->id])->one();
-                if ($links == null)
-                    return '';
-                if ($links->document_out_id == null)
-                    return 'Требуется ответ';
-                else
-                    return Html::a('Исходящий документ "'.\app\models\work\DocumentOutWork::find()->where(['id' => $links->document_out_id])->one()->document_theme.'"',
-                        \yii\helpers\Url::to(['docs-out/view', 'id' => \app\models\work\DocumentOutWork::find()->where(['id' => $links->document_out_id])->one()->id]));
+            ['attribute' => 'needAnswer', 'label' => 'Ответ', 'value' => function(DocumentInWork $model){
+                return $model->getNeedAnswer(StringFormatter::FORMAT_LINK);
             }, 'format' => 'raw'],
-            ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => $model->creatorWork->secondname.' '.mb_substr($model->creatorWork->firstname, 0, 1).'. '.mb_substr($model->creatorWork->patronymic, 0, 1).'.'],
-            ['label' => 'Последний редактор', 'attribute' => 'last_edit_id', 'value' => $model->lastEditWork->secondname.' '.mb_substr($model->lastEditWork->firstname, 0, 1).'. '.mb_substr($model->lastEditWork->patronymic, 0, 1).'.'],
-        */],
+            ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => function(DocumentInWork $model) {
+                return $model->correspondentWork ? $model->correspondentWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
+            }],
+            ['label' => 'Последний редактор', 'attribute' => 'last_update_id', 'value' => function(DocumentInWork $model) {
+                return $model->lastUpdateWork ? $model->lastUpdateWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
+            }],
+        ],
     ]) ?>
 
 </div>
