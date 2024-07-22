@@ -35,19 +35,19 @@ class PeopleWork extends People
         }
     }
 
-    private function getFullFio()
+    public function getFullFio()
     {
         return "$this->surname $this->firstname $this->patronymic";
     }
 
-    private function getSurnameInitials()
+    public function getSurnameInitials()
     {
         return $this->surname
             . ' ' . substr($this->firstname, 0, 1)
             . '. ' . $this->patronymic ? substr($this->patronymic, 0, 1) . '.' : '';
     }
 
-    private function getFioPosition()
+    public function getFioPosition()
     {
         return 'stub';
     }

@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
@@ -7,6 +8,8 @@ use yii\jui\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\work\document_in_out\DocumentInWork */
+/* @var $correspondentList */
+/* @var $availablePositions */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -29,9 +32,8 @@ use yii\jui\DatePicker;
         ]])->label('Дата поступления документа') ?>
 
     <?= $form->field($model, 'real_date')->widget(DatePicker::class, [
-        'dateFormat' => 'php:Y-m-d',
+        'dateFormat' => 'php:d.m.Y',
         'language' => 'ru',
-        //'dateFormat' => 'dd.MM.yyyy,
         'options' => [
             'placeholder' => 'Дата',
             'class'=> 'form-control',
@@ -40,11 +42,7 @@ use yii\jui\DatePicker;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2050',
-            //'showOn' => 'button',
-            //'buttonText' => 'Выбрать дату',
-            //'buttonImageOnly' => true,
-            //'buttonImage' => 'images/calendar.gif'
+            'yearRange' => '2000:2100',
         ]])->label('Дата входящего документа') ?>
 
 
@@ -70,12 +68,30 @@ use yii\jui\DatePicker;
     ',
     ];
 
-    $people = \app\models\work\PeopleWork::find()->orderBy(['secondname' => SORT_ASC, 'firstname' => SORT_ASC])->all();
-    $items = \yii\helpers\ArrayHelper::map($people,'id','fullName');
-
-    echo $form->field($model, "correspondent_id")->dropDownList($items,$params)->label('ФИО корреспондента');
+    echo $form
+        ->field($model, "correspondent_id")
+        ->dropDownList(ArrayHelper::map($correspondentList, 'id', 'fullFio'),$params)
+        ->label('ФИО корреспондента');
 
     ?>
+
+    <div id="corr_div1">
+        <?php
+        $params = [
+            'id' => 'position',
+            'class' => 'form-control pos',
+        ];
+        echo $form
+            ->field($model, 'position_id')
+            ->dropDownList(ArrayHelper::map($availablePositions, 'id', 'name'), $params)
+            ->label('Должность корреспондента (при наличии)');
+        ?>
+    </div>
+
+    <?= $form->field($model, 'document_theme')->textInput(['maxlength' => true])->label('Тема документа') ?>
+
+    <?= $form->field($model, 'send_method')->dropDownList(Yii::$app->sendMethods->getList())->label('Способ получения') ?>
+
     <?php
     if ($model->correspondent_id !== null)
     {
@@ -132,20 +148,10 @@ use yii\jui\DatePicker;
     }
     ?>
 
-    <?= $form->field($model, 'document_theme')->textInput(['maxlength' => true])->label('Тема документа') ?>
-
-    <?php
-    $sendMethod= \app\models\work\SendMethodWork::find()->orderBy(['name' => SORT_ASC])->all();
-    $items = \yii\helpers\ArrayHelper::map($sendMethod,'id','name');
-    $params = [];
-    echo $form->field($model, 'send_method_id')->dropDownList($items,$params)->label('Способ получения');
-
-    ?>
-
-    <?= $form->field($model, 'key_words')->textInput(['maxlength' => true])->label('Ключевые слова') ?>
-    <?= $form->field($model, 'needAnswer')->checkbox(['id' => 'needAnswer', 'onchange' => 'checkAnswer()']) ?>
-    <div id="dateAnswer" class="col-xs-4" <?php echo $model->needAnswer == 0 ? 'hidden' : '' ?>>
-        <?= $form->field($model, 'dateAnswer')->widget(DatePicker::class, [
+    <?php /*= $form->field($model, 'key_words')->textInput(['maxlength' => true])->label('Ключевые слова') */?>
+    <?php /*= $form->field($model, 'needAnswer')->checkbox(['id' => 'needAnswer', 'onchange' => 'checkAnswer()']) */?>
+    <div id="dateAnswer" class="col-xs-4" <?php /*echo $model->needAnswer == 0 ? 'hidden' : '' */?>>
+        <?php /*= $form->field($model, 'dateAnswer')->widget(DatePicker::class, [
             'dateFormat' => 'php:Y-m-d',
             'language' => 'ru',
             //'dateFormat' => 'dd.MM.yyyy,
@@ -162,32 +168,32 @@ use yii\jui\DatePicker;
                 //'buttonText' => 'Выбрать дату',
                 //'buttonImageOnly' => true,
                 //'buttonImage' => 'images/calendar.gif'
-            ]])->label('Крайний срок ответа') ?>
+            ]])->label('Крайний срок ответа') */?>
     </div>
-    <div id="nameAnswer" class="col-xs-4" <?php echo $model->needAnswer == 0 ? 'hidden' : '' ?>>
+    <div id="nameAnswer" class="col-xs-4" <?php /*echo $model->needAnswer == 0 ? 'hidden' : '' */?>>
         <?php
-        $people = \app\models\work\PeopleWork::find()->where(['company_id' => 8])->orderBy(['secondname' => SORT_ASC, 'firstname' => SORT_ASC])->all();
+/*        $people = \app\models\work\PeopleWork::find()->where(['company_id' => 8])->orderBy(['secondname' => SORT_ASC, 'firstname' => SORT_ASC])->all();
         $items = \yii\helpers\ArrayHelper::map($people,'id','fullName');
         $params = [
             'prompt' => ''
         ];
         echo $form->field($model, "nameAnswer")->dropDownList($items,$params)->label('ФИО ответственного');
 
-        ?>
+        */?>
     </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>
-    <?= $form->field($model, 'scanFile')->fileInput()
-        ->label('Скан документа')?>
+    <?php /*= $form->field($model, 'scanFile')->fileInput()
+        ->label('Скан документа')*/?>
     <?php
-    if (strlen($model->scan) > 2)
+/*    if (strlen($model->scan) > 2)
         echo '<h5>Загруженный файл: '.Html::a($model->scan, \yii\helpers\Url::to(['document-in/get-file', 'fileName' => $model->scan, 'modelId' => $model->id, 'type' => 'scan'])).'&nbsp;&nbsp;&nbsp;&nbsp; '.Html::a('X', \yii\helpers\Url::to(['document-in/delete-file', 'fileName' => $model->scan, 'modelId' => $model->id, 'type' => 'scan'])).'</h5><br>';
-    ?>
+    */?>
 
 
-    <?= $form->field($model, 'docFiles[]')->fileInput(['multiple' => true])->label('Редактируемые документы') ?>
+    <?php /*= $form->field($model, 'docFiles[]')->fileInput(['multiple' => true])->label('Редактируемые документы') */?>
 
     <?php
-    if ($model->doc !== null)
+/*    if ($model->doc !== null)
     {
         $split = explode(" ", $model->doc);
         echo '<table>';
@@ -198,14 +204,14 @@ use yii\jui\DatePicker;
         echo '</table>';
     }
 
-    ?>
+    */?>
 
 
 
-    <?= $form->field($model, 'applicationFiles[]')->fileInput(['multiple' => true])->label('Приложения') ?>
+    <?php /*= $form->field($model, 'applicationFiles[]')->fileInput(['multiple' => true])->label('Приложения') */?>
 
-    <?php
-    if ($model->applications !== null)
+    --><?php
+/*    if ($model->applications !== null)
     {
         $split = explode(" ", $model->applications);
         echo '<table>';
@@ -216,7 +222,7 @@ use yii\jui\DatePicker;
         echo '</table>';
     }
 
-    ?>
+    */?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

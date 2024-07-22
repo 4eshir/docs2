@@ -3,9 +3,12 @@
 namespace frontend\controllers\document;
 
 use common\helpers\FilesHelper;
+use common\helpers\SortHelper;
 use common\models\search\SearchDocumentIn;
 use common\models\work\document_in_out\DocumentInWork;
 use common\repositories\document_in_out\DocumentInRepository;
+use common\repositories\general\PeopleRepository;
+use common\repositories\general\PositionRepository;
 use common\services\general\files\FileService;
 use Yii;
 use yii\web\Controller;
@@ -14,17 +17,23 @@ use yii\web\UploadedFile;
 class DocumentInController extends Controller
 {
     private DocumentInRepository $repository;
+    private PeopleRepository $peopleRepository;
+    private PositionRepository $positionRepository;
     private FileService $fileService;
 
     public function __construct(
         $id,
         $module,
         DocumentInRepository $repository,
+        PeopleRepository $peopleRepository,
+        PositionRepository $positionRepository,
         FileService $fileService,
         $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->repository = $repository;
+        $this->peopleRepository = $peopleRepository;
+        $this->positionRepository = $positionRepository;
         $this->fileService = $fileService;
     }
 
@@ -49,7 +58,8 @@ class DocumentInController extends Controller
     public function actionCreate()
     {
         $model = new DocumentInWork();
-
+        $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
+        $availablePositions = $this->positionRepository->getList();
 
         if ($model->load(Yii::$app->request->post())) {
             $model->fill();
@@ -75,6 +85,8 @@ class DocumentInController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'correspondentList' => $correspondentList,
+            'availablePositions' => $availablePositions,
         ]);
     }
 

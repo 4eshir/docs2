@@ -4,6 +4,8 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\work\document_in_out\DocumentInWork */
+/* @var $correspondentList */
+/* @var $availablePositions */
 
 $this->title = 'Добавить входящий документ';
 $this->params['breadcrumbs'][] = ['label' => 'Входящая документация', 'url' => ['index']];
@@ -16,6 +18,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'correspondentList' => $correspondentList,
+        'availablePositions' => $availablePositions,
     ]) ?>
 
 </div>
