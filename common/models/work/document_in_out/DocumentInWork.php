@@ -2,7 +2,7 @@
 
 namespace common\models\work\document_in_out;
 
-use common\helpers\FilesHelper;
+use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\models\scaffold\DocumentIn;
 use common\models\work\general\CompanyWork;
@@ -13,9 +13,10 @@ use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\document_in_out\InOutDocumentsRepository;
 use common\repositories\general\FilesRepository;
+use frontend\events\EventTrait;
+use InvalidArgumentException;
 use Yii;
 use yii\helpers\Url;
-use InvalidArgumentException;
 
 /**
  * @property PeopleWork $correspondentWork
@@ -27,9 +28,24 @@ use InvalidArgumentException;
  */
 class DocumentInWork extends DocumentIn
 {
-    public $scan;
-    public $doc;
-    public $app;
+    use EventTrait;
+
+    /**
+     * Имена файлов для сохранения в БД
+     */
+    public $scanName;
+    public $docName;
+    public $appName;
+
+    /**
+     * Переменные для input-file в форме
+     */
+    public $scanFile;
+    public $docFiles;
+    public $appFiles;
+
+    public $dateAnswer;
+    public $nameAnswer;
 
     public function attributeLabels()
     {
@@ -48,7 +64,7 @@ class DocumentInWork extends DocumentIn
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['scan', 'doc'], 'required'],
+            [['scanFile', 'docFile'], 'required'],
         ]);
     }
 

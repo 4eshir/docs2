@@ -3,10 +3,12 @@
 namespace console\controllers;
 
 use common\models\LoginForm;
+use common\models\work\general\CompanyWork;
 use common\models\work\general\UserWork;
 use common\models\work\rac\PermissionFunctionWork;
 use common\models\work\rac\PermissionTemplateFunctionWork;
 use common\models\work\rac\PermissionTemplateWork;
+use common\repositories\general\CompanyRepository;
 use common\repositories\general\UserRepository;
 use common\repositories\rac\PermissionFunctionRepository;
 use common\repositories\rac\PermissionTemplateRepository;
@@ -18,6 +20,7 @@ class FillController extends Controller
     private PermissionTemplateRepository $templateRepository;
     private PermissionFunctionRepository $functionRepository;
     private PermissionTemplateFunctionWork $templateFunctionRepository;
+    private CompanyRepository $companyRepository;
 
     public function __construct(
         $id,
@@ -25,12 +28,25 @@ class FillController extends Controller
         PermissionTemplateRepository $templateRepository,
         PermissionFunctionRepository $functionRepository,
         PermissionTemplateFunctionWork $templateFunctionRepository,
+        CompanyRepository $companyRepository,
         $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->templateRepository = $templateRepository;
         $this->functionRepository = $functionRepository;
         $this->templateFunctionRepository = $templateFunctionRepository;
+        $this->companyRepository = $companyRepository;
+    }
+
+    public function actionInit()
+    {
+        $this->companyRepository->save(
+            $this->companyRepository->fastCreateWithId(
+                Yii::$app->params['mainCompanyId'],
+                'ГАОУ АО ДО "Региональный школьный технопарк',
+                'РШТ',
+                0)
+        );
     }
 
     public function actionDropPermissions()

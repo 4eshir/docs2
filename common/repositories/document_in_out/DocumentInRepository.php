@@ -3,6 +3,7 @@
 namespace common\repositories\document_in_out;
 
 use common\models\work\document_in_out\DocumentInWork;
+use DomainException;
 
 class DocumentInRepository
 {
@@ -19,5 +20,14 @@ class DocumentInRepository
     public function getAllDocumentsInYear()
     {
         return DocumentInWork::find()->where(['like', 'local_date', date('Y')])->orderBy(['local_number' => SORT_ASC, 'local_postfix' => SORT_ASC])->all();
+    }
+
+    public function save(DocumentInWork $document)
+    {
+        if (!$document->save()) {
+            throw new DomainException('Ошибка сохранения входящего документа. Проблемы: '.json_encode($company->getErrors()));
+        }
+
+        return $document->id;
     }
 }

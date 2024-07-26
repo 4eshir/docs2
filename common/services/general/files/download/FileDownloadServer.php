@@ -3,8 +3,6 @@
 
 namespace common\services\general\files\download;
 
-use common\helpers\FilesHelper;
-use common\helpers\StringFormatter;
 use Yii;
 
 class FileDownloadServer extends AbstractFileDownload

@@ -21,4 +21,17 @@ class StringFormatter
     {
         return Html::a($name, $url);
     }
+
+    public static function CutFilename($filename, $maxlength = 200)
+    {
+        $result = '';
+        $splitName = explode("_", $filename);
+        $i = 0;
+        while (strlen($result) < $maxlength - strlen($splitName[$i]) && $i < count($splitName)) {
+            $result = $result."_".$splitName[$i];
+            $i++;
+        }
+
+        return mb_substr($result, 1);
+    }
 }

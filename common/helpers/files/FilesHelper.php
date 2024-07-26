@@ -1,6 +1,6 @@
 <?php
 
-namespace common\helpers;
+namespace common\helpers\files;
 
 class FilesHelper
 {

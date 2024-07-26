@@ -3,7 +3,6 @@
 
 namespace common\services\general\files\download;
 
-use common\helpers\FilesHelper;
 use common\services\general\files\YandexDiskContext;
 
 class FileDownloadYandexDisk extends AbstractFileDownload

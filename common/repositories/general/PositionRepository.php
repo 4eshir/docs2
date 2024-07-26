@@ -2,7 +2,7 @@
 
 namespace common\repositories\general;
 
-use common\models\work\general\PeoplePositionBranchWork;
+use common\models\work\general\PeoplePositionCompanyBranchWork;
 use common\models\work\general\PositionWork;
 use yii\helpers\ArrayHelper;
 
@@ -17,7 +17,7 @@ class PositionRepository
     {
         $query = PositionWork::find();
         if ($peopleId) {
-            $subQuery = PeoplePositionBranchWork::find()->where(['people_id' => $peopleId])->all();
+            $subQuery = PeoplePositionCompanyBranchWork::find()->where(['people_id' => $peopleId])->all();
             $query->andWhere(['IN', 'id', ArrayHelper::getColumn($subQuery, 'position_id')]);
         }
 

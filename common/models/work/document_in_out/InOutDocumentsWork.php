@@ -10,6 +10,22 @@ use common\models\work\general\PeopleWork;
  */
 class InOutDocumentsWork extends InOutDocuments
 {
+    public static function fill(
+        $documentInId,
+        $documentOutId = null,
+        $date = null,
+        $responsibleId = null
+    )
+    {
+        $entity = new static();
+        $entity->document_in_id = $documentInId;
+        $entity->document_out_id = $documentOutId;
+        $entity->date = $date;
+        $entity->responsible_id = $responsibleId;
+
+        return $entity;
+    }
+
     public function isDocumentOutEmpty()
     {
         return $this->document_out_id == null;

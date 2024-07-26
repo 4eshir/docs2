@@ -2,11 +2,14 @@
 
 namespace frontend\controllers\document;
 
-use common\helpers\FilesHelper;
+use common\helpers\files\filenames\DocumentInFileNameGenerator;
+use common\helpers\files\FilePaths;
+use common\helpers\files\FilesHelper;
 use common\helpers\SortHelper;
 use common\models\search\SearchDocumentIn;
 use common\models\work\document_in_out\DocumentInWork;
 use common\repositories\document_in_out\DocumentInRepository;
+use common\repositories\general\CompanyRepository;
 use common\repositories\general\PeopleRepository;
 use common\repositories\general\PositionRepository;
 use common\services\general\files\FileService;
@@ -19,6 +22,7 @@ class DocumentInController extends Controller
     private DocumentInRepository $repository;
     private PeopleRepository $peopleRepository;
     private PositionRepository $positionRepository;
+    private CompanyRepository $companyRepository;
     private FileService $fileService;
 
     public function __construct(
@@ -27,6 +31,7 @@ class DocumentInController extends Controller
         DocumentInRepository $repository,
         PeopleRepository $peopleRepository,
         PositionRepository $positionRepository,
+        CompanyRepository $companyRepository,
         FileService $fileService,
         $config = [])
     {
@@ -34,6 +39,7 @@ class DocumentInController extends Controller
         $this->repository = $repository;
         $this->peopleRepository = $peopleRepository;
         $this->positionRepository = $positionRepository;
+        $this->companyRepository = $companyRepository;
         $this->fileService = $fileService;
     }
 
@@ -60,26 +66,46 @@ class DocumentInController extends Controller
         $model = new DocumentInWork();
         $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
         $availablePositions = $this->positionRepository->getList();
+        $availableCompanies = $this->companyRepository->getList();
+        $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
 
-        if ($model->load(Yii::$app->request->post())) {
-            $model->fill();
+        if ($model->load(Yii::$app->request->post()) && $model->validate(false)) {
 
-            $model->scan = UploadedFile::getInstance($model, 'scan');
-            $model->app = UploadedFile::getInstances($model, 'app');
-            $model->doc = UploadedFile::getInstances($model, 'doc');
-            if ($model->validate())
-            {
-                $model->generateDocumentNumber();
-                if ($model->scanFile != null)
-                    $model->uploadScanFile();
-                if ($model->applicationFiles != null)
-                    $model->uploadApplicationFiles();
-                if ($model->docFiles != null)
-                    $model->uploadDocFiles();
+            $model->generateDocumentNumber();
 
-                $model->save(false);
-                Logger::WriteLog(Yii::$app->user->identity->getId(), 'Добавлен входящий документ '.$model->document_theme);
+            $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
+            $model->appFiles = UploadedFile::getInstances($model, 'appFiles');
+            $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
+
+            $this->fileService->uploadFile(
+                $model,
+                $model->scanFile,
+                FilesHelper::TYPE_SCAN,
+                FilePaths::DOCUMENT_IN_DOC
+            );
+
+            for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
+                $this->fileService->uploadFile(
+                    $model,
+                    $model->docFiles[$i - 1],
+                    FilesHelper::TYPE_DOC,
+                    FilePaths::DOCUMENT_IN_DOC,
+                    ['counter' => $i]
+                );
             }
+
+            for ($i = 1; $i < count($model->appFiles) + 1; $i++) {
+                $this->fileService->uploadFile(
+                    $model,
+                    $model->appFiles[$i - 1],
+                    FilesHelper::TYPE_APP,
+                    FilePaths::DOCUMENT_IN_APP,
+                    ['counter' => $i]
+                );
+            }
+
+            $this->repository->save($model);
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -87,6 +113,8 @@ class DocumentInController extends Controller
             'model' => $model,
             'correspondentList' => $correspondentList,
             'availablePositions' => $availablePositions,
+            'availableCompanies' => $availableCompanies,
+            'mainCompanyWorkers' => $mainCompanyWorkers,
         ]);
     }
 

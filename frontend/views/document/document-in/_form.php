@@ -10,6 +10,8 @@ use yii\jui\DatePicker;
 /* @var $model common\models\work\document_in_out\DocumentInWork */
 /* @var $correspondentList */
 /* @var $availablePositions */
+/* @var $availableCompanies */
+/* @var $mainCompanyWorkers */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -75,6 +77,19 @@ use yii\jui\DatePicker;
 
     ?>
 
+    <div id="corr_div2">
+        <?php
+        $params = [
+            'id' => 'company',
+            'class' => 'form-control com',
+        ];
+        echo $form
+            ->field($model, 'company_id')
+            ->dropDownList(ArrayHelper::map($availableCompanies, 'id', 'name'), $params)
+            ->label('Организация корреспондента');
+        ?>
+    </div>
+
     <div id="corr_div1">
         <?php
         $params = [
@@ -88,73 +103,18 @@ use yii\jui\DatePicker;
         ?>
     </div>
 
+
     <?= $form->field($model, 'document_theme')->textInput(['maxlength' => true])->label('Тема документа') ?>
 
     <?= $form->field($model, 'send_method')->dropDownList(Yii::$app->sendMethods->getList())->label('Способ получения') ?>
 
-    <?php
-    if ($model->correspondent_id !== null)
-    {
-        echo '<div id="corr_div1">';
-        $position = \app\models\work\PeoplePositionBranchWork::find()->where(['people_id' => $model->correspondent_id])->all();
-        $pos_id = [];
-        foreach ($position as $posOne)
-            $pos_id[] = $posOne->position_id;
-        $position = \app\models\work\PositionWork::find()->where(['in', 'id', $pos_id])->all();
-        $items = \yii\helpers\ArrayHelper::map($position,'id','name');
-        $params = [
-            'id' => 'position',
-            'class' => 'form-control pos',
-        ];
-        echo $form->field($model, 'position_id')->dropDownList($items,$params)->label('Должность корреспондента (при наличии)');
-        echo '</div>';
+    <?= $form->field($model, 'key_words')->textInput(['maxlength' => true])->label('Ключевые слова') ?>
+    <?= $form->field($model, 'needAnswer')->checkbox(['id' => 'needAnswer', 'onchange' => 'checkAnswer()']) ?>
 
-        echo '<div id="corr_div2">';
-        $company = \app\models\work\CompanyWork::find()->where(['id' => $model->correspondent->company_id])->orderBy(['name' => SORT_ASC])->all();
-        $items = \yii\helpers\ArrayHelper::map($company,'id','name');
-        $params = [
-            'id' => 'company',
-            'class' => 'form-control com',
-        ];
-        echo $form->field($model, 'company_id')->dropDownList($items,$params)->label('Организация корреспондента');
-        echo '</div>';
-    }
-    else
-    {
-        echo '<div id="corr_div1">';
-        $positions = \app\models\work\PositionWork::find()->orderBy(['name' => SORT_ASC])->all();
-        $items = \yii\helpers\ArrayHelper::map($positions,'id','name');
-        $params = [
-            'id' => 'position',
-            'class' => 'form-control pos',
-        ];
-        echo $form->field($model, 'position_id')->dropDownList($items,$params)->label('Должность корреспондента (при наличии)');
-        echo '</div>';
-
-        echo '<div id="corr_div2">';
-        $company = \app\models\work\CompanyWork::find()->where(['!=', 'id', 7])->orderBy(['name' => SORT_ASC])->all();
-        $companyNull = \app\models\work\CompanyWork::find()->where(['id' => 7])->all();
-        $items1 = \yii\helpers\ArrayHelper::map($company,'id','name');
-        $items2 = \yii\helpers\ArrayHelper::map($companyNull,'id','name');
-
-        $items = $items2 + $items1;
-
-        $params = [
-            'id' => 'company',
-            'class' => 'form-control com',
-        ];
-        echo $form->field($model, 'company_id')->dropDownList($items,$params)->label('Организация корреспондента');
-        echo '</div>';
-    }
-    ?>
-
-    <?php /*= $form->field($model, 'key_words')->textInput(['maxlength' => true])->label('Ключевые слова') */?>
-    <?php /*= $form->field($model, 'needAnswer')->checkbox(['id' => 'needAnswer', 'onchange' => 'checkAnswer()']) */?>
-    <div id="dateAnswer" class="col-xs-4" <?php /*echo $model->needAnswer == 0 ? 'hidden' : '' */?>>
-        <?php /*= $form->field($model, 'dateAnswer')->widget(DatePicker::class, [
-            'dateFormat' => 'php:Y-m-d',
+    <div id="dateAnswer" class="col-xs-4" <?= $model->needAnswer == 0 ? 'hidden' : '' ?>>
+        <?= $form->field($model, 'dateAnswer')->widget(DatePicker::class, [
+            'dateFormat' => 'php:d.m.Y',
             'language' => 'ru',
-            //'dateFormat' => 'dd.MM.yyyy,
             'options' => [
                 'placeholder' => 'Дата',
                 'class'=> 'form-control',
@@ -163,34 +123,29 @@ use yii\jui\DatePicker;
             'clientOptions' => [
                 'changeMonth' => true,
                 'changeYear' => true,
-                'yearRange' => '2000:2050',
-                //'showOn' => 'button',
-                //'buttonText' => 'Выбрать дату',
-                //'buttonImageOnly' => true,
-                //'buttonImage' => 'images/calendar.gif'
-            ]])->label('Крайний срок ответа') */?>
+                'yearRange' => '2000:2100',
+            ]])->label('Крайний срок ответа') ?>
     </div>
-    <div id="nameAnswer" class="col-xs-4" <?php /*echo $model->needAnswer == 0 ? 'hidden' : '' */?>>
+    <div id="nameAnswer" class="col-xs-4" <?= $model->needAnswer == 0 ? 'hidden' : '' ?>>
         <?php
-/*        $people = \app\models\work\PeopleWork::find()->where(['company_id' => 8])->orderBy(['secondname' => SORT_ASC, 'firstname' => SORT_ASC])->all();
-        $items = \yii\helpers\ArrayHelper::map($people,'id','fullName');
         $params = [
             'prompt' => ''
         ];
-        echo $form->field($model, "nameAnswer")->dropDownList($items,$params)->label('ФИО ответственного');
+        echo $form->field($model, "nameAnswer")
+            ->dropDownList(
+                ArrayHelper::map($mainCompanyWorkers,'id','fullFio'),
+                $params
+            )
+            ->label('ФИО ответственного');
 
-        */?>
+        ?>
     </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>
-    <?php /*= $form->field($model, 'scanFile')->fileInput()
-        ->label('Скан документа')*/?>
-    <?php
-/*    if (strlen($model->scan) > 2)
-        echo '<h5>Загруженный файл: '.Html::a($model->scan, \yii\helpers\Url::to(['document-in/get-file', 'fileName' => $model->scan, 'modelId' => $model->id, 'type' => 'scan'])).'&nbsp;&nbsp;&nbsp;&nbsp; '.Html::a('X', \yii\helpers\Url::to(['document-in/delete-file', 'fileName' => $model->scan, 'modelId' => $model->id, 'type' => 'scan'])).'</h5><br>';
-    */?>
+    <?= $form->field($model, 'scanFile')->fileInput()
+        ->label('Скан документа') ?>
 
 
-    <?php /*= $form->field($model, 'docFiles[]')->fileInput(['multiple' => true])->label('Редактируемые документы') */?>
+    <?= $form->field($model, 'docFiles[]')->fileInput(['multiple' => true])->label('Редактируемые документы') ?>
 
     <?php
 /*    if ($model->doc !== null)

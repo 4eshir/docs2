@@ -1,7 +1,7 @@
 <?php
 
 use common\helpers\DateFormatter;
-use common\helpers\FilesHelper;
+use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\models\work\document_in_out\DocumentInWork;
 use common\models\work\general\PeopleWork;

@@ -6,6 +6,8 @@ use yii\helpers\Html;
 /* @var $model common\models\work\document_in_out\DocumentInWork */
 /* @var $correspondentList */
 /* @var $availablePositions */
+/* @var $availableCompanies */
+/* @var $mainCompanyWorkers */
 
 $this->title = 'Добавить входящий документ';
 $this->params['breadcrumbs'][] = ['label' => 'Входящая документация', 'url' => ['index']];
@@ -20,6 +22,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'correspondentList' => $correspondentList,
         'availablePositions' => $availablePositions,
+        'availableCompanies' => $availableCompanies,
+        'mainCompanyWorkers' => $mainCompanyWorkers,
     ]) ?>
 
 </div>

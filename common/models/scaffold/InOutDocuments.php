@@ -31,7 +31,7 @@ class InOutDocuments extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['document_in_id', 'document_out_id'], 'required'],
+            [['document_in_id'], 'required'],
             [['document_in_id', 'document_out_id', 'responsible_id'], 'integer'],
             [['date'], 'safe'],
             [['document_in_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentIn::class, 'targetAttribute' => ['document_in_id' => 'id']],
