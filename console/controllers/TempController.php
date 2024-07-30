@@ -16,7 +16,7 @@ class TempController extends Controller
 {
     public function actionCheck()
     {
-        $repository = Yii::createObject(PeopleRepository::class);
-        var_dump($repository->getPeopleFromMainCompany());
+        var_dump(DocumentInWork::class);
+        var_dump(get_class(new DocumentInWork()));
     }
 }

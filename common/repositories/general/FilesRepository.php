@@ -3,6 +3,9 @@
 namespace common\repositories\general;
 
 use common\models\work\general\FilesWork;
+use DomainException;
+use Yii;
+use yii\db\Exception;
 
 class FilesRepository
 {
@@ -13,5 +16,52 @@ class FilesRepository
             ->andWhere(['table_row_id' => $id])
             ->andWhere(['file_type' => $fileType])
             ->all();
+    }
+
+    /**
+     * Подготавливает запрос для создания новой записи в таблице
+     * @param $tableName
+     * @param $tableRowId
+     * @param $filetype
+     * @param $filepath
+     * @return string
+     */
+    public function prepareCreate($tableName, $tableRowId, $filetype, $filepath)
+    {
+        $model = FilesWork::fill($tableName, $tableRowId, $filetype, $filepath);
+        $command = Yii::$app->db->createCommand();
+        $command->insert($model::tableName(), $model->getAttributes());
+
+        return $command->getRawSql();
+    }
+
+    /**
+     * Подготавливает запрос для изменения существующей записи в таблице
+     * @param $tableName
+     * @param $tableRowId
+     * @param $filetype
+     * @param $filepath
+     * @return string
+     */
+    public function prepareUpdate($tableName, $tableRowId, $filetype, $filepath)
+    {
+        $model = $this->get($tableName, $tableRowId, $filetype);
+        if (count($model) == 0) {
+            throw new Exception('Запись не найдена');
+        }
+
+        $command = Yii::$app->db->createCommand();
+        $command->update($model[0]::tableName(), ['filepath' => $filepath], ['id' => $model[0]->id]);
+
+        return $command->getRawSql();
+    }
+
+    public function save(FilesWork $file)
+    {
+        if (!$file->save()) {
+            throw new DomainException('Ошибка сохранения связки входящий/исходящий документы. Проблемы: '.json_encode($file->getErrors()));
+        }
+
+        return $file->id;
     }
 }

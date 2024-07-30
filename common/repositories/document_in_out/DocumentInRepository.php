@@ -25,7 +25,7 @@ class DocumentInRepository
     public function save(DocumentInWork $document)
     {
         if (!$document->save()) {
-            throw new DomainException('Ошибка сохранения входящего документа. Проблемы: '.json_encode($company->getErrors()));
+            throw new DomainException('Ошибка сохранения входящего документа. Проблемы: '.json_encode($document->getErrors()));
         }
 
         return $document->id;

@@ -11,6 +11,9 @@ class FilesHelper
     const FILE_SERVER = 'server';
     const FILE_YADI = 'yadi';
 
+    const LOAD_TYPE_SINGLE = 'single'; /** тип загрузки "единичный". перезаписывает существующую строку в БД при наличии @see FilesWork */
+    const LOAD_TYPE_MULTI = 'multi'; /** тип загрузки "мульти". создает новые записи в @see FilesWork вне зависимости от существующих аналогичных строк*/
+
     public static function getFileTypes()
     {
         return [

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\document;
 
+use Cassandra\Exception\ValidationException;
 use common\helpers\files\filenames\DocumentInFileNameGenerator;
 use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
@@ -13,6 +14,9 @@ use common\repositories\general\CompanyRepository;
 use common\repositories\general\PeopleRepository;
 use common\repositories\general\PositionRepository;
 use common\services\general\files\FileService;
+use DomainException;
+use frontend\events\document_in\InOutDocumentCreateEvent;
+use frontend\events\document_in\InOutDocumentDeleteEvent;
 use Yii;
 use yii\web\Controller;
 use yii\web\UploadedFile;
@@ -69,19 +73,30 @@ class DocumentInController extends Controller
         $availableCompanies = $this->companyRepository->getList();
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate(false)) {
+        if ($model->load(Yii::$app->request->post())) {
 
             $model->generateDocumentNumber();
+
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
 
             $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
             $model->appFiles = UploadedFile::getInstances($model, 'appFiles');
             $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
 
+            $this->repository->save($model);
+
+            if ($model->needAnswer) {
+                $model->recordEvent(new InOutDocumentCreateEvent($model->id, null, $model->dateAnswer, $model->nameAnswer), DocumentInWork::class);
+            }
+
             $this->fileService->uploadFile(
                 $model,
                 $model->scanFile,
                 FilesHelper::TYPE_SCAN,
-                FilePaths::DOCUMENT_IN_DOC
+                FilesHelper::LOAD_TYPE_SINGLE,
+                FilePaths::DOCUMENT_IN_SCAN
             );
 
             for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
@@ -89,6 +104,7 @@ class DocumentInController extends Controller
                     $model,
                     $model->docFiles[$i - 1],
                     FilesHelper::TYPE_DOC,
+                    FilesHelper::LOAD_TYPE_MULTI,
                     FilePaths::DOCUMENT_IN_DOC,
                     ['counter' => $i]
                 );
@@ -99,17 +115,90 @@ class DocumentInController extends Controller
                     $model,
                     $model->appFiles[$i - 1],
                     FilesHelper::TYPE_APP,
+                    FilesHelper::LOAD_TYPE_MULTI,
                     FilePaths::DOCUMENT_IN_APP,
                     ['counter' => $i]
                 );
             }
 
-            $this->repository->save($model);
+            $model->releaseEvents();
 
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
+            'model' => $model,
+            'correspondentList' => $correspondentList,
+            'availablePositions' => $availablePositions,
+            'availableCompanies' => $availableCompanies,
+            'mainCompanyWorkers' => $mainCompanyWorkers,
+        ]);
+    }
+
+    public function actionUpdate($id)
+    {
+        $model = $this->repository->get($id);
+
+        /** @var DocumentInWork $model */
+        $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
+        $availablePositions = $this->positionRepository->getList();
+        $availableCompanies = $this->companyRepository->getList();
+        $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
+
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
+            $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
+            $model->appFiles = UploadedFile::getInstances($model, 'appFiles');
+            $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
+
+            $this->repository->save($model);
+
+            if ($model->needAnswer) {
+                $model->recordEvent(new InOutDocumentCreateEvent($model->id, null, $model->dateAnswer, $model->nameAnswer), DocumentInWork::class);
+            }
+            else {
+                $model->recordEvent(new InOutDocumentDeleteEvent($model->id), DocumentInWork::class);
+            }
+
+            $this->fileService->uploadFile(
+                $model,
+                $model->scanFile,
+                FilesHelper::TYPE_SCAN,
+                FilesHelper::LOAD_TYPE_SINGLE,
+                FilePaths::DOCUMENT_IN_SCAN
+            );
+
+            for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
+                $this->fileService->uploadFile(
+                    $model,
+                    $model->docFiles[$i - 1],
+                    FilesHelper::TYPE_DOC,
+                    FilesHelper::LOAD_TYPE_MULTI,
+                    FilePaths::DOCUMENT_IN_DOC,
+                    ['counter' => $i]
+                );
+            }
+
+            for ($i = 1; $i < count($model->appFiles) + 1; $i++) {
+                $this->fileService->uploadFile(
+                    $model,
+                    $model->appFiles[$i - 1],
+                    FilesHelper::TYPE_APP,
+                    FilesHelper::LOAD_TYPE_MULTI,
+                    FilePaths::DOCUMENT_IN_APP,
+                    ['counter' => $i]
+                );
+            }
+
+            $model->releaseEvents();
+
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        return $this->render('update', [
             'model' => $model,
             'correspondentList' => $correspondentList,
             'availablePositions' => $availablePositions,

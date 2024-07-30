@@ -33,6 +33,16 @@ class InOutDocumentsRepository
     }
 
     /**
+     * Возвращает строку по ID входящего документа
+     * @param $docInId
+     * @return array|\yii\db\ActiveRecord|null
+     */
+    public function getByDocumentInId($docInId)
+    {
+        return InOutDocumentsWork::find()->where(['document_in_id' => $docInId])->one();
+    }
+
+    /**
      * Подготавливает запрос для создания новой записи в таблице
      * @param $docInId
      * @param $docOutId
@@ -49,18 +59,26 @@ class InOutDocumentsRepository
         return $command->getRawSql();
     }
 
+    public function prepareDelete($docInId)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(InOutDocumentsWork::tableName(), ['document_in_id' => $docInId]);
+
+        return $command->getRawSql();
+    }
+
     /**
      * Сохраняет запись в таблице
      * @param InOutDocumentsWork $user
      * @return int
      * @throws \yii\db\Exception
      */
-    public function save(InOutDocumentsWork $user)
+    public function save(InOutDocumentsWork $document)
     {
-        if (!$user->save()) {
-            throw new DomainException('Ошибка сохранения связки входящий/исходящий документы. Проблемы: '.json_encode($user->getErrors()));
+        if (!$document->save()) {
+            throw new DomainException('Ошибка сохранения связки входящий/исходящий документы. Проблемы: '.json_encode($document->getErrors()));
         }
 
-        return $user->id;
+        return $document->id;
     }
 }

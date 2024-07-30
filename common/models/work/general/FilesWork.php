@@ -6,5 +6,19 @@ use common\models\scaffold\Files;
 
 class FilesWork extends Files
 {
+    public static function fill(
+        $tableName,
+        $tableRowId,
+        $filetype,
+        $filepath
+    )
+    {
+        $entity = new static();
+        $entity->table_name = $tableName;
+        $entity->table_row_id = $tableRowId;
+        $entity->file_type = $filetype;
+        $entity->filepath = $filepath;
 
+        return $entity;
+    }
 }

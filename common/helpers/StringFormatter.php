@@ -34,4 +34,14 @@ class StringFormatter
 
         return mb_substr($result, 1);
     }
+
+    public static function removeUntilFirstSlash($string) {
+        $firstSlashPosition = strpos($string, '/');
+
+        if ($firstSlashPosition !== false) {
+            return '/' . substr($string, $firstSlashPosition + 1);
+        }
+
+        return $string;
+    }
 }

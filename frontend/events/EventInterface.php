@@ -10,5 +10,5 @@ interface EventInterface
      * Функция выполнения. Должна возвращать массив запросов к БД (если они есть)
      * @return mixed
      */
-    public function execute() : array;
+    public function execute();
 }

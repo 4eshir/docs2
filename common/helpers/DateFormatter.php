@@ -13,6 +13,7 @@ class DateFormatter
     const dmY_dot = 4;
     const dmy_dash = 5;
     const dmy_dot = 6;
+    const Ymd_without_separator = 7;
 
     public static function getFormats()
     {
@@ -23,6 +24,7 @@ class DateFormatter
             self::dmY_dot => 'd.m.Y',
             self::dmy_dash => 'd-m-y',
             self::dmy_dot => 'd.m.y',
+            self::Ymd_without_separator => 'Ymd',
         ];
     }
 
@@ -49,6 +51,6 @@ class DateFormatter
     public static function format($data, $baseType, $targetType)
     {
         $datetime = DateTime::createFromFormat(self::get($baseType), $data);
-        return $datetime->format(self::get($targetType));
+        return $datetime ? $datetime->format(self::get($targetType)) : $data;
     }
 }

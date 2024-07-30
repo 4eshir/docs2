@@ -144,40 +144,13 @@ use yii\jui\DatePicker;
     <?= $form->field($model, 'scanFile')->fileInput()
         ->label('Скан документа') ?>
 
+    <?= $form->field($model, 'docFiles[]')
+        ->fileInput(['multiple' => true])
+        ->label('Редактируемые документы') ?>
 
-    <?= $form->field($model, 'docFiles[]')->fileInput(['multiple' => true])->label('Редактируемые документы') ?>
-
-    <?php
-/*    if ($model->doc !== null)
-    {
-        $split = explode(" ", $model->doc);
-        echo '<table>';
-        for ($i = 0; $i < count($split) - 1; $i++)
-        {
-            echo '<tr><td><h5>Загруженный файл: '.Html::a($split[$i], \yii\helpers\Url::to(['document-in/get-file', 'fileName' => $split[$i], 'modelId' => $model->id, 'type' => 'docs'])).'</h5></td><td style="padding-left: 10px">'.Html::a('X', \yii\helpers\Url::to(['document-in/delete-file', 'fileName' => $split[$i], 'modelId' => $model->id, 'type' => 'doc'])).'</td></tr>';
-        }
-        echo '</table>';
-    }
-
-    */?>
-
-
-
-    <?php /*= $form->field($model, 'applicationFiles[]')->fileInput(['multiple' => true])->label('Приложения') */?>
-
-    --><?php
-/*    if ($model->applications !== null)
-    {
-        $split = explode(" ", $model->applications);
-        echo '<table>';
-        for ($i = 0; $i < count($split) - 1; $i++)
-        {
-            echo '<tr><td><h5>Загруженный файл: '.Html::a($split[$i], \yii\helpers\Url::to(['document-in/get-file', 'fileName' => $split[$i], 'modelId' => $model->id, 'type' => 'apps'])).'</h5></td><td style="padding-left: 10px">'.Html::a('X', \yii\helpers\Url::to(['document-in/delete-file', 'fileName' => $split[$i], 'modelId' => $model->id, 'type' => 'app'])).'</td></tr>';
-        }
-        echo '</table>';
-    }
-
-    */?>
+    <?= $form->field($model, 'appFiles[]')
+        ->fileInput(['multiple' => true])
+        ->label('Приложения') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

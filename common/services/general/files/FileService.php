@@ -8,6 +8,7 @@ use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\services\general\files\download\FileDownloadServer;
 use common\services\general\files\download\FileDownloadYandexDisk;
+use frontend\events\general\FileCreateEvent;
 
 class FileService
 {
@@ -43,12 +44,24 @@ class FileService
         ];
     }
 
-    public function uploadFile($model, $file, $filetype, $basePath, $params = [])
+    public function uploadFile($model, $file, $filetype, $loadtype, $basePath, $params = [])
     {
         // тут будет стратегия для загрузки на яндекс диск... потом
 
-        //СРОЧНО - ЗДЕСЬ ДОЛЖЕН БЫТЬ ИВЕНТ ДЛЯ СОЗДАНИЯ ЗАПИСИ В ТАБЛИЦЕ FILES
+        $filepath = $basePath . $this->filenameGenerator->generateFileName($model, $filetype, $params);
+        $model->recordEvent(
+            new FileCreateEvent(
+                $model::tableName(),
+                $model->id,
+                $filetype,
+                StringFormatter::removeUntilFirstSlash($filepath),
+                $loadtype
+            ),
+            get_class($model)
+        );
 
-        $file->saveAs($basePath . $this->filenameGenerator->generateFileName($model, $filetype, $params));
+        if ($file) {
+            $file->saveAs($filepath);
+        }
     }
 }
