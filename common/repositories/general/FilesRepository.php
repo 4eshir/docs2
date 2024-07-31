@@ -18,6 +18,16 @@ class FilesRepository
             ->all();
     }
 
+    public function getLastFile($tableName, $tableRowId, $fileType)
+    {
+        return FilesWork::find()
+            ->where(['table_name' => $tableName])
+            ->andWhere(['table_row_id' => $tableRowId])
+            ->andWhere(['file_type' => $fileType])
+            ->orderBy(['id' => SORT_DESC])
+            ->one();
+    }
+
     /**
      * Подготавливает запрос для создания новой записи в таблице
      * @param $tableName

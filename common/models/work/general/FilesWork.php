@@ -3,9 +3,12 @@
 namespace common\models\work\general;
 
 use common\models\scaffold\Files;
+use frontend\events\EventTrait;
 
 class FilesWork extends Files
 {
+    use EventTrait;
+
     public static function fill(
         $tableName,
         $tableRowId,

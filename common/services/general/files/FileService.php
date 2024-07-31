@@ -6,13 +6,16 @@ use common\helpers\files\filenames\DocumentInFileNameGenerator;
 use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
+use common\models\work\general\FilesWork;
 use common\services\general\files\download\FileDownloadServer;
 use common\services\general\files\download\FileDownloadYandexDisk;
+use DomainException;
 use frontend\events\general\FileCreateEvent;
+use frontend\events\general\FileDeleteEvent;
 
 class FileService
 {
-    private DocumentInFileNameGenerator $filenameGenerator;
+    public DocumentInFileNameGenerator $filenameGenerator;
 
     public function __construct(DocumentInFileNameGenerator $filenameGenerator)
     {
@@ -62,6 +65,19 @@ class FileService
 
         if ($file) {
             $file->saveAs($filepath);
+        }
+    }
+
+    public function deleteFile($fileId)
+    {
+        $entity = FilesWork::find()->where(['id' => $fileId])->one();
+        /** @var FilesWork $entity */
+        $entity->recordEvent(new FileDeleteEvent($entity->filepath), get_class($entity));
+        if ($entity->delete()) {
+            $entity->releaseEvents();
+        }
+        else {
+            throw new DomainException('Произошла ошибка при удалении записи из таблицы files');
         }
     }
 }

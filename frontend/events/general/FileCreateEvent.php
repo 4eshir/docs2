@@ -3,8 +3,6 @@
 namespace frontend\events\general;
 
 use common\helpers\files\FilesHelper;
-use common\models\work\document_in_out\DocumentInWork;
-use common\repositories\document_in_out\InOutDocumentsRepository;
 use common\repositories\general\FilesRepository;
 use frontend\events\EventInterface;
 use Yii;

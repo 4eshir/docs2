@@ -8,6 +8,9 @@ use yii\helpers\Html;
 /* @var $availablePositions */
 /* @var $availableCompanies */
 /* @var $mainCompanyWorkers */
+/* @var $scanFile */
+/* @var $docFiles */
+/* @var $appFiles */
 
 $this->title = 'Входящий документ №' . $model->fullNumber;
 $this->params['breadcrumbs'][] = ['label' => 'Входящая документация', 'url' => ['index']];
@@ -25,6 +28,9 @@ $this->params['breadcrumbs'][] = 'Редактирование';
         'availablePositions' => $availablePositions,
         'availableCompanies' => $availableCompanies,
         'mainCompanyWorkers' => $mainCompanyWorkers,
+        'scanFile' => $scanFile,
+        'docFiles' => $docFiles,
+        'appFiles' => $appFiles,
     ]) ?>
 
 </div>

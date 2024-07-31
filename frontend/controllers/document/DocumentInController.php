@@ -11,12 +11,14 @@ use common\models\search\SearchDocumentIn;
 use common\models\work\document_in_out\DocumentInWork;
 use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\general\CompanyRepository;
+use common\repositories\general\FilesRepository;
 use common\repositories\general\PeopleRepository;
 use common\repositories\general\PositionRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\document_in\InOutDocumentCreateEvent;
 use frontend\events\document_in\InOutDocumentDeleteEvent;
+use frontend\services\document\DocumentInService;
 use Yii;
 use yii\web\Controller;
 use yii\web\UploadedFile;
@@ -28,6 +30,8 @@ class DocumentInController extends Controller
     private PositionRepository $positionRepository;
     private CompanyRepository $companyRepository;
     private FileService $fileService;
+    private FilesRepository $filesRepository;
+    private DocumentInService $service;
 
     public function __construct(
         $id,
@@ -37,6 +41,8 @@ class DocumentInController extends Controller
         PositionRepository $positionRepository,
         CompanyRepository $companyRepository,
         FileService $fileService,
+        FilesRepository $filesRepository,
+        DocumentInService $service,
         $config = [])
     {
         parent::__construct($id, $module, $config);
@@ -45,6 +51,8 @@ class DocumentInController extends Controller
         $this->positionRepository = $positionRepository;
         $this->companyRepository = $companyRepository;
         $this->fileService = $fileService;
+        $this->filesRepository = $filesRepository;
+        $this->service = $service;
     }
 
     public function actionIndex()
@@ -81,46 +89,14 @@ class DocumentInController extends Controller
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
 
-            $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
-            $model->appFiles = UploadedFile::getInstances($model, 'appFiles');
-            $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
-
+            $this->service->getFilesInstances($model);
             $this->repository->save($model);
 
             if ($model->needAnswer) {
                 $model->recordEvent(new InOutDocumentCreateEvent($model->id, null, $model->dateAnswer, $model->nameAnswer), DocumentInWork::class);
             }
 
-            $this->fileService->uploadFile(
-                $model,
-                $model->scanFile,
-                FilesHelper::TYPE_SCAN,
-                FilesHelper::LOAD_TYPE_SINGLE,
-                FilePaths::DOCUMENT_IN_SCAN
-            );
-
-            for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
-                $this->fileService->uploadFile(
-                    $model,
-                    $model->docFiles[$i - 1],
-                    FilesHelper::TYPE_DOC,
-                    FilesHelper::LOAD_TYPE_MULTI,
-                    FilePaths::DOCUMENT_IN_DOC,
-                    ['counter' => $i]
-                );
-            }
-
-            for ($i = 1; $i < count($model->appFiles) + 1; $i++) {
-                $this->fileService->uploadFile(
-                    $model,
-                    $model->appFiles[$i - 1],
-                    FilesHelper::TYPE_APP,
-                    FilesHelper::LOAD_TYPE_MULTI,
-                    FilePaths::DOCUMENT_IN_APP,
-                    ['counter' => $i]
-                );
-            }
-
+            $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
 
             return $this->redirect(['view', 'id' => $model->id]);
@@ -144,16 +120,16 @@ class DocumentInController extends Controller
         $availablePositions = $this->positionRepository->getList();
         $availableCompanies = $this->companyRepository->getList();
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
+        $scanFile = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_SCAN);
+        $docFiles = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_DOC);
+        $appFiles = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_APP);
 
         if ($model->load(Yii::$app->request->post())) {
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
 
-            $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
-            $model->appFiles = UploadedFile::getInstances($model, 'appFiles');
-            $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
-
+            $this->service->getFilesInstances($model);
             $this->repository->save($model);
 
             if ($model->needAnswer) {
@@ -163,36 +139,7 @@ class DocumentInController extends Controller
                 $model->recordEvent(new InOutDocumentDeleteEvent($model->id), DocumentInWork::class);
             }
 
-            $this->fileService->uploadFile(
-                $model,
-                $model->scanFile,
-                FilesHelper::TYPE_SCAN,
-                FilesHelper::LOAD_TYPE_SINGLE,
-                FilePaths::DOCUMENT_IN_SCAN
-            );
-
-            for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
-                $this->fileService->uploadFile(
-                    $model,
-                    $model->docFiles[$i - 1],
-                    FilesHelper::TYPE_DOC,
-                    FilesHelper::LOAD_TYPE_MULTI,
-                    FilePaths::DOCUMENT_IN_DOC,
-                    ['counter' => $i]
-                );
-            }
-
-            for ($i = 1; $i < count($model->appFiles) + 1; $i++) {
-                $this->fileService->uploadFile(
-                    $model,
-                    $model->appFiles[$i - 1],
-                    FilesHelper::TYPE_APP,
-                    FilesHelper::LOAD_TYPE_MULTI,
-                    FilePaths::DOCUMENT_IN_APP,
-                    ['counter' => $i]
-                );
-            }
-
+            $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
 
             return $this->redirect(['view', 'id' => $model->id]);
@@ -204,6 +151,9 @@ class DocumentInController extends Controller
             'availablePositions' => $availablePositions,
             'availableCompanies' => $availableCompanies,
             'mainCompanyWorkers' => $mainCompanyWorkers,
+            'scanFile' => $scanFile,
+            'docFiles' => $docFiles,
+            'appFiles' => $appFiles,
         ]);
     }
 
@@ -224,6 +174,17 @@ class DocumentInController extends Controller
             $data['obj']->file->download($fp);
 
             fseek($fp, 0);
+        }
+    }
+
+    public function actionDeleteFile($modelId, $fileId)
+    {
+        try {
+            $this->fileService->deleteFile($fileId);
+            return $this->redirect(['view', 'id' => $modelId]);
+        }
+        catch (DomainException $e) {
+            return 'Oops! Something wrong';
         }
     }
 }

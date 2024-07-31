@@ -12,6 +12,9 @@ use yii\jui\DatePicker;
 /* @var $availablePositions */
 /* @var $availableCompanies */
 /* @var $mainCompanyWorkers */
+/* @var $scanFile */
+/* @var $docFiles */
+/* @var $appFiles */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -144,13 +147,46 @@ use yii\jui\DatePicker;
     <?= $form->field($model, 'scanFile')->fileInput()
         ->label('Скан документа') ?>
 
+    <?php if (count($scanFile) > 0): ?>
+        <table class="table table-bordered">
+        <?php foreach ($scanFile as $file): ?>
+            <tr>
+                <td><?= Html::a(basename($file->filepath), Url::to(['get-file', 'filepath' => $file->filepath])) ?></td>
+                <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file->id])) ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
+
     <?= $form->field($model, 'docFiles[]')
         ->fileInput(['multiple' => true])
         ->label('Редактируемые документы') ?>
 
+    <?php if (count($docFiles) > 0): ?>
+        <table class="table table-bordered">
+            <?php foreach ($docFiles as $file): ?>
+                <tr>
+                    <td><?= Html::a(basename($file->filepath), Url::to(['get-file', 'filepath' => $file->filepath])) ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file->id])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
+
     <?= $form->field($model, 'appFiles[]')
         ->fileInput(['multiple' => true])
         ->label('Приложения') ?>
+
+    <?php if (count($appFiles) > 0): ?>
+        <table class="table table-bordered">
+            <?php foreach ($appFiles as $file): ?>
+                <tr>
+                    <td><?= Html::a(basename($file->filepath), Url::to(['get-file', 'filepath' => $file->filepath])) ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file->id])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
