@@ -14,7 +14,7 @@ use yii\helpers\Html;
 
 $this->title = 'Входящий документ №' . $model->fullNumber;
 $this->params['breadcrumbs'][] = ['label' => 'Входящая документация', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Редактирование';
 ?>
 <div class="document-in-create">

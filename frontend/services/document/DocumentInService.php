@@ -5,21 +5,26 @@ namespace frontend\services\document;
 use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
 use common\models\work\document_in_out\DocumentInWork;
+use common\repositories\general\CompanyRepository;
 use common\repositories\general\FilesRepository;
+use common\repositories\general\PositionRepository;
 use common\services\general\files\FileService;
 use yii\web\UploadedFile;
 
 class DocumentInService
 {
-    private FilesRepository $filesRepository;
+    private PositionRepository $positionRepository;
+    private CompanyRepository $companyRepository;
     private FileService $fileService;
 
     public function __construct(
-        FilesRepository $filesRepository,
+        PositionRepository $positionRepository,
+        CompanyRepository $companyRepository,
         FileService $fileService
     )
     {
-        $this->filesRepository = $filesRepository;
+        $this->positionRepository = $positionRepository;
+        $this->companyRepository = $companyRepository;
         $this->fileService = $fileService;
     }
 

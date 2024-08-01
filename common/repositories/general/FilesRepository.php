@@ -9,11 +9,16 @@ use yii\db\Exception;
 
 class FilesRepository
 {
-    public function get($tableName, $id, $fileType)
+    public function getById($id)
+    {
+        return FilesWork::find()->where(['id' => $id])->one();
+    }
+
+    public function get($tableName, $tableRowId, $fileType)
     {
         return FilesWork::find()
             ->where(['table_name' => $tableName])
-            ->andWhere(['table_row_id' => $id])
+            ->andWhere(['table_row_id' => $tableRowId])
             ->andWhere(['file_type' => $fileType])
             ->all();
     }

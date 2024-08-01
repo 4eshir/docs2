@@ -60,7 +60,7 @@ use yii\jui\DatePicker;
         'prompt' => 'Выберите корреспондента',
         'onchange' => '
         $.post(
-            "' . Url::toRoute('subcat') . '", 
+            "' . Url::toRoute('dependency-dropdown') . '", 
             {id: $(this).val()}, 
             function(res){
                 var resArr = res.split("|split|");
@@ -85,6 +85,7 @@ use yii\jui\DatePicker;
         $params = [
             'id' => 'company',
             'class' => 'form-control com',
+            'prompt' => '---',
         ];
         echo $form
             ->field($model, 'company_id')
@@ -98,6 +99,7 @@ use yii\jui\DatePicker;
         $params = [
             'id' => 'position',
             'class' => 'form-control pos',
+            'prompt' => '---',
         ];
         echo $form
             ->field($model, 'position_id')
@@ -147,7 +149,7 @@ use yii\jui\DatePicker;
     <?= $form->field($model, 'scanFile')->fileInput()
         ->label('Скан документа') ?>
 
-    <?php if (count($scanFile) > 0): ?>
+    <?php if (is_array($scanFile) && count($scanFile) > 0): ?>
         <table class="table table-bordered">
         <?php foreach ($scanFile as $file): ?>
             <tr>
@@ -162,7 +164,7 @@ use yii\jui\DatePicker;
         ->fileInput(['multiple' => true])
         ->label('Редактируемые документы') ?>
 
-    <?php if (count($docFiles) > 0): ?>
+    <?php if (is_array($docFiles) && count($docFiles) > 0): ?>
         <table class="table table-bordered">
             <?php foreach ($docFiles as $file): ?>
                 <tr>
@@ -177,7 +179,7 @@ use yii\jui\DatePicker;
         ->fileInput(['multiple' => true])
         ->label('Приложения') ?>
 
-    <?php if (count($appFiles) > 0): ?>
+    <?php if (is_array($appFiles) && count($appFiles) > 0): ?>
         <table class="table table-bordered">
             <?php foreach ($appFiles as $file): ?>
                 <tr>

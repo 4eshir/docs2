@@ -66,6 +66,8 @@ class DocumentInWork extends DocumentIn
     public function rules()
     {
         return array_merge(parent::rules(), [
+            [['needAnswer', 'nameAnswer'], 'integer'],
+            [['dateAnswer'], 'string'],
             [['scanFile'], 'file', 'skipOnEmpty' => true,
                 'extensions' => 'png, jpg, pdf, zip, rar, 7z, tag, txt'],
             [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
@@ -259,5 +261,10 @@ class DocumentInWork extends DocumentIn
     public function getLastUpdateWork()
     {
         return $this->hasOne(PeopleWork::class, ['id' => 'last_update_id']);
+    }
+
+    public function setNeedAnswer()
+    {
+        $this->needAnswer = (Yii::createObject(InOutDocumentsRepository::class))->getByDocumentInId($this->id) ? 1 : 0;
     }
 }
