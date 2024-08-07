@@ -2,6 +2,7 @@
 
 namespace common\models\work\document_in_out;
 
+use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
@@ -14,7 +15,6 @@ use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\document_in_out\InOutDocumentsRepository;
 use common\repositories\general\FilesRepository;
-use frontend\events\EventTrait;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\Url;

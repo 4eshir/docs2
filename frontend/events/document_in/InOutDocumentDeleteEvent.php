@@ -2,10 +2,8 @@
 
 namespace frontend\events\document_in;
 
-use common\models\work\document_in_out\DocumentInWork;
-use common\repositories\document_in_out\DocumentInRepository;
+use common\events\EventInterface;
 use common\repositories\document_in_out\InOutDocumentsRepository;
-use frontend\events\EventInterface;
 use Yii;
 
 class InOutDocumentDeleteEvent implements EventInterface

@@ -2,19 +2,23 @@
 
 namespace frontend\events\general;
 
+use common\events\EventInterface;
+use common\models\work\general\FilesWork;
+use common\repositories\general\FilesRepository;
 use DomainException;
-use frontend\events\EventInterface;
 use Yii;
 
 class FileDeleteEvent implements EventInterface
 {
-    private $filepath;
+    private $fileId;
+    private FilesRepository $repository;
 
     public function __construct(
-        $filepath
+        $fileId
     )
     {
-        $this->filepath = $filepath;
+        $this->fileId = $fileId;
+        $this->repository = Yii::createObject(FilesRepository::class);
     }
 
     public function isSingleton(): bool
@@ -24,11 +28,8 @@ class FileDeleteEvent implements EventInterface
 
     public function execute()
     {
-        if (file_exists(Yii::$app->basePath . $this->filepath)) {
-            unlink(Yii::$app->basePath . $this->filepath);
-        }
-        else {
-            throw new DomainException("Файл по пути $this->filepath не найден");
-        }
+        return [
+            $this->repository->prepareDelete($this->fileId)
+        ];
     }
 }

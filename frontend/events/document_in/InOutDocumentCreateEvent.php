@@ -2,7 +2,7 @@
 
 namespace frontend\events\document_in;
 
-use frontend\events\EventInterface;
+use common\events\EventInterface;
 use common\repositories\document_in_out\InOutDocumentsRepository;
 use Yii;
 

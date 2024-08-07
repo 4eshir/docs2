@@ -7,7 +7,7 @@ namespace common\models\scaffold;
  *
  * @property int $id
  * @property string $firstname
- * @property string $secondname
+ * @property string $surname
  * @property string|null $patronymic
  * @property string $username
  * @property string|null $auth_key
@@ -51,10 +51,10 @@ class User extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['firstname', 'secondname', 'username', 'password_hash'], 'required'],
+            [['firstname', 'surname', 'username', 'password_hash'], 'required'],
             [['aka', 'status', 'creator_id', 'last_edit_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['firstname', 'secondname', 'patronymic', 'username', 'password_hash', 'password_reset_token', 'email'], 'string', 'max' => 256],
+            [['firstname', 'surname', 'patronymic', 'username', 'password_hash', 'password_reset_token', 'email'], 'string', 'max' => 256],
             [['auth_key'], 'string', 'max' => 32],
             [['aka'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['aka' => 'id']],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
@@ -70,7 +70,7 @@ class User extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'firstname' => 'Firstname',
-            'secondname' => 'Secondname',
+            'surname' => 'Surname',
             'patronymic' => 'Patronymic',
             'username' => 'Username',
             'auth_key' => 'Auth Key',

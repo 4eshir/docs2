@@ -12,6 +12,7 @@ use common\services\general\files\download\FileDownloadYandexDisk;
 use DomainException;
 use frontend\events\general\FileCreateEvent;
 use frontend\events\general\FileDeleteEvent;
+use Yii;
 
 class FileService
 {
@@ -47,37 +48,24 @@ class FileService
         ];
     }
 
-    public function uploadFile($model, $file, $filetype, $loadtype, $basePath, $params = [])
+    public function uploadFile($file, $filepath)
     {
         // тут будет стратегия для загрузки на яндекс диск... потом
-
-        $filepath = $basePath . $this->filenameGenerator->generateFileName($model, $filetype, $params);
-        $model->recordEvent(
-            new FileCreateEvent(
-                $model::tableName(),
-                $model->id,
-                $filetype,
-                StringFormatter::removeUntilFirstSlash($filepath),
-                $loadtype
-            ),
-            get_class($model)
-        );
 
         if ($file) {
             $file->saveAs($filepath);
         }
     }
 
-    public function deleteFile($fileId)
+    public function deleteFile($filepath)
     {
-        $entity = FilesWork::find()->where(['id' => $fileId])->one();
-        /** @var FilesWork $entity */
-        $entity->recordEvent(new FileDeleteEvent($entity->filepath), get_class($entity));
-        if ($entity->delete()) {
-            $entity->releaseEvents();
+        // тут будет стратегия для загрузки на яндекс диск... потом
+
+        if (file_exists(Yii::$app->basePath . $filepath)) {
+            unlink(Yii::$app->basePath . $filepath);
         }
         else {
-            throw new DomainException('Произошла ошибка при удалении записи из таблицы files');
+            throw new DomainException("Файл по пути $filepath не найден");
         }
     }
 }

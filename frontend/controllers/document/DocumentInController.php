@@ -3,17 +3,12 @@
 namespace frontend\controllers\document;
 
 use common\helpers\DateFormatter;
-use common\helpers\files\filenames\DocumentInFileNameGenerator;
-use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\SortHelper;
 use common\models\search\SearchDocumentIn;
 use common\models\work\document_in_out\DocumentInWork;
-use common\models\work\general\CompanyWork;
-use common\models\work\general\PeoplePositionCompanyBranchWork;
-use common\models\work\general\PeopleWork;
-use common\models\work\general\PositionWork;
+use common\models\work\general\FilesWork;
 use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\general\CompanyRepository;
 use common\repositories\general\FilesRepository;
@@ -23,10 +18,11 @@ use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\document_in\InOutDocumentCreateEvent;
 use frontend\events\document_in\InOutDocumentDeleteEvent;
+use frontend\events\general\FileDeleteEvent;
+use frontend\helpers\HeaderWizard;
 use frontend\services\document\DocumentInService;
 use Yii;
 use yii\web\Controller;
-use yii\web\UploadedFile;
 
 class DocumentInController extends Controller
 {
@@ -172,6 +168,20 @@ class DocumentInController extends Controller
         ]);
     }
 
+    public function actionDelete($id)
+    {
+        $model = $this->repository->get($id);
+        $number = $model->fullNumber;
+        if ($model) {
+            $this->repository->delete($model);
+            Yii::$app->session->setFlash('success', "Документ $number успешно удален");
+            return $this->redirect(['index']);
+        }
+        else {
+            throw new DomainException('Модель не найдена');
+        }
+    }
+
     public function actionGetFile($filepath)
     {
         $data = $this->fileService->downloadFile($filepath);
@@ -180,14 +190,8 @@ class DocumentInController extends Controller
         }
         else {
             $fp = fopen('php://output', 'r');
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename=' . FilesHelper::getFilenameFromPath($data['obj']->filepath));
-            header('Content-Transfer-Encoding: binary');
-            header('Content-Length: ' . $data['obj']->file->size);
-
+            HeaderWizard::setFileHeaders(FilesHelper::getFilenameFromPath($data['obj']->filepath), $data['obj']->file->size);
             $data['obj']->file->download($fp);
-
             fseek($fp, 0);
         }
     }
@@ -195,8 +199,14 @@ class DocumentInController extends Controller
     public function actionDeleteFile($modelId, $fileId)
     {
         try {
-            $filepath = $this->filesRepository->getById($fileId) ? basename($this->filesRepository->getById($fileId)->filepath) : '';
+            $file = $this->filesRepository->getById($fileId);
+
+            /** @var FilesWork $file */
+            $filepath = $file ? basename($file->filepath) : '';
             $this->fileService->deleteFile($fileId);
+            $file->recordEvent(new FileDeleteEvent($file->filepath), get_class($file));
+            $file->releaseEvents();
+
             Yii::$app->session->setFlash('success', "Файл $filepath успешно удален");
             return $this->redirect(['update', 'id' => $modelId]);
         }

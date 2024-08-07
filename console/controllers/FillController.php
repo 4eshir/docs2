@@ -47,6 +47,8 @@ class FillController extends Controller
                 'РШТ',
                 0)
         );
+
+        $this->actionInitTemplates();
     }
 
     public function actionDropPermissions()

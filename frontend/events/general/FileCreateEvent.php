@@ -2,9 +2,9 @@
 
 namespace frontend\events\general;
 
+use common\events\EventInterface;
 use common\helpers\files\FilesHelper;
 use common\repositories\general\FilesRepository;
-use frontend\events\EventInterface;
 use Yii;
 
 class FileCreateEvent implements EventInterface

@@ -3,7 +3,7 @@
 namespace common\models\work\general;
 
 use common\models\scaffold\Files;
-use frontend\events\EventTrait;
+use EventTrait;
 
 class FilesWork extends Files
 {

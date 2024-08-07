@@ -7,6 +7,11 @@ use DomainException;
 
 class UserRepository
 {
+    public function findByUsername($username)
+    {
+        return UserWork::find()->where(['username' => $username])->one();
+    }
+
     public function save(UserWork $user)
     {
         if (!$user->save()) {

@@ -2,30 +2,30 @@
 
 namespace frontend\services\document;
 
+use common\helpers\files\filenames\DocumentInFileNameGenerator;
 use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
+use common\helpers\StringFormatter;
 use common\models\work\document_in_out\DocumentInWork;
 use common\repositories\general\CompanyRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\general\PositionRepository;
 use common\services\general\files\FileService;
+use frontend\events\general\FileCreateEvent;
 use yii\web\UploadedFile;
 
 class DocumentInService
 {
-    private PositionRepository $positionRepository;
-    private CompanyRepository $companyRepository;
     private FileService $fileService;
+    private DocumentInFileNameGenerator $filenameGenerator;
 
     public function __construct(
-        PositionRepository $positionRepository,
-        CompanyRepository $companyRepository,
-        FileService $fileService
+        FileService $fileService,
+        DocumentInFileNameGenerator $filenameGenerator
     )
     {
-        $this->positionRepository = $positionRepository;
-        $this->companyRepository = $companyRepository;
         $this->fileService = $fileService;
+        $this->filenameGenerator = $filenameGenerator;
     }
 
     public function getFilesInstances(DocumentInWork $model)
@@ -37,33 +37,41 @@ class DocumentInService
 
     public function saveFilesFromModel(DocumentInWork $model)
     {
-        $this->fileService->uploadFile(
-            $model,
-            $model->scanFile,
-            FilesHelper::TYPE_SCAN,
-            FilesHelper::LOAD_TYPE_SINGLE,
-            FilePaths::DOCUMENT_IN_SCAN
-        );
+        if ($model->scanFile !== null) {
+            $filepath = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN);
+
+            $this->fileService->uploadFile(
+                $model->scanFile,
+                $filepath
+            );
+
+            $model->recordEvent(
+                new FileCreateEvent(
+                    $model::tableName(),
+                    $model->id,
+                    FilesHelper::TYPE_SCAN,
+                    $filepath,
+                    FilesHelper::LOAD_TYPE_SINGLE
+                ),
+                get_class($model)
+            );
+        }
 
         for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
+            $filepath = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_DOC, ['counter' => $i]);
+
             $this->fileService->uploadFile(
-                $model,
                 $model->docFiles[$i - 1],
-                FilesHelper::TYPE_DOC,
-                FilesHelper::LOAD_TYPE_MULTI,
-                FilePaths::DOCUMENT_IN_DOC,
-                ['counter' => $i]
+                $filepath
             );
         }
 
         for ($i = 1; $i < count($model->appFiles) + 1; $i++) {
+            $filepath = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_APP, ['counter' => $i]);
+
             $this->fileService->uploadFile(
-                $model,
                 $model->appFiles[$i - 1],
-                FilesHelper::TYPE_APP,
-                FilesHelper::LOAD_TYPE_MULTI,
-                FilePaths::DOCUMENT_IN_APP,
-                ['counter' => $i]
+                $filepath
             );
         }
     }

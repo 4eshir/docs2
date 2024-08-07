@@ -2,8 +2,8 @@
 
 namespace frontend\events\general;
 
+use common\events\EventInterface;
 use common\repositories\general\FilesRepository;
-use frontend\events\EventInterface;
 use Yii;
 
 class MultiplyFilesCreateEvent implements EventInterface
