@@ -27,7 +27,7 @@ class UserController extends Controller
         $splitFio = [];
 
         while (count($splitFio) < 2) {
-            $fio = $this->prompt('Введите ФИО пользователя через пробел:');
+            $fio = $this->prompt('Введите ФИО пользователя через пробел (на латинице):');
             $splitFio = explode(' ', $fio);
         }
 
