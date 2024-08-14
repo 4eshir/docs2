@@ -29,7 +29,7 @@ class PermissionFunction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'string', 'max' => 64],
+            [['name'], 'string', 'max' => 128],
             [['short_code'], 'string', 'max' => 32],
         ];
     }

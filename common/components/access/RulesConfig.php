@@ -1,16 +1,17 @@
 <?php
 
-namespace common\services\access;
+namespace common\components\access;
 
-use DomainException;
+use Yii;
 
 class RulesConfig
 {
     // основные связи правил с экшнами контроллеров
     private $permissionActionLinks = [
-        'add_group' => [
-            \frontend\controllers\SiteController::class => [
+        'view_doc_in' => [
+            \frontend\controllers\document\DocumentInController::class => [
                 'index',
+                'view',
             ],
             \backend\controllers\SiteController::class => [
                 'create',
@@ -24,20 +25,6 @@ class RulesConfig
             'login',
         ],
     ];
-
-    /**
-     * Определяет, разрешает ли правило $rule получить доступ к экшну $controller/$action
-     * @param $rule
-     * @param $controller
-     * @param $action
-     * @return bool
-     */
-    public function checkAllow($rule, $controller, $action)
-    {
-        return array_key_exists($rule, $this->permissionActionLinks)
-            && array_key_exists($controller, $this->permissionActionLinks[$rule])
-            && in_array($action, $this->permissionActionLinks[$rule][$controller]);
-    }
 
     public function getPermissionsName()
     {
