@@ -37,7 +37,7 @@ AppAsset::register($this);
     $menuItems = [
         ['label' => 'Входящая документация', 'url' => ['/document/document-in/index']],
         ['label' => 'Исходящая документация', 'url' => ['/document/document-out/index']],
-        ['label' => 'About', 'url' => ['/site/about']],
+        ['label' => 'Положения', 'url' => ['/regulation/regulation/index']],
         ['label' => 'Contact', 'url' => ['/site/contact']],
     ];
     if (Yii::$app->rac->isGuest()) {

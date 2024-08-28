@@ -32,7 +32,7 @@ return [
             ],
         ],
         'branches' => [
-            'class' => 'common\\components\\dictionaries\\BranchDictionary',
+            'class' => 'common\\components\\dictionaries\\base\\BranchDictionary',
         ],
     ],
     'params' => $params,

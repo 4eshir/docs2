@@ -1,6 +1,6 @@
 <?php
 
-namespace common\components\dictionaries;
+namespace common\components\dictionaries\base;
 
 class SendMethodDictionary extends BaseDictionary
 {

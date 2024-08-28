@@ -17,19 +17,19 @@ return [
             'class' => 'common\\services\\access\\RulesConfig',
         ],
         'branches' => [
-            'class' => 'common\\components\\dictionaries\\BranchDictionary',
+            'class' => 'common\\components\\dictionaries\\base\\BranchDictionary',
         ],
         'sendMethods' => [
-            'class' => 'common\\components\\dictionaries\\SendMethodDictionary',
+            'class' => 'common\\components\\dictionaries\\base\\SendMethodDictionary',
         ],
         'companyType' => [
-            'class' => 'common\\components\\dictionaries\\CompanyTypeDictionary',
+            'class' => 'common\\components\\dictionaries\\base\\CompanyTypeDictionary',
         ],
         'categorySmsp' => [
-            'class' => 'common\\components\\dictionaries\\CategorySmspDictionary',
+            'class' => 'common\\components\\dictionaries\\base\\CategorySmspDictionary',
         ],
         'ownershipType' => [
-            'class' => 'common\components\dictionaries\OwnershipTypeDictionary',
+            'class' => 'common\components\dictionaries\base\OwnershipTypeDictionary',
         ],
         'rac' => [
             'class' => 'common\\components\\access\\RacComponent',
