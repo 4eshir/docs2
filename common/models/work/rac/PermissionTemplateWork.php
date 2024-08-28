@@ -29,9 +29,12 @@ class PermissionTemplateWork extends PermissionTemplate
         ];
     }
 
-    public static function fill($name)
+    public static function fill($name, $id = null)
     {
         $entity = new static();
+        if ($id) {
+            $entity->id = $id;
+        }
         $entity->name = $name;
 
         return $entity;

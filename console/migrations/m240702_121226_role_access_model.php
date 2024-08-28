@@ -19,7 +19,7 @@ class m240702_121226_role_access_model extends Migration
 
         $this->createTable('permission_function', [
             'id' => $this->primaryKey(),
-            'name' => $this->string(64),
+            'name' => $this->string(128),
             'short_code' => $this->string(32),
         ]);
 

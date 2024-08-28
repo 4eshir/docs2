@@ -20,6 +20,10 @@ class AuthController extends Controller
 
     public function actionLogin()
     {
+        if (!Yii::$app->rac->isGuest()) {
+            return $this->redirect(['site/index']);
+        }
+
         $model = new LoginModel();
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
@@ -42,6 +46,6 @@ class AuthController extends Controller
     public function actionLogout()
     {
         Yii::$app->user->logout();
-        return $this->redirect(['auth/login']);
+        return $this->redirect(['login']);
     }
 }
