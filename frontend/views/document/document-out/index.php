@@ -6,9 +6,11 @@ use common\models\work\document_in_out\InOutDocumentsWork;
 use kartik\daterange\DateRangePicker;
 use kartik\export\ExportMenu;
 use kartik\grid\GridViewInterface;
+use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 use yii\bootstrap4\Modal;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\jui\DatePicker;
 /* @var $this yii\web\View */
@@ -16,6 +18,7 @@ use yii\jui\DatePicker;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $model common\models\work\document_in_out\DocumentOutWork */
+/* @var $peopleList */
 $this->title = 'Исходящая документация';
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -34,12 +37,44 @@ $tempArchive = $session->get("archiveIn");
                 'tag' => 'button',
                 'class' => 'btn btn-success',
             ],
-            'footer' => 'Низ окна',
+            'footer' => 'Модальное окно',
         ]);
          $form = ActiveForm::begin(); ?>
-        <?= $form->field($model, 'document_number')->textInput(['maxlength' => true])->label('Атрибут 1') ?>
-        <?= $form->field($model, 'document_date')->textInput(['maxlength' => true])->label('Атрибут 2') ?>
-        <?= $form->field($model, 'sent_date')->textInput(['maxlength' => true])->label('Атрибут 3') ?>
+        <?php
+        $params = [
+            'prompt' => '------------',
+            'onchange' => '
+        $.post(
+            "' . Url::toRoute('dependency-dropdown') . '", 
+            {id: $(this).val()}, 
+            function(res){
+                var resArr = res.split("|split|");
+                var elem = document.getElementsByClassName("pos");
+                elem[0].innerHTML = resArr[0];
+                elem = document.getElementsByClassName("com");
+                elem[0].innerHTML = resArr[1];
+            }
+        );
+    ',
+        ];
+        echo $form
+            ->field($model, 'executor_id')
+            ->dropDownList(ArrayHelper::map($peopleList, 'id','fullFio'), $params)
+            ->label('Кто исполнил');
+        ?>
+        <?= $form->field($model, 'document_date')->widget(DatePicker::class, [
+            'dateFormat' => 'php:d.m.Y',
+            'language' => 'ru',
+            'options' => [
+                'placeholder' => 'Дата',
+                'class'=> 'form-control',
+                'autocomplete'=>'off'
+            ],
+            'clientOptions' => [
+                'changeMonth' => true,
+                'changeYear' => true,
+                'yearRange' => '2000:2100',
+            ]])->label('Дата документа') ?>
     <div class="form-group">
         <?= Html::submitButton('Создать резерв', ['class' => 'btn btn-primary']) ?>
     </div>

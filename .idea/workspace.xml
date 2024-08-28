@@ -5,21 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0a04aa45-051d-482f-9b9f-4c83cf98c575" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/events/document_in/InOutDocumentUpdateEvent.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/events/EventTrait.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/events/EventTrait.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/models/search/SearchDocumentIn.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/models/search/SearchDocumentIn.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/models/work/document_in_out/DocumentInWork.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/models/work/document_in_out/DocumentInWork.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/models/work/document_in_out/DocumentOutWork.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/models/work/document_in_out/DocumentOutWork.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/models/work/document_in_out/InOutDocumentsWork.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/models/work/document_in_out/InOutDocumentsWork.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/components/access/RulesConfig.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/components/access/RulesConfig.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/models/work/general/FilesWork.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/models/work/general/FilesWork.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/repositories/document_in_out/DocumentInRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/repositories/document_in_out/DocumentInRepository.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/repositories/document_in_out/DocumentOutRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/repositories/document_in_out/DocumentOutRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/repositories/document_in_out/InOutDocumentsRepository.php" beforeDir="false" afterPath="$PROJECT_DIR$/common/repositories/document_in_out/InOutDocumentsRepository.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/config/bootstrap.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/config/bootstrap.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/controllers/document/DocumentInController.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/controllers/document/DocumentInController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/views/document/document-in/_form.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/views/document/document-in/_form.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/views/document/document-in/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/views/document/document-in/index.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/views/layouts/main.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/views/layouts/main.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/controllers/document/DocumentOutController.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/controllers/document/DocumentOutController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/views/document/document-out/_form.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/views/document/document-out/_form.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/views/document/document-out/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/views/document/document-out/index.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -231,7 +224,7 @@
       <workItem from="1724310321022" duration="4604000" />
       <workItem from="1724647352863" duration="7486000" />
       <workItem from="1724663042372" duration="3508000" />
-      <workItem from="1724823827118" duration="1561000" />
+      <workItem from="1724823827118" duration="12982000" />
     </task>
     <servers />
   </component>

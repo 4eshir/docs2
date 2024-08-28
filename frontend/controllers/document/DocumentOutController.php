@@ -60,12 +60,15 @@ class DocumentOutController extends Controller
         $model = new DocumentOutWork();
         $searchModel = new SearchDocumentOut();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        if(Yii::$app->request->post()){
-            var_dump(Yii::$app->request->post());
-
+        $people = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
+        if($model->load(Yii::$app->request->post())){
+            $model->generateDocumentNumber();
+            $this->repository->createReserve($model);
+            $this->repository->save($model);
         }
         return $this->render('index', [
             'model' => $model,
+            'peopleList' => $people,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -76,20 +79,10 @@ class DocumentOutController extends Controller
             'model' => $this->repository->get($id)
         ]);
     }
-    /*public function actionReserve()
-    {
-        var_dump(Yii::$app->request->post());
-        return $this->redirect(['index']);
-        $model = new DocumentOutWork();
-        $this->repository->createReserve($model);
-        $model->generateDocumentNumber();
-        $this->repository->save($model);
-        return $this->redirect(['index']);
-    }*/
-
     public function actionCreate(){
 
         $model = new DocumentOutWork();
+        $model->document_name = 'NAME';
         $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
         $availablePositions = $this->positionRepository->getList();
         $availableCompanies = $this->companyRepository->getList();
@@ -133,6 +126,7 @@ class DocumentOutController extends Controller
     {
         $model = $this->repository->get($id);
         /** @var DocumentOutWork $model */
+        $model->document_name = 'NAME';
         $model->setIsAnswer();
         $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
         $availablePositions = $this->positionRepository->getList($model->correspondent_id);

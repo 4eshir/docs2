@@ -8,7 +8,7 @@ class RulesConfig
 {
     // основные связи правил с экшнами контроллеров
     private $permissionActionLinks = [
-        'view_doc_in' => [
+        /*'view_doc_in' => [
             \frontend\controllers\document\DocumentInController::class => [
                 'index',
                 'view',
@@ -16,7 +16,7 @@ class RulesConfig
             \backend\controllers\SiteController::class => [
                 'create',
             ],
-        ]
+        ]*/
     ];
 
     // системные экшны, которые не должны учитываться при мониторинге
