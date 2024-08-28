@@ -58,7 +58,6 @@ use yii\jui\DatePicker;
         );
     ',
     ];
-
     echo $form
         ->field($model, "correspondent_id")
         ->dropDownList(ArrayHelper::map($correspondentList, 'id', 'fullFio'),$params)
@@ -92,6 +91,20 @@ use yii\jui\DatePicker;
         ?>
     </div>
     <div id="creator_div1">
+        <?php
+        $params = [
+            'id' => 'creator',
+            'class' => 'form-control cre',
+            'prompt' => '---',
+        ];
+        echo $form
+            ->field($model, 'signed_id')
+            ->dropDownList(ArrayHelper::map($correspondentList, 'id','fullFio'), $params)
+            ->label('Кем подписан');
+        ?>
+    </div>
+
+    <div id="creator_div2">
         <?php
         $params = [
             'id' => 'creator',

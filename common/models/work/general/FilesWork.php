@@ -4,10 +4,10 @@ namespace common\models\work\general;
 
 use common\events\EventTrait;
 use common\models\scaffold\Files;
-<<<<<<< HEAD
+/*<<<<<<< HEAD
 =======
 
->>>>>>> 3b958a08f506b00c9119b64f0e00189c862bae9e
+>>>>>>> 3b958a08f506b00c9119b64f0e00189c862bae9e*/
 class FilesWork extends Files
 {
     use EventTrait;
