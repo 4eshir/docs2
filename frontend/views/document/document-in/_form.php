@@ -142,7 +142,6 @@ use yii\jui\DatePicker;
                 $params
             )
             ->label('ФИО ответственного');
-
         ?>
     </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>

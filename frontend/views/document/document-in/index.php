@@ -26,7 +26,12 @@ $tempArchive = $session->get("archiveIn");
 
     <p>
         <?= Html::a('Добавить входящий документ', ['create'], ['class' => 'btn btn-success', 'style' => 'display: inline-block;']) ?>
-        <?= Html::a('Добавить резерв', ['document-in/create-reserve'], ['class' => 'btn btn-warning', 'style' => 'display: inline-block;']) ?>
+        <?= Html::a('Добавить резерв', ['document/document-in/reserve'], [
+            'class' => 'btn btn-warning',
+            'style' => 'display: inline-block;',
+        ]) ?>
+
+
         <?php
         if ($tempArchive === null)
             echo Html::a('Показать архивные документы', ['document-in/index', 'archive' => 1, 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block; background-color: #ededed']);
@@ -68,20 +73,12 @@ $tempArchive = $session->get("archiveIn");
         <?php echo '<div style="margin-bottom: 10px; margin-top: 20px">'.Html::a('Показать просроченные документы', \yii\helpers\Url::to(['document-in/index', 'sort' => '1'])).
             ' || '.Html::a('Показать документы, требующие ответа', \yii\helpers\Url::to(['document-in/index', 'sort' => '2'])).
             ' || '.Html::a('Показать все документы', \yii\helpers\Url::to(['document-in/index'])).'</div>' ?>
-        <?= GridView::widget([
+        <?=
+        GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
             'summary' => false,
-            'rowOptions' => function($data) {
-                /** @var InOutDocumentsWork $links */
-                $links = count($data->inOutDocumentsWork) > 0 ? $data->inOutDocumentsWork[0] : null;
-                if (!$links) {
-                    return ['class' => 'default'];
-                }
-                else {
-                    return $links->getRowClass();
-                }
-            },
+
             'columns' => [
                 ['attribute' => 'fullNumber'],
                 [
@@ -101,7 +98,7 @@ $tempArchive = $session->get("archiveIn");
                             ]
                         ]
                     ]),
-                    'value' => function(DocumentInWork $model) {
+                    'value' => function(DocumentInWork $model){
                         return date('d.m.y', strtotime($model->local_date));
                     },
                     'encodeLabel' => false,
@@ -142,6 +139,6 @@ $tempArchive = $session->get("archiveIn");
 
                 ['class' => 'yii\grid\ActionColumn'],
             ],
-        ]); ?>
+        ]);?>
     </div>
-
+</div>

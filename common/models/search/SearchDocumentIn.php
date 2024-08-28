@@ -4,7 +4,6 @@ namespace common\models\search;
 
 use common\helpers\DateFormatter;
 use common\models\work\document_in_out\DocumentInWork;
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
@@ -53,7 +52,6 @@ class SearchDocumentIn extends DocumentInWork
     public function search($params)
     {
         $this->load($params);
-
         $query = DocumentInWork::find()
             ->joinWith('company');
 
@@ -132,7 +130,6 @@ class SearchDocumentIn extends DocumentInWork
             ->andFilterWhere(['like', 'company.name', $this->companyName])
             ->andFilterWhere(['like', 'document_theme', $this->documentTheme])
             ->andFilterWhere(['like', 'real_number', $this->realNumber]);
-
         return $dataProvider;
     }
 }

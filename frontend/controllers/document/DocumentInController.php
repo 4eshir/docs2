@@ -85,12 +85,12 @@ class DocumentInController extends Controller
         if ($model->load(Yii::$app->request->post())) {
 
             $model->generateDocumentNumber();
-
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
 
             $this->service->getFilesInstances($model);
+            $model->need_answer = $this->repository->setAnswer($model);
             $this->repository->save($model);
 
             if ($model->needAnswer) {
@@ -111,6 +111,14 @@ class DocumentInController extends Controller
             'mainCompanyWorkers' => $mainCompanyWorkers,
         ]);
     }
+    public function actionReserve()
+    {
+        $model = new DocumentInWork();
+        $this->repository->createReserve($model);
+        $model->generateDocumentNumber();
+        $this->repository->save($model);
+        return $this->redirect(['index']);
+    }
 
     public function actionUpdate($id)
     {
@@ -126,16 +134,16 @@ class DocumentInController extends Controller
         $scanFile = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_SCAN);
         $docFiles = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_DOC);
         $appFiles = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_APP);
-
         if ($model->load(Yii::$app->request->post())) {
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
-
             $this->service->getFilesInstances($model);
+            $model->need_answer = $this->repository->setAnswer($model);
             $this->repository->save($model);
 
             if ($model->needAnswer) {
+
                 $model->recordEvent(
                     new InOutDocumentCreateEvent(
                         $model->id,

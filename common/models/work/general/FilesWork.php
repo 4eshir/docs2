@@ -2,9 +2,8 @@
 
 namespace common\models\work\general;
 
+use common\events\EventTrait;
 use common\models\scaffold\Files;
-use EventTrait;
-
 class FilesWork extends Files
 {
     use EventTrait;

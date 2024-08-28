@@ -25,12 +25,25 @@ class InOutDocumentsWork extends InOutDocuments
 
         return $entity;
     }
-
+    public function linkDocOut(
+        $entity,
+        $documentInId,
+        $documentOutId = null,
+        $date = null,
+        $responsibleId = null
+    )
+    {
+        $entity->document_out_id = $documentOutId;
+        return $entity;
+    }
     public function isDocumentOutEmpty()
     {
         return $this->document_out_id == null;
     }
-
+    public function isDocumentInEmpty()
+    {
+        return $this->document_in_id == null;
+    }
     public function isNoPeopleTarget()
     {
         return $this->responsible_id == null;

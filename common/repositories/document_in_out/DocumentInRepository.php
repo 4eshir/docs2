@@ -34,7 +34,16 @@ class DocumentInRepository
     {
         return DocumentInWork::find()->where(['id' => $id])->one();
     }
-
+    public function createReserve(DocumentInWork  $model)
+    {
+        $model->local_date = '2000-01-01';
+        $model->real_date = '2000-01-01';
+        $model->document_theme = 'Резерв';
+    }
+    public function setAnswer($model)
+    {
+        return $model->needAnswer;
+    }
     public function getAllDocumentsDescDate()
     {
         return DocumentInWork::find()->orderBy(['local_date' => SORT_DESC])->all();

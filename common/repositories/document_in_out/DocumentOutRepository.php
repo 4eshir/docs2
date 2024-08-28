@@ -2,12 +2,121 @@
 
 namespace common\repositories\document_in_out;
 
+use common\helpers\files\FilesHelper;
+use common\models\scaffold\Files;
+use common\models\scaffold\InOutDocuments;
+use common\models\work\document_in_out\DocumentInWork;
 use common\models\work\document_in_out\DocumentOutWork;
+use common\models\work\document_in_out\InOutDocumentsWork;
+use common\models\work\general\FilesWork;
+use common\repositories\general\FilesRepository;
+use common\services\general\files\FileService;
+use DomainException;
+use frontend\events\document_in\InOutDocumentDeleteEvent;
+use frontend\events\general\FileDeleteEvent;
+use yii\db\ActiveRecord;
 
 class DocumentOutRepository
 {
+    private FileService $fileService;
+    private FilesRepository $filesRepository;
+
+    public function __construct(
+        FileService $fileService,
+        FilesRepository $filesRepository
+    )
+    {
+        $this->fileService = $fileService;
+        $this->filesRepository = $filesRepository;
+    }
     public function get($id)
     {
         return DocumentOutWork::find()->where(['id' => $id])->one();
+    }
+    public function setAnswer($model)
+    {
+        return $model->isAnswer;
+    }
+    public function createReserve(DocumentOutWork  $model)
+    {
+        $model->document_date = '2000-01-01';
+        $model->sent_date_date = '2000-01-01';
+        $model->document_theme = 'Резерв';
+    }
+    public function findFileDocuments($id)
+    {
+        $InOutDocument = Files::find()->where(['id' => $id, 'table_name' => 'document_in'])->all();
+        return $InOutDocument[0]->table_row_id;
+    }
+    public function matchInOutDocuments($DocumentInId,$DocumentOutId )
+    {
+        $model = InOutDocumentsWork::find()->where(['document_in_id' => $DocumentInId])->one();
+        $model->document_out_id = $DocumentOutId;
+        if (!$model->save()) {
+            throw new DomainException('Ошибка сохранения исходящего документа. Проблемы: '.json_encode($model->getErrors()));
+        }
+        return $model->id;
+    }
+    public function getDocumentInWithoutAnswer()
+    {
+        $model = [];
+        $docs = InOutDocumentsWork::find()->where(['document_out_id' => null])->all();
+        foreach ($docs as $doc) {
+            $model[] = DocumentInWork::find()->where(['id' => $doc->document_in_id])->one();
+        }
+        return $model;
+    }
+    public function getAllDocumentsDescDate()
+    {
+        return DocumentOutWork::find()->orderBy(['document_date' => SORT_DESC])->all();
+    }
+
+    public function getAllDocumentsInYear()
+    {
+        return DocumentOutWork::find()->where(['like', 'document_date', date('Y')])->orderBy(['document_number' => SORT_ASC, 'document_postfix' => SORT_ASC])->all();
+    }
+
+    public function save(DocumentOutWork $document)
+    {
+        if (!$document->save()) {
+            throw new DomainException('Ошибка сохранения исходящего документа. Проблемы: '.json_encode($document->getErrors()));
+        }
+        return $document->id;
+    }
+
+    public function delete(ActiveRecord $model)
+    {
+        /** @var DocumentOutWork $model */
+        $model->recordEvent(new InOutDocumentDeleteEvent($model->id), DocumentOutWork::class);
+        $scan = $this->filesRepository->get(DocumentOutWork::tableName(), $model->id, FilesHelper::TYPE_SCAN);
+        $docs = $this->filesRepository->get(DocumentOutWork::tableName(), $model->id, FilesHelper::TYPE_DOC);
+        $apps = $this->filesRepository->get(DocumentOutWork::tableName(), $model->id, FilesHelper::TYPE_APP);
+
+        if (is_array($scan)) {
+            foreach ($scan as $file) {
+                $this->fileService->deleteFile($file->filepath);
+                $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            }
+        }
+
+        if (is_array($docs)) {
+            foreach ($docs as $file) {
+                $this->fileService->deleteFile($file->filepath);
+                $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            }
+        }
+
+        if (is_array($apps)) {
+            foreach ($apps as $file) {
+                $this->fileService->deleteFile($file->filepath);
+                $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            }
+        }
+
+        $model->recordEvent(new InOutDocumentDeleteEvent($model->id), get_class($model));
+
+        $model->releaseEvents();
+
+        return $model->delete();
     }
 }

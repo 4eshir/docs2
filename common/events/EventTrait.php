@@ -64,6 +64,7 @@ trait EventTrait
             $transaction->commit();
         }
         catch (\yii\db\Exception $e) {
+            var_dump($e->getMessage());
             $transaction->rollBack();
         }
     }
