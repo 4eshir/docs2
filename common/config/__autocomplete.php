@@ -1,5 +1,15 @@
 <?php
 
+use common\components\access\RacComponent;
+use common\components\access\RulesConfig;
+use common\components\dictionaries\base\BranchDictionary;
+use common\components\dictionaries\base\CategorySmspDictionary;
+use common\components\dictionaries\base\CompanyTypeDictionary;
+use common\components\dictionaries\base\DocumentTypeDictionary;
+use common\components\dictionaries\base\OwnershipTypeDictionary;
+use common\components\dictionaries\base\RegulationTypeDictionary;
+use common\components\dictionaries\base\SendMethodDictionary;
+
 /**
  * This class only exists here for IDE (PHPStorm/Netbeans/...) autocompletion.
  * This file is never included anywhere.
@@ -26,6 +36,8 @@ class Yii {
  * @property CompanyTypeDictionary $companyType
  * @property CategorySmspDictionary $categorySmsp
  * @property OwnershipTypeDictionary $ownershipType
+ * @property RegulationTypeDictionary $regulationType
+ * @property DocumentTypeDictionary $documentType
  * @property RacComponent $rac
  */
 class __Application {

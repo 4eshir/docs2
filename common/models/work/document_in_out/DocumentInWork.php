@@ -4,6 +4,7 @@ namespace common\models\work\document_in_out;
 
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
+use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\models\scaffold\DocumentIn;
@@ -131,6 +132,19 @@ class DocumentInWork extends DocumentIn
             throw new InvalidArgumentException('Неизвестный тип файла');
         }
 
+        $addPath = '';
+        switch ($filetype) {
+            case FilesHelper::TYPE_SCAN:
+                $addPath = FilePaths::DOCUMENT_IN_SCAN;
+                break;
+            case FilesHelper::TYPE_DOC:
+                $addPath = FilePaths::DOCUMENT_IN_DOC;
+                break;
+            case FilesHelper::TYPE_APP:
+                $addPath = FilePaths::DOCUMENT_IN_APP;
+                break;
+        }
+
         $files = (Yii::createObject(FilesRepository::class))->get(self::tableName(), $this->id, $filetype);
         $links = [];
         if (count($files) > 0) {
@@ -138,7 +152,7 @@ class DocumentInWork extends DocumentIn
                 /** @var FilesWork $file */
                 $links[] = StringFormatter::stringAsLink(
                     FilesHelper::getFilenameFromPath($file->filepath),
-                    Url::to(['get-file', 'filepath' => $file->filepath])
+                    Url::to(['get-file', 'filepath' => $addPath . $file->filepath])
                 );
             }
         }

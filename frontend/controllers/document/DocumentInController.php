@@ -212,15 +212,15 @@ class DocumentInController extends Controller
 
             /** @var FilesWork $file */
             $filepath = $file ? basename($file->filepath) : '';
-            $this->fileService->deleteFile($fileId);
-            $file->recordEvent(new FileDeleteEvent($file->filepath), get_class($file));
+            $this->fileService->deleteFile($file->createAdditionalPath() . $file->filepath);
+            $file->recordEvent(new FileDeleteEvent($fileId), get_class($file));
             $file->releaseEvents();
 
             Yii::$app->session->setFlash('success', "Файл $filepath успешно удален");
             return $this->redirect(['update', 'id' => $modelId]);
         }
         catch (DomainException $e) {
-            return 'Oops! Something wrong';
+            return $e->getMessage();
         }
     }
 

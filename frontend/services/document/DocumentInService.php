@@ -42,7 +42,7 @@ class DocumentInService
 
             $this->fileService->uploadFile(
                 $model->scanFile,
-                $filepath
+                FilePaths::DOCUMENT_IN_SCAN.$filepath
             );
 
             $model->recordEvent(
@@ -62,7 +62,7 @@ class DocumentInService
 
             $this->fileService->uploadFile(
                 $model->docFiles[$i - 1],
-                $filepath
+                FilePaths::DOCUMENT_IN_DOC.$filepath
             );
         }
 
@@ -71,7 +71,7 @@ class DocumentInService
 
             $this->fileService->uploadFile(
                 $model->appFiles[$i - 1],
-                $filepath
+                FilePaths::DOCUMENT_IN_APP.$filepath
             );
         }
     }

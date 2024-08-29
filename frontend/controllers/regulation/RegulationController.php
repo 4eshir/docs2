@@ -9,11 +9,13 @@ use common\helpers\SortHelper;
 use common\models\search\SearchDocumentIn;
 use common\models\search\SearchRegulation;
 use common\models\work\document_in_out\DocumentInWork;
+use common\models\work\regulation\RegulationWork;
 use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\general\CompanyRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\general\PeopleRepository;
 use common\repositories\general\PositionRepository;
+use common\repositories\regulation\RegulationRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\document_in\InOutDocumentCreateEvent;
@@ -21,20 +23,26 @@ use frontend\events\document_in\InOutDocumentDeleteEvent;
 use frontend\events\general\FileDeleteEvent;
 use frontend\helpers\HeaderWizard;
 use frontend\services\document\DocumentInService;
+use frontend\services\regulation\RegulationService;
 use Yii;
 use yii\helpers\Url;
 use yii\web\Controller;
 
 class RegulationController extends Controller
 {
-
+    private RegulationRepository $repository;
+    private RegulationService $service;
 
     public function __construct(
         $id,
         $module,
+        RegulationRepository $repository,
+        RegulationService $service,
         $config = [])
     {
         parent::__construct($id, $module, $config);
+        $this->repository = $repository;
+        $this->service = $service;
     }
 
     public function actionIndex()
@@ -57,26 +65,16 @@ class RegulationController extends Controller
 
     public function actionCreate()
     {
-        $model = new DocumentInWork();
-        $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
-        $availablePositions = $this->positionRepository->getList();
-        $availableCompanies = $this->companyRepository->getList();
-        $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
+        $model = new RegulationWork();
 
         if ($model->load(Yii::$app->request->post())) {
 
-            $model->generateDocumentNumber();
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
 
             $this->service->getFilesInstances($model);
-            $model->need_answer = $this->repository->setAnswer($model);
             $this->repository->save($model);
-
-            if ($model->needAnswer) {
-                $model->recordEvent(new InOutDocumentCreateEvent($model->id, null, $model->dateAnswer, $model->nameAnswer), DocumentInWork::class);
-            }
 
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
@@ -86,10 +84,6 @@ class RegulationController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            'correspondentList' => $correspondentList,
-            'availablePositions' => $availablePositions,
-            'availableCompanies' => $availableCompanies,
-            'mainCompanyWorkers' => $mainCompanyWorkers,
         ]);
     }
     public function actionReserve()

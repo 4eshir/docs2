@@ -3,11 +3,10 @@
 namespace common\models\work\general;
 
 use common\events\EventTrait;
+use common\helpers\files\FilesHelper;
 use common\models\scaffold\Files;
-/*<<<<<<< HEAD
-=======
+use common\models\work\document_in_out\DocumentInWork;
 
->>>>>>> 3b958a08f506b00c9119b64f0e00189c862bae9e*/
 class FilesWork extends Files
 {
     use EventTrait;
@@ -26,5 +25,10 @@ class FilesWork extends Files
         $entity->filepath = $filepath;
 
         return $entity;
+    }
+
+    public function createAdditionalPath()
+    {
+        return '/upload/files/' . $this->table_name . '/' . $this->file_type . '/';
     }
 }

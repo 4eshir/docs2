@@ -29,7 +29,10 @@ return [
             'class' => 'common\\components\\dictionaries\\base\\CategorySmspDictionary',
         ],
         'ownershipType' => [
-            'class' => 'common\components\dictionaries\base\OwnershipTypeDictionary',
+            'class' => 'common\\components\\dictionaries\\base\\OwnershipTypeDictionary',
+        ],
+        'regulationType' => [
+            'class' => 'common\\components\\dictionaries\\base\\RegulationTypeDictionary',
         ],
         'rac' => [
             'class' => 'common\\components\\access\\RacComponent',

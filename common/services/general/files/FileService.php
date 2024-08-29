@@ -16,13 +16,6 @@ use Yii;
 
 class FileService
 {
-    public DocumentInFileNameGenerator $filenameGenerator;
-
-    public function __construct(DocumentInFileNameGenerator $filenameGenerator)
-    {
-        $this->filenameGenerator = $filenameGenerator;
-    }
-
     public function downloadFile($filepath)
     {
         $downloadServ = new FileDownloadServer($filepath);
@@ -53,7 +46,7 @@ class FileService
         // тут будет стратегия для загрузки на яндекс диск... потом
 
         if ($file) {
-            $file->saveAs($filepath);
+            $file->saveAs(Yii::$app->basePath . $filepath);
         }
     }
 

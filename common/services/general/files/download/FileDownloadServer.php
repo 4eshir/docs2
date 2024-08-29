@@ -17,7 +17,7 @@ class FileDownloadServer extends AbstractFileDownload
 
     public function LoadFile()
     {
-        $file = $this->ADDITIONAL_PATH.$this->filepath;
+        $file = $this->ADDITIONAL_PATH . $this->filepath;
 
         if (file_exists($file)) {
             $this->success = true;

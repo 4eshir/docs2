@@ -1,7 +1,9 @@
 <?php
 
+use common\helpers\DateFormatter;
 use common\helpers\StringFormatter;
 use common\models\work\document_in_out\DocumentInWork;
+use common\models\work\regulation\RegulationWork;
 use kartik\daterange\DateRangePicker;
 use kartik\export\ExportMenu;
 use kartik\grid\GridViewInterface;
@@ -41,9 +43,17 @@ $this->params['breadcrumbs'][] = $this->title;
             return 'Coming soon';
         }],
         ['attribute' => 'ped_council_number', 'label' => '№ пед.<br>совета', 'encodeLabel' => false, 'format' => 'raw'],
-        ['attribute' => 'ped_council_date', 'label' => 'Дата пед.<br>совета', 'encodeLabel' => false, 'format' => 'raw'],
+        ['attribute' => 'ped_council_date', 'label' => 'Дата пед.<br>совета', 'encodeLabel' => false, 'format' => 'raw',
+            'value' => function (RegulationWork $model) {
+                return 'DateFormatter::format($model->ped_council_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot)';
+            }
+        ],
         ['attribute' => 'par_council_number', 'label' => '№ совета<br>род.', 'encodeLabel' => false, 'format' => 'raw'],
-        ['attribute' => 'par_council_date', 'label' => 'Дата совета<br>род.', 'encodeLabel' => false, 'format' => 'raw'],
+        ['attribute' => 'par_council_date', 'label' => 'Дата совета<br>род.', 'encodeLabel' => false, 'format' => 'raw',
+            'value' => function (RegulationWork $model) {
+                return DateFormatter::format($model->par_council_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
+            }
+        ],
         ['attribute' => 'state', 'label' => 'Состояние', 'value' => function($model){
             /*if ($model->state == 1)
                 return 'Актуально';
@@ -82,16 +92,21 @@ $this->params['breadcrumbs'][] = $this->title;
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
             'rowOptions' => function($data) {
-                if ($data['state'] == 0)
-                    return ['style' => 'background: #c0c0c0']; //return ['class' => 'danger'];
-                else
+                if ($data['state'] == 0) {
+                    return ['style' => 'background: #c0c0c0'];
+                }
+                else {
                     return ['class' => 'default'];
+                }
             },
             'columns' => [
-
-                ['attribute' => 'date', 'label' => 'Дата положения'],
+                ['attribute' => 'date', 'label' => 'Дата положения',
+                    'value' => function (RegulationWork $model) {
+                        return DateFormatter::format($model->date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
+                    }
+                ],
                 ['attribute' => 'name'],
-                ['attribute' => 'orderString', 'label' => 'Приказ', 'value' => function($model){
+                ['attribute' => 'orderString', 'label' => 'Приказ', 'value' => function(RegulationWork $model){
                     /*$order = \app\models\work\DocumentOrderWork::find()->where(['id' => $model->order_id])->one();
                     $doc_num = 0;
                     if ($order->order_postfix == null)
@@ -102,28 +117,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     return 'Coming soon';
                 }],
                 ['attribute' => 'ped_council_number', 'label' => '№ пед.<br>совета', 'encodeLabel' => false, 'format' => 'raw'],
-                ['attribute' => 'ped_council_date', 'label' => 'Дата пед.<br>совета', 'encodeLabel' => false, 'format' => 'raw'],
+                ['attribute' => 'ped_council_date', 'label' => 'Дата пед.<br>совета', 'encodeLabel' => false, 'format' => 'raw',
+                    'value' => function (RegulationWork $model) {
+                        return DateFormatter::format($model->ped_council_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
+                    }
+                ],
                 ['attribute' => 'par_council_number', 'label' => '№ совета<br>род.', 'encodeLabel' => false, 'format' => 'raw'],
-                ['attribute' => 'par_council_date', 'label' => 'Дата совета<br>род.', 'encodeLabel' => false, 'format' => 'raw'],
-                ['attribute' => 'state', 'label' => 'Состояние', 'value' => function($model){
-                    /*if ($model->state == 1)
-                        return 'Актуально';
-                    else
-                    {
-                        $exp = \app\models\work\ExpireWork::find()->where(['expire_order_id' => $model->order_id])->one();
-                        if ($exp == null)
-                            $exp = \app\models\work\ExpireWork::find()->where(['expire_regulation_id' => $model->id])->one();
-                        $order = \app\models\work\DocumentOrderWork::find()->where(['id' => $exp->active_regulation_id])->one();
-                        $doc_num = 0;
-
-                        if ($order->order_postfix == null)
-                            $doc_num = $order->order_number.'/'.$order->order_copy_id;
-                        else
-                            $doc_num = $order->order_number.'/'.$order->order_copy_id.'/'.$order->order_postfix;
-                        return 'Утратило силу в связи с приказом '.Html::a('№'.$doc_num, \yii\helpers\Url::to(['document-order/view', 'id' => $order->id]));
-                    }*/
-                    return 'Coming soon';
-                }, 'format' => 'raw', 'filter' => [1 => "Актуально", 0 => "Утратило силу"]],
+                ['attribute' => 'par_council_date', 'label' => 'Дата совета<br>род.', 'encodeLabel' => false, 'format' => 'raw',
+                    'value' => function (RegulationWork $model) {
+                        return DateFormatter::format($model->par_council_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
+                    }
+                ],
+                ['attribute' => 'state', 'label' => 'Состояние', 'value' => function(RegulationWork $model){
+                    return $model->getStates();
+                }, 'format' => 'raw', 'filter' => [1 => "Актуально", 2 => "Утратило силу"]],
 
                 ['class' => 'yii\grid\ActionColumn'],
             ],

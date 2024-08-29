@@ -79,7 +79,7 @@ class FilesRepository
     public function prepareDelete($id)
     {
         $model = $this->getById($id);
-        if (count($model) == 0) {
+        if (!$model) {
             throw new Exception('Запись не найдена');
         }
 

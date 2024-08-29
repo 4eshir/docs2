@@ -2,16 +2,60 @@
 
 namespace common\models\work\regulation;
 
+use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\models\scaffold\Regulation;
+use InvalidArgumentException;
 
 class RegulationWork extends Regulation
 {
+    use EventTrait;
+    const STATE_ACTIVE = 1;
+    const STATE_EXPIRE = 2;
+
+    public $expires; //документ, отменяющий текущее положение
+
+    /**
+     * Переменные для input-file в форме
+     */
+    public $scanFile;
+
+    public function __construct($config = [])
+    {
+        parent::__construct($config);
+    }
+
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            [['scanFile'], 'file', 'skipOnEmpty' => true,
+                'extensions' => 'png, jpg, pdf, zip, rar, 7z, tag, txt'],
+        ]);
+    }
+
+    public static function states()
+    {
+        return [
+            self::STATE_ACTIVE => 'Актуально',
+            self::STATE_EXPIRE => 'Утратило силу',
+        ];
+    }
+
+    public function getStates()
+    {
+        $statuses = self::states();
+        if (!array_key_exists($this->state, $statuses)) {
+            throw new InvalidArgumentException('Неизвестный статус положения');
+        }
+
+        return $statuses[$this->state];
+    }
+
     // ТОЛЬКО для предварительной обработки полей. Остальные действия - через Event
     public function beforeValidate()
     {
-        var_dump('boobs');
         $this->creator_id = 1/*Yii::$app->user->identity->getId()*/;
+        $this->state = RegulationWork::STATE_ACTIVE;
         $this->date = DateFormatter::format($this->date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $this->ped_council_date = DateFormatter::format($this->ped_council_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $this->par_council_date = DateFormatter::format($this->par_council_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);

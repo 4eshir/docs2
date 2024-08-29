@@ -2,9 +2,11 @@
 
 namespace common\models\search;
 
+use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\helpers\DateFormatter;
 use common\models\work\document_in_out\DocumentInWork;
 use common\models\work\regulation\RegulationWork;
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
@@ -42,7 +44,7 @@ class SearchRegulation extends RegulationWork
     public function search($params)
     {
         $this->load($params);
-        $query = RegulationWork::find();
+        $query = RegulationWork::find()->where(['regulation_type' => RegulationTypeDictionary::TYPE_REGULATION]);
 
         /*if ($this->localDate !== '' && $this->localDate !== null) {
             $dates = DateFormatter::splitDates($this->localDate);

@@ -23,6 +23,11 @@ class FilesHelper
         ];
     }
 
+    public static function getFileType($index)
+    {
+        return self::getFileTypes()[$index];
+    }
+
     public static function getFilenameFromPath($filepath)
     {
         $parts = explode('/', $filepath);

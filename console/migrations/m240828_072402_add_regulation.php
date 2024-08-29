@@ -47,6 +47,34 @@ class m240828_072402_add_regulation extends Migration
             'id',
             'RESTRICT',
         );
+
+
+        $this->createTable('expire', [
+            'id' => $this->primaryKey(),
+            'active_regulation_id' => $this->integer(),
+            'expire_regulation_id' => $this->integer(),
+            'expire_order_id' => $this->integer(),
+            'document_type' => $this->integer()->comment('1 - Приказ; 2 - Исходящий; 3 - Входящий; 4 - Положение; 5 - Положение о мероприятии'),
+            'expire_type' => $this->integer()->comment('1 - Утратило силу; 2 - Изменено'),
+        ]);
+
+        $this->addForeignKey(
+            'fk-expire-1',
+            'expire',
+            'active_regulation_id',
+            'regulation',
+            'id',
+            'RESTRICT',
+        );
+
+        $this->addForeignKey(
+            'fk-expire-2',
+            'expire',
+            'expire_regulation_id',
+            'regulation',
+            'id',
+            'RESTRICT',
+        );
     }
 
     /**
@@ -65,6 +93,19 @@ class m240828_072402_add_regulation extends Migration
         );
 
         $this->dropTable('regulation');
+
+
+        $this->dropForeignKey(
+            'fk-expire-1',
+            'expire'
+        );
+
+        $this->dropForeignKey(
+            'fk-expire-2',
+            'expire'
+        );
+
+        $this->dropTable('expire');
 
         return true;
     }
