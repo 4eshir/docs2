@@ -41,12 +41,30 @@ class FileService
         ];
     }
 
-    public function uploadFile($file, $filepath)
+    /**
+     * Функция загрузки файла на сервер или ЯД
+     * в $params необходимо передать либо filepath, либо пару tableName + fileType
+     * @param $file
+     * @param $filename
+     * @param $params ['filepath' => %относительный_путь_к_файлу%, 'tableName' => %имя_таблицы%, 'fileType' => %тип_файла%]
+     * @return void
+     */
+    public function uploadFile($file, $filename, $params = '')
     {
+        if (array_key_exists('filepath', $params)) {
+            $finalPath = $params['filepath'];
+        }
+        else if (array_key_exists('tableName', $params) && array_key_exists('fileType', $params)) {
+            $finalPath = FilesHelper::createAdditionalPath($params['tableName'], $params['fileType']);
+        }
+        else {
+            throw new DomainException('Не были переданы обязательные параметры: filepath или tableName + fileType');
+        }
+
         // тут будет стратегия для загрузки на яндекс диск... потом
 
         if ($file) {
-            $file->saveAs(Yii::$app->basePath . $filepath);
+            $file->saveAs(Yii::$app->basePath . $finalPath . $filename);
         }
     }
 

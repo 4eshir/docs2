@@ -26,9 +26,4 @@ class FilesWork extends Files
 
         return $entity;
     }
-
-    public function createAdditionalPath()
-    {
-        return '/upload/files/' . $this->table_name . '/' . $this->file_type . '/';
-    }
 }

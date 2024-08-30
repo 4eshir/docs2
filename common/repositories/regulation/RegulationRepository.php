@@ -15,6 +15,18 @@ use yii\db\ActiveRecord;
 
 class RegulationRepository
 {
+    private FileService $fileService;
+    private FilesRepository $filesRepository;
+
+    public function __construct(
+        FileService $fileService,
+        FilesRepository $filesRepository
+    )
+    {
+        $this->fileService = $fileService;
+        $this->filesRepository = $filesRepository;
+    }
+
     /**
      * @param $id
      * @return \yii\db\ActiveRecord|null
@@ -24,11 +36,6 @@ class RegulationRepository
         return RegulationWork::find()->where(['id' => $id])->one();
     }
 
-    public function getExpire($id)
-    {
-
-    }
-
     public function save(RegulationWork $regulation)
     {
         if (!$regulation->save()) {
@@ -36,5 +43,22 @@ class RegulationRepository
         }
 
         return $regulation->id;
+    }
+
+    public function delete(ActiveRecord $model)
+    {
+        /** @var DocumentInWork $model */
+        $scan = $this->filesRepository->get(RegulationWork::tableName(), $model->id, FilesHelper::TYPE_SCAN);
+
+        if (is_array($scan)) {
+            foreach ($scan as $file) {
+                $this->fileService->deleteFile($file->filepath);
+                $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            }
+        }
+
+        $model->releaseEvents();
+
+        return $model->delete();
     }
 }

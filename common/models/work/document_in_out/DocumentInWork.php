@@ -126,6 +126,14 @@ class DocumentInWork extends DocumentIn
         return $this->document_theme;
     }
 
+    /**
+     * Возвращает массив
+     * link => форматированная ссылка на документ
+     * id => ID записи в таблице files
+     * @param $filetype
+     * @return array
+     * @throws \yii\base\InvalidConfigException
+     */
     public function getFileLinks($filetype)
     {
         if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
@@ -135,13 +143,13 @@ class DocumentInWork extends DocumentIn
         $addPath = '';
         switch ($filetype) {
             case FilesHelper::TYPE_SCAN:
-                $addPath = FilePaths::DOCUMENT_IN_SCAN;
+                $addPath = FilesHelper::createAdditionalPath(DocumentInWork::tableName(), FilesHelper::TYPE_SCAN);
                 break;
             case FilesHelper::TYPE_DOC:
-                $addPath = FilePaths::DOCUMENT_IN_DOC;
+                $addPath = FilesHelper::createAdditionalPath(DocumentInWork::tableName(), FilesHelper::TYPE_DOC);
                 break;
             case FilesHelper::TYPE_APP:
-                $addPath = FilePaths::DOCUMENT_IN_APP;
+                $addPath = FilesHelper::createAdditionalPath(DocumentInWork::tableName(), FilesHelper::TYPE_APP);
                 break;
         }
 
@@ -150,10 +158,13 @@ class DocumentInWork extends DocumentIn
         if (count($files) > 0) {
             foreach ($files as $file) {
                 /** @var FilesWork $file */
-                $links[] = StringFormatter::stringAsLink(
-                    FilesHelper::getFilenameFromPath($file->filepath),
-                    Url::to(['get-file', 'filepath' => $addPath . $file->filepath])
-                );
+                $links[] = [
+                    'link' => StringFormatter::stringAsLink(
+                        FilesHelper::getFilenameFromPath($file->filepath),
+                        Url::to(['get-file', 'filepath' => $addPath . $file->filepath])
+                    ),
+                    'id' => $file->id
+                ];
             }
         }
 

@@ -4,8 +4,14 @@ namespace common\models\work\regulation;
 
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
+use common\helpers\files\FilesHelper;
+use common\helpers\StringFormatter;
 use common\models\scaffold\Regulation;
+use common\models\work\general\FilesWork;
+use common\repositories\general\FilesRepository;
 use InvalidArgumentException;
+use Yii;
+use yii\helpers\Url;
 
 class RegulationWork extends Regulation
 {
@@ -49,6 +55,45 @@ class RegulationWork extends Regulation
         }
 
         return $statuses[$this->state];
+    }
+
+    /**
+     * Возвращает массив
+     * link => форматированная ссылка на документ
+     * id => ID записи в таблице files
+     * @param $filetype
+     * @return array
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getFileLinks($filetype)
+    {
+        if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
+            throw new InvalidArgumentException('Неизвестный тип файла');
+        }
+
+        $addPath = '';
+        switch ($filetype) {
+            case FilesHelper::TYPE_SCAN:
+                $addPath = FilesHelper::createAdditionalPath(RegulationWork::tableName(), FilesHelper::TYPE_SCAN);
+                break;
+        }
+
+        $files = (Yii::createObject(FilesRepository::class))->get(self::tableName(), $this->id, $filetype);
+        $links = [];
+        if (count($files) > 0) {
+            foreach ($files as $file) {
+                /** @var FilesWork $file */
+                $links[] = [
+                    'link' => StringFormatter::stringAsLink(
+                        FilesHelper::getFilenameFromPath($file->filepath),
+                        Url::to(['get-file', 'filepath' => $addPath . $file->filepath])
+                    ),
+                    'id' => $file->id
+                ];
+            }
+        }
+
+        return $links;
     }
 
     // ТОЛЬКО для предварительной обработки полей. Остальные действия - через Event

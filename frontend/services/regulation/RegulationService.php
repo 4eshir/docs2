@@ -33,11 +33,15 @@ class RegulationService
     public function saveFilesFromModel(RegulationWork $model)
     {
         if ($model->scanFile !== null) {
-            $filepath = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN);
+            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN);
 
             $this->fileService->uploadFile(
                 $model->scanFile,
-                $filepath
+                $filename,
+                [
+                    'tableName' => RegulationWork::tableName(),
+                    'fileType' => FilesHelper::TYPE_SCAN
+                ]
             );
 
             $model->recordEvent(
@@ -45,7 +49,7 @@ class RegulationService
                     $model::tableName(),
                     $model->id,
                     FilesHelper::TYPE_SCAN,
-                    $filepath,
+                    $filename,
                     FilesHelper::LOAD_TYPE_SINGLE
                 ),
                 get_class($model)

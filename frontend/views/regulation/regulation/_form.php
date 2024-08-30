@@ -3,11 +3,13 @@
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\models\work\regulation\RegulationWork;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model RegulationWork */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $scanFile */
 ?>
 
 
@@ -59,7 +61,7 @@ use yii\widgets\ActiveForm;
         ]]) ?>
 
     <?= $form->field($model, 'par_council_date')->widget(\yii\jui\DatePicker::class, [
-        'dateFormat' => 'php:Y-m-d',
+        'dateFormat' => 'php:d.m.Y',
         'language' => 'ru',
         'options' => [
             'placeholder' => 'Дата собрания',
@@ -77,12 +79,18 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'scanFile')->fileInput()
         ->label('Скан положения')?>
 
-    <?= $form->field($model, 'regulation_type')->hiddenInput(['value' => RegulationTypeDictionary::TYPE_REGULATION])->label(false) ?>
+    <?php if (is_array($scanFile) && count($scanFile) > 0): ?>
+        <table class="table table-bordered">
+            <?php foreach ($scanFile as $file): ?>
+                <tr>
+                    <td><?= $file['link'] ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
 
-    <?php
-/*    if (strlen($model->scan) > 2)
-        echo '<h5>Загруженный файл: '.Html::a($model->scan, \yii\helpers\Url::to(['regulation/get-file', 'fileName' => $model->scan])).'&nbsp;&nbsp;&nbsp;&nbsp; '.Html::a('X', \yii\helpers\Url::to(['regulation/delete-file', 'fileName' => $model->scan, 'modelId' => $model->id, 'type' => 'scan'])).'</h5><br>';
-    */?>
+    <?= $form->field($model, 'regulation_type')->hiddenInput(['value' => RegulationTypeDictionary::TYPE_REGULATION])->label(false) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

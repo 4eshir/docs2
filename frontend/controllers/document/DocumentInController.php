@@ -132,9 +132,9 @@ class DocumentInController extends Controller
         $availablePositions = $this->positionRepository->getList($model->correspondent_id);
         $availableCompanies = $this->companyRepository->getList($model->correspondent_id);
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
-        $scanFile = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_SCAN);
-        $docFiles = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_DOC);
-        $appFiles = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_APP);
+        $scanFile = $model->getFileLinks(FilesHelper::TYPE_SCAN);
+        $docFiles = $model->getFileLinks(FilesHelper::TYPE_DOC);
+        $appFiles = $model->getFileLinks(FilesHelper::TYPE_APP);
         if ($model->load(Yii::$app->request->post())) {
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
@@ -212,7 +212,7 @@ class DocumentInController extends Controller
 
             /** @var FilesWork $file */
             $filepath = $file ? basename($file->filepath) : '';
-            $this->fileService->deleteFile($file->createAdditionalPath() . $file->filepath);
+            $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
             $file->recordEvent(new FileDeleteEvent($fileId), get_class($file));
             $file->releaseEvents();
 

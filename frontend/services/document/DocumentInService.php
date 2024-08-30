@@ -38,11 +38,15 @@ class DocumentInService
     public function saveFilesFromModel(DocumentInWork $model)
     {
         if ($model->scanFile !== null) {
-            $filepath = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN);
+            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN);
 
             $this->fileService->uploadFile(
                 $model->scanFile,
-                FilePaths::DOCUMENT_IN_SCAN.$filepath
+                $filename,
+                [
+                    'tableName' => DocumentInWork::tableName(),
+                    'fileType' => FilesHelper::TYPE_SCAN
+                ]
             );
 
             $model->recordEvent(
@@ -50,7 +54,7 @@ class DocumentInService
                     $model::tableName(),
                     $model->id,
                     FilesHelper::TYPE_SCAN,
-                    $filepath,
+                    $filename,
                     FilesHelper::LOAD_TYPE_SINGLE
                 ),
                 get_class($model)
@@ -58,20 +62,50 @@ class DocumentInService
         }
 
         for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
-            $filepath = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_DOC, ['counter' => $i]);
+            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_DOC, ['counter' => $i]);
 
             $this->fileService->uploadFile(
                 $model->docFiles[$i - 1],
-                FilePaths::DOCUMENT_IN_DOC.$filepath
+                $filename,
+                [
+                    'tableName' => DocumentInWork::tableName(),
+                    'fileType' => FilesHelper::TYPE_DOC
+                ]
+            );
+
+            $model->recordEvent(
+                new FileCreateEvent(
+                    $model::tableName(),
+                    $model->id,
+                    FilesHelper::TYPE_DOC,
+                    $filename,
+                    FilesHelper::LOAD_TYPE_SINGLE
+                ),
+                get_class($model)
             );
         }
 
         for ($i = 1; $i < count($model->appFiles) + 1; $i++) {
-            $filepath = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_APP, ['counter' => $i]);
+            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_APP, ['counter' => $i]);
 
             $this->fileService->uploadFile(
                 $model->appFiles[$i - 1],
-                FilePaths::DOCUMENT_IN_APP.$filepath
+                $filename,
+                [
+                    'tableName' => DocumentInWork::tableName(),
+                    'fileType' => FilesHelper::TYPE_APP
+                ]
+            );
+
+            $model->recordEvent(
+                new FileCreateEvent(
+                    $model::tableName(),
+                    $model->id,
+                    FilesHelper::TYPE_APP,
+                    $filename,
+                    FilesHelper::LOAD_TYPE_SINGLE
+                ),
+                get_class($model)
             );
         }
     }

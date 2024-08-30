@@ -1,7 +1,9 @@
 <?php
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
+use common\helpers\files\FilesHelper;
 use common\models\work\regulation\RegulationWork;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
@@ -35,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'date',
             'name',
-            ['attribute' => 'order_id', 'label' => 'Приказ', 'value' => function($model){
+            ['attribute' => 'order_id', 'label' => 'Приказ', 'value' => function(RegulationWork $model){
                 /*$order = \app\models\work\DocumentOrderWork::find()->where(['id' => $model->order_id])->one();
                 return Html::a($order->fullName, \yii\helpers\Url::to(['document-order/view', 'id' => $order->id]));*/
                 return 'Coming soon';
@@ -44,11 +46,11 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'ped_council_date'],
             ['attribute' => 'par_council_number'],
             ['attribute' => 'par_council_date'],
-            ['label' => 'Состояние', 'attribute' => 'state', 'value' => function($model){
+            ['label' => 'Состояние', 'attribute' => 'state', 'value' => function(RegulationWork $model){
                 return $model->getStates();
             }, 'format' => 'raw'],
-            ['label' => 'Скан положения', 'attribute' => 'scan', 'value' => function ($model) {
-                return Html::a($model->scan, Url::to(['regulation/get-file', 'fileName' => $model->scan, 'modelId' => $model->id]));
+            ['label' => 'Скан положения', 'attribute' => 'scan', 'value' => function (RegulationWork $model) {
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
             }, 'format' => 'raw'],
             'creatorString',
             'editorString',

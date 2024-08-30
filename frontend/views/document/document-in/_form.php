@@ -152,8 +152,8 @@ use yii\jui\DatePicker;
         <table class="table table-bordered">
         <?php foreach ($scanFile as $file): ?>
             <tr>
-                <td><?= Html::a(basename($file->filepath), Url::to(['get-file', 'filepath' => $file->filepath])) ?></td>
-                <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file->id])) ?></td>
+                <td><?= $file['link'] ?></td>
+                <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
             </tr>
         <?php endforeach; ?>
         </table>
@@ -167,8 +167,8 @@ use yii\jui\DatePicker;
         <table class="table table-bordered">
             <?php foreach ($docFiles as $file): ?>
                 <tr>
-                    <td><?= Html::a(basename($file->filepath), Url::to(['get-file', 'filepath' => $file->filepath])) ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file->id])) ?></td>
+                    <td><?= $file['link'] ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
                 </tr>
             <?php endforeach; ?>
         </table>
@@ -182,8 +182,8 @@ use yii\jui\DatePicker;
         <table class="table table-bordered">
             <?php foreach ($appFiles as $file): ?>
                 <tr>
-                    <td><?= Html::a(basename($file->filepath), Url::to(['get-file', 'filepath' => $file->filepath])) ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file->id])) ?></td>
+                    <td><?= $file['link'] ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
                 </tr>
             <?php endforeach; ?>
         </table>

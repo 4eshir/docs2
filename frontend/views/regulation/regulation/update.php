@@ -1,15 +1,15 @@
 <?php
 
+use common\models\work\regulation\RegulationWork;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\RegulationWork */
+/* @var $model RegulationWork */
+/* @var $scanFile */
 
 $this->title = 'Редактировать положение: ' . $model->name;
-$session = Yii::$app->session;
-$tmp = \app\models\work\RegulationTypeWork::find()->where(['id' => $session->get('type')])->one()->name;
 
-$this->params['breadcrumbs'][] = ['label' => $tmp, 'url' => ['index', 'c' => $session->get('type')]];
+$this->params['breadcrumbs'][] = ['label' => 'Положения, инструкции, правила', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Редактирование';
 ?>
@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = 'Редактирование';
 
     <?= $this->render('_form', [
         'model' => $model,
-        'modelExpire' => $modelExpire,
+        'scanFile' => $scanFile,
     ]) ?>
 
 </div>

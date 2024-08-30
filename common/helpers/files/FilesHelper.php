@@ -33,4 +33,15 @@ class FilesHelper
         $parts = explode('/', $filepath);
         return end($parts);
     }
+
+    /**
+     * Создает относительный путь к файлу на основе
+     * @param string $tableName имени таблицы
+     * @param string $fileType типа файла
+     * @return string
+     */
+    public static function createAdditionalPath(string $tableName, string $fileType)
+    {
+        return FilePaths::BASE_FILEPATH . '/' . $tableName . '/' . $fileType . '/';
+    }
 }
