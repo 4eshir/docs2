@@ -94,6 +94,7 @@ class RegulationController extends Controller
         ]);
     }
 
+    //
     public function actionUpdate($id)
     {
         $model = $this->repository->get($id);
