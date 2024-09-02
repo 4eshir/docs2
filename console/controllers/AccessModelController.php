@@ -39,7 +39,7 @@ class AccessModelController extends Controller
         );
 
         $userId = $this->prompt('Введите ID пользователя:');
-        $branch = $this->prompt('Введите отдел для правила (techno, quant, cdntt, cod, mob_quant) или оставьте пустым:');
+        $branch = $this->prompt('Введите отдел для правила (1 - Технопарк, 2 - Кванториум, 3 - ЦДНТТ, 4 - ЦОД, 5 - Моб. Кванториум, 6 - Планетарий, 7 - Администрация) или оставьте пустым:');
 
         $hasException = false;
         try {

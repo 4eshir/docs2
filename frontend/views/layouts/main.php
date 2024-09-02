@@ -38,7 +38,7 @@ AppAsset::register($this);
         ['label' => 'Входящая документация', 'url' => ['/document/document-in/index']],
         ['label' => 'Исходящая документация', 'url' => ['/document/document-out/index']],
         ['label' => 'Положения', 'url' => ['/regulation/regulation/index']],
-        ['label' => 'Contact', 'url' => ['/site/contact']],
+        ['label' => 'Положения о мероприятиях', 'url' => ['/regulation/regulation-event/index']],
     ];
     if (Yii::$app->rac->isGuest()) {
         $menuItems[] = ['label' => 'Signup', 'url' => ['/auth/login']];

@@ -15,7 +15,7 @@ class PermissionTemplateFunctionRepository
     public function save(PermissionTemplateFunctionWork $templateFunction)
     {
         if (!$templateFunction->save()) {
-            throw new DomainException('Ошибка привязки правила к пользователю. Проблемы: '.json_encode($templateFunction->getErrors()));
+            throw new DomainException('Ошибка привязки правила к шаблону. Проблемы: '.json_encode($templateFunction->getErrors()));
         }
 
         return $templateFunction->id;

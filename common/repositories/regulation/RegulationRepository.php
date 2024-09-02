@@ -4,6 +4,7 @@ namespace common\repositories\regulation;
 
 use common\helpers\files\FilesHelper;
 use common\models\work\document_in_out\DocumentInWork;
+use common\models\work\general\FilesWork;
 use common\models\work\regulation\RegulationWork;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
@@ -47,12 +48,13 @@ class RegulationRepository
 
     public function delete(ActiveRecord $model)
     {
-        /** @var DocumentInWork $model */
+        /** @var RegulationWork $model */
         $scan = $this->filesRepository->get(RegulationWork::tableName(), $model->id, FilesHelper::TYPE_SCAN);
 
         if (is_array($scan)) {
             foreach ($scan as $file) {
-                $this->fileService->deleteFile($file->filepath);
+                /** @var FilesWork $file */
+                $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
                 $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
             }
         }

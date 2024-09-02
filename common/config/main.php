@@ -14,7 +14,7 @@ return [
         // another data
 
         'rulesConfig' => [
-            'class' => 'common\\services\\access\\RulesConfig',
+            'class' => 'common\\components\\access\\RulesConfig',
         ],
         'branches' => [
             'class' => 'common\\components\\dictionaries\\base\\BranchDictionary',

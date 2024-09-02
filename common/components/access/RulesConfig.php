@@ -8,21 +8,85 @@ class RulesConfig
 {
     // основные связи правил с экшнами контроллеров
     private $permissionActionLinks = [
-        /*'view_doc_in' => [
+        'view_doc_in' => [
             \frontend\controllers\document\DocumentInController::class => [
                 'index',
                 'view',
+                'getFile',
+                'dependencyDropdown',
             ],
-            \backend\controllers\SiteController::class => [
+        ],
+
+        'edit_doc_in' => [
+            \frontend\controllers\document\DocumentInController::class => [
                 'create',
+                'update',
+                'delete',
+                'reserve',
+                'deleteFile',
             ],
-        ]*/
+        ],
+
+        'view_doc_out' => [
+            \frontend\controllers\document\DocumentOutController::class => [
+                'index',
+                'view',
+                'getFile',
+                'dependencyDropdown',
+            ],
+        ],
+
+        'edit_doc_out' => [
+            \frontend\controllers\document\DocumentOutController::class => [
+                'create',
+                'update',
+                'delete',
+                'reserve',
+                'deleteFile',
+            ],
+        ],
+
+        'view_base_regulations' => [
+            \frontend\controllers\regulation\RegulationController::class => [
+                'index',
+                'view',
+                'getFile',
+            ],
+        ],
+
+        'edit_base_regulations' => [
+            \frontend\controllers\regulation\RegulationController::class => [
+                'create',
+                'update',
+                'delete',
+                'deleteFile',
+            ],
+        ],
+
+        'view_event_regulations' => [
+            \frontend\controllers\regulation\RegulationEventController::class => [
+                'index',
+                'view',
+                'getFile',
+            ],
+        ],
+
+        'edit_event_regulations' => [
+            \frontend\controllers\regulation\RegulationEventController::class => [
+                'create',
+                'update',
+                'delete',
+                'deleteFile',
+            ],
+        ]
     ];
 
     // системные экшны, которые не должны учитываться при мониторинге
     private $systemActions = [
         \frontend\controllers\SiteController::class => [
+            'index',
             'login',
+            'logout',
         ],
     ];
 

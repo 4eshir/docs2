@@ -96,21 +96,21 @@ class DocumentOutRepository
 
         if (is_array($scan)) {
             foreach ($scan as $file) {
-                $this->fileService->deleteFile($file->filepath);
+                $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
                 $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
             }
         }
 
         if (is_array($docs)) {
             foreach ($docs as $file) {
-                $this->fileService->deleteFile($file->filepath);
+                $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
                 $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
             }
         }
 
         if (is_array($apps)) {
             foreach ($apps as $file) {
-                $this->fileService->deleteFile($file->filepath);
+                $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
                 $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
             }
         }

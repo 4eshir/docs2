@@ -8,9 +8,11 @@ use common\models\work\general\UserWork;
 use common\models\work\rac\PermissionFunctionWork;
 use common\models\work\rac\PermissionTemplateFunctionWork;
 use common\models\work\rac\PermissionTemplateWork;
+use common\models\work\rac\UserPermissionFunctionWork;
 use common\repositories\general\CompanyRepository;
 use common\repositories\general\UserRepository;
 use common\repositories\rac\PermissionFunctionRepository;
+use common\repositories\rac\PermissionTemplateFunctionRepository;
 use common\repositories\rac\PermissionTemplateRepository;
 use Yii;
 use yii\console\Controller;
@@ -19,15 +21,18 @@ class FillController extends Controller
 {
     private PermissionTemplateRepository $templateRepository;
     private PermissionFunctionRepository $functionRepository;
-    private PermissionTemplateFunctionWork $templateFunctionRepository;
+    private PermissionTemplateFunctionRepository $templateFunctionRepository;
     private CompanyRepository $companyRepository;
+
+    private $tIds = [];
+    private $fIds = [];
 
     public function __construct(
         $id,
         $module,
         PermissionTemplateRepository $templateRepository,
         PermissionFunctionRepository $functionRepository,
-        PermissionTemplateFunctionWork $templateFunctionRepository,
+        PermissionTemplateFunctionRepository $templateFunctionRepository,
         CompanyRepository $companyRepository,
         $config = [])
     {
@@ -53,6 +58,7 @@ class FillController extends Controller
 
     public function actionDropPermissions()
     {
+        UserPermissionFunctionWork::deleteAll();
         PermissionTemplateFunctionWork::deleteAll();
         PermissionFunctionWork::deleteAll();
         PermissionTemplateWork::deleteAll();
@@ -60,7 +66,16 @@ class FillController extends Controller
 
     public function actionInitTemplates()
     {
-        $tIds = [];
+        $this->actionDropPermissions();
+
+        $this->createTemplates();
+        $this->createFunctions();
+
+        $this->createAdminRole();
+    }
+
+    private function createTemplates()
+    {
         $tIds[1] = $this->templateRepository->save(PermissionTemplateWork::fill('teacher', 1));
         $tIds[2] = $this->templateRepository->save(PermissionTemplateWork::fill('study_info', 2));
         $tIds[3] = $this->templateRepository->save(PermissionTemplateWork::fill('event_info', 3));
@@ -69,8 +84,10 @@ class FillController extends Controller
         $tIds[6] = $this->templateRepository->save(PermissionTemplateWork::fill('branch_controller', 6));
         $tIds[7] = $this->templateRepository->save(PermissionTemplateWork::fill('super_controller', 7));
         $tIds[8] = $this->templateRepository->save(PermissionTemplateWork::fill('admin', 8));
+    }
 
-        $fIds = [];
+    private function createFunctions()
+    {
         $fIds[1] = $this->functionRepository->save(PermissionFunctionWork::fill('Добавление новых учебных групп', 'add_group', 1));
         $fIds[2] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр своих учебных групп', 'view_self_groups', 2));
         $fIds[3] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр учебных групп своего отдела', 'view_branch_groups', 3));
@@ -139,7 +156,77 @@ class FillController extends Controller
         $fIds[66] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование справочника договоров', 'edit_contracts', 66));
         $fIds[67] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр справочника документов о поступлении', 'view_invoices', 67));
         $fIds[68] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование справочника документов о поступлении', 'edit_invoices', 68));
+    }
 
-        $this->templateFunctionRepository->save();
+    private function createAdminRole()
+    {
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 1));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 2));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 3));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 4));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 5));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 6));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 7));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 8));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 9));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 10));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 11));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 12));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 13));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 14));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 15));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 16));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 17));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 18));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 19));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 20));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 21));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 22));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 23));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 24));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 25));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 26));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 27));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 28));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 29));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 30));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 31));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 32));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 33));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 34));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 35));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 36));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 37));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 38));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 39));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 40));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 41));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 42));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 43));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 44));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 45));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 46));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 47));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 48));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 49));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 50));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 51));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 52));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 53));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 54));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 55));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 56));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 57));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 58));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 59));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 60));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 61));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 62));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 63));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 64));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 65));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 66));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 67));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 68));
     }
 }

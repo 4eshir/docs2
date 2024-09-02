@@ -1,5 +1,6 @@
 <?php
 
+use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\helpers\DateFormatter;
 use common\helpers\StringFormatter;
 use common\models\work\document_in_out\DocumentInWork;
@@ -15,7 +16,7 @@ use yii\jui\DatePicker;
 /* @var $searchModel common\models\search\SearchRegulation */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Положения, инструкции, правила';
+$this->title = Yii::$app->regulationType->get(RegulationTypeDictionary::TYPE_REGULATION);
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

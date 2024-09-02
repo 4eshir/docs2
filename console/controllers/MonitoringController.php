@@ -61,7 +61,7 @@ class MonitoringController extends Controller
             $this->stdout('Обнаружены следующие проблемы' . "\r\n\r\n", Console::FG_RED);
             if (count($missControllerAction[0]) > 0) {
                 foreach ($missControllerAction[0] as $missController) {
-                    $this->stdout('В правилах config-файла не найден контролер: ' .$missController . "\r\n", Console::FG_YELLOW);
+                    $this->stdout('В правилах config-файла не найден контроллер: ' .$missController . "\r\n", Console::FG_YELLOW);
                 }
             }
             $this->stdout("\r\n");

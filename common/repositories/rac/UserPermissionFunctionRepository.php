@@ -30,7 +30,7 @@ class UserPermissionFunctionRepository
                     UserPermissionFunctionWork::fill(
                         $userId,
                         $function->id,
-                        $branch
+                        Yii::$app->branches->get($branch)
                     )
                 );
             }

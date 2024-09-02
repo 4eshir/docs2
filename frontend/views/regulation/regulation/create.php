@@ -1,5 +1,6 @@
 <?php
 
+use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\models\work\regulation\RegulationWork;
 use yii\helpers\Html;
 
@@ -7,7 +8,7 @@ use yii\helpers\Html;
 /* @var $model RegulationWork */
 
 $this->title = 'Добавить положение';
-$this->params['breadcrumbs'][] = ['label' => 'Положения, инструкции, правила', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::$app->regulationType->get(RegulationTypeDictionary::TYPE_REGULATION), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="regulation-create">
