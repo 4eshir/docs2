@@ -16,6 +16,7 @@ use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\document_in_out\InOutDocumentsRepository;
 use common\repositories\general\FilesRepository;
+use DomainException;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\Url;
@@ -191,77 +192,89 @@ class DocumentInWork extends DocumentIn
             }
         }
         return '';
-        /*
-        if (array_key_exists($format, StringFormatter::getFormats())) {
-            $links = (Yii::createObject(InOutDocumentsRepository::class))->get($this->id);
-
-            /** @var InOutDocumentsWork $links *//*
-            if ($links == null) {
-                return '';
-            }
-
-            if ($links->isDocumentOutEmpty()) {
-                if ($links->isNoPeopleTarget()) {
-                    if ($links->isNoAnswerDate()) {
-                        return 'Требуется ответ';
-                    }
-                    return 'До '.$links->date;
-                }
-                return 'До '.$links->date.' от '.$links->responsibleWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS);
-            }
-
-            $str = 'Исходящий документ "'.(Yii::createObject(DocumentOutRepository::class))->get($links->document_out_id)->document_theme.'"';
-            return $format == StringFormatter::FORMAT_LINK ?
-                StringFormatter::stringAsLink($str, Url::to(['document-out/view', 'id' => $links->document_out_id])) : $str;
-        }
-        throw new \InvalidArgumentException('Неизвестный формат строки');*/
     }
-
-    public function generateDocumentNumber()
-    {
-        $repository = Yii::createObject(DocumentInRepository::class);
-        $docs = $repository->getAllDocumentsDescDate();
-        if (date('Y') !== substr($docs[0]->local_date, 0, 4)) {
-            $this->local_number = 1;
+    public function TestIn(){
+        $year = substr(DateFormatter::format($this->local_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
+        $local_date = DateFormatter::format($this->local_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
+        $docs = DocumentInWork::find()->all();
+        if($docs == NULL){
+            $this->local_number = '1';
+            $this->local_postfix = 0;
         }
         else {
-            $docs = $repository->getAllDocumentsInYear();
-            if (end($docs)->local_date > $this->local_date && $this->document_theme != 'Резерв') {
-                $tempId = 0;
-                $tempPre = 0;
-                if (count($docs) == 0) {
-                    $tempId = 1;
-                }
-                for ($i = count($docs) - 1; $i >= 0; $i--) {
-                    if ($docs[$i]->local_date <= $this->local_date) {
-                        $tempId = $docs[$i]->local_number;
-                        if ($docs[$i]->local_postfix != null) {
-                            $tempPre = $docs[$i]->local_postfix + 1;
-                        }
-                        else {
-                            $tempPre = 1;
-                        }
+            $down = DocumentInWork::find()
+                ->where(['<', 'local_date', $local_date]) // условие для даты больше заданной
+                ->andWhere(['>=', 'local_date', $year."-01-01"]) // начало года
+                ->andWhere(['<=', 'local_date', $year."-12-31"]) // конец года
+                ->orderBy(['local_date' => SORT_DESC])
+                ->all();
+            $up = DocumentInWork::find()
+                ->where(['>', 'local_date', $local_date])
+                ->andWhere(['>=', 'local_date', $year."-01-01"])
+                ->andWhere(['<=', 'local_date', $year."-12-31"])
+                ->orderBy(['local_date' => SORT_DESC])
+                ->all();
+            $down_max = DocumentInWork::find()
+                ->where(['<=', 'local_date', $local_date])
+                ->andWhere(['>=', 'local_date', $year."-01-01"])
+                ->andWhere(['<=', 'local_date', $year."-12-31"])
+                ->max('local_number');
+            if($up == null && $down == null) {
+                $this->local_number = '0';
+                $this->local_postfix = 0;
+            }
+            if($up == null && $down != null) {
+
+                $this->local_number = $down_max + 1;
+                $this->local_postfix = 0;
+            }
+            if($up != null && $down == null){
+                $this->local_number = '0';
+                $this->local_postfix = '0';
+            }
+            if($up != null && $down != null){
+                $this->local_number = $down_max ;
+                $max_postfix  = DocumentInWork::find()
+                    ->where(['<=', 'local_number', $this->local_number])
+                    ->andWhere(['>=', 'local_date', $year."-01-01"]) // начало года
+                    ->andWhere(['<=', 'local_date', $year."-12-31"]) // конец года
+                    ->max('local_postfix');
+                $this->local_postfix = $max_postfix + 1;
+            }
+        }
+    }
+    /*public function getLastNumber($inputString) {
+        $parts = explode('/', $inputString);
+        return $parts;
+    }
+    public function maxPostfix($model) {
+        $max = '0';
+        foreach ($model as $doc){
+            $parts = $this->getLastNumber($doc->local_postfix);
+            $parts_max = $this->getLastNumber($max);
+            $length = count($parts);
+            $max_length = count($parts_max);
+            if($length > $max_length){
+                $max = $doc->local_postfix;
+            }
+            else if($length = $max_length){
+                $parts_max = $this->getLastNumber($max);
+                for($i = 0; $i < $length; $i++){
+                    if((int)$parts[$i] > (int)$parts_max[$i]){
+                        $max = $doc->local_postfix;
                         break;
                     }
                 }
-
-                $this->local_number = $tempId;
-                $this->local_postfix = $tempPre;
-                Yii::$app->session->addFlash('warning', 'Добавленный документ должен был быть зарегистрирован раньше. Номер документа: '.$this->local_number.'/'.$this->local_postfix);
-            }
-            else
-            {
-                if (count($docs) == 0) {
-                    $this->local_number = 1;
-                }
-                else {
-                    $this->local_number = end($docs)->local_number + 1;
-                }
             }
         }
+        return $max;
     }
-
-    // ТОЛЬКО для предварительной обработки полей. Остальные действия - через Event
+    public function getIncrementedLastNumberString($inputString) {
+        $parts = explode('/', $inputString);
+        $lastNumber = end($parts) + 1;
+        $parts[count($parts) - 1] = $lastNumber;
+        return implode('/', $parts);
+    }*/
     public function beforeValidate()
     {
         $this->creator_id = 1/*Yii::$app->user->identity->getId()*/;
