@@ -37,6 +37,7 @@ AppAsset::register($this);
     $menuItems = [
         ['label' => 'Входящая документация', 'url' => ['/document/document-in/index']],
         ['label' => 'Исходящая документация', 'url' => ['/document/document-out/index']],
+        ['label' => 'Пркиазы по осн. деятельности', 'url' => ['/order/order-main/index']],
         ['label' => 'Положения', 'url' => ['/regulation/regulation/index']],
         ['label' => 'Положения о мероприятиях', 'url' => ['/regulation/regulation-event/index']],
     ];
