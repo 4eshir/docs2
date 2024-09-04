@@ -37,7 +37,7 @@ $tempArchive = $session->get("archiveIn");
             'columns' => [
                 ['attribute' => 'fullNumber'],
                 [
-                    'attribute' => 'localDate',
+                    'attribute' => 'Date',
                     'filter' => DateRangePicker::widget([
                         'language' => 'ru',
                         'model' => $searchModel,

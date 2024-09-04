@@ -3,6 +3,7 @@
 namespace frontend\controllers\order;
 
 use common\models\search\SearchDocumentIn;
+use common\models\search\SearchOrderMain;
 use yii\web\Controller;
 use yii;
 class OrderMainController extends Controller
@@ -15,7 +16,7 @@ class OrderMainController extends Controller
         parent::__construct($id, $module, $config);
     }
     public function actionIndex(){
-        $searchModel = new SearchDocumentIn();
+        $searchModel = new SearchOrderMain();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

@@ -47,22 +47,19 @@ class OrderMain extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['local_number', 'local_date', 'real_date', 'document_theme', 'creator_id'], 'required'],
-            [['local_number', 'local_postfix', 'correspondent_id', 'position_id', 'company_id', 'signed_id', 'get_id', 'send_method', 'creator_id', 'last_edit_id', 'need_answer'], 'integer'],
-            [['local_date', 'real_date'], 'safe'],
-            [['real_number'], 'string', 'max' => 64],
-            [['document_theme', 'target'], 'string', 'max' => 256],
+            [['order_copy_id', 'order_number', 'order_date', 'creator_id'], 'required'],
+            [['order_copy_id', 'order_postfix', 'signed_id', 'bring_id', 'executor_id', 'creator_id', 'last_edit_id', 'nomenclature_id', 'type', 'state'], 'integer'],
+            [['order_date'], 'safe'],
+            [['order_number'], 'string', 'max' => 64],
             [['key_words'], 'string', 'max' => 512],
-            [['correspondent_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['correspondent_id' => 'id']],
-            [['position_id'], 'exist', 'skipOnError' => true, 'targetClass' => Position::class, 'targetAttribute' => ['position_id' => 'id']],
-            [['company_id'], 'exist', 'skipOnError' => true, 'targetClass' => Company::class, 'targetAttribute' => ['company_id' => 'id']],
+            [['target'], 'string', 'max' => 256],
             [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['signed_id' => 'id']],
-            [['get_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['get_id' => 'id']],
+            [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['bring_id' => 'id']],
+            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
             [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['last_edit_id' => 'id']],
         ];
     }
-
     /**
      * {@inheritdoc}
      */
@@ -88,26 +85,6 @@ class OrderMain extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[Company]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-
-    public function getCompany()
-    {
-        return $this->hasOne(Company::class, ['id' => 'company_id']);
-    }
-
-    /**
-     * Gets query for [[Correspondent]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCorrespondent()
-    {
-        return $this->hasOne(People::class, ['id' => 'correspondent_id']);
-    }
 
     /**
      * Gets query for [[Creator]].
@@ -138,17 +115,6 @@ class OrderMain extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::class, ['id' => 'last_edit_id']);
     }
-
-    /**
-     * Gets query for [[Position]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getPosition()
-    {
-        return $this->hasOne(Position::class, ['id' => 'position_id']);
-    }
-
     /**
      * Gets query for [[Signed]].
      *
@@ -157,5 +123,18 @@ class OrderMain extends \yii\db\ActiveRecord
     public function getSigned()
     {
         return $this->hasOne(People::class, ['id' => 'signed_id']);
+    }
+    /**
+     * Gets query for [[Executor]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getExecutor()
+    {
+        return $this->hasOne(User::class, ['id' => 'executor_id']);
+    }
+    public function getBring()
+    {
+        return $this->hasOne(User::class, ['id' => 'bring_id']);
     }
 }
