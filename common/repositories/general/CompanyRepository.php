@@ -9,6 +9,11 @@ use yii\helpers\ArrayHelper;
 
 class CompanyRepository
 {
+    public function get($id)
+    {
+        return CompanyWork::find()->where(['id' => $id])->one();
+    }
+
     /**
      * Возвращает список организаций
      * @param int|null $peopleId если передан параметр, то возвращает текущую организацию человека @see PeopleWork
@@ -33,6 +38,15 @@ class CompanyRepository
     )
     {
         return CompanyWork::fastFillWithId($id, $name, $shortName, $isContractor);
+    }
+
+    public function delete(CompanyWork $company)
+    {
+        if (!$company->delete()) {
+            throw new DomainException('Ошибка удаления организации. Проблемы: '.json_encode($company->getErrors()));
+        }
+
+        return $company->id;
     }
 
     public function save(CompanyWork $company)

@@ -3,6 +3,7 @@
 namespace common\models\work\general;
 
 use common\models\scaffold\Company;
+use Yii;
 
 class CompanyWork extends Company
 {
@@ -54,5 +55,10 @@ class CompanyWork extends Company
         $entity->is_contractor = $isContractor;
 
         return $entity;
+    }
+
+    public function isMainCompany()
+    {
+        return $this->id == Yii::$app->params['mainCompanyId'];
     }
 }

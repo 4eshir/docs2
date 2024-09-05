@@ -2,6 +2,7 @@
 
 namespace common\repositories\document_in_out;
 
+use common\components\traits\CommonRepositoryFunctions;
 use common\helpers\files\FilesHelper;
 use common\models\work\document_in_out\DocumentInWork;
 use common\repositories\general\FilesRepository;
@@ -14,6 +15,8 @@ use yii\db\ActiveRecord;
 
 class DocumentInRepository
 {
+    use CommonRepositoryFunctions;
+
     private FileService $fileService;
     private FilesRepository $filesRepository;
 

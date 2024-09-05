@@ -2,21 +2,40 @@
 
 namespace common\repositories\general;
 
+use common\components\traits\CommonRepositoryFunctions;
 use common\helpers\SortHelper;
-use common\models\work\general\PeoplePositionCompanyBranchRepository;
 use common\models\work\general\PeopleWork;
 use DomainException;
-use InvalidArgumentException;
 use Yii;
 use yii\db\ActiveQuery;
 
 class PeopleRepository
 {
+    use CommonRepositoryFunctions;
+
     private PeoplePositionCompanyBranchRepository $peoplePositionCompanyBranchRepository;
 
     public function __construct(PeoplePositionCompanyBranchRepository $peoplePositionCompanyBranchRepository)
     {
         $this->peoplePositionCompanyBranchRepository = $peoplePositionCompanyBranchRepository;
+    }
+
+    public function get($id)
+    {
+        return PeopleWork::find()->where(['id' => $id])->one();
+    }
+
+    public function getPositionsCompanies($id)
+    {
+        return $this->peoplePositionCompanyBranchRepository->getByPeople($id);
+    }
+
+    public function getCompaniesPositionsByPeople($peopleId)
+    {
+        return [
+            $this->peoplePositionCompanyBranchRepository->getCompaniesByPeople($peopleId),
+            $this->peoplePositionCompanyBranchRepository->getPositionsByPeople($peopleId)
+        ];
     }
 
     /**
@@ -54,5 +73,14 @@ class PeopleRepository
             ->where(['IN', 'id', $this->peoplePositionCompanyBranchRepository->getPeopleByCompany(Yii::$app->params['mainCompanyId'])]);
 
         return $this->getOrderedList(SortHelper::ORDER_TYPE_FIO, SORT_ASC, $query);
+    }
+
+    public function save(PeopleWork $people)
+    {
+        if (!$people->save()) {
+            throw new DomainException('Ошибка сохранения человека. Проблемы: '.json_encode($people->getErrors()));
+        }
+
+        return $people->id;
     }
 }

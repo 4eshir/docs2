@@ -2,6 +2,7 @@
 
 namespace common\repositories\regulation;
 
+use common\components\traits\CommonRepositoryFunctions;
 use common\helpers\files\FilesHelper;
 use common\models\work\document_in_out\DocumentInWork;
 use common\models\work\general\FilesWork;
@@ -16,6 +17,8 @@ use yii\db\ActiveRecord;
 
 class RegulationRepository
 {
+    use CommonRepositoryFunctions;
+
     private FileService $fileService;
     private FilesRepository $filesRepository;
 

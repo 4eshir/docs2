@@ -39,6 +39,15 @@ AppAsset::register($this);
         ['label' => 'Исходящая документация', 'url' => ['/document/document-out/index']],
         ['label' => 'Положения', 'url' => ['/regulation/regulation/index']],
         ['label' => 'Положения о мероприятиях', 'url' => ['/regulation/regulation-event/index']],
+        [
+            'label' => 'Справочники',
+            'items' => [
+                ['label' => 'Люди', 'url' => ['/dictionaries/people/index']],
+                ['label' => 'Организации', 'url' => ['/dictionaries/company/index']],
+                ['label' => 'Должности', 'url' => ['/dictionaries/position/index']],
+                // Add more items as necessary
+            ],
+        ],
     ];
     if (Yii::$app->rac->isGuest()) {
         $menuItems[] = ['label' => 'Signup', 'url' => ['/auth/login']];

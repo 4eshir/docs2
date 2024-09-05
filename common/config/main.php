@@ -34,6 +34,9 @@ return [
         'regulationType' => [
             'class' => 'common\\components\\dictionaries\\base\\RegulationTypeDictionary',
         ],
+        'tables' => [
+            'class' => 'common\\components\\dictionaries\\TableDictionary',
+        ],
         'rac' => [
             'class' => 'common\\components\\access\\RacComponent',
         ],
