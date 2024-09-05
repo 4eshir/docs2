@@ -27,7 +27,17 @@ $tempArchive = $session->get("archiveIn");
         <?= Html::a('Добавить приказ об участии', ['create'], ['class' => 'btn btn-info', 'style' => 'display: inline-block;']) ?>
         <?= Html::a('Добавить резерв', ['reserve'], ['class' => 'btn btn-secondary','style' => 'display: inline-block;',]) ?>
     </p>
-
+    <?php
+    $gridColumns = [
+    ['attribute' => 'fullNumber'],
+    ['attribute' => 'orderDate', 'encodeLabel' => false],
+    ['attribute' => 'orderName', 'encodeLabel' => false],
+    ['attribute' => 'bringName', 'encodeLabel' => false],
+    ['attribute' => 'creatorName', 'encodeLabel' => false],
+    ['attribute' => 'state', 'encodeLabel' => false],
+     'format' => 'raw'
+    ];
+    ?>
     <?=
         GridView::widget([
             'dataProvider' => $dataProvider,
@@ -37,11 +47,11 @@ $tempArchive = $session->get("archiveIn");
             'columns' => [
                 ['attribute' => 'fullNumber'],
                 [
-                    'attribute' => 'Date',
+                    'attribute' => 'orderDate',
                     'filter' => DateRangePicker::widget([
                         'language' => 'ru',
                         'model' => $searchModel,
-                        'attribute' => 'localDate',
+                        'attribute' => 'orderDate',
                         'convertFormat' => true,
                         'pluginOptions' => [
                             'timePicker' => false,
@@ -56,36 +66,10 @@ $tempArchive = $session->get("archiveIn");
                     'value' => NULL,
                     'encodeLabel' => false,
                 ],
-                [
-                    'attribute' => 'realDate',
-                    'filter' => DateRangePicker::widget([
-                        'language' => 'ru',
-                        'model' => $searchModel,
-                        'attribute' => 'realDate',
-                        'convertFormat' => true,
-                        'pluginOptions' => [
-                            'timePicker' => false,
-                            'timePickerIncrement' => 365,
-                            'locale' => [
-                                'format' => 'd.m.y',
-                                'cancelLabel' => 'Закрыть',
-                                'applyLabel' => 'Найти',
-                            ]
-                        ]
-                    ]),
-                    'encodeLabel' => false,
-                    'value' => NULL,
-                ],
-                ['attribute' => 'realNumber', 'encodeLabel' => false],
-
-                ['attribute' => 'companyName', 'encodeLabel' => false],
-                ['attribute' => 'documentTheme', 'encodeLabel' => false],
-                [
-                    'attribute' => 'sendMethodName',
-                    'filter' => Yii::$app->sendMethods->getList(),
-                ],
-                ['attribute' => 'needAnswer', 'value' => NULL, 'format' => 'raw'],
-
+                ['attribute' => 'orderName', 'encodeLabel' => false],
+                ['attribute' => 'bringName', 'encodeLabel' => false],
+                ['attribute' => 'executorName', 'encodeLabel' => false],
+                ['attribute' => 'state', 'encodeLabel' => false],
                 ['class' => 'yii\grid\ActionColumn'],
             ],
         ]);?>

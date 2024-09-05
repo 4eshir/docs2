@@ -2,7 +2,6 @@
 
 namespace frontend\controllers\order;
 
-use common\models\search\SearchDocumentIn;
 use common\models\search\SearchOrderMain;
 use yii\web\Controller;
 use yii;
