@@ -3,9 +3,9 @@
 use yii\helpers\ArrayHelper;
 
 ?>
-
-<div id="dropdown-container">
-    <div class="dropdown-group" id="dropdown-template" style="display:none;">
+<button type="button" class="add-dropdown-resp">+</button>
+<div id="dropdown-container-resp">
+    <div class="dropdown-group-resp" id="dropdown-template-resp" style="display:none;">
         <?php
         $params = [
             'class' => 'form-control pos',
@@ -16,8 +16,7 @@ use yii\helpers\ArrayHelper;
             ->dropDownList(ArrayHelper::map($bringPeople, 'id', 'fullFio'), $params)
             ->label('Ответственные');
         ?>
-        <button type="button" class="remove-dropdown">-</button>
+        <button type="button" class="remove-dropdown-resp">-</button>
     </div>
 </div>
 
-<button type="button" class="add-dropdown">+</button>

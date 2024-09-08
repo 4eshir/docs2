@@ -1,10 +1,11 @@
 <?php
+
 namespace app\components;
 
 use yii\base\Widget;
 use yii\helpers\Html;
 
-class DropDownWidget extends Widget
+class DropDownDocument extends Widget
 {
     public $model; // Модель формы
     public $bringPeople; // Данные для выпадающего списка
@@ -14,7 +15,7 @@ class DropDownWidget extends Widget
     {
         $this->registerAssets();
 
-        return $this->render('DropDown', [
+        return $this->render('DropDownDocument', [
             'model' => $this->model,
             'bringPeople' => $this->bringPeople,
             'form' => $this->form,
@@ -24,13 +25,13 @@ class DropDownWidget extends Widget
     protected function registerAssets()
     {
         $js = <<<JS
-        $('.add-dropdown').click(function() {
-            var newDropdown = $('#dropdown-template').clone().removeAttr('id').show();
-            $('#dropdown-container').append(newDropdown);
+        $('.add-dropdown-doc-ch').click(function() {
+            var newDropdown = $('#dropdown-template-doc-ch').clone().removeAttr('id').show();
+            $('#dropdown-container-doc-ch').append(newDropdown);
         });
         
-        $(document).on('click', '.remove-dropdown', function() {
-            $(this).closest('.dropdown-group').remove();
+        $(document).on('click', '.remove-dropdown-doc-ch', function() {
+            $(this).closest('.dropdown-group-doc-ch').remove();
         });
         JS;
         $this->getView()->registerJs($js);

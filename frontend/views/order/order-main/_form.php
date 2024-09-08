@@ -1,7 +1,8 @@
 <?php
 
 
-use app\components\DropDownWidget;
+use app\components\DropDownDocument;
+use app\components\DropDownResponsiblePeopleWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
@@ -62,17 +63,26 @@ use yii\jui\DatePicker;
     </div>
 
 
-
-
+    <div>
+        Ответственные
+    </div>
     <?
-    echo DropdownWidget::widget([
+    echo DropDownResponsiblePeopleWidget::widget([
     'model' => $model,
     'bringPeople' => $bringPeople,
-    'form' => $form, // Передаем экземпляр формы
+    'form' => $form,
     ]);
     ?>
-
-
+    <div>
+        Изменение документов
+    </div>
+    <?
+    echo DropDownDocument::widget([
+        'model' => $model,
+        'bringPeople' => $bringPeople,
+        'form' => $form,
+    ]);
+    ?>
 
 
 
