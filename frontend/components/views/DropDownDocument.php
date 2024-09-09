@@ -21,7 +21,6 @@ use yii\helpers\ArrayHelper;
             ->dropDownList(ArrayHelper::map($bringPeople, 'id', 'fullFio'), $params)
             ->label('Положение');
         ?>
-
         <button type="button" class="remove-dropdown-doc-ch">-</button>
     </div>
 </div>
