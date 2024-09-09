@@ -77,9 +77,27 @@ class OrderMainWork extends OrderMain
     public function getBringName()
     {
         return $this->bring_id;
+        $model = $this->hasOne(PeopleWork::class, ['id' => $this->bring_id]);
+        var_dump($model);
+        if($model != NULL) {
+            return $model->firstname.' '.$model->secondname.' '.$model->patronymic.' AAAA';
+        }
+       else {
+           return $this->bring_id.'aaa';
+       }
+
     }
     public function getExecutorName()
     {
         return $this->executor_id;
+        $model = $this->hasOne(PeopleWork::class, ['id' => $this->executor_id]);
+        var_dump( $model);
+        if($model != NULL) {
+            return $model->firstname.' '.$model->secondname.' '.$model->patronymic.' AAAA';
+        }
+        else {
+            return $this->executor_id.'aaa';
+        }
+        //
     }
 }

@@ -83,17 +83,7 @@ use yii\jui\DatePicker;
         'form' => $form,
     ]);
     ?>
-
-
-
-
-
-
-
     <?= $form->field($model, 'key_words')->textInput(['maxlength' => true])->label('Ключевые слова') ?>
-    <div class="form-group">
-        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
-    </div>
     <?php ActiveForm::end(); ?>
 
 
