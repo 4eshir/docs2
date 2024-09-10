@@ -2,16 +2,22 @@
 
 namespace frontend\controllers\order;
 
+use common\models\scaffold\People;
 use common\models\search\SearchOrderMain;
+use common\models\work\order\OrderMainWork;
+use common\repositories\general\PeopleRepository;
 use yii\web\Controller;
 use yii;
 class OrderMainController extends Controller
 {
+    private PeopleRepository $peopleRepository;
     public function __construct(
         $id,
         $module,
+        PeopleRepository $repository,
         $config = [])
     {
+        $this->peopleRepository = $repository;
         parent::__construct($id, $module, $config);
     }
     public function actionIndex(){
@@ -24,7 +30,17 @@ class OrderMainController extends Controller
         ]);
     }
     public function actionCreate(){
-        return $this->render('create');
+        $model = new OrderMainWork();
+        $bringPeople = $this->peopleRepository->getOrderedList();
+        if ($model->load(Yii::$app->request->post())) {
+            var_dump(Yii::$app->request->post());
+
+        }
+
+        return $this->render('create', [
+            'model' => $model,
+            'bringPeople' => $bringPeople
+        ]);
     }
 
 }
