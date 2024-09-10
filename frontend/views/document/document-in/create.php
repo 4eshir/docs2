@@ -3,7 +3,7 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\work\document_in_out\DocumentInWork */
+/* @var $model \frontend\models\work\document_in_out\DocumentInWork */
 /* @var $correspondentList */
 /* @var $availablePositions */
 /* @var $availableCompanies */

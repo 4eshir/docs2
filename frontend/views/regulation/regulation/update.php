@@ -1,7 +1,7 @@
 <?php
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
-use common\models\work\regulation\RegulationWork;
+use frontend\models\work\regulation\RegulationWork;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */

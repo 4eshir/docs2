@@ -3,7 +3,7 @@
 namespace common\models\search;
 
 use common\helpers\DateFormatter;
-use common\models\work\document_in_out\DocumentOutWork;
+use frontend\models\work\document_in_out\DocumentOutWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 

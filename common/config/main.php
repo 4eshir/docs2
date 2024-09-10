@@ -34,6 +34,12 @@ return [
         'regulationType' => [
             'class' => 'common\\components\\dictionaries\\base\\RegulationTypeDictionary',
         ],
+        'tables' => [
+            'class' => 'common\\components\\dictionaries\\TableDictionary',
+        ],
+        'personalData' => [
+            'class' => 'common\\components\\dictionaries\\base\\PersonalDataDictionary',
+        ],
         'rac' => [
             'class' => 'common\\components\\access\\RacComponent',
         ],

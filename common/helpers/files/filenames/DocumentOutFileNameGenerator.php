@@ -5,11 +5,10 @@ namespace common\helpers\files\filenames;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
-use common\models\work\document_in_out\DocumentInWork;
-use common\models\work\document_in_out\DocumentOutWork;
-use common\models\work\general\FilesWork;
 use common\repositories\general\FilesRepository;
 use DomainException;
+use frontend\models\work\document_in_out\DocumentOutWork;
+use frontend\models\work\general\FilesWork;
 use InvalidArgumentException;
 
 class DocumentOutFileNameGenerator implements FileNameGeneratorInterface

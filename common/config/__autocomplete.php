@@ -7,8 +7,10 @@ use common\components\dictionaries\base\CategorySmspDictionary;
 use common\components\dictionaries\base\CompanyTypeDictionary;
 use common\components\dictionaries\base\DocumentTypeDictionary;
 use common\components\dictionaries\base\OwnershipTypeDictionary;
+use common\components\dictionaries\base\PersonalDataDictionary;
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\components\dictionaries\base\SendMethodDictionary;
+use common\components\dictionaries\TableDictionary;
 
 /**
  * This class only exists here for IDE (PHPStorm/Netbeans/...) autocompletion.
@@ -38,6 +40,8 @@ class Yii {
  * @property OwnershipTypeDictionary $ownershipType
  * @property RegulationTypeDictionary $regulationType
  * @property DocumentTypeDictionary $documentType
+ * @property TableDictionary $tables
+ * @property PersonalDataDictionary $personalData
  * @property RacComponent $rac
  */
 class __Application {

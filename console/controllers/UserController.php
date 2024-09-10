@@ -2,9 +2,8 @@
 
 namespace console\controllers;
 
-use common\models\LoginForm;
-use common\models\work\general\UserWork;
 use common\repositories\general\UserRepository;
+use frontend\models\work\general\UserWork;
 use Yii;
 use yii\console\Controller;
 

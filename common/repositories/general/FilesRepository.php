@@ -2,8 +2,8 @@
 
 namespace common\repositories\general;
 
-use common\models\work\general\FilesWork;
 use DomainException;
+use frontend\models\work\general\FilesWork;
 use Yii;
 use yii\db\Exception;
 

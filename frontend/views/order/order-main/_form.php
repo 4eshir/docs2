@@ -1,6 +1,5 @@
 <?php
 
-
 use app\components\DropDownDocument;
 use app\components\DropDownResponsiblePeopleWidget;
 use yii\helpers\ArrayHelper;

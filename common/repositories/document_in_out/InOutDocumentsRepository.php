@@ -2,8 +2,8 @@
 
 namespace common\repositories\document_in_out;
 
-use common\models\work\document_in_out\InOutDocumentsWork;
 use DomainException;
+use frontend\models\work\document_in_out\InOutDocumentsWork;
 use Yii;
 
 class InOutDocumentsRepository

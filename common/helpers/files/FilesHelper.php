@@ -2,6 +2,8 @@
 
 namespace common\helpers\files;
 
+use frontend\models\work\general\FilesWork;
+
 class FilesHelper
 {
     const TYPE_SCAN = 'scan';

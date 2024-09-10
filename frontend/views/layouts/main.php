@@ -35,11 +35,25 @@ AppAsset::register($this);
         ],
     ]);
     $menuItems = [
-        ['label' => 'Входящая документация', 'url' => ['/document/document-in/index']],
-        ['label' => 'Исходящая документация', 'url' => ['/document/document-out/index']],
-        ['label' => 'Пркиазы по осн. деятельности', 'url' => ['/order/order-main/index']],
-        ['label' => 'Положения', 'url' => ['/regulation/regulation/index']],
-        ['label' => 'Положения о мероприятиях', 'url' => ['/regulation/regulation-event/index']],
+        [
+            'label' => 'Документооборот',
+            'items' => [
+                ['label' => 'Входящая документация', 'url' => ['/document/document-in/index']],
+                ['label' => 'Исходящая документация', 'url' => ['/document/document-out/index']],
+                ['label' => 'Приказы по осн. деятельности', 'url' => ['/order/order-main/index']],
+                ['label' => 'Положения', 'url' => ['/regulation/regulation/index']],
+                ['label' => 'Положения о мероприятиях', 'url' => ['/regulation/regulation-event/index']],
+            ],
+        ],
+        [
+            'label' => 'Справочники',
+            'items' => [
+                ['label' => 'Люди', 'url' => ['/dictionaries/people/index']],
+                ['label' => 'Организации', 'url' => ['/dictionaries/company/index']],
+                ['label' => 'Должности', 'url' => ['/dictionaries/position/index']],
+                ['label' => 'Участники деятельности', 'url' => ['/dictionaries/foreign-event-participants/index']],
+            ],
+        ],
     ];
     if (Yii::$app->rac->isGuest()) {
         $menuItems[] = ['label' => 'Signup', 'url' => ['/auth/login']];

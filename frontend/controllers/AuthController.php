@@ -2,9 +2,9 @@
 
 namespace frontend\controllers;
 
-use common\models\work\general\UserWork;
 use common\repositories\general\UserRepository;
 use frontend\models\auth\LoginModel;
+use frontend\models\work\general\UserWork;
 use Yii;
 use yii\web\Controller;
 

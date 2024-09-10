@@ -2,6 +2,8 @@
 
 namespace common\helpers\html;
 
+use Yii;
+
 class HtmlBuilder
 {
     /**
@@ -22,5 +24,29 @@ class HtmlBuilder
     public static function createEmptyOption()
     {
         return "<option value>---</option>";
+    }
+
+    /**
+     * Создает таблицу разрешений на разглашение ПД
+     * @param array $data
+     * @return string
+     */
+    public static function createPersonalDataTable(array $data)
+    {
+        $result = "<table class='table table-bordered' style='width: 600px'>";
+        foreach (Yii::$app->personalData->getList() as $key => $pd)
+        {
+            $result .= '<tr><td style="width: 350px">';
+            if (!in_array($key, $data)) {
+                $result .= $pd.'</td><td style="width: 250px"><span class="badge badge-success">Разрешено</span></td>';
+            }
+            else {
+                $result .= $pd.'</td><td style="width: 250px"><span class="badge badge-error">Запрещено</span></td>';
+            }
+            $result .= '</td></tr>';
+        }
+        $result .= "</table>";
+
+        return $result;
     }
 }

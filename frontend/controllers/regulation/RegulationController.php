@@ -3,32 +3,15 @@
 namespace frontend\controllers\regulation;
 
 use common\controllers\DocumentController;
-use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
-use common\helpers\html\HtmlBuilder;
-use common\helpers\SortHelper;
-use common\models\search\SearchDocumentIn;
 use common\models\search\SearchRegulation;
-use common\models\work\document_in_out\DocumentInWork;
-use common\models\work\general\FilesWork;
-use common\models\work\regulation\RegulationWork;
-use common\repositories\document_in_out\DocumentInRepository;
-use common\repositories\general\CompanyRepository;
 use common\repositories\general\FilesRepository;
-use common\repositories\general\PeopleRepository;
-use common\repositories\general\PositionRepository;
 use common\repositories\regulation\RegulationRepository;
 use common\services\general\files\FileService;
 use DomainException;
-use frontend\events\document_in\InOutDocumentCreateEvent;
-use frontend\events\document_in\InOutDocumentDeleteEvent;
-use frontend\events\general\FileDeleteEvent;
-use frontend\helpers\HeaderWizard;
-use frontend\services\document\DocumentInService;
+use frontend\models\work\regulation\RegulationWork;
 use frontend\services\regulation\RegulationService;
 use Yii;
-use yii\helpers\Url;
-use yii\web\Controller;
 
 class RegulationController extends DocumentController
 {

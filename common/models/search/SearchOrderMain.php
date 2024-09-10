@@ -2,8 +2,8 @@
 
 namespace common\models\search;
 
-use common\models\work\order\OrderMainWork;
 use common\helpers\DateFormatter;
+use frontend\models\work\order\OrderMainWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
