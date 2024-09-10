@@ -1,14 +1,8 @@
 <?php
 
-use common\helpers\StringFormatter;
-use common\models\work\document_in_out\DocumentInWork;
-use common\models\work\document_in_out\InOutDocumentsWork;
 use kartik\daterange\DateRangePicker;
-use kartik\export\ExportMenu;
-use kartik\grid\GridViewInterface;
-use yii\helpers\Html;
 use yii\grid\GridView;
-use yii\jui\DatePicker;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\search\SearchDocumentIn */

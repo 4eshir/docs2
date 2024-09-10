@@ -25,13 +25,14 @@ use common\models\scaffold\PermissionFunction;
 use common\models\scaffold\PermissionTemplate;
 use common\models\scaffold\PermissionTemplateFunction;
 use common\models\scaffold\PermissionToken;
+use common\models\scaffold\PersonalDataParticipant;
 use common\models\scaffold\Position;
 use common\models\scaffold\ProductUnion;
 use common\models\scaffold\ProjectTheme;
 use common\models\scaffold\Regulation;
 use common\models\User;
-use common\models\work\general\PeopleWork;
-use common\models\work\rac\UserPermissionFunctionWork;
+use frontend\models\work\general\PeopleWork;
+use frontend\models\work\rac\UserPermissionFunctionWork;
 
 class TableDictionary extends BaseDictionary
 {
@@ -62,6 +63,7 @@ class TableDictionary extends BaseDictionary
             PermissionTemplate::tableName() => 'Шаблоны Rule-Based Access Model',
             PermissionTemplateFunction::tableName() => 'Функции для шаблонов Rule-Based Access Model',
             PermissionToken::tableName() => 'Временные токены доступа для Rule-Based Access Model',
+            PersonalDataParticipant::tableName() => 'Ограничения разглашения персональных данных',
             Position::tableName() => 'Должности',
             ProductUnion::tableName() => 'Объединения объектов',
             ProjectTheme::tableName() => 'Темы проектов',

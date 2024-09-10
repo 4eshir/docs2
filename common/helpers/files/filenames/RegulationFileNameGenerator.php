@@ -5,7 +5,7 @@ namespace common\helpers\files\filenames;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
-use common\models\work\regulation\RegulationWork;
+use frontend\models\work\regulation\RegulationWork;
 use InvalidArgumentException;
 
 class RegulationFileNameGenerator implements FileNameGeneratorInterface

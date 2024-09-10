@@ -6,24 +6,23 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\SortHelper;
 use common\models\search\SearchDocumentOut;
-use common\models\work\document_in_out\DocumentInWork;
-use common\models\work\document_in_out\DocumentOutWork;
-use common\models\work\general\FilesWork;
+use common\repositories\dictionaries\CompanyRepository;
+use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\dictionaries\PositionRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
-use common\repositories\general\CompanyRepository;
 use common\repositories\general\FilesRepository;
-use common\repositories\general\PeopleRepository;
-use common\repositories\general\PositionRepository;
 use common\services\general\files\FileService;
 use DomainException;
-use frontend\events\document_in\InOutDocumentCreateEvent;
 use frontend\events\document_in\InOutDocumentDeleteEvent;
 use frontend\events\document_in\InOutDocumentUpdateEvent;
 use frontend\events\general\FileDeleteEvent;
 use frontend\helpers\HeaderWizard;
+use frontend\models\work\document_in_out\DocumentOutWork;
+use frontend\models\work\general\FilesWork;
 use frontend\services\document\DocumentOutService;
 use Yii;
 use yii\web\Controller;
+
 class DocumentOutController extends Controller
 {
     private DocumentOutRepository $repository;

@@ -1,6 +1,6 @@
 <?php
 
-use common\models\work\general\PeopleWork;
+use frontend\models\work\general\PeopleWork;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 

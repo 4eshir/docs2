@@ -2,14 +2,14 @@
 
 namespace frontend\controllers\dictionaries;
 
+use common\helpers\StringFormatter;
 use common\models\search\SearchCompany;
-use common\models\work\general\CompanyWork;
-use common\repositories\general\CompanyRepository;
+use common\repositories\dictionaries\CompanyRepository;
+use frontend\models\work\dictionaries\CompanyWork;
 use frontend\services\dictionaries\CompanyService;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * CompanyController implements the CRUD actions for Company model.
@@ -24,21 +24,6 @@ class CompanyController extends Controller
         parent::__construct($id, $module, $config);
         $this->repository = $repository;
         $this->service = $service;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
     }
 
     /**
@@ -123,8 +108,8 @@ class CompanyController extends Controller
      */
     public function actionDelete($id)
     {
-        $model = $this->repository->get($id);
         /** @var CompanyWork $model */
+        $model = $this->repository->get($id);
         $deleteErrors = $this->service->isAvailableDelete($id);
 
         if (count($deleteErrors) == 0) {
@@ -135,6 +120,9 @@ class CompanyController extends Controller
                 $this->repository->delete($model);
                 Yii::$app->session->addFlash('success', 'Организация "'.$model->name.'" успешно удалена');
             }
+        }
+        else {
+            Yii::$app->session->addFlash('error', StringFormatter::toStringWithBr($deleteErrors));
         }
 
         return $this->redirect(['index']);

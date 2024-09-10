@@ -3,10 +3,7 @@
 namespace common\models\search;
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
-use common\helpers\DateFormatter;
-use common\models\work\document_in_out\DocumentInWork;
-use common\models\work\regulation\RegulationWork;
-use Yii;
+use frontend\models\work\regulation\RegulationWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 

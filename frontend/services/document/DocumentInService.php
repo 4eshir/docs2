@@ -3,15 +3,10 @@
 namespace frontend\services\document;
 
 use common\helpers\files\filenames\DocumentInFileNameGenerator;
-use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
-use common\helpers\StringFormatter;
-use common\models\work\document_in_out\DocumentInWork;
-use common\repositories\general\CompanyRepository;
-use common\repositories\general\FilesRepository;
-use common\repositories\general\PositionRepository;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
+use frontend\models\work\document_in_out\DocumentInWork;
 use yii\web\UploadedFile;
 
 class DocumentInService

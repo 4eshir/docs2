@@ -4,13 +4,12 @@ namespace frontend\controllers\dictionaries;
 
 use common\helpers\StringFormatter;
 use common\models\search\SearchPeople;
-use common\models\work\general\PeoplePositionCompanyBranchWork;
-use common\models\work\general\PeopleWork;
-use common\repositories\general\CompanyRepository;
-use common\repositories\general\PeopleRepository;
+use common\repositories\dictionaries\CompanyRepository;
+use common\repositories\dictionaries\PeopleRepository;
+use frontend\models\work\general\PeoplePositionCompanyBranchWork;
+use frontend\models\work\general\PeopleWork;
 use frontend\services\dictionaries\PeopleService;
 use Yii;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
 class PeopleController extends Controller
@@ -112,6 +111,9 @@ class PeopleController extends Controller
 
         if (count($deleteErrors) == 0) {
             $model->delete();
+        }
+        else {
+            Yii::$app->session->addFlash('error', StringFormatter::toStringWithBr($deleteErrors));
         }
 
         return $this->redirect(['index']);

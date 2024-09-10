@@ -3,12 +3,12 @@
 namespace common\controllers;
 
 use common\helpers\files\FilesHelper;
-use common\models\work\general\FilesWork;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\general\FileDeleteEvent;
 use frontend\helpers\HeaderWizard;
+use frontend\models\work\general\FilesWork;
 use Yii;
 use yii\web\Controller;
 

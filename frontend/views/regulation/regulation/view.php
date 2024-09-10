@@ -2,10 +2,9 @@
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\helpers\files\FilesHelper;
-use common\models\work\regulation\RegulationWork;
+use frontend\models\work\regulation\RegulationWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */

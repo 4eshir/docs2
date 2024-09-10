@@ -1,7 +1,7 @@
 <?php
 
-use common\models\work\general\CompanyWork;
-use common\models\work\general\PeopleWork;
+use frontend\models\work\dictionaries\CompanyWork;
+use frontend\models\work\general\PeopleWork;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */

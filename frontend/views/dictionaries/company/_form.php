@@ -1,6 +1,6 @@
 <?php
 
-use common\models\work\general\CompanyWork;
+use frontend\models\work\dictionaries\CompanyWork;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 

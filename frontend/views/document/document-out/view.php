@@ -3,13 +3,13 @@
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
-use common\models\work\document_in_out\DocumentOutWork;
-use common\models\work\general\PeopleWork;
+use frontend\models\work\document_in_out\DocumentOutWork;
+use frontend\models\work\general\PeopleWork;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\work\document_in_out\DocumentOutWork */
+/* @var $model \frontend\models\work\document_in_out\DocumentOutWork */
 
 $this->title = $model->document_theme;
 $this->params['breadcrumbs'][] = ['label' => 'Исходящая документация', 'url' => ['index']];

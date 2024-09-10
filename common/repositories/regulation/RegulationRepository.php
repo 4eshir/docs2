@@ -4,15 +4,12 @@ namespace common\repositories\regulation;
 
 use common\components\traits\CommonRepositoryFunctions;
 use common\helpers\files\FilesHelper;
-use common\models\work\document_in_out\DocumentInWork;
-use common\models\work\general\FilesWork;
-use common\models\work\regulation\RegulationWork;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
-use frontend\events\document_in\InOutDocumentDeleteEvent;
 use frontend\events\general\FileDeleteEvent;
-use Yii;
+use frontend\models\work\general\FilesWork;
+use frontend\models\work\regulation\RegulationWork;
 use yii\db\ActiveRecord;
 
 class RegulationRepository

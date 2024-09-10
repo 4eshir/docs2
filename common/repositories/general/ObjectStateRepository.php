@@ -2,10 +2,8 @@
 
 namespace common\repositories\general;
 
-use common\models\scaffold\ObjectStates;
-use common\models\scaffold\ObjectStatesWork;
-use common\models\work\general\UserWork;
 use DomainException;
+use frontend\models\work\ObjectStatesWork;
 
 class ObjectStateRepository
 {

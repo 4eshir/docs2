@@ -2,9 +2,9 @@
 
 namespace common\components\access;
 
-use common\models\work\rac\PermissionFunctionWork;
 use common\repositories\general\UserRepository;
 use common\repositories\rac\UserPermissionFunctionRepository;
+use frontend\models\work\rac\PermissionFunctionWork;
 use Yii;
 
 class RacComponent

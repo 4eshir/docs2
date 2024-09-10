@@ -3,9 +3,7 @@
 namespace frontend\events\general;
 
 use common\events\EventInterface;
-use common\models\work\general\FilesWork;
 use common\repositories\general\FilesRepository;
-use DomainException;
 use Yii;
 
 class FileDeleteEvent implements EventInterface

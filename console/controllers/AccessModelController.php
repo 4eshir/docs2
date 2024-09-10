@@ -2,16 +2,9 @@
 
 namespace console\controllers;
 
-use common\models\LoginForm;
-use common\models\work\rac\UserPermissionFunctionWork;
-use common\repositories\general\UserRepository;
 use common\repositories\rac\UserPermissionFunctionRepository;
 use Exception;
-use Yii;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 use yii\console\Controller;
-use yii\web\Response;
 
 /**
  * Site controller

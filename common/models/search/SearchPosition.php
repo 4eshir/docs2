@@ -3,7 +3,7 @@
 namespace common\models\search;
 
 
-use common\models\work\general\PositionWork;
+use frontend\models\work\dictionaries\PositionWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 

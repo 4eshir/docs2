@@ -1,9 +1,9 @@
 <?php
 
 use common\models\search\SearchCompany;
-use common\models\work\general\CompanyWork;
-use yii\helpers\Html;
+use frontend\models\work\dictionaries\CompanyWork;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel SearchCompany */

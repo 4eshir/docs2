@@ -3,8 +3,8 @@
 namespace common\repositories\general;
 
 use common\components\traits\CommonRepositoryFunctions;
-use common\models\work\general\PeoplePositionCompanyBranchWork;
-use common\models\work\general\PositionWork;
+use frontend\models\work\dictionaries\PositionWork;
+use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use yii\helpers\ArrayHelper;
 
 class PeoplePositionCompanyBranchRepository

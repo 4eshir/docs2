@@ -19,6 +19,11 @@ trait EventTrait
      */
     protected $queries = [];
 
+    public function getEvents()
+    {
+        return $this->events;
+    }
+
     public function recordEvent(EventInterface $event, $className)
     {
         if ($event->isSingleton() && $this->exist($className)) {

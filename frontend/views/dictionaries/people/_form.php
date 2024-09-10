@@ -1,12 +1,11 @@
 <?php
 
-use common\models\work\general\CompanyWork;
-use common\models\work\general\PeopleWork;
+use frontend\models\work\dictionaries\CompanyWork;
+use frontend\models\work\general\PeopleWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
-use yii\jui\AutoComplete;
 
 /* @var $this yii\web\View */
 /* @var $model PeopleWork */

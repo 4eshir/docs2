@@ -2,7 +2,6 @@
 
 namespace common\helpers;
 
-use common\models\work\general\PeopleWork;
 use DomainException;
 use InvalidArgumentException;
 

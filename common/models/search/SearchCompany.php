@@ -2,7 +2,7 @@
 
 namespace common\models\search;
 
-use common\models\work\general\CompanyWork;
+use frontend\models\work\dictionaries\CompanyWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 

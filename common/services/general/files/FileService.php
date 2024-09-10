@@ -2,16 +2,10 @@
 
 namespace common\services\general\files;
 
-use common\helpers\files\filenames\DocumentInFileNameGenerator;
-use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
-use common\helpers\StringFormatter;
-use common\models\work\general\FilesWork;
 use common\services\general\files\download\FileDownloadServer;
 use common\services\general\files\download\FileDownloadYandexDisk;
 use DomainException;
-use frontend\events\general\FileCreateEvent;
-use frontend\events\general\FileDeleteEvent;
 use Yii;
 
 class FileService

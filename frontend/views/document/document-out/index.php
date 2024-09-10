@@ -1,23 +1,22 @@
 <?php
 
 use common\helpers\StringFormatter;
-use common\models\work\document_in_out\DocumentOutWork;
-use common\models\work\document_in_out\InOutDocumentsWork;
+use frontend\models\work\document_in_out\DocumentOutWork;
 use kartik\daterange\DateRangePicker;
 use kartik\export\ExportMenu;
-use kartik\grid\GridViewInterface;
-use yii\helpers\ArrayHelper;
-use yii\widgets\ActiveForm;
 use yii\bootstrap4\Modal;
+use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\grid\GridView;
 use yii\jui\DatePicker;
+use yii\widgets\ActiveForm;
+
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\search\SearchDocumentOut */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $form yii\widgets\ActiveForm */
-/* @var $model common\models\work\document_in_out\DocumentOutWork */
+/* @var $model \frontend\models\work\document_in_out\DocumentOutWork */
 /* @var $peopleList */
 $this->title = 'Исходящая документация';
 $this->params['breadcrumbs'][] = $this->title;

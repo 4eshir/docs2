@@ -7,7 +7,7 @@ namespace common\models\scaffold;
  *
  * @property int $id
  * @property string|null $firstname
- * @property string|null $secondname
+ * @property string|null $surname
  * @property string|null $patronymic
  * @property string|null $birthdate
  * @property int|null $sex 0 - мужской, 1 - женский
@@ -32,7 +32,7 @@ class ForeignEventParticipants extends \yii\db\ActiveRecord
     {
         return [
             [['sex', 'is_true', 'guaranteed_true'], 'integer'],
-            [['firstname', 'secondname', 'patronymic'], 'string', 'max' => 64],
+            [['firstname', 'surname', 'patronymic'], 'string', 'max' => 64],
             [['birthdate', 'email'], 'string', 'max' => 256],
         ];
     }
@@ -45,7 +45,7 @@ class ForeignEventParticipants extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'firstname' => 'Firstname',
-            'secondname' => 'Secondname',
+            'surname' => 'Surname',
             'patronymic' => 'Patronymic',
             'birthdate' => 'Birthdate',
             'sex' => 'Sex',

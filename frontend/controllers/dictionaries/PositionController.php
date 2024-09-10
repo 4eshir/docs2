@@ -1,41 +1,31 @@
 <?php
 
-namespace app\controllers;
+namespace frontend\controllers\dictionaries;
 
-use app\models\components\Logger;
-use app\models\components\RoleBaseAccess;
-use app\models\components\UserRBAC;
+use common\helpers\StringFormatter;
+use common\models\search\SearchPosition;
+use common\repositories\dictionaries\PositionRepository;
+use frontend\models\work\dictionaries\PositionWork;
+use frontend\services\dictionaries\PositionService;
 use Yii;
-use app\models\work\PositionWork;
-use app\models\SearchPosition;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * PositionController implements the CRUD actions for Position model.
  */
 class PositionController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
+    private PositionRepository $repository;
+    private PositionService $service;
+
+    public function __construct($id, $module, PositionRepository $repository, PositionService $service, $config = [])
     {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
+        parent::__construct($id, $module, $config);
+        $this->repository = $repository;
+        $this->service = $service;
     }
 
-    /**
-     * Lists all Position models.
-     * @return mixed
-     */
     public function actionIndex()
     {
         $searchModel = new SearchPosition();
@@ -47,31 +37,21 @@ class PositionController extends Controller
         ]);
     }
 
-    /**
-     * Displays a single Position model.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionView($id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $this->repository->get($id),
         ]);
     }
 
-    /**
-     * Creates a new Position model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
     public function actionCreate()
     {
         $model = new PositionWork();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Logger::WriteLog(Yii::$app->user->identity->getId(), 'Добавлена должность '.$model->name);
-            Yii::$app->session->addFlash('success', 'Должность "'.$model->name.'" успешно добавлена');
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+
+            $this->repository->save($model);
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -80,19 +60,15 @@ class PositionController extends Controller
         ]);
     }
 
-    /**
-     * Updates an existing Position model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        $model = $this->repository->get($id);
+        /** @var PositionWork $model */
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Logger::WriteLog(Yii::$app->user->identity->getId(), 'Изменена должность '.$model->name);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+
+            $this->repository->save($model);
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -102,7 +78,7 @@ class PositionController extends Controller
     }
 
     /**
-     * Deletes an existing Position model.
+     * Deletes an existing Company model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -110,38 +86,22 @@ class PositionController extends Controller
      */
     public function actionDelete($id)
     {
-        $model = $this->findModel($id);
-        if ($model->checkForeignKeys())
-        {
-            if ($model->id == 7)
-                Yii::$app->session->addFlash('error', 'Невозможно удалить должность. Данная должность является базовой');
-            else
-            {
-                Logger::WriteLog(Yii::$app->user->identity->getId(), 'Удалена должность '.$model->name);
-                $model->delete();
-                Yii::$app->session->addFlash('success', 'Должность "'.$model->name.'" успешно удалена');
-            }
+        $model = $this->repository->get($id);
+        /** @var PositionWork $model */
+        $deleteErrors = $this->service->isAvailableDelete($id);
+
+        if (count($deleteErrors) == 0) {
+            $this->repository->delete($model);
+            Yii::$app->session->addFlash('success', 'Должность "'.$model->name.'" успешно удалена');
+        }
+        else {
+            Yii::$app->session->addFlash('error', StringFormatter::toStringWithBr($deleteErrors));
         }
 
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the Position model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return PositionWork the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = PositionWork::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
+    //Проверка на права доступа к CRUD-операциям
     public function beforeAction($action)
     {
         /*if (Yii::$app->rac->isGuest() || !Yii::$app->rac->checkUserAccess(Yii::$app->rac->authId(), get_class(Yii::$app->controller), $action)) {

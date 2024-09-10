@@ -5,16 +5,14 @@ namespace common\repositories\document_in_out;
 use common\components\traits\CommonRepositoryFunctions;
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\Files;
-use common\models\scaffold\InOutDocuments;
-use common\models\work\document_in_out\DocumentInWork;
-use common\models\work\document_in_out\DocumentOutWork;
-use common\models\work\document_in_out\InOutDocumentsWork;
-use common\models\work\general\FilesWork;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\document_in\InOutDocumentDeleteEvent;
 use frontend\events\general\FileDeleteEvent;
+use frontend\models\work\document_in_out\DocumentInWork;
+use frontend\models\work\document_in_out\DocumentOutWork;
+use frontend\models\work\document_in_out\InOutDocumentsWork;
 use yii\db\ActiveRecord;
 
 class DocumentOutRepository

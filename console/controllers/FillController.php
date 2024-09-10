@@ -2,18 +2,14 @@
 
 namespace console\controllers;
 
-use common\models\LoginForm;
-use common\models\work\general\CompanyWork;
-use common\models\work\general\UserWork;
-use common\models\work\rac\PermissionFunctionWork;
-use common\models\work\rac\PermissionTemplateFunctionWork;
-use common\models\work\rac\PermissionTemplateWork;
-use common\models\work\rac\UserPermissionFunctionWork;
-use common\repositories\general\CompanyRepository;
-use common\repositories\general\UserRepository;
+use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\rac\PermissionFunctionRepository;
 use common\repositories\rac\PermissionTemplateFunctionRepository;
 use common\repositories\rac\PermissionTemplateRepository;
+use frontend\models\work\rac\PermissionFunctionWork;
+use frontend\models\work\rac\PermissionTemplateFunctionWork;
+use frontend\models\work\rac\PermissionTemplateWork;
+use frontend\models\work\rac\UserPermissionFunctionWork;
 use Yii;
 use yii\console\Controller;
 

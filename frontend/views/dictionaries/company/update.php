@@ -1,6 +1,6 @@
 <?php
 
-use common\models\work\general\CompanyWork;
+use frontend\models\work\dictionaries\CompanyWork;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
