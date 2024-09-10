@@ -61,11 +61,6 @@ use yii\jui\DatePicker;
         ?>
 
     </div>
-
-
-    <div>
-        Ответственные
-    </div>
     <?
     echo DropDownResponsiblePeopleWidget::widget([
     'model' => $model,

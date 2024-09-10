@@ -76,28 +76,22 @@ class OrderMainWork extends OrderMain
     }
     public function getBringName()
     {
-        return $this->bring_id;
-        $model = $this->hasOne(PeopleWork::class, ['id' => $this->bring_id]);
-        var_dump($model);
+        $model = PeopleWork::findOne($this->bring_id);
         if($model != NULL) {
-            return $model->firstname.' '.$model->secondname.' '.$model->patronymic.' AAAA';
+            return $model->getFullFio();
         }
-       else {
-           return $this->bring_id.'aaa';
-       }
-
+        else {
+           return $this->bring_id;
+        }
     }
     public function getExecutorName()
     {
-        return $this->executor_id;
-        $model = $this->hasOne(PeopleWork::class, ['id' => $this->executor_id]);
-        var_dump( $model);
+        $model = PeopleWork::findOne($this->executor_id);
         if($model != NULL) {
-            return $model->firstname.' '.$model->secondname.' '.$model->patronymic.' AAAA';
+            return $model->getFullFio();
         }
         else {
-            return $this->executor_id.'aaa';
+            return $this->bring_id;
         }
-        //
     }
 }
