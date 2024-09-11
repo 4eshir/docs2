@@ -31,17 +31,44 @@
                     <?php endforeach; ?>
                 </select>
                 <label>
-                    <input type="radio" name="cancel" value="cancel" checked> Отмена
+                    <input type="radio" name="radio[0]" value="cancel"> Отмена
                 </label><br>
                 <label>
-                    <input type="radio" name="change" value="change"> Изменение
+                    <input type="radio" name="radio[0]" value="change"> Изменение
                 </label><br>
                 <button type="button" class="remove-dropdown-doc-ch">-</button>
             </div>
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let idCounter = 0; // Счетчик для уникальных ID
 
+        // Функция для добавления нового блока
+        document.querySelector(".add-dropdown-doc-ch").addEventListener("click", function () {
+            idCounter++; // Увеличиваем счетчик
 
+            // Создаем новый блок на основе шаблона
+            const newDropdown = document.getElementById("dropdown-template-doc-ch").cloneNode(true);
+            newDropdown.style.display = "block"; // Показываем новый блок
+            newDropdown.id = ""; // Удаляем ID у клона, чтобы не было дубликатов
 
+            // Обновляем имена радио-кнопок
+            const radios = newDropdown.querySelectorAll('input[type="radio"]');
+            radios.forEach(function (radio) {
+            radio.name = `radio[${idCounter}]`;
+            radio.id = idCounter;// Задаем уникальное имя
+        });
+    // Добавляем новый блок в контейнер
+        document.getElementById("dropdown-container-doc-ch").appendChild(newDropdown);
+    });
 
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("remove-dropdown-doc-ch")) {
+            const dropdownGroup = event.target.closest(".dropdown-group-doc-ch");
+            dropdownGroup.remove(); // Удаляем блок
+            }
+        });
+    });
+</script>
