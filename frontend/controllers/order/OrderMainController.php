@@ -4,8 +4,8 @@ namespace frontend\controllers\order;
 
 use common\models\scaffold\People;
 use common\models\search\SearchOrderMain;
-use common\models\work\order\OrderMainWork;
-use common\repositories\general\PeopleRepository;
+use common\repositories\dictionaries\PeopleRepository;
+use frontend\models\work\order\OrderMainWork;
 use yii\web\Controller;
 use yii;
 class OrderMainController extends Controller

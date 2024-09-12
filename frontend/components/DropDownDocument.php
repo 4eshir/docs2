@@ -13,8 +13,6 @@ class DropDownDocument extends Widget
 
     public function run()
     {
-        $this->registerAssets();
-
         return $this->render('DropDownDocument', [
             'model' => $this->model,
             'bringPeople' => $this->bringPeople,
