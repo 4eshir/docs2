@@ -11,8 +11,9 @@ use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\general\PeoplePositionCompanyBranchRepository;
 use common\repositories\general\PeopleStampRepository;
+use common\services\DatabaseService;
 
-class CompanyService
+class CompanyService implements DatabaseService
 {
     private DocumentInRepository $documentInRepository;
     private DocumentOutRepository $documentOutRepository;

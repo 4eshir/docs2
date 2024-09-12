@@ -9,10 +9,19 @@ use common\models\scaffold\ForeignEventParticipants;
 use common\models\scaffold\PersonalDataParticipant;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 class ForeignEventParticipantsWork extends ForeignEventParticipants
 {
     use EventTrait;
+
+    /**
+     * DROP_CORRECT_HARD - сброс флагов true и guaranteed_true
+     * DROP_CORRECT_SOFT - сброс флага true
+     */
+    const DROP_CORRECT_HARD = 0;
+    const DROP_CORRECT_SOFT = 1;
 
     const FIO_FULL = 1;
     const FIO_SURNAME_INITIALS = 2;
@@ -29,6 +38,22 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants
     public function __construct($config = [])
     {
         parent::__construct($config);
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => function() {
+                    return date('Y-m-d H:i:s');
+                },
+            ],
+        ];
     }
 
     public function attributeLabels()
@@ -107,6 +132,14 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants
     public function createRawPersonalData()
     {
         return HtmlBuilder::createPersonalDataTable($this->pd);
+    }
+
+    public function setNotTrue($type = self::DROP_CORRECT_HARD)
+    {
+        $this->is_true = 0;
+        if (self::DROP_CORRECT_HARD) {
+            $this->guaranteed_true = 0;
+        }
     }
 
     public function beforeValidate()

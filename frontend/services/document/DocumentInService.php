@@ -4,12 +4,13 @@ namespace frontend\services\document;
 
 use common\helpers\files\filenames\DocumentInFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\services\DatabaseService;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\document_in_out\DocumentInWork;
 use yii\web\UploadedFile;
 
-class DocumentInService
+class DocumentInService implements DatabaseService
 {
     private FileService $fileService;
     private DocumentInFileNameGenerator $filenameGenerator;
@@ -103,5 +104,10 @@ class DocumentInService
                 get_class($model)
             );
         }
+    }
+
+    public function isAvailableDelete($id)
+    {
+        return [];
     }
 }

@@ -7,8 +7,9 @@ use common\models\scaffold\PeopleStamp;
 use common\models\scaffold\Position;
 use common\repositories\general\PeoplePositionCompanyBranchRepository;
 use common\repositories\general\PeopleStampRepository;
+use common\services\DatabaseService;
 
-class PositionService
+class PositionService implements DatabaseService
 {
     private PeoplePositionCompanyBranchRepository $peoplePositionCompanyBranchRepository;
     private PeopleStampRepository $peopleStampRepository;

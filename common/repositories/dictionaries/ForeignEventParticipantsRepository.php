@@ -3,19 +3,55 @@
 namespace common\repositories\dictionaries;
 
 use DomainException;
+use frontend\events\foreign_event_participants\PersonalDataParticipantDetachEvent;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonalDataParticipantWork;
+use InvalidArgumentException;
 use Yii;
 
 class ForeignEventParticipantsRepository
 {
+    const SORT_ID = 0;
+    const SORT_FIO = 1;
+
     public function get($id)
     {
         return ForeignEventParticipantsWork::find()->where(['id' => $id])->one();
     }
 
+    public function getSortedList($sort = self::SORT_ID)
+    {
+        $participants = ForeignEventParticipantsWork::find();
+
+        switch ($sort) {
+            case self::SORT_ID:
+                $participants = $participants->orderBy(['id' => SORT_ASC]);
+                break;
+            case self::SORT_FIO:
+                $participants = $participants->orderBy(['surname' => SORT_ASC, 'firstname' => SORT_ASC, 'patronymic' => SORT_ASC]);
+                break;
+            default:
+                throw new InvalidArgumentException('Неизвестный тип сортировки');
+        }
+
+        return $participants->all();
+    }
+
+    public function prepareUpdate(ForeignEventParticipantsWork $model)
+    {
+        $attributes = $model->getAttributes();
+        unset($attributes['id']);
+
+        $command = Yii::$app->db->createCommand();
+        $command->update($model::tableName(), $attributes, ['id' => $model->id]);
+        return $command->getRawSql();
+    }
+
     public function delete(ForeignEventParticipantsWork $participant)
     {
+        $participant->recordEvent(new PersonalDataParticipantDetachEvent($participant->id), PersonalDataParticipantWork::class);
+        $participant->releaseEvents();
+
         if (!$participant->delete()) {
             throw new DomainException('Ошибка удаления участника. Проблемы: '.json_encode($participant->getErrors()));
         }

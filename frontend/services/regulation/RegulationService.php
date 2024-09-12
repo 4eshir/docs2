@@ -4,12 +4,13 @@ namespace frontend\services\regulation;
 
 use common\helpers\files\filenames\RegulationFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\services\DatabaseService;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\regulation\RegulationWork;
 use yii\web\UploadedFile;
 
-class RegulationService
+class RegulationService implements DatabaseService
 {
     private FileService $fileService;
     private RegulationFileNameGenerator $filenameGenerator;
@@ -53,5 +54,10 @@ class RegulationService
                 get_class($model)
             );
         }
+    }
+
+    public function isAvailableDelete($id)
+    {
+        return [];
     }
 }

@@ -94,6 +94,23 @@ class PersonalDataParticipantRepository
         return $commands;
     }
 
+    public function prepareDetachPersonalData($participantId)
+    {
+        $pds = $this->getPersonalDataByParticipant($participantId);
+
+        $commands = [];
+        foreach ($pds as $one) {
+            $command = Yii::$app->db->createCommand();
+            $command->delete(
+                PersonalDataParticipantWork::tableName(),
+                ['id' => $one->id]
+            );
+            $commands[] = $command->getRawSql();
+        }
+
+        return $commands;
+    }
+
     public function save(PersonalDataParticipantWork $personalData)
     {
         if (!$personalData->save()) {

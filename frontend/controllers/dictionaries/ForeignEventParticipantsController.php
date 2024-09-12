@@ -7,6 +7,7 @@ use common\models\search\SearchForeignEventParticipants;
 use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PersonalDataParticipantRepository;
 use frontend\events\foreign_event_participants\PersonalDataParticipantAttachEvent;
+use frontend\events\foreign_event_participants\PersonalDataParticipantDetachEvent;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonalDataParticipantWork;
 use frontend\services\dictionaries\ForeignEventParticipantsService;
@@ -70,6 +71,8 @@ class ForeignEventParticipantsController extends Controller
             $model->recordEvent(new PersonalDataParticipantAttachEvent($model->id, $model->pd), PersonalDataParticipantWork::class);
             $model->releaseEvents();
 
+            $this->service->checkCorrectOne($model);
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -88,6 +91,8 @@ class ForeignEventParticipantsController extends Controller
             $model->recordEvent(new PersonalDataParticipantAttachEvent($model->id, $model->pd), PersonalDataParticipantWork::class);
             $this->repository->save($model);
             $model->releaseEvents();
+
+            $this->service->checkCorrectOne($model);
 
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -138,8 +143,7 @@ class ForeignEventParticipantsController extends Controller
 
     public function actionCheckCorrect()
     {
-        $model = new ForeignEventParticipantsWork();
-        $model->checkCorrect();
+        $this->service->checkCorrectAll();
         return $this->redirect(['index']);
     }
 

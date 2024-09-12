@@ -11,9 +11,10 @@ use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\general\UserRepository;
 use common\repositories\regulation\RegulationRepository;
+use common\services\DatabaseService;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 
-class PeopleService
+class PeopleService implements DatabaseService
 {
     private DocumentInRepository $documentInRepository;
     private DocumentOutRepository $documentOutRepository;
