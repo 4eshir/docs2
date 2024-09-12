@@ -6,7 +6,12 @@ use common\components\dictionaries\base\BranchDictionary;
 use common\components\dictionaries\base\CategorySmspDictionary;
 use common\components\dictionaries\base\CompanyTypeDictionary;
 use common\components\dictionaries\base\DocumentTypeDictionary;
+use common\components\dictionaries\base\EventFormDictionary;
+use common\components\dictionaries\base\EventLevelDictionary;
+use common\components\dictionaries\base\EventTypeDictionary;
+use common\components\dictionaries\base\EventWayDictionary;
 use common\components\dictionaries\base\OwnershipTypeDictionary;
+use common\components\dictionaries\base\ParticipationScopeDictionary;
 use common\components\dictionaries\base\PersonalDataDictionary;
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\components\dictionaries\base\SendMethodDictionary;
@@ -42,6 +47,11 @@ class Yii {
  * @property DocumentTypeDictionary $documentType
  * @property TableDictionary $tables
  * @property PersonalDataDictionary $personalData
+ * @property EventFormDictionary $eventForm
+ * @property EventLevelDictionary $eventLevel
+ * @property EventTypeDictionary $eventType
+ * @property EventWayDictionary $eventWay
+ * @property ParticipationScopeDictionary $participationScope
  * @property RacComponent $rac
  */
 class __Application {

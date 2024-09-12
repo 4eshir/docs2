@@ -12,6 +12,7 @@ use common\models\scaffold\DocumentIn;
 use common\models\scaffold\DocumentOut;
 use common\models\scaffold\Entry;
 use common\models\scaffold\Errors;
+use common\models\scaffold\Event;
 use common\models\scaffold\EventExternal;
 use common\models\scaffold\Expire;
 use common\models\scaffold\Files;
@@ -49,6 +50,7 @@ class TableDictionary extends BaseDictionary
             DocumentOut::tableName() => 'Исходящая документация',
             Entry::tableName() => 'Документы о поступлении',
             Errors::tableName() => 'Ошибки',
+            Event::tableName() => 'Мероприятия',
             EventExternal::tableName() => 'Внешние мероприятия',
             Expire::tableName() => 'Ограничения или изменения документов',
             Files::tableName() => 'Файлы',

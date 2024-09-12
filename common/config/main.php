@@ -37,6 +37,21 @@ return [
         'tables' => [
             'class' => 'common\\components\\dictionaries\\TableDictionary',
         ],
+        'eventForm' => [
+            'class' => 'common\\components\\dictionaries\\base\\EventFormDictionary',
+        ],
+        'eventLevel' => [
+            'class' => 'common\\components\\dictionaries\\base\\EventLevelDictionary',
+        ],
+        'eventType' => [
+            'class' => 'common\\components\\dictionaries\\base\\EventTypeDictionary',
+        ],
+        'eventWay' => [
+            'class' => 'common\\components\\dictionaries\\base\\EventWayDictionary',
+        ],
+        'participationScope' => [
+            'class' => 'common\\components\\dictionaries\\base\\ParticipationScopeDictionary',
+        ],
         'personalData' => [
             'class' => 'common\\components\\dictionaries\\base\\PersonalDataDictionary',
         ],

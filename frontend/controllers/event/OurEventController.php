@@ -1,7 +1,8 @@
 <?php
 
-namespace forntend\controllers\event;
+namespace frontend\controllers\event;
 
+use common\models\search\SearchEvent;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -37,12 +38,14 @@ class OurEventController extends Controller
         $searchModel = new SearchEvent();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        if (array_key_exists("SearchEvent", Yii::$app->request->queryParams))
+        /*
+         * Тут вроде как нужен PBAC ля проверки отдела
+         * if (array_key_exists("SearchEvent", Yii::$app->request->queryParams))
         {
             if (Yii::$app->request->queryParams["SearchEvent"]["eventBranchs"] != null) {
                 $searchModel->eventBranchs = Yii::$app->request->queryParams["SearchEvent"]["eventBranchs"];
             }
-        }
+        }*/
 
 
 

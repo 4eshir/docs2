@@ -9,6 +9,10 @@ class FilesHelper
     const TYPE_SCAN = 'scan';
     const TYPE_DOC = 'doc';
     const TYPE_APP = 'app';
+    const TYPE_PROTOCOL = 'protocol';
+    const TYPE_PHOTO = 'photo';
+    const TYPE_REPORT = 'report';
+    const TYPE_OTHER = 'other';
 
     const FILE_SERVER = 'server';
     const FILE_YADI = 'yadi';
