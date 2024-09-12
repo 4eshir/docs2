@@ -6,6 +6,7 @@ use common\helpers\StringFormatter;
 use common\models\search\SearchPeople;
 use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\dictionaries\PositionRepository;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\services\dictionaries\PeopleService;
@@ -18,17 +19,20 @@ class PeopleController extends Controller
     private PeopleService $service;
     private CompanyRepository $companyRepository;
 
+    private PositionRepository $positionRepository;
     public function __construct(
         $id,
         $module,
         PeopleRepository $repository,
         PeopleService $service,
         CompanyRepository $companyRepository,
+        PositionRepository $positionRepository,
         $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->repository = $repository;
         $this->service = $service;
+        $this->positionRepository = $positionRepository;
         $this->companyRepository = $companyRepository;
     }
 
@@ -64,9 +68,9 @@ class PeopleController extends Controller
         $model = new PeopleWork();
         $modelPeoplePositionBranch = [new PeoplePositionCompanyBranchWork()];
         $companies = $this->companyRepository->getList();
-
+        $positions = $this->positionRepository->getList();
+        $branches = Yii::$app->branches->getList();
         if ($model->load(Yii::$app->request->post())) {
-
             if ($model->validate()) {
                 $this->repository->save($model);
             }
@@ -78,6 +82,8 @@ class PeopleController extends Controller
             'model' => $model,
             'modelPeoplePositionBranch' => $modelPeoplePositionBranch,
             'companies' => $companies,
+            'positions' => $positions,
+            'branches' => $branches
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 use app\components\DropDownDocument;
 use app\components\DropDownResponsiblePeopleWidget;
+use frontend\models\work\order\OrderMainWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
@@ -9,7 +10,7 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\jui\DatePicker;
 /* @var $this yii\web\View */
-/* @var $model common\models\work\order\OrderMainWork */
+/* @var $model OrderMainWork */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $bringPeople */
 ?>
@@ -62,9 +63,9 @@ use yii\jui\DatePicker;
     </div>
     <?
     echo DropDownResponsiblePeopleWidget::widget([
-    'model' => $model,
-    'bringPeople' => $bringPeople,
-    'form' => $form,
+        'model' => $model,
+        'bringPeople' => $bringPeople,
+        'form' => $form,
     ]);
     ?>
     <div>
