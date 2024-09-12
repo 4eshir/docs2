@@ -1,6 +1,9 @@
 <?php
 
+use app\components\DropDownPosition;
+use common\components\dictionaries\base\BranchDictionary;
 use frontend\models\work\dictionaries\CompanyWork;
+use frontend\models\work\dictionaries\PositionWork;
 use frontend\models\work\general\PeopleWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -11,6 +14,8 @@ use yii\widgets\ActiveForm;
 /* @var $model PeopleWork */
 /* @var $companies CompanyWork[] */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $positions PositionWork */
+/* @var $branches */
 ?>
 
 <div class="people-form">
@@ -26,17 +31,20 @@ use yii\widgets\ActiveForm;
     <div class="row">
         <div class="panel panel-default">
             <div class="panel-heading"><h4><i class="glyphicon glyphicon-briefcase"></i> Должности</h4></div>
-            <i>Coming soon</i>
         </div>
     </div>
-
     <?php
     $params = [
         'prompt' => '---',
         'id' => 'org'
     ];
+    echo DropDownPosition::widget([
+        'model' => $model,
+        'positions' => $positions,
+        'form' => $form,
+        'branches' => $branches
+    ]);
     echo $form->field($model, 'company_id')->dropDownList(ArrayHelper::map($companies, 'id', 'name'), $params)->label('Организация');
-
     ?>
 
     <div id="orghid" <?= !$model->inMainCompany() ? 'hidden' : '' ?>>
