@@ -95,7 +95,7 @@ class PositionController extends Controller
             Yii::$app->session->addFlash('success', 'Должность "'.$model->name.'" успешно удалена');
         }
         else {
-            Yii::$app->session->addFlash('error', StringFormatter::toStringWithBr($deleteErrors));
+            Yii::$app->session->addFlash('error', implode('<br>', $deleteErrors));
         }
 
         return $this->redirect(['index']);

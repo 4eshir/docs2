@@ -1,10 +1,13 @@
 <?php
 
+use common\helpers\files\FilesHelper;
+use frontend\models\work\event\EventWork;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\EventWork */
+/* @var $model EventWork */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Мероприятия', 'url' => ['index']];
@@ -25,25 +28,25 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
         <?php
-        $error = $model->getErrorsWork();
+        /*$error = $model->getErrorsWork();
         if ($error !== '' && ((\app\models\components\RoleBaseAccess::CheckRole(Yii::$app->user->identity->getId(), 7)) || (\app\models\components\RoleBaseAccess::CheckRole(Yii::$app->user->identity->getId(), 6))))
             echo Html::a('Простить ошибки', ['amnesty', 'id' => $model->id], ['class' => 'btn btn-warning',
                 'data' => [
                     'confirm' => 'Вы действительно хотите простить все ошибки в мероприятии?',
                     'method' => 'post',
-                ],]);
+                ],]);*/
         ?>
     </p>
 
     <div class="content-container" style="color: #ff0000; font: 18px bold;">
         <?php
-        $error = $model->getErrorsWork();
+        /*$error = $model->getErrorsWork();
         if ($error != '')
         {
             echo '<p style="">';
             echo $error;
             echo '</p>';
-        }
+        }*/
         ?>
     </div>
 
@@ -52,60 +55,36 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'start_date',
             'finish_date',
-            ['attribute' => 'event_type_id', 'value' => $model->eventType->name],
-            ['attribute' => 'event_form_id', 'value' => $model->eventForm->name],
-            'eventWayString',
+            ['attribute' => 'event_type', 'value' => function(EventWork $model){
+                return Yii::$app->eventType->get($model->event_type);
+            }],
+            ['attribute' => 'event_form', 'value' => function(EventWork $model){
+                return Yii::$app->eventForm->get($model->event_form);
+            }],
+            ['attribute' => 'event_way', 'value' => function(EventWork $model){
+                return Yii::$app->eventWay->get($model->event_way);
+            }],
             'address',
-            ['attribute' => 'event_level_id', 'value' => $model->eventLevel->name],
+            ['attribute' => 'event_level', 'value' => function(EventWork $model){
+                return Yii::$app->eventLevel->get($model->event_level);
+            }],
             ['attribute' => 'scopesString', 'format' => 'raw'],
             'participants_count',
-            'childs',
-            'teachers',
-            'others',
+            'child_participants_count',
+            'teachers_participants_count',
+            'others_participants_count',
             'leftAge',
             'rightAge',
             ['attribute' => 'is_federal', 'value' => function($model){
-                if ($model->is_federal == 1)
+                if ($model->is_federal == 1) {
                     return 'Да';
-                else
+                }
+                else {
                     return 'Нет';
+                }
             }],
-            ['attribute' => 'responsible_id', 'value' => $model->responsible2_id !== null ? $model->responsibleWork->shortName.'<br>'.$model->responsibleWork2->shortName : $model->responsibleWork->shortName,
-                'format' => 'raw'],
-            ['attribute' => 'eventDepartment', 'label' => 'Мероприятие проводит', 'value' => function($model){
-                $tech = \app\models\work\EventBranchWork::find()->where(['branch_id' => 2])->andWhere(['event_id' => $model->id])->all();
-                $quant = \app\models\work\EventBranchWork::find()->where(['branch_id' => 1])->andWhere(['event_id' => $model->id])->all();
-                $cdntt = \app\models\work\EventBranchWork::find()->where(['branch_id' => 3])->andWhere(['event_id' => $model->id])->all();
-                $mobquant = \app\models\work\EventBranchWork::find()->where(['branch_id' => 4])->andWhere(['event_id' => $model->id])->all();
-                $cod = \app\models\work\EventBranchWork::find()->where(['branch_id' => 7])->andWhere(['event_id' => $model->id])->all();
-
-                $result = '';
-                if (count($tech) > 0)
-                    $result = $result.'Технопарк';
-                if (count($quant) > 0)
-                    if ($result == '')
-                        $result = $result.'Кванториум';
-                    else
-                        $result = $result.'<br>Кванториум';
-                if (count($cdntt) > 0)
-                    if ($result == '')
-                        $result = $result.'ЦДНТТ';
-                    else
-                        $result = $result.'<br>ЦДНТТ';
-                if (count($mobquant) > 0)
-                    if ($result == '')
-                        $result = $result.'Мобильный кванториум';
-                    else
-                        $result = $result.'<br>Мобильный кванториум';
-
-                if (count($cod) > 0)
-                    if ($result == '')
-                        $result = $result.'Центр одаренных детей';
-                    else
-                        $result = $result.'<br>Центр одаренных детей';
-
-                return $result;
-            }, 'format' => 'raw'],
+            ['attribute' => 'responsibles', 'format' => 'raw'],
+            ['attribute' => 'eventBranches', 'label' => 'Мероприятие проводит', 'format' => 'raw'],
             ['attribute' => 'contains_education', 'value' => function($model){
                 if ($model->contains_education == 0)
                     return 'Не содержит образовательных программы';
@@ -114,49 +93,21 @@ $this->params['breadcrumbs'][] = $this->title;
             }],
             'key_words',
             'comment',
-            ['attribute' => 'order_id', 'value' => Html::a($model->orderWork->fullName, \yii\helpers\Url::to(['document-order/view', 'id' => $model->order_id])),
-                'format' => 'raw'],
-            ['attribute' => 'regulation_id', 'value' => Html::a($model->regulation->name, \yii\helpers\Url::to(['regulation/view', 'id' => $model->regulation_id])),
-                'format' => 'raw'],
-
-            ['attribute' => 'eventsLink', 'label' => 'Отчетные мероприятия', 'value' => function($model){
-                $events = \app\models\work\EventsLinkWork::find()->where(['event_id' => $model->id])->all();
-                $result = '';
-                foreach ($events as $event)
-                    $result = $result.$event->eventExternal->name.'<br>';
-                return $result;
+            ['attribute' => 'order_id', 'value' => function (EventWork $model) {
+                return 'Coming soon';
             }, 'format' => 'raw'],
-            ['label' => 'Протоколы мероприятия', 'attribute' => 'protocol', 'value' => function ($model) {
-                $split = explode(" ", $model->protocol);
-                $result = '';
-                for ($i = 0; $i < count($split) - 1; $i++)
-                    $result = $result.Html::a($split[$i], \yii\helpers\Url::to(['event/get-file', 'fileName' => $split[$i], 'type' => 'protocol'])).'<br>';
-                return $result;
-                //return Html::a($model->Scan, 'index.php?r=docs-out/get-file&filename='.$model->Scan);
+            ['attribute' => 'regulationRaw', 'label' => 'Положение', 'format' => 'raw'],
+            ['label' => 'Протоколы мероприятия', 'attribute' => 'protocol', 'value' => function (EventWork $model) {
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_PROTOCOL), 'link'));
             }, 'format' => 'raw'],
             ['label' => 'Фотоматериалы', 'attribute' => 'photoFiles', 'value' => function ($model) {
-                $split = explode(" ", $model->photos);
-                $result = '';
-                for ($i = 0; $i < count($split) - 1; $i++)
-                    $result = $result.Html::a($split[$i], \yii\helpers\Url::to(['event/get-file', 'fileName' => $split[$i], 'type' => 'photos'])).'<br>';
-                return $result;
-                //return Html::a($model->Scan, 'index.php?r=docs-out/get-file&filename='.$model->Scan);
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_PHOTO), 'link'));
             }, 'format' => 'raw'],
             ['label' => 'Явочные документы', 'attribute' => 'reporting_doc', 'value' => function ($model) {
-                $split = explode(" ", $model->reporting_doc);
-                $result = '';
-                for ($i = 0; $i < count($split) - 1; $i++)
-                    $result = $result.Html::a($split[$i], \yii\helpers\Url::to(['event/get-file', 'fileName' => $split[$i], 'type' => 'reporting'])).'<br>';
-                return $result;
-                //return Html::a($model->Scan, 'index.php?r=docs-out/get-file&filename='.$model->Scan);
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_REPORT), 'link'));
             }, 'format' => 'raw'],
             ['label' => 'Другие файлы', 'attribute' => 'otherFiles', 'value' => function ($model) {
-                $split = explode(" ", $model->other_files);
-                $result = '';
-                for ($i = 0; $i < count($split) - 1; $i++)
-                    $result = $result.Html::a($split[$i], \yii\helpers\Url::to(['event/get-file', 'fileName' => $split[$i], 'type' => 'other'])).'<br>';
-                return $result;
-                //return Html::a($model->Scan, 'index.php?r=docs-out/get-file&filename='.$model->Scan);
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_OTHER), 'link'));
             }, 'format' => 'raw'],
             ['attribute' => 'linkGroups', 'format' => 'raw'],
             'creatorString',

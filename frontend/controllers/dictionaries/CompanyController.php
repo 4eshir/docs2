@@ -122,7 +122,7 @@ class CompanyController extends Controller
             }
         }
         else {
-            Yii::$app->session->addFlash('error', StringFormatter::toStringWithBr($deleteErrors));
+            Yii::$app->session->addFlash('error', implode('<br>', $deleteErrors));
         }
 
         return $this->redirect(['index']);

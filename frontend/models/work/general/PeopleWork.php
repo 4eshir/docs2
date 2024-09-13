@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use function common\models\work\general\mb_substr;
 
 class PeopleWork extends People
 {

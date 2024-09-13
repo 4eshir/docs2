@@ -2,8 +2,15 @@
 
 namespace frontend\controllers\event;
 
+use common\helpers\SortHelper;
 use common\models\search\SearchEvent;
+use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\event\EventRepository;
+use common\repositories\regulation\RegulationRepository;
+use frontend\models\work\event\EventWork;
+use frontend\services\event\EventService;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -14,6 +21,27 @@ use yii\web\UploadedFile;
  */
 class OurEventController extends Controller
 {
+    private EventRepository $repository;
+    private EventService $service;
+    private PeopleRepository $peopleRepository;
+    private RegulationRepository $regulationRepository;
+
+    public function __construct(
+        $id,
+        $module,
+        EventRepository $repository,
+        EventService $service,
+        PeopleRepository $peopleRepository,
+        RegulationRepository $regulationRepository,
+        $config = [])
+    {
+        parent::__construct($id, $module, $config);
+        $this->repository = $repository;
+        $this->service = $service;
+        $this->peopleRepository = $peopleRepository;
+        $this->regulationRepository = $regulationRepository;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -39,15 +67,13 @@ class OurEventController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         /*
-         * Тут вроде как нужен PBAC ля проверки отдела
+         * Тут вроде как нужен PBAC для проверки отдела
          * if (array_key_exists("SearchEvent", Yii::$app->request->queryParams))
         {
             if (Yii::$app->request->queryParams["SearchEvent"]["eventBranchs"] != null) {
                 $searchModel->eventBranchs = Yii::$app->request->queryParams["SearchEvent"]["eventBranchs"];
             }
         }*/
-
-
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -63,13 +89,7 @@ class OurEventController extends Controller
      */
     public function actionView($id)
     {
-        $model = $this->findModel($id);
-        $eventP = EventParticipantsWork::find()->where(['event_id' => $model->id])->one();
-        $model->childs = $eventP->child_participants;
-        $model->teachers = $eventP->teacher_participants;
-        $model->others = $eventP->other_participants;
-        $model->leftAge = $eventP->age_left_border;
-        $model->rightAge = $eventP->age_right_border;
+        $model = $this->repository->get($id);
         return $this->render('view', [
             'model' => $model,
         ]);
@@ -83,52 +103,23 @@ class OurEventController extends Controller
     public function actionCreate()
     {
         $model = new EventWork();
-        $modelEventsLinks = [new EventsLinkWork];
-        $modelGroups = [new EventTrainingGroupWork];
+        //$modelEventsLinks = [new EventsLinkWork];
+        //$modelGroups = [new EventTrainingGroupWork];
 
-        if ($model->load(Yii::$app->request->post())) {
-            $model->protocolFile = UploadedFile::getInstances($model, 'protocolFile');
-            $model->reportingFile = UploadedFile::getInstances($model, 'reportingFile');
-            $model->photoFiles = UploadedFile::getInstances($model, 'photoFiles');
-            $model->otherFiles = UploadedFile::getInstances($model, 'otherFiles');
-            $model->protocol = '';
-            $model->reporting_doc = '';
-            $model->photos = '';
-            $model->other_files = '';
-            if ($model->order_id == '') $model->order_id = null;
-            if ($model->regulation_id == '') $model->regulation_id = null;
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $this->service->getFilesInstances($model);
 
-            $modelEventsLinks = DynamicModel::createMultiple(EventsLinkWork::classname());
-            DynamicModel::loadMultiple($modelEventsLinks, Yii::$app->request->post());
-            $model->eventsLink = $modelEventsLinks;
-            $modelGroups = DynamicModel::createMultiple(EventTrainingGroupWork::classname());
-            DynamicModel::loadMultiple($modelGroups, Yii::$app->request->post());
-            $model->groups = $modelGroups;
+            $model->save();
+            $this->service->saveFilesFromModel($model);
 
-            if ($model->validate(false))
-            {
-                if ($model->protocolFile !== null)
-                    $model->uploadProtocolFile();
-                if ($model->reportingFile !== null)
-                    $model->uploadReportingFile();
-                if ($model->photoFiles !== null)
-                    $model->uploadPhotosFiles();
-                if ($model->otherFiles !== null)
-                    $model->uploadOtherFiles();
-                $model->save(false);
-                Logger::WriteLog(Yii::$app->user->identity->getId(), 'Добавлено мероприятие '.$model->name);
-            }
-            else
-            {
-                var_dump($model->getErrors());
-            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
             'model' => $model,
-            'modelEventsLinks' => (empty($modelEventsLinks)) ? [new EventsLinkWork] : $modelEventsLinks,
-            'modelGroups' => (empty($modelGroups)) ? [new EventTrainingGroupWork] : $modelGroups,
+            'people' => $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO, SORT_ASC),
+            'regulations' => $this->regulationRepository->getOrderedList(),
+            'branches' => ArrayHelper::getColumn($this->repository->getBranches($model->id), 'branch'),
         ]);
     }
 
@@ -331,21 +322,22 @@ class OurEventController extends Controller
         }
     }
 
-    //Проверка на права доступа к CRUD-операциям
-    public function beforeAction($action)
-    {
-        if (Yii::$app->user->isGuest)
-            return $this->redirect(['/site/login']);
-        if (!RoleBaseAccess::CheckAccess($action->controller->id, $action->id, Yii::$app->user->identity->getId())) {
-            return $this->redirect(['/site/error-access']);
-        }
-        return parent::beforeAction($action); // TODO: Change the autogenerated stub
-    }
-
     public function actionAmnesty ($id)
     {
         $errorsAmnesty = new EventErrorsWork();
         $errorsAmnesty->EventAmnesty($id);
         return $this->redirect('index?r=event/view&id='.$id);
+    }
+
+    //Проверка на права доступа к CRUD-операциям
+    public function beforeAction($action)
+    {
+        /*if (Yii::$app->rac->isGuest() || !Yii::$app->rac->checkUserAccess(Yii::$app->rac->authId(), get_class(Yii::$app->controller), $action)) {
+            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
+            $this->redirect(Yii::$app->request->referrer);
+            return false;
+        }*/
+
+        return parent::beforeAction($action); // TODO: Change the autogenerated stub
     }
 }

@@ -4,12 +4,14 @@ namespace common\repositories\regulation;
 
 use common\components\traits\CommonRepositoryFunctions;
 use common\helpers\files\FilesHelper;
+use common\helpers\SortHelper;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\general\FileDeleteEvent;
 use frontend\models\work\general\FilesWork;
 use frontend\models\work\regulation\RegulationWork;
+use Yii;
 use yii\db\ActiveRecord;
 
 class RegulationRepository
@@ -35,6 +37,25 @@ class RegulationRepository
     public function get($id)
     {
         return RegulationWork::find()->where(['id' => $id])->one();
+    }
+
+    public function getOrderedList(int $orderedType = SortHelper::ORDER_TYPE_ID, int $orderDirection = SORT_DESC, $baseQuery = null)
+    {
+        $query = $baseQuery ?: RegulationWork::find();
+        if (SortHelper::orderedAvailable(Yii::createObject(RegulationWork::class), $orderedType, $orderDirection)) {
+            switch ($orderedType) {
+                case SortHelper::ORDER_TYPE_ID:
+                    $query->orderBy(['id' => $orderDirection]);
+                    break;
+                default:
+                    throw new DomainException('Что-то пошло не так');
+            }
+        }
+        else {
+            throw new DomainException('Невозможно произвести сортировку по таблице ' . RegulationWork::tableName());
+        }
+
+        return $query->all();
     }
 
     public function save(RegulationWork $regulation)

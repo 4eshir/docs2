@@ -34,11 +34,11 @@ class DocumentOutService implements DatabaseService
     public function saveFilesFromModel(DocumentOutWork $model)
     {
         if ($model->scanFile !== null) {
-            $filepath = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN);
+            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN);
 
             $this->fileService->uploadFile(
                 $model->scanFile,
-                $filepath
+                $filename
             );
 
             $model->recordEvent(
@@ -46,7 +46,7 @@ class DocumentOutService implements DatabaseService
                     $model::tableName(),
                     $model->id,
                     FilesHelper::TYPE_SCAN,
-                    $filepath,
+                    $filename,
                     FilesHelper::LOAD_TYPE_SINGLE
                 ),
                 get_class($model)
@@ -54,20 +54,42 @@ class DocumentOutService implements DatabaseService
         }
 
         for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
-            $filepath = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_DOC, ['counter' => $i]);
+            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_DOC, ['counter' => $i]);
 
             $this->fileService->uploadFile(
                 $model->docFiles[$i - 1],
-                $filepath
+                $filename
+            );
+
+            $model->recordEvent(
+                new FileCreateEvent(
+                    $model::tableName(),
+                    $model->id,
+                    FilesHelper::TYPE_DOC,
+                    $filename,
+                    FilesHelper::LOAD_TYPE_MULTI
+                ),
+                get_class($model)
             );
         }
 
         for ($i = 1; $i < count($model->appFiles) + 1; $i++) {
-            $filepath = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_APP, ['counter' => $i]);
+            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_APP, ['counter' => $i]);
 
             $this->fileService->uploadFile(
                 $model->appFiles[$i - 1],
-                $filepath
+                $filename
+            );
+
+            $model->recordEvent(
+                new FileCreateEvent(
+                    $model::tableName(),
+                    $model->id,
+                    FilesHelper::TYPE_APP,
+                    $filename,
+                    FilesHelper::LOAD_TYPE_MULTI
+                ),
+                get_class($model)
             );
         }
     }

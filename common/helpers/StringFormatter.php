@@ -44,9 +44,4 @@ class StringFormatter
 
         return $string;
     }
-
-    public static function toStringWithBr(array $data)
-    {
-        return implode('<br>', $data);
-    }
 }

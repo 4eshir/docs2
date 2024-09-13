@@ -51,7 +51,7 @@ class PeopleController extends Controller
     {
         $model = $this->repository->get($id);
 
-        $positions = StringFormatter::toStringWithBr(
+        $positions = implode('<br>',
             $this->service->createPositionsCompaniesArray(
                 $this->repository->getPositionsCompanies($id)
             )
@@ -119,7 +119,7 @@ class PeopleController extends Controller
             $model->delete();
         }
         else {
-            Yii::$app->session->addFlash('error', StringFormatter::toStringWithBr($deleteErrors));
+            Yii::$app->session->addFlash('error', implode('<br>', $deleteErrors));
         }
 
         return $this->redirect(['index']);

@@ -25,7 +25,11 @@ class FilesHelper
         return [
             self::TYPE_SCAN => 'Сканы документов',
             self::TYPE_DOC => 'Редактируемые файлы документов',
-            self::TYPE_APP => 'Приложения к документам'
+            self::TYPE_APP => 'Приложения к документам',
+            self::TYPE_PROTOCOL => 'Протоколы',
+            self::TYPE_PHOTO => 'Фотоматериалы',
+            self::TYPE_REPORT => 'Явочные документы',
+            self::TYPE_OTHER => 'Другие файлы',
         ];
     }
 

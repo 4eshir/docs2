@@ -120,7 +120,7 @@ class ForeignEventParticipantsController extends Controller
             Yii::$app->session->addFlash('success', 'Участник деятельности "'.$model->getFIO(ForeignEventParticipantsWork::FIO_FULL).'" успешно удален');
         }
         else {
-            Yii::$app->session->addFlash('error', StringFormatter::toStringWithBr($deleteErrors));
+            Yii::$app->session->addFlash('error', implode('<br>', $deleteErrors));
         }
 
         return $this->redirect(['index']);
