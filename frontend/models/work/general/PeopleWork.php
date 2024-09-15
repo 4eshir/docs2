@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\general;
 
+use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\models\scaffold\People;
 use InvalidArgumentException;
@@ -11,6 +12,7 @@ use yii\db\ActiveRecord;
 
 class PeopleWork extends People
 {
+    use EventTrait;
     const FIO_FULL = 1;
     const FIO_SURNAME_INITIALS = 2;
     const FIO_WITH_POSITION = 3;
@@ -30,7 +32,18 @@ class PeopleWork extends People
             ],
         ];
     }
-
+    public static function fill(
+        $name,
+        $surname,
+        $patronymic
+    )
+    {
+        $entity = new static();
+        $entity->firstname = $name;
+        $entity->surname = $surname;
+        $entity->patronymic = $patronymic;
+        return $entity;
+    }
     public static function getFioTypes()
     {
         return [

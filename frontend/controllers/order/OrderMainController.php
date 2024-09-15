@@ -33,7 +33,7 @@ class OrderMainController extends Controller
         $model = new OrderMainWork();
         $bringPeople = $this->peopleRepository->getOrderedList();
         if ($model->load(Yii::$app->request->post())) {
-            var_dump(Yii::$app->request->post());
+            var_dump($model);
 
         }
 

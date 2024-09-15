@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\dictionaries;
 
+use app\events\dictionaries\PeopleEventCreate;
 use common\helpers\StringFormatter;
 use common\models\search\SearchPeople;
 use common\repositories\dictionaries\CompanyRepository;
@@ -72,10 +73,11 @@ class PeopleController extends Controller
         $branches = Yii::$app->branches->getList();
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate()) {
-                $this->repository->save($model);
+                $model->recordEvent(new PeopleEventCreate($model->firstname, $model->surname, $model->patronymic),PeopleWork::class);
             }
-
-            return $this->redirect(['view', 'id' => $model->id]);
+            $model->releaseEvents();
+            return $this->redirect(['index']);
+            //return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [

@@ -20,6 +20,13 @@ class PeopleRepository
     {
         $this->peoplePositionCompanyBranchRepository = $peoplePositionCompanyBranchRepository;
     }
+    public function prepareCreate($name, $surname, $patronymic)
+    {
+        $model = PeopleWork::fill($name, $surname, $patronymic);
+        $command = Yii::$app->db->createCommand();
+        $command->insert($model::tableName(), $model->getAttributes());
+        return $command->getRawSql();
+    }
 
     public function get($id)
     {
@@ -75,6 +82,8 @@ class PeopleRepository
 
         return $this->getOrderedList(SortHelper::ORDER_TYPE_FIO, SORT_ASC, $query);
     }
+
+
 
     public function save(PeopleWork $people)
     {
