@@ -10,6 +10,8 @@ use yii\helpers\Html;
 /* @var $model PeopleWork */
 /* @var $companies CompanyWork */
 /* @var $positions PositionWork */
+/* @var $modelPeoplePositionBranch PositionWork */
+
 /* @var $branches */
 
 $this->title = 'Добавить человека';

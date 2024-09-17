@@ -8,6 +8,7 @@ use common\models\search\SearchPeople;
 use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\dictionaries\PositionRepository;
+use common\repositories\general\PeoplePositionCompanyBranchRepository;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\services\dictionaries\PeopleService;
@@ -71,11 +72,14 @@ class PeopleController extends Controller
         $companies = $this->companyRepository->getList();
         $positions = $this->positionRepository->getList();
         $branches = Yii::$app->branches->getList();
-        if ($model->load(Yii::$app->request->post())) {
+        $post = Yii::$app->request->post();
+        if ($model->load($post)) {
             if ($model->validate()) {
-                $model->recordEvent(new PeopleEventCreate($model->firstname, $model->surname, $model->patronymic),PeopleWork::class);
+                //$model->recordEvent(new PeopleEventCreate($model->firstname, $model->surname, $model->patronymic),PeopleWork::class);
+                foreach ($companies as $company) {}
+                ////$model->recordEvent(new PeoplePositionCompanyBranchRepository($model->firstname, $model->patronymic),PeoplePositionCompanyBranchWork::class);
             }
-            $model->releaseEvents();
+           //$model->releaseEvents();
             return $this->redirect(['index']);
             //return $this->redirect(['view', 'id' => $model->id]);
         }

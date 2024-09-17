@@ -8,6 +8,20 @@ use frontend\models\work\dictionaries\PositionWork;
 
 class PeoplePositionCompanyBranchWork extends PeoplePositionCompanyBranch
 {
+    public static function fill(
+        $people_id,
+        $position_id,
+        $company_id,
+        $branch
+    )
+    {
+        $entity = new static();
+        $entity->people_id = $people_id;
+        $entity->position_id = $position_id;
+        $entity->company_id = $company_id;
+        $entity->branch = $branch;
+        return $entity;
+    }
     public function getCompanyWork()
     {
         return $this->hasOne(CompanyWork::class, ['id' => 'company_id']);
