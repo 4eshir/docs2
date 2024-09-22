@@ -44,6 +44,7 @@ class PeoplePositionCompanyBranchRepository
         $peoplePositions = PeoplePositionCompanyBranchWork::find()->where(['people_id' => $peopleId])->all();
         return PositionWork::find()->where(['IN', 'id', ArrayHelper::getColumn($peoplePositions, 'company_id')])->all();
     }
+
     public function prepareCreate($people_id, $position_id, $company_id, $branch)
     {
         $model = PeoplePositionCompanyBranchWork::fill($people_id, $position_id, $company_id, $branch);

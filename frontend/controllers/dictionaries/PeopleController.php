@@ -3,6 +3,8 @@
 namespace frontend\controllers\dictionaries;
 
 use app\events\dictionaries\PeopleEventCreate;
+use app\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
+use common\components\dictionaries\base\BranchDictionary;
 use common\helpers\StringFormatter;
 use common\models\search\SearchPeople;
 use common\repositories\dictionaries\CompanyRepository;
@@ -75,13 +77,20 @@ class PeopleController extends Controller
         $post = Yii::$app->request->post();
         if ($model->load($post)) {
             if ($model->validate()) {
-                //$model->recordEvent(new PeopleEventCreate($model->firstname, $model->surname, $model->patronymic),PeopleWork::class);
-                foreach ($companies as $company) {}
-                ////$model->recordEvent(new PeoplePositionCompanyBranchRepository($model->firstname, $model->patronymic),PeoplePositionCompanyBranchWork::class);
+                $post_pos = $post['pos'];
+                $post_side = $post['side'];
+                $test_people_id = 2;
+                $model->recordEvent(new PeopleEventCreate($model->firstname, $model->surname, $model->patronymic),PeopleWork::class);
+                for ($i = 0; $i < count($post_pos); $i++) {
+                    if ($post_pos[$i] != NULL && $post_side[$i] != NULL){
+                        $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($test_people_id, $post_pos[$i] ,
+                            $model->company_id, BranchDictionary::getByName($post_side[$i])),
+                            PeoplePositionCompanyBranchWork::class);
+                    }
+                }
             }
-           //$model->releaseEvents();
+            $model->releaseEvents();
             return $this->redirect(['index']);
-            //return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
