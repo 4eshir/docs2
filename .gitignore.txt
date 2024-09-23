@@ -19,6 +19,7 @@ Thumbs.db
 
 # composer vendor dir
 /vendor
+/.idea
 /backend/config
 /forntend/config
 /common/config
