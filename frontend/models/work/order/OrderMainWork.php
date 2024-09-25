@@ -23,7 +23,8 @@ class OrderMainWork extends OrderMain
     public $scanName;
     public $docName;
     public $appName;
-
+    public $archive;
+    public $archiveName;
     /**
      * Переменные для input-file в форме
      */
