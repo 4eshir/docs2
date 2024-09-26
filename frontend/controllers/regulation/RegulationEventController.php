@@ -19,14 +19,14 @@ class RegulationEventController extends DocumentController
     private RegulationService $service;
 
     public function __construct(
-        $id,
-        $module,
-        RegulationRepository $repository,
-        RegulationService $service,
-        $config = [])
+                             $id,
+                             $module,
+        RegulationRepository $peopleRepository,
+        RegulationService    $service,
+                             $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
-        $this->repository = $repository;
+        $this->repository = $peopleRepository;
         $this->service = $service;
     }
 

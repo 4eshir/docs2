@@ -27,15 +27,15 @@ class ForeignEventParticipantsController extends Controller
     private ForeignEventParticipantsService $service;
 
     public function __construct(
-        $id,
-        $module,
-        ForeignEventParticipantsRepository $repository,
-        PersonalDataParticipantRepository $personalDataRepository,
-        ForeignEventParticipantsService $service,
-        $config = [])
+                                           $id,
+                                           $module,
+        ForeignEventParticipantsRepository $peopleRepository,
+        PersonalDataParticipantRepository  $personalDataRepository,
+        ForeignEventParticipantsService    $service,
+                                           $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->repository = $repository;
+        $this->repository = $peopleRepository;
         $this->personalDataRepository = $personalDataRepository;
         $this->service = $service;
     }

@@ -27,16 +27,16 @@ class OurEventController extends Controller
     private RegulationRepository $regulationRepository;
 
     public function __construct(
-        $id,
-        $module,
-        EventRepository $repository,
-        EventService $service,
-        PeopleRepository $peopleRepository,
+                             $id,
+                             $module,
+        EventRepository      $peopleRepository,
+        EventService         $service,
+        PeopleRepository     $peopleRepository,
         RegulationRepository $regulationRepository,
-        $config = [])
+                             $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->repository = $repository;
+        $this->repository = $peopleRepository;
         $this->service = $service;
         $this->peopleRepository = $peopleRepository;
         $this->regulationRepository = $regulationRepository;

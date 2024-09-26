@@ -19,10 +19,10 @@ class CompanyController extends Controller
     private CompanyRepository $repository;
     private CompanyService $service;
 
-    public function __construct($id, $module, CompanyRepository $repository, CompanyService $service, $config = [])
+    public function __construct($id, $module, CompanyRepository $peopleRepository, CompanyService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->repository = $repository;
+        $this->repository = $peopleRepository;
         $this->service = $service;
     }
 

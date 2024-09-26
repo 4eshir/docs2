@@ -34,19 +34,19 @@ class DocumentOutController extends Controller
     private DocumentOutService $service;
 
     public function __construct(
-        $id,
-        $module,
-        DocumentOutRepository $repository,
-        PeopleRepository $peopleRepository,
-        PositionRepository $positionRepository,
-        CompanyRepository $companyRepository,
-        FileService $fileService,
-        FilesRepository $filesRepository,
-        DocumentOutService $service,
-        $config = [])
+                              $id,
+                              $module,
+        DocumentOutRepository $peopleRepository,
+        PeopleRepository      $peopleRepository,
+        PositionRepository    $positionRepository,
+        CompanyRepository     $companyRepository,
+        FileService           $fileService,
+        FilesRepository       $filesRepository,
+        DocumentOutService    $service,
+                              $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->repository = $repository;
+        $this->repository = $peopleRepository;
         $this->peopleRepository = $peopleRepository;
         $this->positionRepository = $positionRepository;
         $this->companyRepository = $companyRepository;

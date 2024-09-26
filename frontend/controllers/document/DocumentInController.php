@@ -35,16 +35,16 @@ class DocumentInController extends Controller
     private DocumentInService $service;
 
     public function __construct(
-        $id,
-        $module,
+                             $id,
+                             $module,
         DocumentInRepository $repository,
-        PeopleRepository $peopleRepository,
-        PositionRepository $positionRepository,
-        CompanyRepository $companyRepository,
-        FileService $fileService,
-        FilesRepository $filesRepository,
-        DocumentInService $service,
-        $config = [])
+        PeopleRepository     $peopleRepository,
+        PositionRepository   $positionRepository,
+        CompanyRepository    $companyRepository,
+        FileService          $fileService,
+        FilesRepository      $filesRepository,
+        DocumentInService    $service,
+                             $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->repository = $repository;

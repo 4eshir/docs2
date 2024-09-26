@@ -2,7 +2,7 @@
 
 use app\components\DropDownDocument;
 use app\components\DropDownResponsiblePeopleWidget;
-use frontend\models\work\order\OrderMainWork;
+use app\models\work\order\OrderMainWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;

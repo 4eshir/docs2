@@ -25,16 +25,16 @@ class PeopleController extends Controller
 
     private PositionRepository $positionRepository;
     public function __construct(
-        $id,
-        $module,
-        PeopleRepository $repository,
-        PeopleService $service,
-        CompanyRepository $companyRepository,
+                           $id,
+                           $module,
+        PeopleRepository   $peopleRepository,
+        PeopleService      $service,
+        CompanyRepository  $companyRepository,
         PositionRepository $positionRepository,
-        $config = [])
+                           $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->repository = $repository;
+        $this->repository = $peopleRepository;
         $this->service = $service;
         $this->positionRepository = $positionRepository;
         $this->companyRepository = $companyRepository;

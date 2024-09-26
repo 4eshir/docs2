@@ -5,19 +5,23 @@ namespace frontend\controllers\order;
 use common\models\scaffold\People;
 use common\models\search\SearchOrderMain;
 use common\repositories\dictionaries\PeopleRepository;
-use frontend\models\work\order\OrderMainWork;
+use app\models\work\order\OrderMainWork;
+use common\repositories\order\OrderMainRepository;
 use yii\web\Controller;
 use yii;
 class OrderMainController extends Controller
 {
+    private OrderMainRepository $repository;
     private PeopleRepository $peopleRepository;
     public function __construct(
-        $id,
-        $module,
-        PeopleRepository $repository,
-        $config = [])
+                         $id,
+                         $module,
+        OrderMainRepository $repository,
+        PeopleRepository $peopleRepository,
+                         $config = [])
     {
-        $this->peopleRepository = $repository;
+        $this->peopleRepository = $peopleRepository;
+        $this->repository = $repository;
         parent::__construct($id, $module, $config);
     }
     public function actionIndex(){
@@ -34,9 +38,8 @@ class OrderMainController extends Controller
         $bringPeople = $this->peopleRepository->getOrderedList();
         if ($model->load(Yii::$app->request->post())) {
             var_dump($model);
-
+            $this->repository->save($model);
         }
-
         return $this->render('create', [
             'model' => $model,
             'bringPeople' => $bringPeople
