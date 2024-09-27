@@ -39,17 +39,9 @@ class OurEventController extends DocumentController
         RegulationRepository $regulationRepository,
                              $config = [])
     {
-<<<<<<< HEAD
+
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;
-=======
-        parent::__construct($id, $module, $config);
-<<<<<<< HEAD
-        $this->repository = $repository;
-=======
-        $this->repository = $peopleRepository;
->>>>>>> 27809e3aee8427827a25535b47e2218845c3921a
->>>>>>> ce4b48fda19834117296f6699c4dd6b6581cdd04
         $this->service = $service;
         $this->peopleRepository = $peopleRepository;
         $this->regulationRepository = $regulationRepository;
