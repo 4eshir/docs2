@@ -30,11 +30,17 @@ use yii\jui\DatePicker;
             'changeYear' => true,
             'yearRange' => '2000:2100',
         ]])->label('Дата приказа') ?>
-    <?= $form->field($model, 'order_number')->textInput()->label('Код и описание номенклатуры') ?>
-    <div id="archive" class="col-xs-4" <?= $model->study_type == 0 ? 'hidden' : '' ?>>
-        <?= $form->field($model, 'order_name')->textInput()->label('Наименование приказа') ?>
+
+    <div id="archive" class="col-xs-4"<?= $model->study_type == 0 ? 'hidden' : '' ?>>
+        <?= $form->field($model, 'order_number')->textInput()->label('Архивный номер') ?>
+    </div>
+    <div id="archive-2" class="col-xs-4">
+        <?= $form->field($model, 'order_number')->textInput()->label('Код и описание номенклатуры') ?>
     </div>
     <?= $form->field($model, 'archive')->checkbox(['id' => 'study_type', 'onchange' => 'checkArchive()']) ?>
+    <?= $form->field($model, 'order_name')->textInput()->label('Наименование приказа') ?>
+
+
     <div id="bring">
         <?php
         $params = [
@@ -99,10 +105,12 @@ use yii\jui\DatePicker;
         // Если чекбокс отмечен
         if (chkBox.checked) {
             // Показываем элемент, убирая атрибут hidden
-            $("#archive").prop("hidden", true);
+            $("#archive").prop("hidden", false);
+            $("#archive-2").prop("hidden", true);
         } else {
             // Скрываем элемент, добавляя атрибут hidden
-            $("#archive").prop("hidden", false);
+            $("#archive").prop("hidden", true);
+            $("#archive-2").prop("hidden", false);
         }
     }
 </script>

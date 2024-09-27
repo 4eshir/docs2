@@ -4,6 +4,9 @@ namespace frontend\controllers\order;
 
 use common\repositories\dictionaries\PeopleRepository;
 use app\models\work\order\OrderMainWork;
+use common\repositories\dictionaries\PeopleRepository;
+use DomainException;
+use frontend\models\search\SearchOrderMain;
 use common\repositories\order\OrderMainRepository;
 use frontend\models\search\SearchOrderMain;
 use yii\web\Controller;
@@ -37,7 +40,9 @@ class OrderMainController extends Controller
         $model = new OrderMainWork();
         $bringPeople = $this->peopleRepository->getOrderedList();
         if ($model->load(Yii::$app->request->post())) {
-            var_dump($model);
+            if(!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
             $this->repository->save($model);
         }
         return $this->render('create', [

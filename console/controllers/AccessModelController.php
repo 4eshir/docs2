@@ -16,11 +16,11 @@ class AccessModelController extends Controller
     public function __construct(
                                          $id,
                                          $module,
-        UserPermissionFunctionRepository $userFunctionPeopleRepository,
+        UserPermissionFunctionRepository $userFunctionRepository,
                                          $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->userFunctionRepository = $userFunctionPeopleRepository;
+        $this->userFunctionRepository = $userFunctionRepository;
     }
 
     //-----------------------------------------------

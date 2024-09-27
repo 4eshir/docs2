@@ -28,13 +28,13 @@ class ForeignEventParticipantsController extends Controller
     public function __construct(
                                            $id,
                                            $module,
-        ForeignEventParticipantsRepository $peopleRepository,
+        ForeignEventParticipantsRepository $repository,
         PersonalDataParticipantRepository  $personalDataRepository,
         ForeignEventParticipantsService    $service,
                                            $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->repository = $peopleRepository;
+        $this->repository = $repository;
         $this->personalDataRepository = $personalDataRepository;
         $this->service = $service;
     }
