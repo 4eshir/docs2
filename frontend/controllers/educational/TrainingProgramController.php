@@ -137,6 +137,30 @@ class TrainingProgramController extends DocumentController
         ]);
     }
 
+    /**
+     * Deletes an existing TrainingProgram model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        /** @var TrainingProgramWork $model */
+        $model = $this->repository->get($id);
+        $deleteErrors = $this->service->isAvailableDelete($id);
+
+        if (count($deleteErrors) == 0) {
+            $this->repository->delete($model);
+            Yii::$app->session->addFlash('success', 'Образовательная программа "'.$model->name.'" успешно удалена');
+        }
+        else {
+            Yii::$app->session->addFlash('error', implode('<br>', $deleteErrors));
+        }
+
+        return $this->redirect(['index']);
+    }
+
     public function actionUpdatePlan($id, $modelId)
     {
         $model = ThematicPlanWork::find()->where(['id' => $id])->one();
@@ -155,23 +179,6 @@ class TrainingProgramController extends DocumentController
         return $this->render('update-plan', [
             'model' => $model,
         ]);
-    }
-
-    /**
-     * Deletes an existing TrainingProgram model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $model = $this->findModel($id);
-        $name = $model->name;
-        $model->delete();
-        Logger::WriteLog(Yii::$app->user->identity->getId(), 'Удалена образовательная программа '.$name);
-
-        return $this->redirect(['index']);
     }
 
     public function actionSaver()

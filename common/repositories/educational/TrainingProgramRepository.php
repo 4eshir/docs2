@@ -65,4 +65,8 @@ class TrainingProgramRepository
     {
         return AuthorProgramWork::find()->where(['training_program_id' => $programId])->all();
     }
+
+    public function delete(TrainingProgramWork $model)
+    {
+    }
 }

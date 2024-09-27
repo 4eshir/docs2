@@ -4,12 +4,13 @@ namespace frontend\services\educational;
 
 use common\helpers\files\filenames\TrainingProgramFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\services\DatabaseService;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\educational\TrainingProgramWork;
 use yii\web\UploadedFile;
 
-class TrainingProgramService
+class TrainingProgramService implements DatabaseService
 {
     private FileService $fileService;
     private TrainingProgramFileNameGenerator $filenameGenerator;
@@ -101,5 +102,10 @@ class TrainingProgramService
                 get_class($model)
             );
         }
+    }
+
+    public function isAvailableDelete($id)
+    {
+        return [];
     }
 }

@@ -89,6 +89,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'docFiles', 'value' => function ($model) {
                 return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_DOC), 'link'));
             }, 'format' => 'raw'],
+            ['attribute' => 'contractFile', 'value' => function ($model) {
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_CONTRACT), 'link'));
+            }, 'format' => 'raw'],
             ['attribute' => 'certificateType', 'label' => 'Итоговая форма контроля', 'value' => function (TrainingProgramWork $model) {
                 return Yii::$app->certificateType->get($model->certificate_type);
             }],
@@ -109,11 +112,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     for (i = 0; i < acc.length; i++) {
         acc[i].addEventListener("click", function() {
-            /* Toggle between adding and removing the "active" class,
-            to highlight the button that controls the panel */
             this.classList.toggle("active");
 
-            /* Toggle between hiding and showing the active panel */
             var panel = this.nextElementSibling;
             if (panel.style.display === "block") {
                 panel.style.display = "none";

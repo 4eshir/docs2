@@ -3,16 +3,11 @@
 namespace frontend\controllers\order;
 
 use common\repositories\dictionaries\PeopleRepository;
-<<<<<<< HEAD
-use frontend\models\search\SearchOrderMain;
-use frontend\models\work\order\OrderMainWork;
-=======
 use app\models\work\order\OrderMainWork;
 use common\repositories\order\OrderMainRepository;
+use frontend\models\search\SearchOrderMain;
 use yii\web\Controller;
->>>>>>> 27809e3aee8427827a25535b47e2218845c3921a
 use yii;
-use yii\web\Controller;
 
 class OrderMainController extends Controller
 {

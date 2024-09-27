@@ -31,21 +31,16 @@ class OurEventController extends DocumentController
     private RegulationRepository $regulationRepository;
 
     public function __construct(
-                             $id,
-                             $module,
-        EventRepository      $peopleRepository,
-        EventService         $service,
-        PeopleRepository     $peopleRepository,
+        $id,
+        $module,
+        EventRepository $repository,
+        EventService $service,
+        PeopleRepository $peopleRepository,
         RegulationRepository $regulationRepository,
-                             $config = [])
+        $config = [])
     {
-<<<<<<< HEAD
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;
-=======
-        parent::__construct($id, $module, $config);
-        $this->repository = $peopleRepository;
->>>>>>> 27809e3aee8427827a25535b47e2218845c3921a
         $this->service = $service;
         $this->peopleRepository = $peopleRepository;
         $this->regulationRepository = $regulationRepository;

@@ -90,6 +90,9 @@ class TrainingProgramWork extends TrainingProgram
             case FilesHelper::TYPE_DOC:
                 $addPath = FilesHelper::createAdditionalPath(TrainingProgramWork::tableName(), FilesHelper::TYPE_DOC);
                 break;
+            case FilesHelper::TYPE_CONTRACT:
+                $addPath = FilesHelper::createAdditionalPath(TrainingProgramWork::tableName(), FilesHelper::TYPE_CONTRACT);
+                break;
         }
 
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
