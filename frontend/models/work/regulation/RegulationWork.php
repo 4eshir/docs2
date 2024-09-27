@@ -11,6 +11,8 @@ use common\repositories\general\FilesRepository;
 use frontend\models\work\general\FilesWork;
 use InvalidArgumentException;
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 use yii\helpers\Url;
 
 class RegulationWork extends Regulation
@@ -29,6 +31,22 @@ class RegulationWork extends Regulation
     public function __construct($config = [])
     {
         parent::__construct($config);
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => function() {
+                    return date('Y-m-d H:i:s');
+                },
+            ],
+        ];
     }
 
     public function rules()
@@ -78,22 +96,7 @@ class RegulationWork extends Regulation
                 break;
         }
 
-        $files = (Yii::createObject(FilesRepository::class))->get(self::tableName(), $this->id, $filetype);
-        $links = [];
-        if (count($files) > 0) {
-            foreach ($files as $file) {
-                /** @var FilesWork $file */
-                $links[] = [
-                    'link' => StringFormatter::stringAsLink(
-                        FilesHelper::getFilenameFromPath($file->filepath),
-                        Url::to(['get-file', 'filepath' => $addPath . $file->filepath])
-                    ),
-                    'id' => $file->id
-                ];
-            }
-        }
-
-        return $links;
+        return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
 
     // ТОЛЬКО для предварительной обработки полей. Остальные действия - через Event

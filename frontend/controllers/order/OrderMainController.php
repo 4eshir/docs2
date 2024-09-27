@@ -2,12 +2,12 @@
 
 namespace frontend\controllers\order;
 
-use common\models\scaffold\People;
-use common\models\search\SearchOrderMain;
 use common\repositories\dictionaries\PeopleRepository;
+use frontend\models\search\SearchOrderMain;
 use frontend\models\work\order\OrderMainWork;
-use yii\web\Controller;
 use yii;
+use yii\web\Controller;
+
 class OrderMainController extends Controller
 {
     private PeopleRepository $peopleRepository;

@@ -12,7 +12,7 @@ class RulesConfig
             \frontend\controllers\document\DocumentInController::class => [
                 'index',
                 'view',
-                'getFile',
+                'get-file',
                 'dependencyDropdown',
             ],
         ],
@@ -23,7 +23,7 @@ class RulesConfig
                 'update',
                 'delete',
                 'reserve',
-                'deleteFile',
+                'delete-file',
             ],
         ],
 
@@ -31,8 +31,8 @@ class RulesConfig
             \frontend\controllers\document\DocumentOutController::class => [
                 'index',
                 'view',
-                'getFile',
-                'dependencyDropdown',
+                'get-file',
+                'dependency-dropdown',
             ],
         ],
 
@@ -42,7 +42,7 @@ class RulesConfig
                 'update',
                 'delete',
                 'reserve',
-                'deleteFile',
+                'delete-file',
             ],
         ],
 
@@ -50,7 +50,7 @@ class RulesConfig
             \frontend\controllers\regulation\RegulationController::class => [
                 'index',
                 'view',
-                'getFile',
+                'get-file',
             ],
         ],
 
@@ -59,7 +59,7 @@ class RulesConfig
                 'create',
                 'update',
                 'delete',
-                'deleteFile',
+                'delete-file',
             ],
         ],
 
@@ -67,7 +67,7 @@ class RulesConfig
             \frontend\controllers\regulation\RegulationEventController::class => [
                 'index',
                 'view',
-                'getFile',
+                'get-file',
             ],
         ],
 
@@ -76,8 +76,24 @@ class RulesConfig
                 'create',
                 'update',
                 'delete',
-                'deleteFile',
+                'delete-file',
             ],
+        ],
+
+        'view_training_programs' => [
+            \frontend\controllers\educational\TrainingProgramController::class => [
+                'index',
+                'view',
+                'get-file',
+            ]
+        ],
+
+        'edit_training_programs' => [
+            \frontend\controllers\educational\TrainingProgramController::class => [
+                'create',
+                'update',
+                'delete',
+            ]
         ]
     ];
 

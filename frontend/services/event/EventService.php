@@ -134,6 +134,6 @@ class EventService implements DatabaseService
 
     public function isAvailableDelete($id)
     {
-        // TODO: Implement isAvailableDelete() method.
+        return [];
     }
 }

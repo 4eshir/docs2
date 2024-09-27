@@ -82,12 +82,12 @@ class DocumentInFileNameGenerator implements FileNameGeneratorInterface
 
         if ($object->companyWork->short_name !== '') {
             $filename =
-                'Ред'.($this->getOrdinalFileNumberDoc($object) + $params['counter']).
+                'Ред'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_DOC) + $params['counter']).
                 '_Вх.'.$new_date.'_'.$object->local_number.'_'.$object->companyWork->short_name.'_'.$object->document_theme;
         }
         else {
             $filename =
-                'Ред'.($this->getOrdinalFileNumberDoc($object) + $params['counter']).
+                'Ред'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_DOC) + $params['counter']).
                 '_Вх.'.$new_date.'_'.$object->local_number.'_'.$object->companyWork->name.'_'.$object->document_theme;
         }
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
@@ -127,10 +127,10 @@ class DocumentInFileNameGenerator implements FileNameGeneratorInterface
         $new_date = DateFormatter::format($date, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
 
         if ($object->company->short_name !== '') {
-            $filename = 'Приложение'.($this->getOrdinalFileNumberApp($object) + $params['counter']).'_Вх.'.$new_date.'_'.$object->local_number.'_'.$object->companyWork->short_name.'_'.$object->document_theme;
+            $filename = 'Приложение'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_APP) + $params['counter']).'_Вх.'.$new_date.'_'.$object->local_number.'_'.$object->companyWork->short_name.'_'.$object->document_theme;
         }
         else {
-            $filename = 'Приложение'.($this->getOrdinalFileNumberApp($object) + $params['counter']).'_Вх.'.$new_date.'_'.$object->local_number.'_'.$object->companyWork->name.'_'.$object->document_theme;
+            $filename = 'Приложение'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_APP) + $params['counter']).'_Вх.'.$new_date.'_'.$object->local_number.'_'.$object->companyWork->name.'_'.$object->document_theme;
         }
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);

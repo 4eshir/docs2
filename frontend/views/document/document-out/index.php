@@ -13,7 +13,7 @@ use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\search\SearchDocumentOut */
+/* @var $searchModel \frontend\models\search\SearchDocumentOut */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $model \frontend\models\work\document_in_out\DocumentOutWork */

@@ -38,6 +38,18 @@ class BranchDictionary extends BaseDictionary
             $this->list[self::ADMINISTRATION],
         ];
     }
+
+    public function getOnlyEducational()
+    {
+        return [
+            self::TECHNOPARK => 'Технопарк',
+            self::QUANTORIUM => 'Кванториум',
+            self::CDNTT => 'ЦДНТТ',
+            self::COD => 'ЦОД',
+            self::MOBILE_QUANTUM => 'Мобильный Кванториум',
+        ];
+    }
+
     public static function getByName($name){
         switch ($name){
             case 'Технопарк':

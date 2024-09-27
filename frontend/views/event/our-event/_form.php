@@ -5,6 +5,7 @@ use frontend\models\work\general\PeopleWork;
 use frontend\models\work\regulation\RegulationWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 
@@ -13,6 +14,10 @@ use yii\widgets\ActiveForm;
 /* @var $people PeopleWork */
 /* @var $regulations RegulationWork */
 /* @var $branches array */
+/* @var $protocolFiles */
+/* @var $photoFiles */
+/* @var $reportingFiles */
+/* @var $otherFiles */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -42,7 +47,7 @@ use yii\widgets\ActiveForm;
     }
 
     .checkBlock{
-        height: 400px;
+        max-height: 400px;
         overflow-y: scroll;
         margin-right: -15px;
         margin-bottom: -15px;
@@ -128,6 +133,7 @@ use yii\widgets\ActiveForm;
         <div class="checkBlock">
             <?= $form->field($model, 'scopes')->checkboxList(Yii::$app->participationScope->getList(), [
                 'item' => function($index, $label, $name, $checked, $value) {
+                $checked = $checked ? 'checked' : '';
                 return "<div 'class'='col-sm-12'><label><input class='sc' type='checkbox' {$checked} name='{$name}'value='{$value}'> {$label}</label></div>";
             }])->label(false) ?>
         </div>
@@ -155,17 +161,19 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'responsible1_id')->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), [])->label('Ответственный за мероприятие'); ?>
     <?= $form->field($model, 'responsible2_id')->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), ['prompt' => '---'])->label('Второй ответственный (опционально)'); ?>
 
-    <div class="row">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4>Мероприятие проводит</h4></div>
-            <div class="panel-body">
-                <?= $form->field($model, 'isTechnopark')->checkbox(['checked' => in_array(Yii::$app->branches::TECHNOPARK, $branches)]) ?>
-                <?= $form->field($model, 'isQuantorium')->checkbox(['checked' => in_array(Yii::$app->branches::QUANTORIUM, $branches)]) ?>
-                <?= $form->field($model, 'isCDNTT')->checkbox(['checked' => in_array(Yii::$app->branches::CDNTT, $branches)]) ?>
-                <?= $form->field($model, 'isMobQuant')->checkbox(['checked' => in_array(Yii::$app->branches::MOBILE_QUANTUM, $branches)]) ?>
-                <?= $form->field($model, 'isCod')->checkbox(['checked' => in_array(Yii::$app->branches::COD, $branches)]) ?>
-            </div>
+    <div class="checkList">
+        <div class="checkHeader">
+            <h4 class="noPM">Отделы</h4>
         </div>
+
+        <div class="checkBlock">
+            <?= $form->field($model, 'branches')->checkboxList(Yii::$app->branches->getOnlyEducational(), [
+                'item' => function($index, $label, $name, $checked, $value) {
+                    $checked = $checked ? 'checked' : '';
+                    return "<div 'class'='col-sm-12'><label><input class='sc' type='checkbox' {$checked} name='{$name}'value='{$value}'> {$label}</label></div>";
+                }])->label(false) ?>
+        </div>
+
     </div>
 
     <?= $form->field($model, 'key_words')->textInput(['maxlength' => true]) ?>
@@ -204,12 +212,52 @@ use yii\widgets\ActiveForm;
                                                                            1 => 'Содержит образовательные программы'), ['value'=>$model->contains_education ])->label('') ?>
 
     <?= $form->field($model, 'protocolFiles[]')->fileInput(['multiple' => true]) ?>
+    <?php if (is_array($protocolFiles) && count($protocolFiles) > 0): ?>
+        <table class="table table-bordered">
+            <?php foreach ($protocolFiles as $file): ?>
+                <tr>
+                    <td><?= $file['link'] ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
 
     <?= $form->field($model, 'photoFiles[]')->fileInput(['multiple' => true]) ?>
+    <?php if (is_array($photoFiles) && count($photoFiles) > 0): ?>
+        <table class="table table-bordered">
+            <?php foreach ($photoFiles as $file): ?>
+                <tr>
+                    <td><?= $file['link'] ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
 
     <?= $form->field($model, 'reportingFiles[]')->fileInput(['multiple' => true]) ?>
+    <?php if (is_array($reportingFiles) && count($reportingFiles) > 0): ?>
+        <table class="table table-bordered">
+            <?php foreach ($reportingFiles as $file): ?>
+                <tr>
+                    <td><?= $file['link'] ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
 
     <?= $form->field($model, 'otherFiles[]')->fileInput(['multiple' => true]) ?>
+    <?php if (is_array($otherFiles) && count($otherFiles) > 0): ?>
+        <table class="table table-bordered">
+            <?php foreach ($otherFiles as $file): ?>
+                <tr>
+                    <td><?= $file['link'] ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

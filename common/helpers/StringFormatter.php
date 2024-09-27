@@ -2,6 +2,7 @@
 
 namespace common\helpers;
 
+use PhpOffice\PhpSpreadsheet\Reader\Xls\MD5;
 use yii\helpers\Html;
 
 class StringFormatter
@@ -43,5 +44,10 @@ class StringFormatter
         }
 
         return $string;
+    }
+
+    public static function createHash(string $str)
+    {
+        return MD5($str);
     }
 }

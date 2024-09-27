@@ -1,6 +1,6 @@
 <?php
 
-use common\models\search\SearchCompany;
+use frontend\models\search\SearchCompany;
 use frontend\models\work\dictionaries\CompanyWork;
 use yii\grid\GridView;
 use yii\helpers\Html;

@@ -2,9 +2,8 @@
 
 namespace frontend\controllers\dictionaries;
 
-use common\helpers\StringFormatter;
-use common\models\search\SearchCompany;
 use common\repositories\dictionaries\CompanyRepository;
+use frontend\models\search\SearchCompany;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\services\dictionaries\CompanyService;
 use Yii;

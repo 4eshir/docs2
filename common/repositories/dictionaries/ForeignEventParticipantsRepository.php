@@ -6,6 +6,7 @@ use DomainException;
 use frontend\events\foreign_event_participants\PersonalDataParticipantDetachEvent;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonalDataParticipantWork;
+use frontend\models\work\general\RussianNamesWork;
 use InvalidArgumentException;
 use Yii;
 
@@ -45,6 +46,20 @@ class ForeignEventParticipantsRepository
         $command = Yii::$app->db->createCommand();
         $command->update($model::tableName(), $attributes, ['id' => $model->id]);
         return $command->getRawSql();
+    }
+
+    public function getSexByName(string $name)
+    {
+        $searchName = RussianNamesWork::find()->where(['name' => $name])->one();
+        if ($searchName == null) {
+            return 2;
+        }
+
+        if ($searchName->Sex == "М") {
+            return 0;
+        }
+
+        return 1;
     }
 
     public function delete(ForeignEventParticipantsWork $participant)

@@ -2,7 +2,11 @@
 
 namespace common\helpers\files;
 
+use common\helpers\StringFormatter;
+use common\repositories\general\FilesRepository;
 use frontend\models\work\general\FilesWork;
+use Yii;
+use yii\helpers\Url;
 
 class FilesHelper
 {
@@ -13,6 +17,8 @@ class FilesHelper
     const TYPE_PHOTO = 'photo';
     const TYPE_REPORT = 'report';
     const TYPE_OTHER = 'other';
+    const TYPE_MAIN = 'main';
+    const TYPE_CONTRACT = 'contract';
 
     const FILE_SERVER = 'server';
     const FILE_YADI = 'yadi';
@@ -30,6 +36,8 @@ class FilesHelper
             self::TYPE_PHOTO => 'Фотоматериалы',
             self::TYPE_REPORT => 'Явочные документы',
             self::TYPE_OTHER => 'Другие файлы',
+            self::TYPE_MAIN => 'Основные документы',
+            self::TYPE_CONTRACT => 'Файлы договоров',
         ];
     }
 
@@ -53,5 +61,25 @@ class FilesHelper
     public static function createAdditionalPath(string $tableName, string $fileType)
     {
         return FilePaths::BASE_FILEPATH . '/' . $tableName . '/' . $fileType . '/';
+    }
+
+    public static function createFileLinks($object, $filetype, $addPath)
+    {
+        $files = (Yii::createObject(FilesRepository::class))->get($object::tableName(), $object->id, $filetype);
+        $links = [];
+        if (count($files) > 0) {
+            foreach ($files as $file) {
+                /** @var FilesWork $file */
+                $links[] = [
+                    'link' => StringFormatter::stringAsLink(
+                        FilesHelper::getFilenameFromPath($file->filepath),
+                        Url::to(['get-file', 'filepath' => $addPath . $file->filepath])
+                    ),
+                    'id' => $file->id
+                ];
+            }
+        }
+
+        return $links;
     }
 }

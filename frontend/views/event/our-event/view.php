@@ -69,10 +69,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 return Yii::$app->eventLevel->get($model->event_level);
             }],
             ['attribute' => 'scopesString', 'format' => 'raw'],
-            'participants_count',
+            ['attribute' => 'participants_count', 'value' => function (EventWork $model){
+                return $model->child_participants_count + $model->teacher_participants_count + $model->other_participants_count;
+            }],
             'child_participants_count',
-            'teachers_participants_count',
-            'others_participants_count',
+            'child_rst_participants_count',
+            'teacher_participants_count',
+            'other_participants_count',
             'leftAge',
             'rightAge',
             ['attribute' => 'is_federal', 'value' => function($model){
