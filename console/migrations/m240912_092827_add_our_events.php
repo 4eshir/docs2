@@ -103,6 +103,21 @@ class m240912_092827_add_our_events extends Migration
             'id',
             'RESTRICT',
         );
+
+        $this->createTable('event_scope', [
+            'id' => $this->primaryKey(),
+            'event_id' => $this->integer(),
+            'participation_scope' => $this->smallInteger()
+        ]);
+
+        $this->addForeignKey(
+            'fk-event_scope-1',
+            'event_scope',
+            'event_id',
+            'event',
+            'id',
+            'RESTRICT',
+        );
     }
 
     /**
@@ -110,6 +125,10 @@ class m240912_092827_add_our_events extends Migration
      */
     public function safeDown()
     {
+        $this->dropForeignKey('fk-event_scope-1', 'event_scope');
+
+        $this->dropTable('event_scope');
+
         $this->dropForeignKey('fk-event_branch-1', 'event_branch');
 
         $this->dropTable('event_branch');

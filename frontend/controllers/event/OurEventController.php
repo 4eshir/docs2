@@ -2,24 +2,28 @@
 
 namespace frontend\controllers\event;
 
+use common\controllers\DocumentController;
+use common\helpers\files\FilesHelper;
 use common\helpers\SortHelper;
-use common\models\search\SearchEvent;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\event\EventRepository;
+use common\repositories\general\FilesRepository;
 use common\repositories\regulation\RegulationRepository;
+use common\services\general\files\FileService;
+use frontend\events\event\CreateEventBranchEvent;
+use frontend\events\event\CreateEventScopeEvent;
+use frontend\models\search\SearchEvent;
 use frontend\models\work\event\EventWork;
 use frontend\services\event\EventService;
 use Yii;
-use yii\helpers\ArrayHelper;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\web\UploadedFile;
+use yii\helpers\ArrayHelper;
+use yii\web\NotFoundHttpException;
 
 /**
  * EventController implements the CRUD actions for Event model.
  */
-class OurEventController extends Controller
+class OurEventController extends DocumentController
 {
     private EventRepository $repository;
     private EventService $service;
@@ -35,8 +39,17 @@ class OurEventController extends Controller
         RegulationRepository $regulationRepository,
                              $config = [])
     {
-        parent::__construct($id, $module, $config);
+<<<<<<< HEAD
+        parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;
+=======
+        parent::__construct($id, $module, $config);
+<<<<<<< HEAD
+        $this->repository = $repository;
+=======
+        $this->repository = $peopleRepository;
+>>>>>>> 27809e3aee8427827a25535b47e2218845c3921a
+>>>>>>> ce4b48fda19834117296f6699c4dd6b6581cdd04
         $this->service = $service;
         $this->peopleRepository = $peopleRepository;
         $this->regulationRepository = $regulationRepository;
@@ -109,8 +122,12 @@ class OurEventController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $this->service->getFilesInstances($model);
 
-            $model->save();
+            $this->repository->save($model);
             $this->service->saveFilesFromModel($model);
+
+            $model->recordEvent(new CreateEventBranchEvent($model->id, $model->branches), get_class($model));
+            $model->recordEvent(new CreateEventScopeEvent($model->id, $model->scopes), get_class($model));
+            $model->releaseEvents();
 
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -132,57 +149,41 @@ class OurEventController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-        $modelEventsLinks = [new EventsLinkWork];
-        $modelGroups = [new EventTrainingGroupWork];
+        /** @var EventWork $model */
+        $model = $this->repository->get($id);
+        $model->fillSecondaryFields();
+        //$modelEventsLinks = [new EventsLinkWork];
+        //$modelGroups = [new EventTrainingGroupWork];
 
-        $eventP = EventParticipantsWork::find()->where(['event_id' => $model->id])->one();
-        $model->childs = $eventP->child_participants;
-        $model->childs_rst = $eventP->child_rst_participants;
-        $model->teachers = $eventP->teacher_participants;
-        $model->others = $eventP->other_participants;
-        $model->leftAge = $eventP->age_left_border;
-        $model->rightAge = $eventP->age_right_border;
-        $model->old_name = $model->name;
+        //$model->old_name = $model->name;
 
-        
+        $protocolFiles = $model->getFileLinks(FilesHelper::TYPE_PROTOCOL);
+        $photoFiles = $model->getFileLinks(FilesHelper::TYPE_PHOTO);
+        $reportingFiles = $model->getFileLinks(FilesHelper::TYPE_REPORT);
+        $otherFiles = $model->getFileLinks(FilesHelper::TYPE_OTHER);
 
         if ($model->load(Yii::$app->request->post())) {
-            if ($model->validate(false))
-            {
-                $model->protocolFile = UploadedFile::getInstances($model, 'protocolFile');
-                $model->reportingFile = UploadedFile::getInstances($model, 'reportingFile');
-                $model->photoFiles = UploadedFile::getInstances($model, 'photoFiles');
-                $model->otherFiles = UploadedFile::getInstances($model, 'otherFiles');
+            $this->service->getFilesInstances($model);
 
-                $modelEventsLinks = DynamicModel::createMultiple(EventsLinkWork::classname());
-                DynamicModel::loadMultiple($modelEventsLinks, Yii::$app->request->post());
-                $model->eventsLink = $modelEventsLinks;
-                $modelGroups = DynamicModel::createMultiple(EventTrainingGroupWork::classname());
-                DynamicModel::loadMultiple($modelGroups, Yii::$app->request->post());
-                $model->groups = $modelGroups;
+            $this->repository->save($model);
+            $this->service->saveFilesFromModel($model);
 
-                if ($model->validate(false))
-                {
-                    if ($model->protocolFile !== null)
-                        $model->uploadProtocolFile(10);
-                    if ($model->reportingFile !== null)
-                        $model->uploadReportingFile(10);
-                    if ($model->photoFiles !== null)
-                        $model->uploadPhotosFiles(10);
-                    if ($model->otherFiles !== null)
-                        $model->uploadOtherFiles(10);
-                    $model->save(false);
-                    Logger::WriteLog(Yii::$app->user->identity->getId(), 'Изменено мероприятие '.$model->name);
-                }
-            }
+            $model->recordEvent(new CreateEventBranchEvent($model->id, $model->branches), get_class($model));
+            $model->recordEvent(new CreateEventScopeEvent($model->id, $model->scopes), get_class($model));
+            $model->releaseEvents();
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('update', [
             'model' => $model,
-            'modelEventsLinks' => (empty($modelEventsLinks)) ? [new EventsLinkWork] : $modelEventsLinks,
-            'modelGroups' => (empty($modelGroups)) ? [new EventTrainingGroupWork] : $modelGroups,
+            'people' => $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO, SORT_ASC),
+            'regulations' => $this->regulationRepository->getOrderedList(),
+            'branches' => ArrayHelper::getColumn($this->repository->getBranches($model->id), 'branch'),
+            'protocolFiles' => $protocolFiles,
+            'photoFiles' => $photoFiles,
+            'reportingFiles' => $reportingFiles,
+            'otherFiles' => $otherFiles,
         ]);
     }
 
@@ -195,14 +196,17 @@ class OurEventController extends Controller
      */
     public function actionDelete($id)
     {
-        $eventP = EventParticipantsWork::find()->where(['event_id' => $id])->one();
-        if ($eventP != null) $eventP->delete();
-        $links = EventsLinkWork::find()->where(['event_id' => $id])->all();
-        $name = $this->findModel($id)->name;
-        foreach ($links as $link)
-            $link->delete();
-        Logger::WriteLog(Yii::$app->user->identity->getId(), 'Удалено мероприятие '.$name);
-        $this->findModel($id)->delete();
+        /** @var EventWork $model */
+        $model = $this->repository->get($id);
+        $deleteErrors = $this->service->isAvailableDelete($id);
+
+        if (count($deleteErrors) == 0) {
+            $this->repository->delete($model);
+            Yii::$app->session->addFlash('success', 'Событие "'.$model->name.'" успешно удалено');
+        }
+        else {
+            Yii::$app->session->addFlash('error', implode('<br>', $deleteErrors));
+        }
 
         return $this->redirect(['index']);
     }
@@ -219,107 +223,6 @@ class OurEventController extends Controller
         $eventsLink = EventsLinkWork::find()->where(['id' => $id])->one();
         $eventsLink->delete();
         return $this->redirect('index?r=event/update&id='.$modelId);
-    }
-
-    public function actionDeleteFile($fileName = null, $modelId = null, $type = null)
-    {
-
-        $model = EventWork::find()->where(['id' => $modelId])->one();
-
-        $eventP = EventParticipantsWork::find()->where(['event_id' => $model->id])->one();
-        $model->childs = $eventP->child_participants;
-        $model->childs_rst = $eventP->child_rst_participants;
-        $model->teachers = $eventP->teacher_participants;
-        $model->others = $eventP->other_participants;
-        $model->leftAge = $eventP->age_left_border;
-        $model->rightAge = $eventP->age_right_border;
-        $model->old_name = $model->name;
-
-        $branches = EventBranchWork::find()->where(['event_id' => $model->id])->all();
-        foreach ($branches as $branch) 
-        {
-            if ($branch->branch_id == 1) $model->isQuantorium = 1;
-            if ($branch->branch_id == 2) $model->isTechnopark = 1;
-            if ($branch->branch_id == 3) $model->isCDNTT = 1;
-            if ($branch->branch_id == 4) $model->isMobQuant = 1;
-            if ($branch->branch_id == 7) $model->isCod = 1;
-        }
-
-        if ($fileName !== null && !Yii::$app->user->isGuest && $modelId !== null)
-        {
-            $fileCell = $model->protocol;
-            if ($type == 'photos') $fileCell = $model->photos;
-            if ($type == 'report') $fileCell = $model->reporting_doc;
-            if ($type == 'other') $fileCell = $model->other_files;
-            $result = '';
-            $split = explode(" ", $fileCell);
-            $deleteFile = '';
-            for ($i = 0; $i < count($split) - 1; $i++)
-            {
-                if ($split[$i] !== $fileName)
-                {
-                    $result = $result.$split[$i].' ';
-                }
-                else
-                    $deleteFile = $split[$i];
-            }
-
-            if ($type == null) $model->protocol = $result;
-            if ($type == 'photos') $model->photos = $result;
-            if ($type == 'report') $model->reporting_doc = $result;
-            if ($type == 'other') $model->other_files = $result;
-            $model->save(false);
-            Logger::WriteLog(Yii::$app->user->identity->getId(), 'Удален файл '.$deleteFile);
-        }
-        return $this->redirect('index.php?r=event/update&id='.$modelId);
-    }
-
-    /**
-     * Finds the Event model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return EventWork the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = EventWork::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-    //-------------------------
-
-    public function actionGetFile($fileName = null, $type = null)
-    {
-
-        $filePath = '/upload/files/'.Yii::$app->controller->id;
-        $filePath .= $type == null ? '/' : '/'.$type.'/';
-
-        $downloadServ = new FileDownloadServer($filePath, $fileName);
-        $downloadYadi = new FileDownloadYandexDisk($filePath, $fileName);
-
-        $downloadServ->LoadFile();
-        if (!$downloadServ->success) $downloadYadi->LoadFile();
-        else return \Yii::$app->response->sendFile($downloadServ->file);
-
-        if (!$downloadYadi->success) throw new \Exception('File not found');
-        else {
-
-            $fp = fopen('php://output', 'r');
-
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename=' . $downloadYadi->filename);
-            header('Content-Transfer-Encoding: binary');
-            header('Content-Length: ' . $downloadYadi->file->size);
-
-            $downloadYadi->file->download($fp);
-
-            fseek($fp, 0);
-        }
     }
 
     public function actionAmnesty ($id)

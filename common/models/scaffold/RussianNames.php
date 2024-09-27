@@ -5,10 +5,12 @@ namespace common\models\scaffold;
 /**
  * This is the model class for table "russian_names".
  *
- * @property int $id
- * @property string|null $name
- * @property string|null $sex
- * @property int|null $peoples_count
+ * @property int $ID
+ * @property string|null $Name
+ * @property string|null $Sex
+ * @property int|null $PeoplesCount
+ * @property string|null $WhenPeoplesCount
+ * @property string|null $Source
  */
 class RussianNames extends \yii\db\ActiveRecord
 {
@@ -26,9 +28,10 @@ class RussianNames extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['peoples_count'], 'integer'],
-            [['name'], 'string', 'max' => 128],
-            [['sex'], 'string', 'max' => 3],
+            [['PeoplesCount'], 'integer'],
+            [['WhenPeoplesCount'], 'safe'],
+            [['Name', 'Source'], 'string', 'max' => 1024],
+            [['Sex'], 'string', 'max' => 10],
         ];
     }
 
@@ -38,10 +41,12 @@ class RussianNames extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'name' => 'Name',
-            'sex' => 'Sex',
-            'peoples_count' => 'Peoples Count',
+            'ID' => 'ID',
+            'Name' => 'Name',
+            'Sex' => 'Sex',
+            'PeoplesCount' => 'Peoples Count',
+            'WhenPeoplesCount' => 'When Peoples Count',
+            'Source' => 'Source',
         ];
     }
 }

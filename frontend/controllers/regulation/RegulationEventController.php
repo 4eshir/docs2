@@ -4,11 +4,11 @@ namespace frontend\controllers\regulation;
 
 use common\controllers\DocumentController;
 use common\helpers\files\FilesHelper;
-use common\models\search\SearchRegulationEvent;
 use common\repositories\general\FilesRepository;
 use common\repositories\regulation\RegulationRepository;
 use common\services\general\files\FileService;
 use DomainException;
+use frontend\models\search\SearchRegulationEvent;
 use frontend\models\work\regulation\RegulationWork;
 use frontend\services\regulation\RegulationService;
 use Yii;

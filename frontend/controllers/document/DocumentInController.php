@@ -2,11 +2,11 @@
 
 namespace frontend\controllers\document;
 
+use common\controllers\DocumentController;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\SortHelper;
-use common\models\search\SearchDocumentIn;
 use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\dictionaries\PositionRepository;
@@ -16,15 +16,12 @@ use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\document_in\InOutDocumentCreateEvent;
 use frontend\events\document_in\InOutDocumentDeleteEvent;
-use frontend\events\general\FileDeleteEvent;
-use frontend\helpers\HeaderWizard;
+use frontend\models\search\SearchDocumentIn;
 use frontend\models\work\document_in_out\DocumentInWork;
-use frontend\models\work\general\FilesWork;
 use frontend\services\document\DocumentInService;
 use Yii;
-use yii\web\Controller;
 
-class DocumentInController extends Controller
+class DocumentInController extends DocumentController
 {
     private DocumentInRepository $repository;
     private PeopleRepository $peopleRepository;
@@ -46,7 +43,7 @@ class DocumentInController extends Controller
         DocumentInService    $service,
                              $config = [])
     {
-        parent::__construct($id, $module, $config);
+        parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;
         $this->peopleRepository = $peopleRepository;
         $this->positionRepository = $positionRepository;
@@ -181,39 +178,6 @@ class DocumentInController extends Controller
         }
         else {
             throw new DomainException('Модель не найдена');
-        }
-    }
-
-    public function actionGetFile($filepath)
-    {
-        $data = $this->fileService->downloadFile($filepath);
-        if ($data['type'] == FilesHelper::FILE_SERVER) {
-            Yii::$app->response->sendFile($data['obj']->file);
-        }
-        else {
-            $fp = fopen('php://output', 'r');
-            HeaderWizard::setFileHeaders(FilesHelper::getFilenameFromPath($data['obj']->filepath), $data['obj']->file->size);
-            $data['obj']->file->download($fp);
-            fseek($fp, 0);
-        }
-    }
-
-    public function actionDeleteFile($modelId, $fileId)
-    {
-        try {
-            $file = $this->filesRepository->getById($fileId);
-
-            /** @var FilesWork $file */
-            $filepath = $file ? basename($file->filepath) : '';
-            $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
-            $file->recordEvent(new FileDeleteEvent($fileId), get_class($file));
-            $file->releaseEvents();
-
-            Yii::$app->session->setFlash('success', "Файл $filepath успешно удален");
-            return $this->redirect(['update', 'id' => $modelId]);
-        }
-        catch (DomainException $e) {
-            return $e->getMessage();
         }
     }
 

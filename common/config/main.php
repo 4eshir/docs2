@@ -55,6 +55,18 @@ return [
         'personalData' => [
             'class' => 'common\\components\\dictionaries\\base\\PersonalDataDictionary',
         ],
+        'thematicDirection' => [
+            'class' => 'common\\components\\dictionaries\\base\\ThematicDirectionDictionary',
+        ],
+        'focus' => [
+            'class' => 'common\\components\\dictionaries\\base\\FocusDictionary',
+        ],
+        'allowRemote' => [
+            'class' => 'common\\components\\dictionaries\\base\\AllowRemoteDictionary',
+        ],
+        'certificateType' => [
+            'class' => 'common\\components\\dictionaries\\base\\CertificateTypeDictionary',
+        ],
         'rac' => [
             'class' => 'common\\components\\access\\RacComponent',
         ],

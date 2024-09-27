@@ -47,6 +47,12 @@ AppAsset::register($this);
             ],
         ],
         [
+            'label' => 'Учебная деятельность',
+            'items' => [
+                ['label' => 'Образовательные программы', 'url' => ['/educational/training-program/index']],
+            ],
+        ],
+        [
             'label' => 'Справочники',
             'items' => [
                 ['label' => 'Люди', 'url' => ['/dictionaries/people/index']],

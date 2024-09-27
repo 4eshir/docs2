@@ -2,12 +2,11 @@
 
 namespace frontend\controllers\dictionaries;
 
-use common\helpers\StringFormatter;
-use common\models\search\SearchForeignEventParticipants;
 use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PersonalDataParticipantRepository;
 use frontend\events\foreign_event_participants\PersonalDataParticipantAttachEvent;
-use frontend\events\foreign_event_participants\PersonalDataParticipantDetachEvent;
+use frontend\models\search\SearchForeignEventParticipants;
+use frontend\models\work\auxiliary\LoadParticipants;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonalDataParticipantWork;
 use frontend\services\dictionaries\ForeignEventParticipantsService;
@@ -133,6 +132,7 @@ class ForeignEventParticipantsController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->file = UploadedFile::getInstance($model, 'file');
             $model->save();
+            $this->service->checkCorrectAll();
             return $this->redirect(['index']);
         }
 

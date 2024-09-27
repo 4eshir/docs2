@@ -151,22 +151,7 @@ class DocumentInWork extends DocumentIn
                 break;
         }
 
-        $files = (Yii::createObject(FilesRepository::class))->get(self::tableName(), $this->id, $filetype);
-        $links = [];
-        if (count($files) > 0) {
-            foreach ($files as $file) {
-                /** @var FilesWork $file */
-                $links[] = [
-                    'link' => StringFormatter::stringAsLink(
-                        FilesHelper::getFilenameFromPath($file->filepath),
-                        Url::to(['get-file', 'filepath' => $addPath . $file->filepath])
-                    ),
-                    'id' => $file->id
-                ];
-            }
-        }
-
-        return $links;
+        return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
 
     /**
