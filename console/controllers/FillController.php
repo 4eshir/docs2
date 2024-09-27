@@ -26,14 +26,14 @@ class FillController extends Controller
     public function __construct(
                                              $id,
                                              $module,
-        PermissionTemplateRepository         $templatePeopleRepository,
+        PermissionTemplateRepository         $templateRepository,
         PermissionFunctionRepository         $functionRepository,
         PermissionTemplateFunctionRepository $templateFunctionRepository,
         CompanyRepository                    $companyRepository,
                                              $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->templateRepository = $templatePeopleRepository;
+        $this->templateRepository = $templateRepository;
         $this->functionRepository = $functionRepository;
         $this->templateFunctionRepository = $templateFunctionRepository;
         $this->companyRepository = $companyRepository;

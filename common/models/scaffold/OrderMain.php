@@ -47,7 +47,7 @@ class OrderMain extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['order_copy_id', 'order_number', 'order_date', 'creator_id'], 'required'],
+            [['order_copy_id', 'order_date', 'creator_id'], 'required'],
             [['order_copy_id', 'order_postfix', 'signed_id', 'bring_id', 'executor_id', 'creator_id', 'last_edit_id', 'nomenclature_id', 'type', 'state'], 'integer'],
             [['order_date'], 'safe'],
             [['order_number'], 'string', 'max' => 64],

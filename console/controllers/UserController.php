@@ -14,11 +14,11 @@ class UserController extends Controller
     public function __construct(
                        $id,
                        $module,
-        UserRepository $userPeopleRepository,
+        UserRepository $userRepository,
                        $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->userRepository = $userPeopleRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function actionCreate()

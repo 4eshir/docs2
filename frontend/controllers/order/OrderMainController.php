@@ -37,7 +37,9 @@ class OrderMainController extends Controller
         $model = new OrderMainWork();
         $bringPeople = $this->peopleRepository->getOrderedList();
         if ($model->load(Yii::$app->request->post())) {
-            var_dump($model);
+            if(!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
             $this->repository->save($model);
         }
         return $this->render('create', [

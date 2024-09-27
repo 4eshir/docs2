@@ -36,7 +36,7 @@ class DocumentOutController extends Controller
     public function __construct(
                               $id,
                               $module,
-        DocumentOutRepository $peopleRepository,
+        DocumentOutRepository $repository,
         PeopleRepository      $peopleRepository,
         PositionRepository    $positionRepository,
         CompanyRepository     $companyRepository,
@@ -46,7 +46,7 @@ class DocumentOutController extends Controller
                               $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->repository = $peopleRepository;
+        $this->repository = $repository;
         $this->peopleRepository = $peopleRepository;
         $this->positionRepository = $positionRepository;
         $this->companyRepository = $companyRepository;

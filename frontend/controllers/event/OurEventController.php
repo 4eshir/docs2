@@ -29,14 +29,14 @@ class OurEventController extends Controller
     public function __construct(
                              $id,
                              $module,
-        EventRepository      $peopleRepository,
+        EventRepository      $repository,
         EventService         $service,
         PeopleRepository     $peopleRepository,
         RegulationRepository $regulationRepository,
                              $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->repository = $peopleRepository;
+        $this->repository = $repository;
         $this->service = $service;
         $this->peopleRepository = $peopleRepository;
         $this->regulationRepository = $regulationRepository;
