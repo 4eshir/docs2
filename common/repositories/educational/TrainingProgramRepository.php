@@ -2,8 +2,13 @@
 
 namespace common\repositories\educational;
 
+use common\helpers\files\FilesHelper;
 use common\models\scaffold\AuthorProgram;
+use common\repositories\general\FilesRepository;
+use common\services\general\files\FileService;
 use DomainException;
+use frontend\events\educational\training_program\DeleteTrainingProgramBranchEvent;
+use frontend\events\general\FileDeleteEvent;
 use frontend\models\work\educational\AuthorProgramWork;
 use frontend\models\work\educational\BranchProgramWork;
 use frontend\models\work\educational\ThematicPlanWork;
@@ -12,6 +17,18 @@ use Yii;
 
 class TrainingProgramRepository
 {
+    private FileService $fileService;
+    private FilesRepository $filesRepository;
+
+    public function __construct(
+        FileService $fileService,
+        FilesRepository $filesRepository
+    )
+    {
+        $this->fileService = $fileService;
+        $this->filesRepository = $filesRepository;
+    }
+
     public function get($id)
     {
         return TrainingProgramWork::find()->where(['id' => $id])->one();
@@ -68,5 +85,36 @@ class TrainingProgramRepository
 
     public function delete(TrainingProgramWork $model)
     {
+        /** @var TrainingProgramWork $model */
+        $model->recordEvent(new DeleteTrainingProgramBranchEvent($model->id), get_class($model));
+
+        $main = $this->filesRepository->get(TrainingProgramWork::tableName(), $model->id, FilesHelper::TYPE_MAIN);
+        $doc = $this->filesRepository->get(TrainingProgramWork::tableName(), $model->id, FilesHelper::TYPE_DOC);
+        $contract = $this->filesRepository->get(TrainingProgramWork::tableName(), $model->id, FilesHelper::TYPE_CONTRACT);
+
+        if (is_array($main)) {
+            foreach ($main as $file) {
+                $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
+                $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            }
+        }
+
+        if (is_array($doc)) {
+            foreach ($doc as $file) {
+                $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
+                $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            }
+        }
+
+        if (is_array($contract)) {
+            foreach ($contract as $file) {
+                $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
+                $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            }
+        }
+
+        $model->releaseEvents();
+
+        return $model->delete();
     }
 }
