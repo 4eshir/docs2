@@ -1,5 +1,5 @@
 <?php
-namespace frontend\models\work\order;
+namespace app\models\work\order;
 use common\events\EventTrait;
 use common\models\scaffold\OrderMain;
 use frontend\models\work\general\PeopleWork;
@@ -23,7 +23,8 @@ class OrderMainWork extends OrderMain
     public $scanName;
     public $docName;
     public $appName;
-
+    public $archive;
+    public $archiveName;
     /**
      * Переменные для input-file в форме
      */

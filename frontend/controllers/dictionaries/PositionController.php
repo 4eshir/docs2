@@ -18,10 +18,10 @@ class PositionController extends Controller
     private PositionRepository $repository;
     private PositionService $service;
 
-    public function __construct($id, $module, PositionRepository $repository, PositionService $service, $config = [])
+    public function __construct($id, $module, PositionRepository $peopleRepository, PositionService $service, $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->repository = $repository;
+        $this->repository = $peopleRepository;
         $this->service = $service;
     }
 

@@ -12,10 +12,10 @@ class AuthController extends Controller
 {
     private UserRepository $userRepository;
 
-    public function __construct($id, $module, UserRepository $userRepository, $config = [])
+    public function __construct($id, $module, UserRepository $userPeopleRepository, $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->userRepository = $userRepository;
+        $this->userRepository = $userPeopleRepository;
     }
 
     public function actionLogin()

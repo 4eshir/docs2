@@ -32,16 +32,16 @@ class DocumentInController extends DocumentController
     private DocumentInService $service;
 
     public function __construct(
-        $id,
-        $module,
+                             $id,
+                             $module,
         DocumentInRepository $repository,
-        PeopleRepository $peopleRepository,
-        PositionRepository $positionRepository,
-        CompanyRepository $companyRepository,
-        FileService $fileService,
-        FilesRepository $filesRepository,
-        DocumentInService $service,
-        $config = [])
+        PeopleRepository     $peopleRepository,
+        PositionRepository   $positionRepository,
+        CompanyRepository    $companyRepository,
+        FileService          $fileService,
+        FilesRepository      $filesRepository,
+        DocumentInService    $service,
+                             $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;

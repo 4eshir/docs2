@@ -95,7 +95,14 @@ class PeopleWork extends People
                 return 'Другое';
         }
     }
-
+    public function getBranchByPost($post)
+    {
+        return $post['side'];
+    }
+    public function getPositionsByPost($post)
+    {
+        return $post['pos'];
+    }
     public function beforeValidate()
     {
         $this->firstname = str_replace(' ', '', $this->firstname);

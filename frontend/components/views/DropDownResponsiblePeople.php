@@ -20,7 +20,8 @@
                         <option value="<?= htmlspecialchars($person->id) ?>">
                             <?= htmlspecialchars($person->getFullFio()) ?>
                         </option>
-                    <?php endforeach; ?>
+                    <?php endforeach;
+                    ?>
                 </select>
                 <button type="button" class="remove-dropdown-resp">-</button>
             </div>
