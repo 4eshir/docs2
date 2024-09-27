@@ -14,11 +14,11 @@ class OrderMainController extends Controller
     private OrderMainRepository $repository;
     private PeopleRepository $peopleRepository;
     public function __construct(
-                         $id,
-                         $module,
+        $id,
+        $module,
         OrderMainRepository $repository,
         PeopleRepository $peopleRepository,
-                         $config = [])
+        $config = [])
     {
         $this->peopleRepository = $peopleRepository;
         $this->repository = $repository;
