@@ -34,6 +34,7 @@ namespace common\models\scaffold;
  */
 class DocumentIn extends \yii\db\ActiveRecord
 {
+
     /**
      * {@inheritdoc}
      */
