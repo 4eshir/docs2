@@ -8,6 +8,14 @@ use setasign\Fpdi\PdfParser\Filter\Ascii85;
 
 class OrderMainRepository
 {
+    public function get($id)
+    {
+        return OrderMainWork::find()->where(['id' => $id])->one();
+    }
+    public function delete($id)
+    {
+        return OrderMainWork::deleteAll(['id' => $id]);
+    }
     public function save(OrderMainWork $model)
     {
         if (!$model->save()) {
@@ -15,4 +23,5 @@ class OrderMainRepository
         }
         return $model->id;
     }
+
 }

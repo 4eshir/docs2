@@ -47,17 +47,16 @@ class OrderMain extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['order_copy_id', 'order_date', 'creator_id'], 'required'],
-            [['order_copy_id', 'order_postfix', 'signed_id', 'bring_id', 'executor_id', 'creator_id', 'last_edit_id', 'nomenclature_id', 'type', 'state'], 'integer'],
+            [['order_date'], 'required'],
+            [['order_copy_id', 'order_postfix', 'signed_id', 'bring_id', 'executor_id',  'creator_id', 'last_edit_id', 'nomenclature_id', 'type', 'state'], 'integer'],
             [['order_date'], 'safe'],
-            [['order_number'], 'string', 'max' => 64],
+            [['order_number', 'order_name'], 'string', 'max' => 64],
             [['key_words'], 'string', 'max' => 512],
-            [['target'], 'string', 'max' => 256],
             [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['signed_id' => 'id']],
-            [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['bring_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['executor_id' => 'id']],
-            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
-            [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['last_edit_id' => 'id']],
+            [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['bring_id' => 'id']],
+            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['executor_id' => 'id']],
+            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['creator_id' => 'id']],
+            [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['last_edit_id' => 'id']],
         ];
     }
     /**
