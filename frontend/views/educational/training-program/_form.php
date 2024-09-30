@@ -82,6 +82,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'actual')->checkbox(); ?>
 
+    <?= $form->field($model, 'utpFile')->fileInput() ?>
 
     <?= $form->field($model, 'mainFile')->fileInput() ?>
 

@@ -2,6 +2,9 @@
 
 namespace common\models\scaffold;
 
+use InvalidArgumentException;
+use Yii;
+
 /**
  * This is the model class for table "thematic_plan".
  *
@@ -20,6 +23,20 @@ class ThematicPlan extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'thematic_plan';
+    }
+
+    public static function fill($theme, $programId, $controlType)
+    {
+        if (!array_key_exists($controlType, Yii::$app->controlType->getList())) {
+            throw new InvalidArgumentException('Неизвестный тип контроля');
+        }
+
+        $entity = new static();
+        $entity->theme = $theme;
+        $entity->training_program_id = $programId;
+        $entity->control_type = $controlType;
+
+        return $entity;
     }
 
     /**

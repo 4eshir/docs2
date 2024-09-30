@@ -4,6 +4,7 @@ namespace frontend\services\educational;
 
 use common\helpers\files\filenames\TrainingProgramFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\helpers\StringFormatter;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
@@ -26,7 +27,12 @@ class TrainingProgramService implements DatabaseService
         $model->mainFile = UploadedFile::getInstance($model, 'mainFile');
         $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
         $model->contractFile = UploadedFile::getInstance($model, 'contractFile');
-        $model->fileUtp = UploadedFile::getInstance($model, 'fileUtp');
+        $model->utpFile = UploadedFile::getInstance($model, 'utpFile');
+    }
+
+    public function saveUtpFromFile()
+    {
+
     }
 
     public function saveFilesFromModel(TrainingProgramWork $model)

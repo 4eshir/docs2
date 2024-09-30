@@ -75,7 +75,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'capacity',
             'student_left_age',
             'student_right_age',
-            'stringFocus',
+            ['attribute' => 'focus', 'value' => function (TrainingProgramWork $model) {
+                return Yii::$app->focus->get($model->focus);
+            }, 'format' => 'raw'],
             ['attribute' => 'fullDirectionName', 'label' => 'Тематическое направление'],
             'hour_capacity',
             ['attribute' => 'themesPlan', 'value' =>

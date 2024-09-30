@@ -4,6 +4,7 @@ namespace common\repositories\educational;
 
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\AuthorProgram;
+use common\models\scaffold\ThematicPlan;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
@@ -81,6 +82,21 @@ class TrainingProgramRepository
     public function getAuthors($programId)
     {
         return AuthorProgramWork::find()->where(['training_program_id' => $programId])->all();
+    }
+
+    public function prepareCreateTheme($theme, $programId, $controlType)
+    {
+        $model = ThematicPlan::fill($theme, $programId, $controlType);
+        $command = Yii::$app->db->createCommand();
+        $command->insert($model::tableName(), $model->getAttributes());
+        return $command->getRawSql();
+    }
+
+    public function prepareDeleteTheme($id)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(ThematicPlanWork::tableName(), ['id' => $id]);
+        return $command->getRawSql();
     }
 
     public function delete(TrainingProgramWork $model)

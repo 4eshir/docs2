@@ -2,18 +2,22 @@
 
 namespace frontend\models\work\educational;
 
+use common\components\wizards\ExcelWizard;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
+use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
+use common\models\scaffold\ThematicPlan;
 use common\models\scaffold\TrainingProgram;
-use common\repositories\general\FilesRepository;
-use frontend\models\work\general\FilesWork;
+use common\repositories\educational\TrainingProgramRepository;
+use common\services\general\files\FileService;
+use frontend\events\educational\training_program\CreateThemeInPlanEvent;
+use frontend\events\educational\training_program\ResetThematicPlanEvent;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\helpers\Url;
 
 class TrainingProgramWork extends TrainingProgram
 {
@@ -22,9 +26,19 @@ class TrainingProgramWork extends TrainingProgram
     public $mainFile;
     public $docFiles;
     public $contractFile;
-    public $fileUtp;
+    public $utpFile;
 
     public $branches;
+
+    private FileService $fileService;
+    private TrainingProgramRepository $repository;
+
+    public function __construct($config = [])
+    {
+        parent::__construct($config);
+        $this->fileService = Yii::createObject(FileService::class);
+        $this->repository = Yii::createObject(TrainingProgramRepository::class);
+    }
 
     public function rules()
     {
@@ -36,7 +50,7 @@ class TrainingProgramWork extends TrainingProgram
                     'extensions' => 'jpg, png, pdf, doc, docx, zip, rar, 7z, tag'],
                 [['contractFile'], 'file', 'skipOnEmpty' => true,
                     'extensions' => 'ppt, pptx, xls, xlsx, pdf, png, jpg, doc, docx, zip, rar, 7z, tag, txt'],
-                [['fileUtp'], 'file', 'extensions' => 'xls, xlsx', 'skipOnEmpty' => true],
+                [['utpFile'], 'file', 'extensions' => 'xls, xlsx', 'skipOnEmpty' => true],
             ]
         );
     }
@@ -96,5 +110,25 @@ class TrainingProgramWork extends TrainingProgram
         }
 
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
+    }
+
+    public function saveUtpFromFile()
+    {
+        $this->recordEvent(new ResetThematicPlanEvent($this->id), ThematicPlanWork::class);
+
+        $newFilename = StringFormatter::createHash(date("Y-m-d H:i:s")) . '.' . $this->utpFile->extension;
+        $this->fileService->uploadFile($this->file, $newFilename, ['filepath' => FilePaths::TEMP_FILEPATH . '/']);
+        $data = ExcelWizard::getDataFromColumns(
+            Yii::$app->basePath . FilePaths::TEMP_FILEPATH . '/' . $newFilename,
+            ['Тема', 'Тип контроля']
+        );
+
+        for ($i = 0; $i < count($data['Тема']); $i++) {
+            $this->recordEvent(new CreateThemeInPlanEvent($data['Тема'], $this->id, $data['Тип контроля']), ThematicPlanWork::class);
+        }
+
+        $this->releaseEvents();
+
+        $this->fileService->deleteFile(Yii::$app->basePath . FilePaths::TEMP_FILEPATH . '/' . $newFilename);
     }
 }

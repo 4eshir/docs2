@@ -42,14 +42,15 @@ class ExcelWizard
     }
 
     /**
-     * Возвращает массив с данными по участникам деятельности из Excel-файла
+     * Возвращает массив с данными по выбранным столбцам из Excel-файла
      * @param $filepath
+     * @param array $columns массив строк-заголовков столбцов
      * @return array
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
      * @throws \yii\base\InvalidConfigException
      */
-    public static function getAllParticipants($filepath)
+    public static function getDataFromColumns($filepath, array $columns)
     {
         ini_set('memory_limit', '512M');
 
@@ -65,7 +66,7 @@ class ExcelWizard
             $tempValue = $worksheet->getCell(Coordinate::stringFromColumnIndex(1) . $startRow)->getValue();;
         }
 
-        $headers = ['Фамилия обучающегося', 'Имя обучающегося', 'Отчество обучающегося', 'Дата рождения (л)', 'Контакт: Рабочий e-mail'];
+        $headers = $columns;
         $data = [];
         foreach ($headers as $header) {
             $data[$header] = self::getColumnDataByHeader($worksheet, $header, $startRow);

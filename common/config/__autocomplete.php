@@ -7,6 +7,7 @@ use common\components\dictionaries\base\BranchDictionary;
 use common\components\dictionaries\base\CategorySmspDictionary;
 use common\components\dictionaries\base\CertificateTypeDictionary;
 use common\components\dictionaries\base\CompanyTypeDictionary;
+use common\components\dictionaries\base\ControlTypeDictionary;
 use common\components\dictionaries\base\DocumentTypeDictionary;
 use common\components\dictionaries\base\EventFormDictionary;
 use common\components\dictionaries\base\EventLevelDictionary;
@@ -60,6 +61,7 @@ class Yii {
  * @property FocusDictionary $focus
  * @property AllowRemoteDictionary $allowRemote
  * @property CertificateTypeDictionary $certificateType
+ * @property ControlTypeDictionary $controlType
  * @property RacComponent $rac
  */
 class __Application {

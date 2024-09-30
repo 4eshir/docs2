@@ -67,6 +67,9 @@ return [
         'certificateType' => [
             'class' => 'common\\components\\dictionaries\\base\\CertificateTypeDictionary',
         ],
+        'controlType' => [
+            'class' => 'common\\components\\dictionaries\\base\\ControlTypeDictionary',
+        ],
         'rac' => [
             'class' => 'common\\components\\access\\RacComponent',
         ],

@@ -43,7 +43,10 @@ class LoadParticipants extends Model
     {
         $newFilename = StringFormatter::createHash(date("Y-m-d H:i:s")) . '.' . $this->file->extension;
         $this->fileService->uploadFile($this->file, $newFilename, ['filepath' => FilePaths::TEMP_FILEPATH . '/']);
-        $data = ExcelWizard::getAllParticipants(Yii::$app->basePath . FilePaths::TEMP_FILEPATH . '/' . $newFilename);
+        $data = ExcelWizard::getDataFromColumns(
+            Yii::$app->basePath . FilePaths::TEMP_FILEPATH . '/' . $newFilename,
+            ['Фамилия обучающегося', 'Имя обучающегося', 'Отчество обучающегося', 'Дата рождения (л)', 'Контакт: Рабочий e-mail']
+        );
 
         for ($i = 0; $i < count($data['Фамилия обучающегося']); $i++) {
             $participant = ForeignEventParticipantsWork::fill(
@@ -58,5 +61,7 @@ class LoadParticipants extends Model
             $participant->recordEvent(new PersonalDataParticipantAttachEvent($participant->id), get_class($participant));
             $participant->releaseEvents();
         }
+
+        $this->fileService->deleteFile(Yii::$app->basePath . FilePaths::TEMP_FILEPATH . '/' . $newFilename);
     }
 }
