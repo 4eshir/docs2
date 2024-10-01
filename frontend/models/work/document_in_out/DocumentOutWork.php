@@ -41,8 +41,8 @@ class DocumentOutWork extends DocumentOut
      * Переменные для input-file в форме
      */
     public $scanFile;
-    public $docFiles;
-    public $appFiles;
+    public $docFile;
+    public $appFile;
 
     public $isAnswer;
     public $dateAnswer;
@@ -67,9 +67,9 @@ class DocumentOutWork extends DocumentOut
             [['dateAnswer'], 'string'],
             [['scanFile'], 'file', 'skipOnEmpty' => true,
                 'extensions' => 'png, jpg, pdf, zip, rar, 7z, tag, txt'],
-            [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
+            [['docFile'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
                 'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt'],
-            [['appFiles'], 'file', 'skipOnEmpty' => true,  'maxFiles' => 10,
+            [['appFile'], 'file', 'skipOnEmpty' => true,  'maxFiles' => 10,
                 'extensions' => 'ppt, pptx, xls, xlsx, pdf, png, jpg, doc, docx, zip, rar, 7z, tag, txt'],
         ]);
     }
@@ -201,19 +201,19 @@ class DocumentOutWork extends DocumentOut
             if($up == null && $down == null) {
                 $this->document_number = '0';
                 $this->document_postfix = 0;
-                var_dump('this 1');
+
             }
             if($up == null && $down != null) {
 
                 $this->document_number = $down_max + 1;
                 $this->document_postfix = 0;
-                var_dump('this 2');
+
             }
             if($up != null && $down == null){
                 //вопрос???
                 $this->document_number = '0';
                 $this->document_postfix = '0';
-                var_dump('this 3');
+
             }
             if($up != null && $down != null){
                 $this->document_number = $down_max ;
