@@ -25,20 +25,6 @@ class ThematicPlan extends \yii\db\ActiveRecord
         return 'thematic_plan';
     }
 
-    public static function fill($theme, $programId, $controlType)
-    {
-        if (!array_key_exists($controlType, Yii::$app->controlType->getList())) {
-            throw new InvalidArgumentException('Неизвестный тип контроля');
-        }
-
-        $entity = new static();
-        $entity->theme = $theme;
-        $entity->training_program_id = $programId;
-        $entity->control_type = $controlType;
-
-        return $entity;
-    }
-
     /**
      * {@inheritdoc}
      */

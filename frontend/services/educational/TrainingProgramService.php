@@ -2,13 +2,19 @@
 
 namespace frontend\services\educational;
 
+use common\components\wizards\ExcelWizard;
 use common\helpers\files\filenames\TrainingProgramFileNameGenerator;
+use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
+use frontend\events\educational\training_program\CreateThemeInPlanEvent;
+use frontend\events\educational\training_program\ResetThematicPlanEvent;
 use frontend\events\general\FileCreateEvent;
+use frontend\models\work\educational\ThematicPlanWork;
 use frontend\models\work\educational\TrainingProgramWork;
+use Yii;
 use yii\web\UploadedFile;
 
 class TrainingProgramService implements DatabaseService
@@ -30,9 +36,24 @@ class TrainingProgramService implements DatabaseService
         $model->utpFile = UploadedFile::getInstance($model, 'utpFile');
     }
 
-    public function saveUtpFromFile()
+    public function saveUtpFromFile(TrainingProgramWork $model)
     {
+        if ($model->utpFile !== null) {
+            $model->recordEvent(new ResetThematicPlanEvent($model->id), ThematicPlanWork::class);
 
+            $newFilename = StringFormatter::createHash(date("Y-m-d H:i:s")) . '.' . $model->utpFile->extension;
+            $this->fileService->uploadFile($model->utpFile, $newFilename, ['filepath' => FilePaths::TEMP_FILEPATH . '/']);
+            $data = ExcelWizard::getDataFromColumns(
+                Yii::$app->basePath . FilePaths::TEMP_FILEPATH . '/' . $newFilename,
+                ['Тема', 'Тип контроля']
+            );
+
+            for ($i = 0; $i < count($data['Тема']); $i++) {
+                $model->recordEvent(new CreateThemeInPlanEvent($data['Тема'][$i], $model->id, $data['Тип контроля'][$i]), ThematicPlanWork::class);
+            }
+
+            $this->fileService->deleteFile(FilePaths::TEMP_FILEPATH . '/' . $newFilename);
+        }
     }
 
     public function saveFilesFromModel(TrainingProgramWork $model)

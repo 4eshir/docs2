@@ -62,6 +62,6 @@ class LoadParticipants extends Model
             $participant->releaseEvents();
         }
 
-        $this->fileService->deleteFile(Yii::$app->basePath . FilePaths::TEMP_FILEPATH . '/' . $newFilename);
+        $this->fileService->deleteFile(FilePaths::TEMP_FILEPATH . '/' . $newFilename);
     }
 }

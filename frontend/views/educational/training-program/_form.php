@@ -1,11 +1,14 @@
 <?php
 
+use common\helpers\html\HtmlBuilder;
 use yii\helpers\Html;
 use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model \frontend\models\work\educational\TrainingProgramWork */
+/* @var $modelAuthor */
+/* @var $modelThematicPlan */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -83,6 +86,10 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'actual')->checkbox(); ?>
 
     <?= $form->field($model, 'utpFile')->fileInput() ?>
+
+    <?php if (strlen($modelThematicPlan) > 10): ?>
+        <?= $modelThematicPlan; ?>
+    <?php endif; ?>
 
     <?= $form->field($model, 'mainFile')->fileInput() ?>
 

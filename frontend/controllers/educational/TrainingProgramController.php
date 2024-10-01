@@ -3,6 +3,7 @@
 namespace frontend\controllers\educational;
 
 use common\controllers\DocumentController;
+use common\helpers\html\HtmlBuilder;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
@@ -14,6 +15,8 @@ use frontend\models\work\educational\TrainingProgramWork;
 use frontend\services\educational\TrainingProgramService;
 use Yii;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -92,6 +95,7 @@ class TrainingProgramController extends DocumentController
             $this->service->getFilesInstances($model);
             $this->repository->save($model);
             $this->service->saveFilesFromModel($model);
+            $this->service->saveUtpFromFile($model);
 
             $model->recordEvent(new CreateTrainingProgramBranchEvent($model->id, $model->branches), TrainingProgramWork::class);
             $model->releaseEvents();
@@ -118,12 +122,28 @@ class TrainingProgramController extends DocumentController
         /** @var TrainingProgramWork $model */
         $model = $this->repository->get($id);
         $modelAuthor = $this->repository->getAuthors($id);
-        $modelThematicPlan = $this->repository->getThematicPlan($id);
+        $themes = $this->repository->getThematicPlan($id);
+        $modelThematicPlan = HtmlBuilder::createTableWithActionButtons(
+            [
+                ArrayHelper::getColumn($themes, 'theme')
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Редактировать',
+                    Url::to('update-theme'),
+                    ['id' => ArrayHelper::getColumn($themes, 'id'), 'modelId' => ArrayHelper::getColumn($themes, 'training_program_id')]),
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-theme'),
+                    ['id' => ArrayHelper::getColumn($themes, 'id'), 'modelId' => ArrayHelper::getColumn($themes, 'training_program_id')])
+            ]
+        );
 
         if ($model->load(Yii::$app->request->post())) {
             $this->service->getFilesInstances($model);
             $this->repository->save($model);
             $this->service->saveFilesFromModel($model);
+            $this->service->saveUtpFromFile($model);
 
             $model->recordEvent(new CreateTrainingProgramBranchEvent($model->id, $model->branches), TrainingProgramWork::class);
             $model->releaseEvents();
@@ -161,15 +181,15 @@ class TrainingProgramController extends DocumentController
         return $this->redirect(['index']);
     }
 
-    public function actionUpdatePlan($id, $modelId)
+    public function actionUpdateTheme($id, $modelId)
     {
-        $model = ThematicPlanWork::find()->where(['id' => $id])->one();
-        if ($model->load(Yii::$app->request->post())) {
-            $model->save(false);
+        /** @var ThematicPlanWork $model */
+        $model = $this->repository->getTheme($id);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $this->repository->saveTheme($model);
             $group = TrainingProgramWork::find()->where(['id' => $modelId])->one();
             $modelAuthor = [new AuthorProgramWork];
             $modelThematicPlan = [new ThematicPlanWork];
-            Logger::WriteLog(Yii::$app->user->identity->getId(), 'Изменен тематический план образовательной программы '.$model->trainingProgram->name);
             return $this->render('update', [
                 'model' => $group,
                 'modelAuthor' => $modelAuthor,
@@ -264,7 +284,7 @@ class TrainingProgramController extends DocumentController
         return $this->redirect('index.php?r=training-program/update&id='.$modelId);
     }
 
-    public function actionDeletePlan($id, $modelId)
+    public function actionDeleteTheme($id, $modelId)
     {
         $plan = ThematicPlanWork::find()->where(['id' => $id])->one();
         $name = $plan->trainingProgram->name;

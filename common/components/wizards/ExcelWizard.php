@@ -32,8 +32,8 @@ class ExcelWizard
 
         $data = [];
         $mainIndex = 0;
-        while ($mainIndex < $highestRow - $headerRow) {
-            $row = $worksheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . ($headerRow + $mainIndex + 1))->getFormattedValue();
+        while ($mainIndex < $highestRow - $headerRow &&
+            strlen($row = $worksheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . ($headerRow + $mainIndex + 1))->getFormattedValue()) > 0) {
             $data[] = $row;
             $mainIndex++;
         }
@@ -63,7 +63,7 @@ class ExcelWizard
         $tempValue = $worksheet->getCell(Coordinate::stringFromColumnIndex(1) . $startRow);
         while ($startRow < $highestRow && strlen($tempValue) < 1) {
             $startRow++;
-            $tempValue = $worksheet->getCell(Coordinate::stringFromColumnIndex(1) . $startRow)->getValue();;
+            $tempValue = $worksheet->getCell(Coordinate::stringFromColumnIndex(1) . $startRow)->getValue();
         }
 
         $headers = $columns;

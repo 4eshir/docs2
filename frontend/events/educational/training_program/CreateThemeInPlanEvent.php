@@ -33,6 +33,8 @@ class CreateThemeInPlanEvent implements EventInterface
 
     public function execute()
     {
-        return $this->repository->prepareCreateTheme($this->theme, $this->programId, $this->controlType);
+        return [
+            $this->repository->prepareCreateTheme($this->theme, $this->programId, $this->controlType)
+        ];
     }
 }

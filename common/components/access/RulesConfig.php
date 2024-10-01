@@ -93,6 +93,8 @@ class RulesConfig
                 'create',
                 'update',
                 'delete',
+                'update-theme',
+                'delete-theme'
             ]
         ]
     ];

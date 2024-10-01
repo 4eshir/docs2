@@ -86,7 +86,7 @@ class TrainingProgramRepository
 
     public function prepareCreateTheme($theme, $programId, $controlType)
     {
-        $model = ThematicPlan::fill($theme, $programId, $controlType);
+        $model = ThematicPlanWork::fill($theme, $programId, $controlType);
         $command = Yii::$app->db->createCommand();
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
@@ -132,5 +132,18 @@ class TrainingProgramRepository
         $model->releaseEvents();
 
         return $model->delete();
+    }
+
+    public function getTheme($themeId)
+    {
+        return ThematicPlanWork::find()->where(['id' => $themeId])->one();
+    }
+
+    public function saveTheme(ThematicPlanWork $theme)
+    {
+        if (!$theme->save()) {
+            throw new DomainException('Ошибка сохранения образовательной программы. Проблемы: '.json_encode($theme->getErrors()));
+        }
+        return $theme->id;
     }
 }

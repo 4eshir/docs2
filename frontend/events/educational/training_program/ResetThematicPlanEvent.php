@@ -33,7 +33,7 @@ class ResetThematicPlanEvent implements EventInterface
         $result = [];
         foreach ($themes as $theme) {
             /** @var ThematicPlanWork $theme */
-            $result = array_merge($result, $this->repository->prepareDeleteTheme($theme->id));
+            $result[] = $this->repository->prepareDeleteTheme($theme->id);
         }
 
         return $result;

@@ -111,24 +111,4 @@ class TrainingProgramWork extends TrainingProgram
 
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
-
-    public function saveUtpFromFile()
-    {
-        $this->recordEvent(new ResetThematicPlanEvent($this->id), ThematicPlanWork::class);
-
-        $newFilename = StringFormatter::createHash(date("Y-m-d H:i:s")) . '.' . $this->utpFile->extension;
-        $this->fileService->uploadFile($this->file, $newFilename, ['filepath' => FilePaths::TEMP_FILEPATH . '/']);
-        $data = ExcelWizard::getDataFromColumns(
-            Yii::$app->basePath . FilePaths::TEMP_FILEPATH . '/' . $newFilename,
-            ['Тема', 'Тип контроля']
-        );
-
-        for ($i = 0; $i < count($data['Тема']); $i++) {
-            $this->recordEvent(new CreateThemeInPlanEvent($data['Тема'], $this->id, $data['Тип контроля']), ThematicPlanWork::class);
-        }
-
-        $this->releaseEvents();
-
-        $this->fileService->deleteFile(Yii::$app->basePath . FilePaths::TEMP_FILEPATH . '/' . $newFilename);
-    }
 }
