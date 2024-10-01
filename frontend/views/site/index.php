@@ -5,13 +5,6 @@
 $this->title = 'My Yii Application';
 ?>
 
-<script>
-    React.createElement('div', {className: 'my-class'}, 'Hello, World!');
-    //ReactDOM.render(<div>lol</div>, document.getElementById("app"));
-</script>
-
-<div id="app"></div>
-
 <div class="site-index">
     <div class="p-5 mb-4 bg-transparent rounded-3">
         <div class="container-fluid py-5 text-center">

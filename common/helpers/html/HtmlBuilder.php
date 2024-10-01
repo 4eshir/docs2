@@ -3,6 +3,7 @@
 namespace common\helpers\html;
 
 use Yii;
+use yii\helpers\Html;
 
 class HtmlBuilder
 {
@@ -47,6 +48,23 @@ class HtmlBuilder
         }
         $result .= "</table>";
 
+        return $result;
+    }
+
+    /**
+     * Создает группу кнопок
+     * $linksArray должен быть ассоциативным массивом ['Имя кнопки' => 'ссылка']
+     * @param $linksArray
+     * @return string
+     */
+    public static function createGroupButton($linksArray)
+    {
+        $result = '<div class="button-group">';
+        $class = count($linksArray) < 3 ? 'btn-primary' : 'btn-secondary';
+        foreach ($linksArray as $label => $url) {
+            $result .= Html::a($label, $url, ['class' => $class]);
+        }
+        $result .= '</div>';
         return $result;
     }
 }

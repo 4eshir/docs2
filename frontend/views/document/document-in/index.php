@@ -16,26 +16,24 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $session = Yii::$app->session;
 $tempArchive = $session->get("archiveIn");
+$helper = new DocumentInWork();
 ?>
 <div class="document-in-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Добавить входящий документ', ['create'], ['class' => 'btn btn-success', 'style' => 'display: inline-block;']) ?>
-        <?= Html::a('Добавить резерв', ['document/document-in/reserve'], [
-            'class' => 'btn btn-warning',
-            'style' => 'display: inline-block;',
-        ]) ?>
+    <?= $helper->createGroupButton(); ?>
 
+    <p >
 
         <?php
         if ($tempArchive === null)
-            echo Html::a('Показать архивные документы', ['document-in/index', 'archive' => 1, 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block; background-color: #ededed']);
+            echo Html::a('Показать архивные документы', ['document-in/index', 'archive' => 1, 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
         else
-            echo Html::a('Скрыть архивные документы', ['document-in/index', 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block; background-color: #ededed']);
+            echo Html::a('Скрыть архивные документы', ['document-in/index', 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
         ?>
     </p>
+
     <?= $this->render('_search', ['model' => $searchModel]) ?>
 
     <?php
@@ -65,6 +63,26 @@ $tempArchive = $session->get("archiveIn");
     ]);
 
     ?>
+
+    <div class="filter-toggle" id="filterToggle">
+        <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
+        </svg>
+    </div>
+
+    <div class="filter-panel" id="filterPanel">
+        <h2>Фильтры</h2>
+        <label>
+            <input type="checkbox"> Фильтр 1
+        </label>
+        <label>
+            <input type="checkbox"> Фильтр 2
+        </label>
+        <label>
+            <input type="checkbox"> Фильтр 3
+        </label>
+    </div>
+
     <div style="margin-bottom: 20px">
 
         <?php echo '<div style="margin-bottom: 10px; margin-top: 20px">'.Html::a('Показать просроченные документы', \yii\helpers\Url::to(['document-in/index', 'sort' => '1'])).
@@ -73,7 +91,7 @@ $tempArchive = $session->get("archiveIn");
         <?=
         GridView::widget([
             'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
+            //'filterModel' => $searchModel,
             'summary' => false,
 
             'columns' => [
@@ -134,8 +152,11 @@ $tempArchive = $session->get("archiveIn");
                     return $model->getNeedAnswer(StringFormatter::FORMAT_LINK);
                 }, 'format' => 'raw'],
 
-                ['class' => 'yii\grid\ActionColumn'],
+                //['class' => 'yii\grid\ActionColumn'],
+                ['class' => \app\components\VerticalActionColumn::class],
             ],
-        ]);?>
+        ]);
+
+        ?>
     </div>
 </div>

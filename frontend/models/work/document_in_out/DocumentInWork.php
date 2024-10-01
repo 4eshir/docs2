@@ -5,6 +5,7 @@ namespace frontend\models\work\document_in_out;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\models\scaffold\DocumentIn;
 use common\repositories\document_in_out\DocumentOutRepository;
@@ -240,6 +241,16 @@ class DocumentInWork extends DocumentIn
             }
         }
     }
+
+    public function createGroupButton()
+    {
+        $links = [
+            'Добавить документ' => Url::to(['document/document-in/create']),
+            'Добавить резерв' => Url::to(['document/document-in/reserve']),
+        ];
+        return HtmlBuilder::createGroupButton($links);
+    }
+
     /*public function getLastNumber($inputString) {
         $parts = explode('/', $inputString);
         return $parts;
