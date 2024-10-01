@@ -182,7 +182,7 @@ use yii\widgets\ActiveForm;
         </table>
     <?php endif; ?>
 
-    <?= $form->field($model, 'docFiles[]')
+    <?= $form->field($model, 'docFile[]')
         ->fileInput(['multiple' => true])
         ->label('Редактируемые документы') ?>
 
@@ -197,7 +197,7 @@ use yii\widgets\ActiveForm;
         </table>
     <?php endif; ?>
 
-    <?= $form->field($model, 'appFiles[]')
+    <?= $form->field($model, 'appFile[]')
         ->fileInput(['multiple' => true])
         ->label('Приложения') ?>
 

@@ -27,8 +27,8 @@ class DocumentOutService implements DatabaseService
     public function getFilesInstances(DocumentOutWork $model)
     {
         $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
-        $model->appFiles = UploadedFile::getInstances($model, 'appFiles');
-        $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
+        $model->appFile = UploadedFile::getInstances($model, 'appFile');
+        $model->docFile = UploadedFile::getInstances($model, 'docFile');
     }
 
     public function saveFilesFromModel(DocumentOutWork $model)
@@ -38,7 +38,12 @@ class DocumentOutService implements DatabaseService
 
             $this->fileService->uploadFile(
                 $model->scanFile,
-                $filename
+                $filename,
+                [
+                    'tableName' => DocumentOutWork::tableName(),
+                    'fileType' => FilesHelper::TYPE_SCAN
+                ]
+
             );
 
             $model->recordEvent(
@@ -53,11 +58,11 @@ class DocumentOutService implements DatabaseService
             );
         }
 
-        for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
+        for ($i = 1; $i < count($model->docFile) + 1; $i++) {
             $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_DOC, ['counter' => $i]);
 
             $this->fileService->uploadFile(
-                $model->docFiles[$i - 1],
+                $model->docFile[$i - 1],
                 $filename
             );
 
@@ -73,11 +78,11 @@ class DocumentOutService implements DatabaseService
             );
         }
 
-        for ($i = 1; $i < count($model->appFiles) + 1; $i++) {
+        for ($i = 1; $i < count($model->appFile) + 1; $i++) {
             $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_APP, ['counter' => $i]);
 
             $this->fileService->uploadFile(
-                $model->appFiles[$i - 1],
+                $model->appFile[$i - 1],
                 $filename
             );
 
