@@ -5,7 +5,6 @@ use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\SortHelper;
-use common\models\search\SearchDocumentOut;
 use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\dictionaries\PositionRepository;
@@ -17,6 +16,7 @@ use frontend\events\document_in\InOutDocumentDeleteEvent;
 use frontend\events\document_in\InOutDocumentUpdateEvent;
 use frontend\events\general\FileDeleteEvent;
 use frontend\helpers\HeaderWizard;
+use frontend\models\search\SearchDocumentOut;
 use frontend\models\work\document_in_out\DocumentOutWork;
 use frontend\models\work\general\FilesWork;
 use frontend\services\document\DocumentOutService;
@@ -34,16 +34,16 @@ class DocumentOutController extends Controller
     private DocumentOutService $service;
 
     public function __construct(
-        $id,
-        $module,
+                              $id,
+                              $module,
         DocumentOutRepository $repository,
-        PeopleRepository $peopleRepository,
-        PositionRepository $positionRepository,
-        CompanyRepository $companyRepository,
-        FileService $fileService,
-        FilesRepository $filesRepository,
-        DocumentOutService $service,
-        $config = [])
+        PeopleRepository      $peopleRepository,
+        PositionRepository    $positionRepository,
+        CompanyRepository     $companyRepository,
+        FileService           $fileService,
+        FilesRepository       $filesRepository,
+        DocumentOutService    $service,
+                              $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->repository = $repository;
@@ -90,7 +90,6 @@ class DocumentOutController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $local_id = $model->is_answer;
             $model->testOut();
-           // $model->generateDocumentNumber();
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }

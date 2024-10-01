@@ -1,10 +1,10 @@
 <?php
 
-use common\models\search\SearchForeignEventParticipants;
+use frontend\models\search\SearchForeignEventParticipants;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
-use yii\helpers\Html;
-use yii\grid\GridView;
 use kartik\export\ExportMenu;
+use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel SearchForeignEventParticipants */

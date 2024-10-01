@@ -33,6 +33,16 @@ trait EventTrait
         $this->events[] = $event;
     }
 
+    protected function clearEvents()
+    {
+        $this->events = [];
+    }
+
+    protected function clearQueries()
+    {
+        $this->queries = [];
+    }
+
     protected function exist($className)
     {
         foreach ($this->events as $event) {
@@ -50,6 +60,7 @@ trait EventTrait
                 /** @var EventInterface $event */
                 $this->queries = array_merge($this->queries, $event->execute());
             }
+            $this->clearEvents();
         }
         catch (Exception $e) {
             Yii::error('Произошла ошибка в releaseEvents - ' . $e->getMessage());
@@ -67,6 +78,7 @@ trait EventTrait
                 $command->execute();
             }
             $transaction->commit();
+            $this->clearQueries();
         }
         catch (\yii\db\Exception $e) {
             var_dump($e->getMessage());

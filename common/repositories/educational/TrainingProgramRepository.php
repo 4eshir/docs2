@@ -1,0 +1,149 @@
+<?php
+
+namespace common\repositories\educational;
+
+use common\helpers\files\FilesHelper;
+use common\models\scaffold\AuthorProgram;
+use common\models\scaffold\ThematicPlan;
+use common\repositories\general\FilesRepository;
+use common\services\general\files\FileService;
+use DomainException;
+use frontend\events\educational\training_program\DeleteTrainingProgramBranchEvent;
+use frontend\events\general\FileDeleteEvent;
+use frontend\models\work\educational\AuthorProgramWork;
+use frontend\models\work\educational\BranchProgramWork;
+use frontend\models\work\educational\ThematicPlanWork;
+use frontend\models\work\educational\TrainingProgramWork;
+use Yii;
+
+class TrainingProgramRepository
+{
+    private FileService $fileService;
+    private FilesRepository $filesRepository;
+
+    public function __construct(
+        FileService $fileService,
+        FilesRepository $filesRepository
+    )
+    {
+        $this->fileService = $fileService;
+        $this->filesRepository = $filesRepository;
+    }
+
+    public function get($id)
+    {
+        return TrainingProgramWork::find()->where(['id' => $id])->one();
+    }
+
+    public function getBranches($id)
+    {
+        return BranchProgramWork::find()->where(['training_program_id' => $id])->orderBy(['branch' => SORT_ASC])->all();
+    }
+
+    public function prepareResetBranches($eventId)
+    {
+        $branches = $this->getBranches($eventId);
+        $commands = [];
+        foreach ($branches as $branch) {
+            $command = Yii::$app->db->createCommand();
+            $command->delete(BranchProgramWork::tableName(), ['id' => $branch->id]);
+            $commands[] = $command->getRawSql();
+        }
+
+        return $commands;
+    }
+
+    public function prepareConnectBranches($eventId, $branches)
+    {
+        $commands = [];
+        foreach ($branches as $branch) {
+            $model = BranchProgramWork::fill($eventId, $branch);
+            $command = Yii::$app->db->createCommand();
+            $command->insert($model::tableName(), $model->getAttributes());
+            $commands[] = $command->getRawSql();
+        }
+
+        return $commands;
+    }
+
+    public function save(TrainingProgramWork $program)
+    {
+        if (!$program->save()) {
+            throw new DomainException('Ошибка сохранения образовательной программы. Проблемы: '.json_encode($program->getErrors()));
+        }
+        return $program->id;
+    }
+
+    public function getThematicPlan($programId)
+    {
+        return ThematicPlanWork::find()->where(['training_program_id' => $programId])->all();
+    }
+
+    public function getAuthors($programId)
+    {
+        return AuthorProgramWork::find()->where(['training_program_id' => $programId])->all();
+    }
+
+    public function prepareCreateTheme($theme, $programId, $controlType)
+    {
+        $model = ThematicPlanWork::fill($theme, $programId, $controlType);
+        $command = Yii::$app->db->createCommand();
+        $command->insert($model::tableName(), $model->getAttributes());
+        return $command->getRawSql();
+    }
+
+    public function prepareDeleteTheme($id)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(ThematicPlanWork::tableName(), ['id' => $id]);
+        return $command->getRawSql();
+    }
+
+    public function delete(TrainingProgramWork $model)
+    {
+        /** @var TrainingProgramWork $model */
+        $model->recordEvent(new DeleteTrainingProgramBranchEvent($model->id), get_class($model));
+
+        $main = $this->filesRepository->get(TrainingProgramWork::tableName(), $model->id, FilesHelper::TYPE_MAIN);
+        $doc = $this->filesRepository->get(TrainingProgramWork::tableName(), $model->id, FilesHelper::TYPE_DOC);
+        $contract = $this->filesRepository->get(TrainingProgramWork::tableName(), $model->id, FilesHelper::TYPE_CONTRACT);
+
+        if (is_array($main)) {
+            foreach ($main as $file) {
+                $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
+                $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            }
+        }
+
+        if (is_array($doc)) {
+            foreach ($doc as $file) {
+                $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
+                $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            }
+        }
+
+        if (is_array($contract)) {
+            foreach ($contract as $file) {
+                $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
+                $model->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            }
+        }
+
+        $model->releaseEvents();
+
+        return $model->delete();
+    }
+
+    public function getTheme($themeId)
+    {
+        return ThematicPlanWork::find()->where(['id' => $themeId])->one();
+    }
+
+    public function saveTheme(ThematicPlanWork $theme)
+    {
+        if (!$theme->save()) {
+            throw new DomainException('Ошибка сохранения образовательной программы. Проблемы: '.json_encode($theme->getErrors()));
+        }
+        return $theme->id;
+    }
+}

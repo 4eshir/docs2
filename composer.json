@@ -27,7 +27,8 @@
         "laminas/laminas-diactoros": "2.17",
         "arhitector/yandex": "dev-master",
         "guzzlehttp/psr7": "^2.6",
-        "php-http/message-factory": "^1.1"
+        "php-http/message-factory": "^1.1",
+        "phpoffice/phpspreadsheet": "^1.29"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

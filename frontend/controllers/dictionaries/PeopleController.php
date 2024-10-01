@@ -5,12 +5,10 @@ namespace frontend\controllers\dictionaries;
 use app\events\dictionaries\PeopleEventCreate;
 use app\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
 use common\components\dictionaries\base\BranchDictionary;
-use common\helpers\StringFormatter;
-use common\models\search\SearchPeople;
 use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\dictionaries\PositionRepository;
-use common\repositories\general\PeoplePositionCompanyBranchRepository;
+use frontend\models\search\SearchPeople;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\services\dictionaries\PeopleService;
@@ -25,16 +23,16 @@ class PeopleController extends Controller
 
     private PositionRepository $positionRepository;
     public function __construct(
-        $id,
-        $module,
-        PeopleRepository $repository,
-        PeopleService $service,
-        CompanyRepository $companyRepository,
+                           $id,
+                           $module,
+        PeopleRepository   $peopleRepository,
+        PeopleService      $service,
+        CompanyRepository  $companyRepository,
         PositionRepository $positionRepository,
-        $config = [])
+                           $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->repository = $repository;
+        $this->repository = $peopleRepository;
         $this->service = $service;
         $this->positionRepository = $positionRepository;
         $this->companyRepository = $companyRepository;
@@ -75,18 +73,17 @@ class PeopleController extends Controller
         $positions = $this->positionRepository->getList();
         $branches = Yii::$app->branches->getList();
         $post = Yii::$app->request->post();
-        if ($model->load($post)) {
-            if ($model->validate()) {
-                $post_pos = $post['pos'];
-                $post_side = $post['side'];
-                $test_people_id = 2;
-                $model->recordEvent(new PeopleEventCreate($model->firstname, $model->surname, $model->patronymic),PeopleWork::class);
-                for ($i = 0; $i < count($post_pos); $i++) {
-                    if ($post_pos[$i] != NULL && $post_side[$i] != NULL){
-                        $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($test_people_id, $post_pos[$i] ,
-                            $model->company_id, BranchDictionary::getByName($post_side[$i])),
-                            PeoplePositionCompanyBranchWork::class);
-                    }
+        if ($model->load($post)  && $model->validate()) {
+
+            $postPos = $model->getPositionsByPost($post);
+            $postBranch = $model->getBranchByPost($post) ;
+            $people_id = $this->repository->save($model);
+
+            for ($i = 0; $i < count($postPos); $i++) {
+                if ($postPos[$i] != NULL && $postBranch[$i] != NULL && $i != 0){
+                    $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($people_id, (int)$postPos[$i] ,
+                        $model->company_id, BranchDictionary::getByName($postBranch[$i])),
+                        PeoplePositionCompanyBranchWork::class);
                 }
             }
             $model->releaseEvents();

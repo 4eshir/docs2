@@ -4,11 +4,11 @@ namespace frontend\controllers\regulation;
 
 use common\controllers\DocumentController;
 use common\helpers\files\FilesHelper;
-use common\models\search\SearchRegulation;
 use common\repositories\general\FilesRepository;
 use common\repositories\regulation\RegulationRepository;
 use common\services\general\files\FileService;
 use DomainException;
+use frontend\models\search\SearchRegulation;
 use frontend\models\work\regulation\RegulationWork;
 use frontend\services\regulation\RegulationService;
 use Yii;
@@ -19,11 +19,11 @@ class RegulationController extends DocumentController
     private RegulationService $service;
 
     public function __construct(
-        $id,
-        $module,
+                             $id,
+                             $module,
         RegulationRepository $repository,
-        RegulationService $service,
-        $config = [])
+        RegulationService    $service,
+                             $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;

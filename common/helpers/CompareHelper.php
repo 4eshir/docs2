@@ -64,4 +64,14 @@ class CompareHelper
 
         return self::RESULT_CORRECT;
     }
+
+    /**
+     * Проверяет, является ли входная строка корректным e-mail
+     * @param string $str
+     * @return int
+     */
+    public static function isEmail(string $str) {
+        $pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
+        return preg_match($pattern, $str) === 1 ? self::RESULT_CORRECT : self::RESULT_INCORRECT;
+    }
 }

@@ -2,9 +2,8 @@
 
 namespace frontend\controllers\dictionaries;
 
-use common\helpers\StringFormatter;
-use common\models\search\SearchPosition;
 use common\repositories\dictionaries\PositionRepository;
+use frontend\models\search\SearchPosition;
 use frontend\models\work\dictionaries\PositionWork;
 use frontend\services\dictionaries\PositionService;
 use Yii;

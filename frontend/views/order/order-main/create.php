@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 
-/* @var $model \frontend\models\work\order\OrderMainWork */
+/* @var $model \app\models\work\order\OrderMainWork */
 /* @var $bringPeople */
 
 $this->title = 'Добавить приказ об основной деятельности';

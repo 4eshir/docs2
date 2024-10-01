@@ -8,7 +8,7 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $searchModel common\models\search\SearchDocumentIn */
+/* @var $searchModel \frontend\models\search\SearchDocumentIn */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Входящая документация';

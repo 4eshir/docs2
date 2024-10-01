@@ -38,27 +38,39 @@ class BranchDictionary extends BaseDictionary
             $this->list[self::ADMINISTRATION],
         ];
     }
+
+    public function getOnlyEducational()
+    {
+        return [
+            self::TECHNOPARK => 'Технопарк',
+            self::QUANTORIUM => 'Кванториум',
+            self::CDNTT => 'ЦДНТТ',
+            self::COD => 'ЦОД',
+            self::MOBILE_QUANTUM => 'Мобильный Кванториум',
+        ];
+    }
+
     public static function getByName($name){
         switch ($name){
-            case 'Технопарк':
+            case "Технопарк":
                 $id = 1;
                 break;
-            case 'Кванториум':
+            case "Кванториум":
                 $id = 2;
                 break;
-            case 'ЦДНТТ':
+            case "ЦДНТТ":
                 $id = 3;
                 break;
-            case 'ЦОД':
+            case "ЦОД":
                 $id = 4;
                 break;
-            case 'Мобильный Кванториум':
+            case "Мобильный Кванториум":
                 $id = 5;
                 break;
-            case 'Планетарий':
+            case "Планетарий":
                 $id = 6;
                 break;
-            case 'Администрация':
+            case "Администрация":
                 $id = 7;
                 break;
             default:

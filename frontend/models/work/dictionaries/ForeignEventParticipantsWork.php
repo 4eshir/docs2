@@ -56,6 +56,26 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants
         ];
     }
 
+    public static function fill(
+        $firstname,
+        $surname,
+        $birthdate,
+        $email,
+        $sex,
+        $patronymic = ''
+    )
+    {
+        $entity = new static();
+        $entity->firstname = $firstname;
+        $entity->surname = $surname;
+        $entity->birthdate = $birthdate;
+        $entity->email = $email;
+        $entity->sex = $sex;
+        $entity->patronymic = $patronymic;
+
+        return $entity;
+    }
+
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
@@ -136,9 +156,11 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants
 
     public function setNotTrue($type = self::DROP_CORRECT_HARD)
     {
-        $this->is_true = 0;
-        if (self::DROP_CORRECT_HARD) {
-            $this->guaranteed_true = 0;
+        if (!$this->isGuaranteedTrue() && $type !== self::DROP_CORRECT_HARD) {
+            $this->is_true = 0;
+            if (self::DROP_CORRECT_HARD) {
+                $this->guaranteed_true = 0;
+            }
         }
     }
 

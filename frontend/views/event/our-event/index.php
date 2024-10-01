@@ -1,10 +1,10 @@
 <?php
 
-use common\models\search\SearchEvent;
+use frontend\models\search\SearchEvent;
 use frontend\models\work\event\EventWork;
 use kartik\export\ExportMenu;
-use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel SearchEvent */

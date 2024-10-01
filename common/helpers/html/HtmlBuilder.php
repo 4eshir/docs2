@@ -2,6 +2,8 @@
 
 namespace common\helpers\html;
 
+use common\helpers\common\BaseFunctions;
+use DomainException;
 use Yii;
 use yii\helpers\Html;
 
@@ -52,6 +54,7 @@ class HtmlBuilder
     }
 
     /**
+<<<<<<< HEAD
      * Создает группу кнопок
      * $linksArray должен быть ассоциативным массивом ['Имя кнопки' => 'ссылка']
      * @param $linksArray
@@ -67,4 +70,63 @@ class HtmlBuilder
         $result .= '</div>';
         return $result;
     }
+=======
+     * Создает таблицу с данными из $dataMatrix и экшн-кнопками из $buttonMatrix
+     * @param array $dataMatrix данные для таблицы в виде матрицы
+     * @param array $buttonMatrix матрица кнопок взаимодействия класса HtmlHelper::a()
+     * @return string
+     */
+    public static function createTableWithActionButtons(array $dataMatrix, array $buttonMatrix)
+    {
+        $result = '<table class="table table-bordered">';
+        $dataMatrix = BaseFunctions::transposeMatrix($dataMatrix);
+        $buttonMatrix = BaseFunctions::transposeMatrix($buttonMatrix);
+
+        foreach ($dataMatrix as $i => $row) {
+            $result .= '<tr>';
+            foreach ($row as $cell) {
+                $result .= "<td>$cell</td>";
+            }
+            foreach ($buttonMatrix[$i] as $button) {
+                $result .= "<td>$button</td>";
+            }
+            $result .= '</tr>';
+        }
+
+        $result .= '</table>';
+
+        return $result;
+    }
+
+    /**
+     * Создает массив кнопок с указанными в $queryParams параметрами
+     * @param string $text имя кнопок
+     * @param string $url url кнопок
+     * @param array $queryParams массив параметров вида ['param_name' => [1, 2, 3], 'param_name' => ['some', 'data'], ...]
+     * @return array
+     */
+    public static function createButtonsArray(string $text, string $url, array $queryParams)
+    {
+        $result = [];
+
+        $keys = array_keys($queryParams);
+        $maxLength = max(array_map('count', $queryParams));
+
+        // Формируем результирующий массив
+        for ($i = 0; $i < $maxLength; $i++) {
+            $combined = [];
+            foreach ($keys as $key) {
+                if (isset($queryParams[$key][$i])) {
+                    $combined[$key] = $queryParams[$key][$i];
+                }
+            }
+            if (!empty($combined)) {
+                $result[] = Html::a($text, array_merge([$url], $combined));
+            }
+        }
+
+        return $result;
+    }
+
+>>>>>>> da2af2f26533db6a85aec80027131c9ef6b3299f
 }

@@ -2,7 +2,7 @@
 
 use app\components\DropDownDocument;
 use app\components\DropDownResponsiblePeopleWidget;
-use frontend\models\work\order\OrderMainWork;
+use app\models\work\order\OrderMainWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
@@ -30,7 +30,14 @@ use yii\jui\DatePicker;
             'changeYear' => true,
             'yearRange' => '2000:2100',
         ]])->label('Дата приказа') ?>
-    <?= $form->field($model, 'order_number')->textInput()->label('Код и описание номенклатуры') ?>
+
+    <div id="archive" class="col-xs-4"<?= $model->study_type == 0 ? 'hidden' : '' ?>>
+        <?= $form->field($model, 'order_number')->textInput()->label('Архивный номер') ?>
+    </div>
+    <div id="archive-2" class="col-xs-4">
+        <?= $form->field($model, 'order_number')->textInput()->label('Код и описание номенклатуры') ?>
+    </div>
+    <?= $form->field($model, 'archive')->checkbox(['id' => 'study_type', 'onchange' => 'checkArchive()']) ?>
     <?= $form->field($model, 'order_name')->textInput()->label('Наименование приказа') ?>
 
 
@@ -91,7 +98,22 @@ use yii\jui\DatePicker;
 </div>
 
 
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    function checkArchive() {
+        var chkBox = document.getElementById('study_type'); // Получаем чекбокс по ID
+        // Если чекбокс отмечен
+        if (chkBox.checked) {
+            // Показываем элемент, убирая атрибут hidden
+            $("#archive").prop("hidden", false);
+            $("#archive-2").prop("hidden", true);
+        } else {
+            // Скрываем элемент, добавляя атрибут hidden
+            $("#archive").prop("hidden", true);
+            $("#archive-2").prop("hidden", false);
+        }
+    }
+</script>
 
 
 

@@ -12,10 +12,10 @@ class UserController extends Controller
     private UserRepository $userRepository;
 
     public function __construct(
-        $id,
-        $module,
+                       $id,
+                       $module,
         UserRepository $userRepository,
-        $config = [])
+                       $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->userRepository = $userRepository;

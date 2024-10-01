@@ -1,8 +1,8 @@
 <?php
 
-use common\models\search\SearchPeople;
-use yii\helpers\Html;
+use frontend\models\search\SearchPeople;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel SearchPeople */

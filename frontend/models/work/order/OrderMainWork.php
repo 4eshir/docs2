@@ -1,5 +1,5 @@
 <?php
-namespace frontend\models\work\order;
+namespace app\models\work\order;
 use common\events\EventTrait;
 use common\models\scaffold\OrderMain;
 use frontend\models\work\general\PeopleWork;
@@ -23,7 +23,8 @@ class OrderMainWork extends OrderMain
     public $scanName;
     public $docName;
     public $appName;
-
+    public $archive;
+    public $archiveName;
     /**
      * Переменные для input-file в форме
      */
@@ -45,14 +46,10 @@ class OrderMainWork extends OrderMain
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['needAnswer', 'nameAnswer'], 'integer'],
-            [['dateAnswer'], 'string'],
-            [['scanFile'], 'file', 'skipOnEmpty' => true,
+            [['scan'], 'file', 'skipOnEmpty' => true,
                 'extensions' => 'png, jpg, pdf, zip, rar, 7z, tag, txt'],
-            [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
-                'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt'],
-            [['appFiles'], 'file', 'skipOnEmpty' => true,  'maxFiles' => 10,
-                'extensions' => 'ppt, pptx, xls, xlsx, pdf, png, jpg, doc, docx, zip, rar, 7z, tag, txt'],
+            [['doc'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
+                'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt']
         ]);
     }
     public function getFullNumber()
@@ -80,6 +77,22 @@ class OrderMainWork extends OrderMain
         else {
            return $this->bring_id;
         }
+    }
+    public function getResponsiblePeople($post)
+    {
+        return $post["respPeople"];
+    }
+    public function getDocumentExpire($post)
+    {
+        return $post["doc-1"];
+    }
+    public function getRegulationExpire($post)
+    {
+        return $post["doc-2"];
+    }
+    public function getStatusExpire($post)
+    {
+        return $post["radio"];
     }
     public function getExecutorName()
     {
