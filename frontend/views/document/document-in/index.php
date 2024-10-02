@@ -1,5 +1,6 @@
 <?php
 
+use common\helpers\html\HtmlCreator;
 use common\helpers\StringFormatter;
 use frontend\models\work\document_in_out\DocumentInWork;
 use kartik\daterange\DateRangePicker;
@@ -22,54 +23,57 @@ $helper = new DocumentInWork();
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= $helper->createGroupButton(); ?>
+    <div class="flexx space">
+        <div class="flexx">
+            <?= $helper->createGroupButton(); ?>
 
-    <p >
+            <p hidden>
 
-        <?php
-        if ($tempArchive === null)
-            echo Html::a('Показать архивные документы', ['document-in/index', 'archive' => 1, 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
-        else
-            echo Html::a('Скрыть архивные документы', ['document-in/index', 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
-        ?>
-    </p>
+                <?php
+                if ($tempArchive === null)
+                    echo Html::a('Показать архивные документы', ['document-in/index', 'archive' => 1, 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
+                else
+                    echo Html::a('Скрыть архивные документы', ['document-in/index', 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
+                ?>
+            </p>
 
-    <?= $this->render('_search', ['model' => $searchModel]) ?>
+            <?= $this->render('_search', ['model' => $searchModel]) ?>
 
-    <?php
+            <div class="export-menu">
+                <?php
 
-    $gridColumns = [
-        ['attribute' => 'fullNumber'],
-        ['attribute' => 'localDate', 'encodeLabel' => false],
-        ['attribute' => 'realDate', 'encodeLabel' => false],
-        ['attribute' => 'realNumber', 'encodeLabel' => false],
+                $gridColumns = [
+                    ['attribute' => 'fullNumber'],
+                    ['attribute' => 'localDate', 'encodeLabel' => false],
+                    ['attribute' => 'realDate', 'encodeLabel' => false],
+                    ['attribute' => 'realNumber', 'encodeLabel' => false],
 
-        ['attribute' => 'companyName', 'encodeLabel' => false],
-        ['attribute' => 'documentTheme', 'encodeLabel' => false],
-        ['attribute' => 'sendMethodName', 'value' => 'sendMethod.name'],
-        ['attribute' => 'needAnswer', 'value' => function(DocumentInWork $model) {
-            return $model->getNeedAnswer();
-        }, 'format' => 'raw'],
+                    ['attribute' => 'companyName', 'encodeLabel' => false],
+                    ['attribute' => 'documentTheme', 'encodeLabel' => false],
+                    ['attribute' => 'sendMethodName', 'value' => 'sendMethod.name'],
+                    ['attribute' => 'needAnswer', 'value' => function(DocumentInWork $model) {
+                        return $model->getNeedAnswer();
+                    }, 'format' => 'raw'],
 
-    ];
-    echo '<b>Скачать файл </b>';
-    echo ExportMenu::widget([
-        'dataProvider' => $dataProvider,
-        'columns' => $gridColumns,
+                ];
+                echo '<b>Скачать файл </b>';
+                echo ExportMenu::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => $gridColumns,
 
-        'options' => [
-            'padding-bottom: 100px',
-        ]
-    ]);
+                    'options' => [
+                        'padding-bottom: 100px',
+                    ]
+                ]);
 
-    ?>
+                ?>
+            </div>
+        </div>
 
-    <div class="filter-toggle" id="filterToggle">
-        <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
-        </svg>
+        <?= HtmlCreator::filterToggle() ?>
     </div>
 
+    <i class="fa-solid fa-house"></i>
     <div class="filter-panel" id="filterPanel">
         <h2>Фильтры</h2>
         <label>
@@ -82,6 +86,7 @@ $helper = new DocumentInWork();
             <input type="checkbox"> Фильтр 3
         </label>
     </div>
+
 
     <div style="margin-bottom: 20px">
 

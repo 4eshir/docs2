@@ -236,6 +236,11 @@ class DocumentInWork extends DocumentIn
         return HtmlBuilder::createGroupButton($links);
     }
 
+    public function createFilterButton()
+    {
+
+    }
+
     /*public function getLastNumber($inputString) {
         $parts = explode('/', $inputString);
         return $parts;

@@ -1,19 +1,27 @@
 :root {
     --border-radius: 10px;
+
     --primary-light-color: #00A58E;
     --primary-color: #009580;
     --primary-hover: #008472;
-    --primaty-light-subtle-color: #ECF8F7;
-    --primaty-subtle-color: #D6F0EC;
-    --primaty-subtle-hover: #BFE8E2;
-    --primaty-subtle-text: #007F6D;
+    --primary-active: #0b5f54;
+
+    --primary-light-subtle-color: #ECF8F7;
+    --primary-subtle-color: #D6F0EC;
+    --primary-subtle-hover: #BFE8E2;
+    --primary-subtle-active: #89cac0;
+    --primary-subtle-text: #007F6D;
+
     --critical-light-color: #D21C1C;
     --critical-color: #B91919;
     --critical-hover: #9D1515;
+
     --critical-subtle-light-color: #FCF3F3;
     --critical-subtle-color: #F8E2E2;
     --critical-subtle-hover: #F3CECE;
     --critical-subtle-text: #6D0909;
+    --critical-suble-active: #d88f8f;
+
     --secondary-light-color: #E8EDF1;
     --secondary-color: #DCE3E9;
     --secondary-hover: #CAD4DE;
@@ -132,7 +140,7 @@ table th a svg {
     text-decoration: none;
 }
 
-a:hover svg path {
+a:hover svg path, #filterToggle:hover svg path {
     stroke: var(--primary-light-color); /* Окрашивает SVG в цвет текста ссылки */
 }
 
@@ -156,17 +164,35 @@ a:hover svg path {
     border-color: var(--primary-hover);
 }
 
+.btn-primary:active, .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle, .btn-primary:focus {
+    background-color: var(--primary-active);
+    border-color: var(--primary-active);
+}
+
+.btn-primary:focus, .btn-primary.focus, .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle {
+    box-shadow: 0 0 0 0.2rem rgba(0, 165, 142, 0.3);
+}
 
 .btn-success {
-    background-color: var(--primaty-subtle-color);
-    border-color: var(--primaty-subtle-color);
-    color: var(--primaty-subtle-text);
+    background-color: var(--primary-subtle-color);
+    border-color: var(--primary-subtle-color);
+    color: var(--primary-subtle-text);
 }
 
 .btn-success:hover {
-    background-color: var(--primaty-subtle-hover);
-    border-color: var(--primaty-subtle-hover);
-    color: var(--primaty-subtle-text);
+    background-color: var(--primary-subtle-hover);
+    border-color: var(--primary-subtle-hover);
+    color: var(--primary-subtle-text);
+}
+
+.btn-success:active, .btn-success:not(:disabled):not(.disabled):active, .btn-success:not(:disabled):not(.disabled).active, .show > .btn-success.dropdown-toggle, .btn-success:focus {
+    background-color: var(--primary-subtle-active);
+    border-color: var(--primary-subtle-active);
+    color: var(--primary-subtle-text);
+}
+
+.btn-success:focus, .btn-success.focus, .btn-success:not(:disabled):not(.disabled):active:focus, .btn-success:not(:disabled):not(.disabled).active:focus, .show > .btn-success.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.2rem rgba(236, 248, 247, 1);
 }
 
 .btn-warning {
@@ -178,6 +204,16 @@ a:hover svg path {
 .btn-warning:hover {
     background-color: var(--critical-subtle-hover);
     border-color: var(--critical-subtle-hover);
+}
+
+.btn-warning:focus, .btn-warning.focus, .btn-warning:not(:disabled):not(.disabled):active, .btn-warning:not(:disabled):not(.disabled).active, .show > .btn-warning.dropdown-toggle {
+    color: black;
+    background-color: var(--critical-suble-active);
+    border-color: var(--critical-suble-active);
+}
+
+.btn-warning:focus, .btn-warning.focus, .btn-warning:not(:disabled):not(.disabled):active:focus, .btn-warning:not(:disabled):not(.disabled).active:focus, .show > .btn-warning.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.2rem rgba(252, 243, 243, 1);
 }
 
 .btn-danger {
@@ -200,6 +236,14 @@ a:hover svg path {
     background-color: var(--secondary-hover);
     border-color: var(--secondary-hover);
     color: black;
+}
+
+.btn:focus-visible {
+    color: black;
+    background-color: #91cae1;
+    border-color: #91cae1;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(145, 202, 225, 0.3);
 }
 
 a {
@@ -248,4 +292,20 @@ a:hover {
     padding: 10px;
     margin-top: 10px;
     background-color: #f9f9f9;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+    background-color: var(--primary-color);
+}
+
+.flexx {
+    display: flex;
+}
+
+.export-menu {
+    margin: auto 3em;
+}
+
+.space {
+    justify-content: space-between;
 }

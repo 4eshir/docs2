@@ -11,6 +11,7 @@ use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
 
 AppAsset::register($this);
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -21,6 +22,8 @@ AppAsset::register($this);
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+    <?php $this->registerCssFile('@web/vendor/fortawesome/font-awesome/css/all.min.css'); ?>
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 </head>
 <body class="d-flex flex-column h-100">
 <?php $this->beginBody() ?>
