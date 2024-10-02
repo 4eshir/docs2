@@ -38,6 +38,10 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'ped_council_number')->textInput(['maxlength' => true]) ?>
 
+    <?php if (strlen($modelAuthor) > 10): ?>
+        <?= $modelAuthor; ?>
+    <?php endif; ?>
+
     <?= $form->field($model, 'capacity')->textInput() ?>
 
     <div class="row">

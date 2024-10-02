@@ -81,7 +81,7 @@ class TrainingProgramRepository
 
     public function getAuthors($programId)
     {
-        return AuthorProgramWork::find()->where(['training_program_id' => $programId])->all();
+        return AuthorProgramWork::find()->joinWith('authorWork authorWork')->where(['training_program_id' => $programId])->all();
     }
 
     public function prepareCreateTheme($theme, $programId, $controlType)
@@ -97,6 +97,11 @@ class TrainingProgramRepository
         $command = Yii::$app->db->createCommand();
         $command->delete(ThematicPlanWork::tableName(), ['id' => $id]);
         return $command->getRawSql();
+    }
+
+    public function deleteTheme($themeId)
+    {
+        return (ThematicPlanWork::find()->where(['id' => $themeId])->one())->delete();
     }
 
     public function delete(TrainingProgramWork $model)
@@ -145,5 +150,10 @@ class TrainingProgramRepository
             throw new DomainException('Ошибка сохранения образовательной программы. Проблемы: '.json_encode($theme->getErrors()));
         }
         return $theme->id;
+    }
+
+    public function deleteAuthor($id)
+    {
+        return (AuthorProgramWork::find()->where(['id' => $id])->one())->delete();
     }
 }

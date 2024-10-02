@@ -94,7 +94,8 @@ class RulesConfig
                 'update',
                 'delete',
                 'update-theme',
-                'delete-theme'
+                'delete-theme',
+                'delete-author',
             ]
         ]
     ];

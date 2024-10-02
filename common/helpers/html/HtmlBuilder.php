@@ -55,25 +55,37 @@ class HtmlBuilder
 
     /**
      * Создает таблицу с данными из $dataMatrix и экшн-кнопками из $buttonMatrix
+     * Первые элементы массивов $dataMatrix - названия столбцов
      * @param array $dataMatrix данные для таблицы в виде матрицы
      * @param array $buttonMatrix матрица кнопок взаимодействия класса HtmlHelper::a()
      * @return string
      */
     public static function createTableWithActionButtons(array $dataMatrix, array $buttonMatrix)
     {
-        $result = '<table class="table table-bordered">';
+        if (count($buttonMatrix) == 0 || count($buttonMatrix[0]) == 0) {
+            return '';
+        }
+
+        $result = '<table class="table table-bordered"><thead>';
+        foreach ($dataMatrix as $row) {
+            $result .= "<th>$row[0]</th>";
+        }
+        $result .= '</thead>';
+
         $dataMatrix = BaseFunctions::transposeMatrix($dataMatrix);
         $buttonMatrix = BaseFunctions::transposeMatrix($buttonMatrix);
 
         foreach ($dataMatrix as $i => $row) {
-            $result .= '<tr>';
-            foreach ($row as $cell) {
-                $result .= "<td>$cell</td>";
+            if ($i > 0) {
+                $result .= '<tr>';
+                foreach ($row as $cell) {
+                    $result .= "<td>$cell</td>";
+                }
+                foreach ($buttonMatrix[$i - 1] as $button) {
+                    $result .= "<td>$button</td>";
+                }
+                $result .= '</tr>';
             }
-            foreach ($buttonMatrix[$i] as $button) {
-                $result .= "<td>$button</td>";
-            }
-            $result .= '</tr>';
         }
 
         $result .= '</table>';

@@ -1,8 +1,11 @@
 <?php
-use yii\helpers\Html;use yii\widgets\ActiveForm;
+
+use frontend\models\work\educational\ThematicPlanWork;
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\ThematicPlanWork */
+/* @var $model ThematicPlanWork */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -12,15 +15,7 @@ use yii\helpers\Html;use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'theme')->textInput()->label('Тема') ?>
 
-    <?php
-    $ct = \app\models\work\ControlTypeWork::find()->all();
-    $items = \yii\helpers\ArrayHelper::map($ct,'id','name');
-    $params = [
-        'prompt' => ''
-    ];
-    echo $form->field($model, 'control_type_id')->dropDownList($items,$params)->label('Форма контроля');
-
-    ?>
+    <?= $form->field($model, 'control_type')->dropDownList(Yii::$app->controlType->getList(), ['prompt' => '---'])->label('Форма контроля'); ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
