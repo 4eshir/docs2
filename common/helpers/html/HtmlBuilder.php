@@ -54,6 +54,23 @@ class HtmlBuilder
     }
 
     /**
+<<<<<<< HEAD
+     * Создает группу кнопок
+     * $linksArray должен быть ассоциативным массивом ['Имя кнопки' => 'ссылка']
+     * @param $linksArray
+     * @return string
+     */
+    public static function createGroupButton($linksArray)
+    {
+        $result = '<div class="button-group">';
+        $class = count($linksArray) < 3 ? 'btn-primary' : 'btn-secondary';
+        foreach ($linksArray as $label => $url) {
+            $result .= Html::a($label, $url, ['class' => $class]);
+        }
+        $result .= '</div>';
+        return $result;
+    }
+=======
      * Создает таблицу с данными из $dataMatrix и экшн-кнопками из $buttonMatrix
      * Первые элементы массивов $dataMatrix - названия столбцов
      * @param array $dataMatrix данные для таблицы в виде матрицы
@@ -123,4 +140,5 @@ class HtmlBuilder
         return $result;
     }
 
+>>>>>>> da2af2f26533db6a85aec80027131c9ef6b3299f
 }
