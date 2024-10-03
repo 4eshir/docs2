@@ -2,7 +2,7 @@
 
 namespace common\repositories\dictionaries;
 
-use common\components\traits\CommonRepositoryFunctions;
+use common\components\traits\CommonDatabaseFunctions;
 use common\helpers\SortHelper;
 use common\repositories\general\PeoplePositionCompanyBranchRepository;
 use DomainException;
@@ -12,7 +12,7 @@ use yii\db\ActiveQuery;
 
 class PeopleRepository
 {
-    use CommonRepositoryFunctions;
+    use CommonDatabaseFunctions;
 
     private PeoplePositionCompanyBranchRepository $peoplePositionCompanyBranchRepository;
 

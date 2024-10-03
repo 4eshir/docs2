@@ -2,7 +2,7 @@
 
 namespace common\repositories\dictionaries;
 
-use common\components\traits\CommonRepositoryFunctions;
+use common\components\traits\CommonDatabaseFunctions;
 use DomainException;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonalDataParticipantWork;
@@ -10,7 +10,7 @@ use Yii;
 
 class PersonalDataParticipantRepository
 {
-    use CommonRepositoryFunctions;
+    use CommonDatabaseFunctions;
 
     public function getPersonalDataByParticipant($participantId)
     {

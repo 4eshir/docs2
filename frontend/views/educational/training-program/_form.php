@@ -9,6 +9,9 @@ use yii\widgets\ActiveForm;
 /* @var $model \frontend\models\work\educational\TrainingProgramWork */
 /* @var $modelAuthor */
 /* @var $modelThematicPlan */
+/* @var $mainFile */
+/* @var $docFiles */
+/* @var $contractFile */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -80,6 +83,10 @@ use yii\widgets\ActiveForm;
 
         <div id="contractNetwork" style="display: <?php echo $model->is_network == 0 ? 'none' : 'block' ?>">
             <?= $form->field($model, 'contractFile')->fileInput() ?>
+
+            <?php if (strlen($contractFile) > 10): ?>
+                <?= $contractFile; ?>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -97,7 +104,15 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'mainFile')->fileInput() ?>
 
+    <?php if (strlen($mainFile) > 10): ?>
+        <?= $mainFile; ?>
+    <?php endif; ?>
+
     <?= $form->field($model, 'docFiles[]')->fileInput(['multiple' => true]) ?>
+
+    <?php if (strlen($docFiles) > 10): ?>
+        <?= $docFiles; ?>
+    <?php endif; ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>

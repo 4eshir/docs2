@@ -148,45 +148,24 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'scanFile')->fileInput()
         ->label('Скан документа') ?>
 
-    <?php if (is_array($scanFile) && count($scanFile) > 0): ?>
-        <table class="table table-bordered">
-        <?php foreach ($scanFile as $file): ?>
-            <tr>
-                <td><?= $file['link'] ?></td>
-                <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
-            </tr>
-        <?php endforeach; ?>
-        </table>
+    <?php if (strlen($scanFile) > 10): ?>
+        <?= $scanFile; ?>
     <?php endif; ?>
 
     <?= $form->field($model, 'docFiles[]')
         ->fileInput(['multiple' => true])
         ->label('Редактируемые документы') ?>
 
-    <?php if (is_array($docFiles) && count($docFiles) > 0): ?>
-        <table class="table table-bordered">
-            <?php foreach ($docFiles as $file): ?>
-                <tr>
-                    <td><?= $file['link'] ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+    <?php if (strlen($docFiles) > 10): ?>
+        <?= $docFiles; ?>
     <?php endif; ?>
 
     <?= $form->field($model, 'appFiles[]')
         ->fileInput(['multiple' => true])
         ->label('Приложения') ?>
 
-    <?php if (is_array($appFiles) && count($appFiles) > 0): ?>
-        <table class="table table-bordered">
-            <?php foreach ($appFiles as $file): ?>
-                <tr>
-                    <td><?= $file['link'] ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+    <?php if (strlen($appFiles) > 10): ?>
+        <?= $appFiles; ?>
     <?php endif; ?>
 
     <div class="form-group">

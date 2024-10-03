@@ -2,9 +2,9 @@
 
 namespace common\repositories\general;
 
-use common\components\traits\CommonRepositoryFunctions;
+use common\components\traits\CommonDatabaseFunctions;
 
 class PeopleStampRepository
 {
-    use CommonRepositoryFunctions;
+    use CommonDatabaseFunctions;
 }

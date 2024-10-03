@@ -4,7 +4,7 @@ namespace common\components\traits;
 
 use Yii;
 
-trait CommonRepositoryFunctions
+trait CommonDatabaseFunctions
 {
     /**
      * Проверка возможности удаления записи из таблицы $dependentTable

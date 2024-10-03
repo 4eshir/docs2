@@ -123,37 +123,8 @@ class TrainingProgramController extends DocumentController
         $model = $this->repository->get($id);
         $authors = $this->repository->getAuthors($id);
         $themes = $this->repository->getThematicPlan($id);
-        $modelThematicPlan = HtmlBuilder::createTableWithActionButtons(
-            [
-                array_merge(['Тема'], ArrayHelper::getColumn($themes, 'theme'))
-            ],
-            [
-                HtmlBuilder::createButtonsArray(
-                    'Редактировать',
-                    Url::to('update-theme'),
-                    ['id' => ArrayHelper::getColumn($themes, 'id'), 'modelId' => ArrayHelper::getColumn($themes, 'training_program_id')]),
-                HtmlBuilder::createButtonsArray(
-                    'Удалить',
-                    Url::to('delete-theme'),
-                    ['id' => ArrayHelper::getColumn($themes, 'id'), 'modelId' => ArrayHelper::getColumn($themes, 'training_program_id')])
-            ]
-        );
-        $nameAuthors = ArrayHelper::getColumn($authors, 'authorWork.firstname');
-        $surnameAuthors = ArrayHelper::getColumn($authors, 'authorWork.surname');
-        $patronymicAuthors = ArrayHelper::getColumn($authors, 'authorWork.patronymic');
-        $modelAuthor = HtmlBuilder::createTableWithActionButtons(
-            [
-                array_merge(['ФИО'], array_map(function($nameAuthors, $surnameAuthors, $patronymicAuthors) {
-                                                    return "$nameAuthors $surnameAuthors $patronymicAuthors";
-                                                }, $nameAuthors, $surnameAuthors, $patronymicAuthors))
-            ],
-            [
-                HtmlBuilder::createButtonsArray(
-                    'Удалить',
-                    Url::to('delete-author'),
-                    ['id' => ArrayHelper::getColumn($authors, 'id'), 'modelId' => ArrayHelper::getColumn($authors, 'training_program_id')])
-            ]
-        );
+        $fileTables = $this->service->getUploadedFilesTables($model);
+        $depTables = $this->service->getDependencyTables($authors, $themes);
 
         if ($model->load(Yii::$app->request->post())) {
             $this->service->getFilesInstances($model);
@@ -166,10 +137,14 @@ class TrainingProgramController extends DocumentController
 
             return $this->redirect(['view', 'id' => $model->id]);
         }
+
         return $this->render('update', [
             'model' => $model,
-            'modelAuthor' => $modelAuthor,
-            'modelThematicPlan' => $modelThematicPlan,
+            'modelAuthor' => $depTables['authors'],
+            'modelThematicPlan' => $depTables['themes'],
+            'mainFile' => $fileTables['main'],
+            'docFiles' => $fileTables['doc'],
+            'contractFile' => $fileTables['contract'],
         ]);
     }
 

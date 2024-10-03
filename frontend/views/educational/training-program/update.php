@@ -7,6 +7,9 @@ use yii\helpers\Html;
 /* @var $model TrainingProgramWork */
 /* @var $modelAuthor array */
 /* @var $modelThematicPlan array */
+/* @var $mainFile */
+/* @var $docFiles */
+/* @var $contractFile */
 
 $this->title = 'Редактировать образовательную программу: ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Образовательные программы', 'url' => ['index']];
@@ -21,6 +24,9 @@ $this->params['breadcrumbs'][] = 'Редактирование';
         'model' => $model,
         'modelAuthor' => $modelAuthor,
         'modelThematicPlan' => $modelThematicPlan,
+        'mainFile' => $mainFile,
+        'docFiles' => $docFiles,
+        'contractFile' => $contractFile,
     ]) ?>
 
 </div>

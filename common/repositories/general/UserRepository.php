@@ -2,13 +2,13 @@
 
 namespace common\repositories\general;
 
-use common\components\traits\CommonRepositoryFunctions;
+use common\components\traits\CommonDatabaseFunctions;
 use DomainException;
 use frontend\models\work\general\UserWork;
 
 class UserRepository
 {
-    use CommonRepositoryFunctions;
+    use CommonDatabaseFunctions;
 
     public function findByUsername($username)
     {

@@ -20,6 +20,8 @@ use frontend\models\search\SearchDocumentIn;
 use frontend\models\work\document_in_out\DocumentInWork;
 use frontend\services\document\DocumentInService;
 use Yii;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 class DocumentInController extends DocumentController
 {
@@ -27,8 +29,6 @@ class DocumentInController extends DocumentController
     private PeopleRepository $peopleRepository;
     private PositionRepository $positionRepository;
     private CompanyRepository $companyRepository;
-    private FileService $fileService;
-    private FilesRepository $filesRepository;
     private DocumentInService $service;
 
     public function __construct(
@@ -38,8 +38,6 @@ class DocumentInController extends DocumentController
         PeopleRepository     $peopleRepository,
         PositionRepository   $positionRepository,
         CompanyRepository    $companyRepository,
-        FileService          $fileService,
-        FilesRepository      $filesRepository,
         DocumentInService    $service,
                              $config = [])
     {
@@ -48,8 +46,6 @@ class DocumentInController extends DocumentController
         $this->peopleRepository = $peopleRepository;
         $this->positionRepository = $positionRepository;
         $this->companyRepository = $companyRepository;
-        $this->fileService = $fileService;
-        $this->filesRepository = $filesRepository;
         $this->service = $service;
     }
 
@@ -122,9 +118,8 @@ class DocumentInController extends DocumentController
         $availablePositions = $this->positionRepository->getList($model->correspondent_id);
         $availableCompanies = $this->companyRepository->getList($model->correspondent_id);
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
-        $scanFile = $model->getFileLinks(FilesHelper::TYPE_SCAN);
-        $docFiles = $model->getFileLinks(FilesHelper::TYPE_DOC);
-        $appFiles = $model->getFileLinks(FilesHelper::TYPE_APP);
+        $tables = $this->service->getUploadedFilesTables($model);
+
         if ($model->load(Yii::$app->request->post())) {
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
@@ -161,9 +156,9 @@ class DocumentInController extends DocumentController
             'availablePositions' => $availablePositions,
             'availableCompanies' => $availableCompanies,
             'mainCompanyWorkers' => $mainCompanyWorkers,
-            'scanFile' => $scanFile,
-            'docFiles' => $docFiles,
-            'appFiles' => $appFiles,
+            'scanFile' => $tables['scan'],
+            'docFiles' => $tables['doc'],
+            'appFiles' => $tables['app'],
         ]);
     }
 

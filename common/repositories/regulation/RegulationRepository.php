@@ -2,7 +2,7 @@
 
 namespace common\repositories\regulation;
 
-use common\components\traits\CommonRepositoryFunctions;
+use common\components\traits\CommonDatabaseFunctions;
 use common\helpers\files\FilesHelper;
 use common\helpers\SortHelper;
 use common\repositories\general\FilesRepository;
@@ -16,7 +16,7 @@ use yii\db\ActiveRecord;
 
 class RegulationRepository
 {
-    use CommonRepositoryFunctions;
+    use CommonDatabaseFunctions;
 
     private FileService $fileService;
     private FilesRepository $filesRepository;

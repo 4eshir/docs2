@@ -6,6 +6,7 @@ use common\components\wizards\ExcelWizard;
 use common\helpers\files\filenames\TrainingProgramFileNameGenerator;
 use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
@@ -15,6 +16,8 @@ use frontend\events\general\FileCreateEvent;
 use frontend\models\work\educational\ThematicPlanWork;
 use frontend\models\work\educational\TrainingProgramWork;
 use Yii;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\UploadedFile;
 
 class TrainingProgramService implements DatabaseService
@@ -129,6 +132,87 @@ class TrainingProgramService implements DatabaseService
                 get_class($model)
             );
         }
+    }
+
+    public function getUploadedFilesTables(TrainingProgramWork $model)
+    {
+        $mainLinks = $model->getFileLinks(FilesHelper::TYPE_MAIN);
+        $mainFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($mainLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($mainLinks), $model->id), 'fileId' => ArrayHelper::getColumn($mainLinks, 'id')])
+            ]
+        );
+
+        $docLinks = $model->getFileLinks(FilesHelper::TYPE_DOC);
+        $docFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($docLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($docLinks), $model->id), 'fileId' => ArrayHelper::getColumn($docLinks, 'id')])
+            ]
+        );
+
+        $contractLinks = $model->getFileLinks(FilesHelper::TYPE_CONTRACT);
+        $contractFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($contractLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($contractLinks), $model->id), 'fileId' => ArrayHelper::getColumn($contractLinks, 'id')])
+            ]
+        );
+
+        return ['main' => $mainFiles, 'doc' => $docFiles, 'contract' => $contractFiles];
+    }
+
+    public function getDependencyTables($authors, $themes)
+    {
+        $modelThematicPlan = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Тема'], ArrayHelper::getColumn($themes, 'theme'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Редактировать',
+                    Url::to('update-theme'),
+                    ['id' => ArrayHelper::getColumn($themes, 'id'), 'modelId' => ArrayHelper::getColumn($themes, 'training_program_id')]),
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-theme'),
+                    ['id' => ArrayHelper::getColumn($themes, 'id'), 'modelId' => ArrayHelper::getColumn($themes, 'training_program_id')])
+            ]
+        );
+        $nameAuthors = ArrayHelper::getColumn($authors, 'authorWork.firstname');
+        $surnameAuthors = ArrayHelper::getColumn($authors, 'authorWork.surname');
+        $patronymicAuthors = ArrayHelper::getColumn($authors, 'authorWork.patronymic');
+        $modelAuthor = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['ФИО'], array_map(function($nameAuthors, $surnameAuthors, $patronymicAuthors) {
+                    return "$nameAuthors $surnameAuthors $patronymicAuthors";
+                }, $nameAuthors, $surnameAuthors, $patronymicAuthors))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-author'),
+                    ['id' => ArrayHelper::getColumn($authors, 'id'), 'modelId' => ArrayHelper::getColumn($authors, 'training_program_id')])
+            ]
+        );
+
+        return ['themes' => $modelThematicPlan, 'authors' => $modelAuthor];
     }
 
     public function isAvailableDelete($id)

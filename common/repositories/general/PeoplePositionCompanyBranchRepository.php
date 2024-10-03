@@ -2,7 +2,7 @@
 
 namespace common\repositories\general;
 
-use common\components\traits\CommonRepositoryFunctions;
+use common\components\traits\CommonDatabaseFunctions;
 use frontend\models\work\dictionaries\PositionWork;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use Yii;
@@ -10,7 +10,7 @@ use yii\helpers\ArrayHelper;
 
 class PeoplePositionCompanyBranchRepository
 {
-    use CommonRepositoryFunctions;
+    use CommonDatabaseFunctions;
 
     public function getByPeople($peopleId)
     {
