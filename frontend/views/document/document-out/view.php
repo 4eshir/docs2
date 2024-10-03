@@ -5,6 +5,7 @@ use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use frontend\models\work\document_in_out\DocumentOutWork;
 use frontend\models\work\general\PeopleWork;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -18,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 
-<div class="document-in-view">
+<div class="document-out-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -56,13 +57,13 @@ $this->params['breadcrumbs'][] = $this->title;
             ['label' => 'Тема документа', 'attribute' => 'document_theme'],
             ['label' => 'Способ получения', 'attribute' => 'send_method', 'value' => Yii::$app->sendMethods->get($model->send_method)],
             ['label' => 'Скан документа', 'attribute' => 'scan', 'value' => function (DocumentOutWork $model) {
-                return implode('<br>', $model->getFileLinks(FilesHelper::TYPE_SCAN));
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
             }, 'format' => 'raw'],
             ['label' => 'Редактируемые документы', 'attribute' => 'docFiles', 'value' => function ($model) {
-                return implode('<br>', $model->getFileLinks(FilesHelper::TYPE_DOC));
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_DOC), 'link'));
             }, 'format' => 'raw'],
             ['label' => 'Приложения', 'attribute' => 'applications', 'value' => function ($model) {
-                return implode('<br>', $model->getFileLinks(FilesHelper::TYPE_APP));
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_APP), 'link'));
             }, 'format' => 'raw'],
             ['label' => 'Ключевые слова', 'attribute' => 'key_words'],
             ['attribute' => 'isAnswer', 'label' => 'Ответ', 'value' => function (DocumentOutWork $model) {

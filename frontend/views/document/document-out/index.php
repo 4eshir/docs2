@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $session = Yii::$app->session;
 $tempArchive = $session->get("archiveIn");
 ?>
-<div class="document-in-index">
+<div class="document-out-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

@@ -20,6 +20,7 @@ class OrderMainWork extends OrderMain
     /**
      * Имена файлов для сохранения в БД
      */
+    public $names;
     public $scanName;
     public $docName;
     public $appName;
@@ -93,6 +94,22 @@ class OrderMainWork extends OrderMain
     public function getStatusExpire($post)
     {
         return $post["radio"];
+    }
+    public function getCreatorWork()
+    {
+        return PeopleWork::findOne($this->creator_id);
+    }
+    public function getLastUpdateWork()
+    {
+        return PeopleWork::findOne($this->last_edit_id);
+    }
+    public function getBringWork()
+    {
+        return PeopleWork::findOne($this->bring_id);
+    }
+    public function getExecutorWork()
+    {
+        return PeopleWork::findOne($this->executor_id);
     }
     public function getExecutorName()
     {

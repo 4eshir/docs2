@@ -2,6 +2,7 @@
 
 use app\components\DropDownDocument;
 use app\components\DropDownResponsiblePeopleWidget;
+use app\components\DynamicFormWidget;
 use app\models\work\order\OrderMainWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -13,10 +14,12 @@ use yii\jui\DatePicker;
 /* @var $model OrderMainWork */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $bringPeople */
+/* @var $scanFile */
+/* @var $docFiles */
 ?>
 <div class="order-main-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
         'dateFormat' => 'php:d.m.Y',
         'language' => 'ru',
@@ -86,15 +89,40 @@ use yii\jui\DatePicker;
     ]);
     ?>
     <?= $form->field($model, 'key_words')->textInput(['maxlength' => true])->label('Ключевые слова') ?>
+
+    <div class="panel-body" style="padding: 0; margin: 0"></div>
+    <?= $form->field($model, 'scanFile')->fileInput()
+        ->label('Скан документа') ?>
+
+    <?php if (is_array($scanFile) && count($scanFile) > 0): ?>
+        <table class="table table-bordered">
+            <?php foreach ($scanFile as $file): ?>
+                <tr>
+                    <td><?= $file['link'] ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
+
+    <?= $form->field($model, 'docFiles[]')
+        ->fileInput(['multiple' => true])
+        ->label('Редактируемые документы') ?>
+
+    <?php if (is_array($docFiles) && count($docFiles) > 0): ?>
+        <table class="table table-bordered">
+            <?php foreach ($docFiles as $file): ?>
+                <tr>
+                    <td><?= $file['link'] ?></td>
+                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
     </div>
-
-
     <?php ActiveForm::end(); ?>
-
-
-
 </div>
 
 
