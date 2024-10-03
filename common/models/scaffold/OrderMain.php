@@ -8,6 +8,7 @@ namespace common\models\scaffold;
  * @property string|null $order_number
  * @property int|null $order_postfix
  * @property string $order_date
+ * @property string $order_name
  * @property int|null $signed_id
  * @property int|null $bring_id
  * @property int|null $executor_id

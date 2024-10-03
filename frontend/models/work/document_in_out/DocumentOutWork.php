@@ -86,20 +86,22 @@ class DocumentOutWork extends DocumentOut
             throw new InvalidArgumentException('Неизвестный тип файла');
         }
 
-        $files = (Yii::createObject(FilesRepository::class))->get(self::tableName(), $this->id, $filetype);
-        $links = [];
-        if (count($files) > 0) {
-            foreach ($files as $file) {
-                /** @var FilesWork $file */
-                $links[] = StringFormatter::stringAsLink(
-                    FilesHelper::getFilenameFromPath($file->filepath),
-                    Url::to(['get-file', 'filepath' => $file->filepath])
-                );
-            }
+        $addPath = '';
+        switch ($filetype) {
+            case FilesHelper::TYPE_SCAN:
+                $addPath = FilesHelper::createAdditionalPath(DocumentOutWork::tableName(), FilesHelper::TYPE_SCAN);
+                break;
+            case FilesHelper::TYPE_DOC:
+                $addPath = FilesHelper::createAdditionalPath(DocumentOutWork::tableName(), FilesHelper::TYPE_DOC);
+                break;
+            case FilesHelper::TYPE_APP:
+                $addPath = FilesHelper::createAdditionalPath(DocumentOutWork::tableName(), FilesHelper::TYPE_APP);
+                break;
         }
 
-        return $links;
+        return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
+
     public function getFilesAnswer()
     {
         $repository = Yii::createObject(DocumentOutRepository::class);

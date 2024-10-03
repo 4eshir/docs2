@@ -1,13 +1,13 @@
 <?php
-
 namespace frontend\controllers\order;
-
 use app\models\work\general\OrderPeopleWork;
 use app\models\work\order\ExpireWork;
 use common\helpers\DateFormatter;
 use common\repositories\dictionaries\PeopleRepository;
 use app\models\work\order\OrderMainWork;
+use common\repositories\general\FilesRepository;
 use common\repositories\general\OrderPeopleRepository;
+use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\expire\ExpireCreateEvent;
 use frontend\events\general\OrderPeopleCreateEvent;
@@ -15,18 +15,23 @@ use frontend\models\search\SearchOrderMain;
 use common\repositories\order\OrderMainRepository;
 use yii\web\Controller;
 use yii;
-
 class OrderMainController extends Controller
 {
     private OrderMainRepository $repository;
+    private FileService $fileService;
+    private FilesRepository $filesRepository;
     private PeopleRepository $peopleRepository;
     public function __construct(
         $id,
         $module,
         OrderMainRepository $repository,
         PeopleRepository $peopleRepository,
+        FileService          $fileService,
+        FilesRepository      $filesRepository,
         $config = [])
     {
+        $this->fileService = $fileService;
+        $this->filesRepository = $filesRepository;
         $this->peopleRepository = $peopleRepository;
         $this->repository = $repository;
         parent::__construct($id, $module, $config);
@@ -50,7 +55,7 @@ class OrderMainController extends Controller
         if ($model->load($post)) {
             $respPeople = $model->getResponsiblePeople($post);
             $model->order_copy_id = 1;
-            $model->order_date = DateFormatter::format( $model->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
+            $model->order_date = DateFormatter::format($model->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
             if(!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -66,7 +71,6 @@ class OrderMainController extends Controller
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
-
         return $this->render('create', [
             'model' => $model,
             'bringPeople' => $bringPeople
@@ -86,7 +90,7 @@ class OrderMainController extends Controller
     }
     public function actionView($id){
         return $this->render('view', [
-
+            'model' => $this->repository->get($id),
         ]);
     }
 

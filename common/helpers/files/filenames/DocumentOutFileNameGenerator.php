@@ -83,12 +83,12 @@ class DocumentOutFileNameGenerator implements FileNameGeneratorInterface
         if ($object->companyWork->short_name !== '') {
             $filename =
                 'Ред'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_DOC) + $params['counter']).
-                '_Вх.'.$new_date.'_'.$object->document_number.'_'.$object->companyWork->short_name.'_'.$object->document_theme;
+                '_Исх.'.$new_date.'_'.$object->document_number.'_'.$object->companyWork->short_name.'_'.$object->document_theme;
         }
         else {
             $filename =
                 'Ред'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_DOC) + $params['counter']).
-                '_Вх.'.$new_date.'_'.$object->document_number.'_'.$object->companyWork->name.'_'.$object->document_theme;
+                '_Исх.'.$new_date.'_'.$object->document_number.'_'.$object->companyWork->name.'_'.$object->document_theme;
         }
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
@@ -104,10 +104,10 @@ class DocumentOutFileNameGenerator implements FileNameGeneratorInterface
         $new_date = DateFormatter::format($date, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
 
         if ($object->companyWork->short_name !== '') {
-            $filename = 'Вх.'.$new_date.'_'.$object->document_number.'_'.$object->companyWork->short_name.'_'.$object->document_theme;
+            $filename = 'Исх.'.$new_date.'_'.$object->document_number.'_'.$object->companyWork->short_name.'_'.$object->document_theme;
         }
         else {
-            $filename = 'Вх.'.$new_date.'_'.$object->document_number.'_'.$object->companyWork->name.'_'.$object->document_theme;
+            $filename = 'Исх.'.$new_date.'_'.$object->document_number.'_'.$object->companyWork->name.'_'.$object->document_theme;
         }
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
