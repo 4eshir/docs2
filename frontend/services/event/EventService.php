@@ -4,11 +4,14 @@ namespace frontend\services\event;
 
 use common\helpers\files\filenames\EventNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\document_in_out\DocumentOutWork;
 use frontend\models\work\event\EventWork;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\UploadedFile;
 
 class EventService implements DatabaseService
@@ -130,6 +133,63 @@ class EventService implements DatabaseService
                 get_class($model)
             );
         }
+    }
+
+    public function getUploadedFilesTables(EventWork $model)
+    {
+        $photoLinks = $model->getFileLinks(FilesHelper::TYPE_PHOTO);
+        $photoFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($photoLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($photoLinks), $model->id), 'fileId' => ArrayHelper::getColumn($photoLinks, 'id')])
+            ]
+        );
+
+        $protocolLinks = $model->getFileLinks(FilesHelper::TYPE_PROTOCOL);
+        $protocolFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($protocolLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($protocolLinks), $model->id), 'fileId' => ArrayHelper::getColumn($protocolLinks, 'id')])
+            ]
+        );
+
+        $reportingLinks = $model->getFileLinks(FilesHelper::TYPE_REPORT);
+        $reportingFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($reportingLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($reportingLinks), $model->id), 'fileId' => ArrayHelper::getColumn($reportingLinks, 'id')])
+            ]
+        );
+
+        $otherLinks = $model->getFileLinks(FilesHelper::TYPE_OTHER);
+        $otherFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($otherLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($otherLinks), $model->id), 'fileId' => ArrayHelper::getColumn($otherLinks, 'id')])
+            ]
+        );
+
+        return ['protocol' => $protocolFiles, 'photo' => $photoFiles, 'report' => $reportingFiles, 'other' => $otherFiles];
     }
 
     public function isAvailableDelete($id)

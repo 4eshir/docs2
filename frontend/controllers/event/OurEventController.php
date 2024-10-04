@@ -148,10 +148,7 @@ class OurEventController extends DocumentController
 
         //$model->old_name = $model->name;
 
-        $protocolFiles = $model->getFileLinks(FilesHelper::TYPE_PROTOCOL);
-        $photoFiles = $model->getFileLinks(FilesHelper::TYPE_PHOTO);
-        $reportingFiles = $model->getFileLinks(FilesHelper::TYPE_REPORT);
-        $otherFiles = $model->getFileLinks(FilesHelper::TYPE_OTHER);
+        $tables = $this->service->getUploadedFilesTables($model);
 
         if ($model->load(Yii::$app->request->post())) {
             $this->service->getFilesInstances($model);
@@ -171,10 +168,10 @@ class OurEventController extends DocumentController
             'people' => $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO, SORT_ASC),
             'regulations' => $this->regulationRepository->getOrderedList(),
             'branches' => ArrayHelper::getColumn($this->repository->getBranches($model->id), 'branch'),
-            'protocolFiles' => $protocolFiles,
-            'photoFiles' => $photoFiles,
-            'reportingFiles' => $reportingFiles,
-            'otherFiles' => $otherFiles,
+            'protocolFiles' => $tables['protocol'],
+            'photoFiles' => $tables['photo'],
+            'reportingFiles' => $tables['report'],
+            'otherFiles' => $tables['other'],
         ]);
     }
 

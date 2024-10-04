@@ -212,51 +212,27 @@ use yii\widgets\ActiveForm;
                                                                            1 => 'Содержит образовательные программы'), ['value'=>$model->contains_education ])->label('') ?>
 
     <?= $form->field($model, 'protocolFiles[]')->fileInput(['multiple' => true]) ?>
-    <?php if (is_array($protocolFiles) && count($protocolFiles) > 0): ?>
-        <table class="table table-bordered">
-            <?php foreach ($protocolFiles as $file): ?>
-                <tr>
-                    <td><?= $file['link'] ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+
+    <?php if (strlen($protocolFiles) > 10): ?>
+        <?= $protocolFiles; ?>
     <?php endif; ?>
 
     <?= $form->field($model, 'photoFiles[]')->fileInput(['multiple' => true]) ?>
-    <?php if (is_array($photoFiles) && count($photoFiles) > 0): ?>
-        <table class="table table-bordered">
-            <?php foreach ($photoFiles as $file): ?>
-                <tr>
-                    <td><?= $file['link'] ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+
+    <?php if (strlen($photoFiles) > 10): ?>
+        <?= $photoFiles; ?>
     <?php endif; ?>
 
     <?= $form->field($model, 'reportingFiles[]')->fileInput(['multiple' => true]) ?>
-    <?php if (is_array($reportingFiles) && count($reportingFiles) > 0): ?>
-        <table class="table table-bordered">
-            <?php foreach ($reportingFiles as $file): ?>
-                <tr>
-                    <td><?= $file['link'] ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+
+    <?php if (strlen($reportingFiles) > 10): ?>
+        <?= $reportingFiles; ?>
     <?php endif; ?>
 
     <?= $form->field($model, 'otherFiles[]')->fileInput(['multiple' => true]) ?>
-    <?php if (is_array($otherFiles) && count($otherFiles) > 0): ?>
-        <table class="table table-bordered">
-            <?php foreach ($otherFiles as $file): ?>
-                <tr>
-                    <td><?= $file['link'] ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+
+    <?php if (strlen($otherFiles) > 10): ?>
+        <?= $otherFiles; ?>
     <?php endif; ?>
 
     <div class="form-group">
