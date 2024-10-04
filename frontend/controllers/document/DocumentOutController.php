@@ -131,9 +131,7 @@ class DocumentOutController extends Controller
         $availablePositions = $this->positionRepository->getList($model->correspondent_id);
         $availableCompanies = $this->companyRepository->getList($model->correspondent_id);
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
-        $scanFile = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_SCAN);
-        $docFiles = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_DOC);
-        $appFiles = $this->filesRepository->get($model::tableName(), $model->id, FilesHelper::TYPE_APP);
+        $tables = $this->service->getUploadedFilesTables($model);
         $filesAnswer = $this->repository->getDocumentInWithoutAnswer();
         if ($model->load(Yii::$app->request->post())) {
             if (!$model->validate()) {
@@ -168,9 +166,9 @@ class DocumentOutController extends Controller
             'availablePositions' => $availablePositions,
             'availableCompanies' => $availableCompanies,
             'mainCompanyWorkers' => $mainCompanyWorkers,
-            'scanFile' => $scanFile,
-            'docFiles' => $docFiles,
-            'appFiles' => $appFiles,
+            'scanFile' => $tables['scan'],
+            'docFiles' => $tables['doc'],
+            'appFiles' => $tables['app'],
             'filesAnswer' => $filesAnswer
         ]);
     }

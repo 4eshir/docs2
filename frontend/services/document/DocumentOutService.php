@@ -4,10 +4,14 @@ namespace frontend\services\document;
 
 use common\helpers\files\filenames\DocumentOutFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
+use frontend\controllers\document\DocumentOutController;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\document_in_out\DocumentOutWork;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\UploadedFile;
 
 class DocumentOutService implements DatabaseService
@@ -63,7 +67,11 @@ class DocumentOutService implements DatabaseService
 
             $this->fileService->uploadFile(
                 $model->docFile[$i - 1],
-                $filename
+                $filename,
+                [
+                    'tableName' => DocumentOutWork::tableName(),
+                    'fileType' => FilesHelper::TYPE_DOC
+                ]
             );
 
             $model->recordEvent(
@@ -83,7 +91,11 @@ class DocumentOutService implements DatabaseService
 
             $this->fileService->uploadFile(
                 $model->appFile[$i - 1],
-                $filename
+                $filename,
+                [
+                    'tableName' => DocumentOutWork::tableName(),
+                    'fileType' => FilesHelper::TYPE_APP
+                ]
             );
 
             $model->recordEvent(
@@ -102,5 +114,49 @@ class DocumentOutService implements DatabaseService
     public function isAvailableDelete($id)
     {
         return [];
+    }
+
+    public function getUploadedFilesTables(DocumentOutWork $model)
+    {
+        $scanLinks = $model->getFileLinks(FilesHelper::TYPE_SCAN);
+        $scanFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($scanLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($scanLinks), $model->id), 'fileId' => ArrayHelper::getColumn($scanLinks, 'id')])
+            ]
+        );
+
+        $docLinks = $model->getFileLinks(FilesHelper::TYPE_DOC);
+        $docFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($docLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($docLinks), $model->id), 'fileId' => ArrayHelper::getColumn($docLinks, 'id')])
+            ]
+        );
+
+        $appLinks = $model->getFileLinks(FilesHelper::TYPE_APP);
+        $appFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($appLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($appLinks), $model->id), 'fileId' => ArrayHelper::getColumn($appLinks, 'id')])
+            ]
+        );
+
+        return ['scan' => $scanFiles, 'doc' => $docFiles, 'app' => $appFiles];
     }
 }

@@ -10,6 +10,7 @@ class SendMethodDictionary extends BaseDictionary
     const FAX = 3;
     const WHATSAPP = 5;
     const SBIS = 6;
+    const DIRECTUM = 7;
 
     public function __construct()
     {
@@ -21,6 +22,7 @@ class SendMethodDictionary extends BaseDictionary
             self::FAX => 'Факс',
             self::WHATSAPP => 'WhatsApp',
             self::SBIS => 'СБИС',
+            self::DIRECTUM => 'Directum',
         ];
     }
 
@@ -33,6 +35,7 @@ class SendMethodDictionary extends BaseDictionary
             $this->list[self::FAX],
             $this->list[self::WHATSAPP],
             $this->list[self::SBIS],
+            $this->list[self::DIRECTUM],
         ];
     }
 }

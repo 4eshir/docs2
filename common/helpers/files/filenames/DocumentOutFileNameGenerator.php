@@ -94,7 +94,7 @@ class DocumentOutFileNameGenerator implements FileNameGeneratorInterface
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
         $res = StringFormatter::CutFilename($res);
 
-        return $res . '.' . $object->docFiles[$params['counter'] - 1]->extension;
+        return $res . '.' . $object->docFile[$params['counter'] - 1]->extension;
     }
 
     private function generateScanFileName($object, $params = [])
@@ -136,6 +136,6 @@ class DocumentOutFileNameGenerator implements FileNameGeneratorInterface
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
         $res = StringFormatter::CutFilename($res);
 
-        return $res . '.' . $object->appFiles[$params['counter'] - 1]->extension;
+        return $res . '.' . $object->appFile[$params['counter'] - 1]->extension;
     }
 }
