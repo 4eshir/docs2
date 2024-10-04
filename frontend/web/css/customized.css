@@ -1,5 +1,6 @@
 :root {
     --border-radius: 10px;
+    --border-color: #e8edf1;
 
     --primary-light-color: #00A58E;
     --primary-color: #009580;
@@ -55,6 +56,10 @@ tbody {
     border: none;
 }
 
+.table tr {
+    background-color: white;
+}
+
 table th {
     background-color: rgb(245, 247, 249)!important;
     text-align: left;
@@ -80,11 +85,11 @@ th:last-child, .grid-view tbody tr:hover td:last-child {
     border-top-right-radius: var(--border-radius);
 }
 
-.grid-view tbody tr:hover td:first-child {
+.grid-view tbody tr:hover td:first-child, .grid-view tbody tr:last-child td:first-child {
     border-bottom-left-radius: var(--border-radius);
 }
 
-.grid-view tbody tr:hover td:last-child {
+.grid-view tbody tr:hover td:last-child, .grid-view tbody tr:last-child td:last-child {
     border-bottom-right-radius: var(--border-radius);
 }
 
@@ -103,7 +108,7 @@ table th a svg {
 
 .grid-view tr:not(:last-child) {
     border-bottom-width: 1px;
-    border-bottom-color: rgba(232,237,241, 1);
+    border-bottom-color: var(--border-color);
 }
 
 .action-column {
@@ -124,12 +129,6 @@ table th a svg {
             rgb(232, 237, 241) 0px 0px 0px 1px;
 }
 
-.breadcrumb {
-    background-color: white;
-    border: none;
-    padding: .75rem 0;
-}
-
 .breadcrumb a {
     color: black;
     text-decoration: underline;
@@ -138,6 +137,7 @@ table th a svg {
 .breadcrumb a:hover {
     color: var(--primary-light-color);
     text-decoration: none;
+    font-weight: 600;
 }
 
 a:hover svg path, #filterToggle:hover svg path {
@@ -265,7 +265,7 @@ a:hover {
 }
 
 .button-group {
-    margin: 1em 0;
+    margin: auto 0;
 }
 
 .button-group a {
@@ -288,10 +288,10 @@ a:hover {
 .filter-panel {
     display: none;
     border-radius: var(--border-radius);
-    border: 1px solid #d3d3d3;
-    padding: 10px;
+    border: 1px solid var(--border-color);
+    padding: 1em;
     margin-top: 10px;
-    background-color: #f9f9f9;
+    background-color: #f5f7f9;
 }
 
 .dropdown-item.active, .dropdown-item:active {
@@ -303,9 +303,23 @@ a:hover {
 }
 
 .export-menu {
-    margin: auto 3em;
+    margin: auto 2em;
 }
 
 .space {
     justify-content: space-between;
+}
+
+.substrate, .breadcrumb {
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 1em;
+    border: 1px solid var(--border-color);
+}
+
+body {
+    background-image: url(../backgorund/1.jpg);
+    /*background-size: cover;*/
+    background-position: center;
+    /*background-repeat: no-repeat;*/
 }
