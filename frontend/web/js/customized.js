@@ -119,12 +119,19 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     const filterToggle = document.getElementById('filterToggle');
     const filterPanel = document.getElementById('filterPanel');
+    const pathSVG = filterToggle.getElementsByTagName('path');
+    let color = '#000';
 
     filterToggle.addEventListener('click', function () {
         if (filterPanel.style.display === 'none' || filterPanel.style.display === '') {
             filterPanel.style.display = 'block';
+            color = '#009580';
         } else {
             filterPanel.style.display = 'none';
+            color = '#000';
+        }
+        for (let i = 0; i < pathSVG.length; i++) {
+            pathSVG[i].setAttribute('stroke', color);
         }
     });
 });

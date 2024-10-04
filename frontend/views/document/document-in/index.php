@@ -21,70 +21,67 @@ $helper = new DocumentInWork();
 ?>
 <div class="document-in-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="substrate">
+        <h1><?= Html::encode($this->title) ?></h1>
 
-    <div class="flexx space">
-        <div class="flexx">
-            <?= $helper->createGroupButton(); ?>
+        <div class="flexx space">
+            <div class="flexx">
+                <?= $helper->createGroupButton(); ?>
 
-            <p hidden>
+                <p hidden>
 
-                <?php
-                if ($tempArchive === null)
-                    echo Html::a('Показать архивные документы', ['document-in/index', 'archive' => 1, 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
-                else
-                    echo Html::a('Скрыть архивные документы', ['document-in/index', 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
-                ?>
-            </p>
+                    <?php
+                    if ($tempArchive === null)
+                        echo Html::a('Показать архивные документы', ['document-in/index', 'archive' => 1, 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
+                    else
+                        echo Html::a('Скрыть архивные документы', ['document-in/index', 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
+                    ?>
+                </p>
 
-            <?= $this->render('_search', ['model' => $searchModel]) ?>
+                <?= $this->render('_search', ['model' => $searchModel]) ?>
 
-            <div class="export-menu">
-                <?php
+                <div class="export-menu">
+                    <?php
 
-                $gridColumns = [
-                    ['attribute' => 'fullNumber'],
-                    ['attribute' => 'localDate', 'encodeLabel' => false],
-                    ['attribute' => 'realDate', 'encodeLabel' => false],
-                    ['attribute' => 'realNumber', 'encodeLabel' => false],
+                    $gridColumns = [
+                        ['attribute' => 'fullNumber'],
+                        ['attribute' => 'localDate', 'encodeLabel' => false],
+                        ['attribute' => 'realDate', 'encodeLabel' => false],
+                        ['attribute' => 'realNumber', 'encodeLabel' => false],
 
-                    ['attribute' => 'companyName', 'encodeLabel' => false],
-                    ['attribute' => 'documentTheme', 'encodeLabel' => false],
-                    ['attribute' => 'sendMethodName', 'value' => 'sendMethod.name'],
-                    ['attribute' => 'needAnswer', 'value' => function(DocumentInWork $model) {
-                        return $model->getNeedAnswer();
-                    }, 'format' => 'raw'],
+                        ['attribute' => 'companyName', 'encodeLabel' => false],
+                        ['attribute' => 'documentTheme', 'encodeLabel' => false],
+                        ['attribute' => 'sendMethodName', 'value' => 'sendMethod.name'],
+                        ['attribute' => 'needAnswer', 'value' => function(DocumentInWork $model) {
+                            return $model->getNeedAnswer();
+                        }, 'format' => 'raw'],
 
-                ];
-                echo '<b>Скачать файл </b>';
-                echo ExportMenu::widget([
-                    'dataProvider' => $dataProvider,
-                    'columns' => $gridColumns,
+                    ];
 
-                    'options' => [
-                        'padding-bottom: 100px',
-                    ]
-                ]);
+                    echo ExportMenu::widget([
+                        'dataProvider' => $dataProvider,
+                        'columns' => $gridColumns,
 
-                ?>
+                        'options' => [
+                            'padding-bottom: 100px',
+                        ],
+                    ]);
+
+                    ?>
+                </div>
             </div>
-        </div>
 
-        <?= HtmlCreator::filterToggle() ?>
+            <?= HtmlCreator::filterToggle() ?>
+        </div>
     </div>
 
-    <i class="fa-solid fa-house"></i>
     <div class="filter-panel" id="filterPanel">
-        <h2>Фильтры</h2>
-        <label>
-            <input type="checkbox"> Фильтр 1
-        </label>
-        <label>
-            <input type="checkbox"> Фильтр 2
-        </label>
-        <label>
-            <input type="checkbox"> Фильтр 3
-        </label>
+        <h2><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path d="M9 12L4 4H15M20 4L15 12V21L9 18V16" stroke="#009580" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg> Поиск</h2>
+        <div class="flexx">
+            <div></div>
+        </div>
     </div>
 
 
