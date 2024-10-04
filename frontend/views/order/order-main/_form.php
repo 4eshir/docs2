@@ -2,7 +2,7 @@
 
 use app\components\DropDownDocument;
 use app\components\DropDownResponsiblePeopleWidget;
-use app\components\DynamicFormWidget;
+use app\components\DynamicWidget;
 use app\models\work\order\OrderMainWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -16,9 +16,19 @@ use yii\jui\DatePicker;
 /* @var $bringPeople */
 /* @var $scanFile */
 /* @var $docFiles */
-?>
-<div class="order-main-form">
+/* @var $orders */
+/* @var $regulations */
 
+?>
+<style>
+    .bordered-div {
+        border: 2px solid #000; /* Черная рамка */
+        padding: 10px;          /* Отступы внутри рамки */
+        border-radius: 5px;    /* Скругленные углы (по желанию) */
+        margin: 10px 0;        /* Отступы сверху и снизу */
+    }
+</style>
+<div class="order-main-form">
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
         'dateFormat' => 'php:d.m.Y',
@@ -71,23 +81,96 @@ use yii\jui\DatePicker;
         ?>
 
     </div>
-    <?
-    echo DropDownResponsiblePeopleWidget::widget([
-        'model' => $model,
-        'bringPeople' => $bringPeople,
-        'form' => $form,
-    ]);
-    ?>
-    <div>
-        Изменение документов
+    <div class="bordered-div">
+        <?php DynamicWidget::begin([
+            'widgetContainer' => 'dynamicform_wrapper',
+            'widgetBody' => '.container-items',
+            'widgetItem' => '.item',
+            'model' => $model,
+            'formId' => 'dynamic-form',
+            'formFields' => ['order_name'],
+        ]); ?>
+
+        <div class="container-items">
+            <h5 class="panel-title pull-left">Ответственные</h5><!-- widgetBody -->
+            <div class="pull-right">
+                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+            </div>
+            <div class="item panel panel-default" id = "item"><!-- widgetItem -->
+                <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
+                <div class="panel-heading">
+                    <div class="clearfix"></div>
+                </div>
+                <div class = "form-label">
+                    <div class="panel-body">
+                        <?php
+                        $params = [
+                            'id' => 'names',
+                            'class' => 'form-control pos',
+                            'prompt' => '---',
+                        ];
+                        echo $form
+                            ->field($model, 'names[]')
+                            ->dropDownList(ArrayHelper::map($bringPeople, 'id', 'fullFio'), $params)
+                            ->label('Ответственные');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
+        DynamicWidget::end()
+        ?>
     </div>
-    <?
-    echo DropDownDocument::widget([
-        'model' => $model,
-        'bringPeople' => $bringPeople,
-        'form' => $form,
-    ]);
-    ?>
+
+    <div class="bordered-div">
+        <?php DynamicWidget::begin([
+            'widgetContainer' => 'dynamicform_wrapper',
+            'widgetBody' => '.container-items',
+            'widgetItem' => '.item',
+            'model' => $model,
+            'formId' => 'dynamic-form',
+            'formFields' => ['order_name'],
+        ]); ?>
+
+        <div class="container-items">
+            <h5 class="panel-title pull-left">Изменение документов</h5><!-- widgetBody -->
+            <div class="pull-right">
+                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+            </div>
+            <div class="item panel panel-default" id = "item"><!-- widgetItem -->
+                <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
+                <div class="panel-heading">
+                    <div class="clearfix"></div>
+                </div>
+                <div class = "form-label">
+                    <div class="panel-body">
+                        <?php
+                        $params = [
+                            'id' => 'names',
+                            'class' => 'form-control pos',
+                            'prompt' => '---',
+                        ];
+                        echo $form
+                            ->field($model, 'orders[]')
+                            ->dropDownList(ArrayHelper::map($orders, 'id', 'orderName'), $params)
+                            ->label('Приказ');
+                        echo $form
+                            ->field($model, 'regulations[]')
+                            ->dropDownList(ArrayHelper::map($regulations, 'id', 'name'), $params)
+                            ->label('Приказ');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
+        DynamicWidget::end()
+        ?>
+    </div>
+
+
+
     <?= $form->field($model, 'key_words')->textInput(['maxlength' => true])->label('Ключевые слова') ?>
 
     <div class="panel-body" style="padding: 0; margin: 0"></div>
@@ -119,13 +202,14 @@ use yii\jui\DatePicker;
             <?php endforeach; ?>
         </table>
     <?php endif; ?>
+
+
+
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
     </div>
     <?php ActiveForm::end(); ?>
 </div>
-
-
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script>
     function checkArchive() {

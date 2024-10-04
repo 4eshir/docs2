@@ -21,6 +21,9 @@ class OrderMainWork extends OrderMain
      * Имена файлов для сохранения в БД
      */
     public $names;
+    public $orders;
+    public $statuses;
+    public $regulations ;
     public $scanName;
     public $docName;
     public $appName;
@@ -65,6 +68,7 @@ class OrderMainWork extends OrderMain
         return $this->order_date;
     }
 
+
     public function getOrderName()
     {
         return $this->order_name;
@@ -81,19 +85,21 @@ class OrderMainWork extends OrderMain
     }
     public function getResponsiblePeople($post)
     {
-        return $post["respPeople"];
+        return $post["OrderMainWork"]["names"];
     }
     public function getDocumentExpire($post)
     {
-        return $post["doc-1"];
+
+        return $post["OrderMainWork"]["orders"];
     }
     public function getRegulationExpire($post)
     {
-        return $post["doc-2"];
+
+        return $post["OrderMainWork"]["regulations"];
     }
     public function getStatusExpire($post)
     {
-        return $post["radio"];
+        return $post["OrderMainWork"]["radio"];
     }
     public function getCreatorWork()
     {

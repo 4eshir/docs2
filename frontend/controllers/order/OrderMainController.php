@@ -13,6 +13,7 @@ use frontend\events\expire\ExpireCreateEvent;
 use frontend\events\general\OrderPeopleCreateEvent;
 use frontend\models\search\SearchOrderMain;
 use common\repositories\order\OrderMainRepository;
+use frontend\models\work\regulation\RegulationWork;
 use yii\web\Controller;
 use yii;
 class OrderMainController extends Controller
@@ -49,22 +50,24 @@ class OrderMainController extends Controller
         $model = new OrderMainWork();
         $bringPeople = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
-        $docs = $model->getDocumentExpire($post);
-        $regulation = $model->getRegulationExpire($post);
-        $statuses = $model->getStatusExpire($post);
+        $orders = OrderMainWork::find()->all();
+        $regulations = RegulationWork::find()->all();
         if ($model->load($post)) {
             $respPeople = $model->getResponsiblePeople($post);
+            //$statuses = $model->getStatusExpire($post);
+            $docs = $model->getDocumentExpire($post);
+            $regulation = $model->getRegulationExpire($post);
             $model->order_copy_id = 1;
             $model->order_date = DateFormatter::format($model->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
             if(!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->repository->save($model);
-            for($i = 1; $i < count($docs); $i++){
-                $model->recordEvent(new ExpireCreateEvent($model->id,
-                    $regulation[$i],$docs[$i],1,$statuses[$i]), ExpireWork::class);
+            for($i = 0; $i < count($docs); $i++){
+                $model->recordEvent(new ExpireCreateEvent($regulation[$i],
+                    $regulation[$i],$docs[$i],1,1), ExpireWork::class);
             }
-            for($i = 1; $i < count($respPeople); $i++){
+            for($i = 0; $i < count($respPeople); $i++){
                 $model->recordEvent(new OrderPeopleCreateEvent($respPeople[$i], $model->id), OrderPeopleWork::class );
             }
 
@@ -72,8 +75,10 @@ class OrderMainController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
         return $this->render('create', [
+            'orders' => $orders,
             'model' => $model,
-            'bringPeople' => $bringPeople
+            'bringPeople' => $bringPeople,
+            'regulations' => $regulations,
         ]);
     }
     public function actionDelete($id){

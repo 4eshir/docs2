@@ -56,7 +56,10 @@ class RegulationWork extends Regulation
                 'extensions' => 'png, jpg, pdf, zip, rar, 7z, tag, txt'],
         ]);
     }
-
+    public function getName()
+    {
+        return $this->name;
+    }
     public static function states()
     {
         return [

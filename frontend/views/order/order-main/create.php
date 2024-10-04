@@ -4,7 +4,8 @@ use yii\helpers\Html;
 
 /* @var $model \app\models\work\order\OrderMainWork */
 /* @var $bringPeople */
-
+/* @var $orders */
+/* @var $regulations */
 $this->title = 'Добавить приказ об основной деятельности';
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об осн. деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -16,8 +17,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= $this->render('_form', [
             'model' => $model,
-            'bringPeople' => $bringPeople
-
+            'bringPeople' => $bringPeople,
+            'orders' => $orders,
+            'regulations' => $regulations
         ]) ?>
 
     </div>
