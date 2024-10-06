@@ -17,6 +17,9 @@ class PeopleWork extends People
     const FIO_SURNAME_INITIALS = 2;
     const FIO_WITH_POSITION = 3;
 
+    public $branches;
+    public $positions;
+
     public function behaviors()
     {
         return [
@@ -52,7 +55,6 @@ class PeopleWork extends People
             self::FIO_WITH_POSITION => 'ФИО полностью и должность с местом работы в скобках',
         ];
     }
-
     public function getFIO($type)
     {
         switch ($type) {
@@ -97,11 +99,11 @@ class PeopleWork extends People
     }
     public function getBranchByPost($post)
     {
-        return $post['side'];
+        return $post["PeopleWork"]['branches'];
     }
     public function getPositionsByPost($post)
     {
-        return $post['pos'];
+        return $post["PeopleWork"]['positions'];
     }
     public function beforeValidate()
     {
