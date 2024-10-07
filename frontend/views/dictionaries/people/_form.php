@@ -1,6 +1,7 @@
 <?php
 
 use app\components\DropDownPosition;
+use app\components\DynamicWidget;
 use common\components\dictionaries\base\BranchDictionary;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
@@ -28,23 +29,48 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'patronymic')->textInput(['maxlength' => true])->label('Отчество') ?>
 
-    <div class="row">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4><i class="glyphicon glyphicon-briefcase"></i> Должности</h4></div>
+    <?php DynamicWidget::begin([
+        'widgetContainer' => 'dynamicform_wrapper',
+        'widgetBody' => '.container-items',
+        'widgetItem' => '.item',
+        'model' => $model,
+        'formId' => 'dynamic-form',
+        'formFields' => ['order_name'],
+    ]); ?>
+
+    <div class="container-items">
+        <h5 class="panel-title pull-left">Должности и организации</h5>
+        <div class="pull-right">
+            <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+        </div>
+        <div class="item panel panel-default" id = "item">
+            <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
+            <div class="panel-heading">
+                <div class="clearfix"></div>
+            </div>
+            <div class = "form-label">
+                <div class="panel-body">
+                    <?php
+                    $params = [
+                        'id' => 'names',
+                        'class' => 'form-control pos',
+                        'prompt' => '---',
+                    ];
+                    echo $form
+                        ->field($model, 'orders[]')
+                        ->dropDownList(ArrayHelper::map($orders, 'id', 'orderName'), $params)
+                        ->label('Приказ');
+                    echo $form
+                        ->field($model, 'regulations[]')
+                        ->dropDownList(ArrayHelper::map($regulations, 'id', 'name'), $params)
+                        ->label('Приказ');
+                    ?>
+                </div>
+            </div>
         </div>
     </div>
     <?php
-    $params = [
-        'prompt' => '---',
-        'id' => 'org'
-    ];
-    echo DropDownPosition::widget([
-        'model' => $model,
-        'positions' => $positions,
-        'form' => $form,
-        'branches' => $branches
-    ]);
-    echo $form->field($model, 'company_id')->dropDownList(ArrayHelper::map($companies, 'id', 'name'), $params)->label('Организация');
+    DynamicWidget::end()
     ?>
 
     <div id="orghid" <?= !$model->inMainCompany() ? 'hidden' : '' ?>>
