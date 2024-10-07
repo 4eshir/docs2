@@ -50,9 +50,9 @@ class OrderMainWork extends OrderMain
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['scan'], 'file', 'skipOnEmpty' => true,
+            [['scanFile'], 'file', 'skipOnEmpty' => true,
                 'extensions' => 'png, jpg, pdf, zip, rar, 7z, tag, txt'],
-            [['doc'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
+            [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
                 'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt']
         ]);
     }

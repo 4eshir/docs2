@@ -1,6 +1,7 @@
 <?php
 
 use app\components\DropDownPosition;
+use app\components\DynamicWidget;
 use common\components\dictionaries\base\BranchDictionary;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
@@ -15,9 +16,16 @@ use yii\widgets\ActiveForm;
 /* @var $companies CompanyWork[] */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $positions PositionWork */
-/* @var $branches */
+/* @var $branches BranchDictionary  */
 ?>
-
+<style>
+    .bordered-div {
+        border: 2px solid #000; /* Черная рамка */
+        padding: 10px;          /* Отступы внутри рамки */
+        border-radius: 5px;    /* Скругленные углы (по желанию) */
+        margin: 10px 0;        /* Отступы сверху и снизу */
+    }
+</style>
 <div class="people-form">
 
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
@@ -28,25 +36,72 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'patronymic')->textInput(['maxlength' => true])->label('Отчество') ?>
 
-    <div class="row">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4><i class="glyphicon glyphicon-briefcase"></i> Должности</h4></div>
-        </div>
-    </div>
-    <?php
-    $params = [
-        'prompt' => '---',
-        'id' => 'org'
-    ];
-    echo DropDownPosition::widget([
-        'model' => $model,
-        'positions' => $positions,
-        'form' => $form,
-        'branches' => $branches
-    ]);
-    echo $form->field($model, 'company_id')->dropDownList(ArrayHelper::map($companies, 'id', 'name'), $params)->label('Организация');
-    ?>
+    <div class="bordered-div">
+        <?php DynamicWidget::begin([
+            'widgetContainer' => 'dynamicform_wrapper',
+            'widgetBody' => '.container-items',
+            'widgetItem' => '.item',
+            'model' => $model,
+            'formId' => 'dynamic-form',
+            'formFields' => [
+                    'position',
+                    'branch'
+            ],
+        ]);
+        ?>
 
+        <div class="container-items">
+            <h5 class="panel-title pull-left">Должность</h5><!-- widgetBody -->
+            <div class="pull-right">
+                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+            </div>
+            <div class="item panel panel-default" id = "item"><!-- widgetItem -->
+                <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
+                <div class="panel-heading">
+                    <div class="clearfix"></div>
+                </div>
+                <div class = "form-label">
+                    <div class="panel-body">
+                        <?php
+                        $params = [
+                            'prompt' => '---',
+                            'id' => 'org'
+                        ];
+                        echo $form->field($model, 'companies[]')->dropDownList(ArrayHelper::map($companies, 'id', 'name'), $params)->label('Организация');
+                        ?>
+
+                        <?php
+                        $params = [
+                            'id' => 'position',
+                            'prompt' => '---',
+                        ];
+                        echo $form
+                            ->field($model, 'positions[]')
+                            ->dropDownList(ArrayHelper::map($positions, 'id', 'pos'), $params)
+                            ->label('Должность');
+                        ?>
+                    </div>
+                </div>
+                <div class = "form-label">
+                    <div class="panel-body">
+                        <?php
+                        $params = [
+                            'id' => 'branch',
+                            'prompt' => '---',
+                        ];
+                        echo $form
+                            ->field($model, 'branches[]')
+                            ->dropDownList(Yii::$app->branches->getList(), ['prompt' => '---'])
+                            ->label('Отдел(при наличии)');
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
+        DynamicWidget::end()
+        ?>
+    </div>
     <div id="orghid" <?= !$model->inMainCompany() ? 'hidden' : '' ?>>
 
         <?= $form->field($model, 'short')->textInput(['maxlength' => true]) ?>

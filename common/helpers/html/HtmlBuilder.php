@@ -109,17 +109,21 @@ class HtmlBuilder
      * Первые элементы массивов $dataMatrix - названия столбцов
      * @param array $dataMatrix данные для таблицы в виде матрицы
      * @param array $buttonMatrix матрица кнопок взаимодействия класса HtmlHelper::a()
+     * @param array $classes css-классы для стилизации таблицы
      * @return string
      */
-    public static function createTableWithActionButtons(array $dataMatrix, array $buttonMatrix)
+    public static function createTableWithActionButtons(
+        array $dataMatrix,
+        array $buttonMatrix,
+        array $classes = ['table' => 'table table-bordered', 'tr' => '', 'th' => '', 'td' => ''])
     {
         if (count($buttonMatrix) == 0 || count($buttonMatrix[0]) == 0) {
             return '';
         }
 
-        $result = '<table class="table table-bordered"><thead>';
+        $result = '<table class="' . $classes['table'] . '"><thead>';
         foreach ($dataMatrix as $row) {
-            $result .= "<th>$row[0]</th>";
+            $result .= "<th class='" . $classes['th'] . "'>$row[0]</th>";
         }
         $result .= '</thead>';
 
@@ -128,12 +132,12 @@ class HtmlBuilder
 
         foreach ($dataMatrix as $i => $row) {
             if ($i > 0) {
-                $result .= '<tr>';
+                $result .= '<tr class="' . $classes['tr'] . '">';
                 foreach ($row as $cell) {
-                    $result .= "<td>$cell</td>";
+                    $result .= "<td class='" . $classes['td'] . "'>$cell</td>";
                 }
                 foreach ($buttonMatrix[$i - 1] as $button) {
-                    $result .= "<td>$button</td>";
+                    $result .= "<td class='" . $classes['td'] . "'>$button</td>";
                 }
                 $result .= '</tr>';
             }

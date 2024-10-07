@@ -158,7 +158,7 @@ use yii\jui\DatePicker;
                         echo $form
                             ->field($model, 'regulations[]')
                             ->dropDownList(ArrayHelper::map($regulations, 'id', 'name'), $params)
-                            ->label('Приказ');
+                            ->label('Положение');
                         ?>
                     </div>
                 </div>
