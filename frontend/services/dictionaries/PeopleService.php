@@ -2,6 +2,7 @@
 
 namespace frontend\services\dictionaries;
 
+use app\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
 use common\models\scaffold\DocumentIn;
 use common\models\scaffold\DocumentOut;
 use common\models\scaffold\People;
@@ -43,6 +44,17 @@ class PeopleService implements DatabaseService
         }
 
         return $result;
+    }
+
+    public function attachPositionCompanyBranch($positions, $companies, $branches)
+    {
+        for ($i = 0; $i < count($postPos); $i++) {
+            if ($postPos[$i] != NULL && $postBranch[$i] != NULL){
+                $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($people_id, (int)$postPos[$i] ,
+                    $model->company_id, $postBranch[$i]),
+                    PeoplePositionCompanyBranchWork::class);
+            }
+        }
     }
 
     /**

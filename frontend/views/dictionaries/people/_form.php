@@ -36,13 +36,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'patronymic')->textInput(['maxlength' => true])->label('Отчество') ?>
 
-    <?php
-    $params = [
-        'prompt' => '---',
-        'id' => 'org'
-    ];
-        echo $form->field($model, 'company_id')->dropDownList(ArrayHelper::map($companies, 'id', 'name'), $params)->label('Организация');
-    ?>
     <div class="bordered-div">
         <?php DynamicWidget::begin([
             'widgetContainer' => 'dynamicform_wrapper',
@@ -69,6 +62,14 @@ use yii\widgets\ActiveForm;
                 </div>
                 <div class = "form-label">
                     <div class="panel-body">
+                        <?php
+                        $params = [
+                            'prompt' => '---',
+                            'id' => 'org'
+                        ];
+                        echo $form->field($model, 'companies[]')->dropDownList(ArrayHelper::map($companies, 'id', 'name'), $params)->label('Организация');
+                        ?>
+
                         <?php
                         $params = [
                             'id' => 'position',

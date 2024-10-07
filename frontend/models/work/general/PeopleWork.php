@@ -19,6 +19,7 @@ class PeopleWork extends People
 
     public $branches;
     public $positions;
+    public $companies;
 
     public function behaviors()
     {

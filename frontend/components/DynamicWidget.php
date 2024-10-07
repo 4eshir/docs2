@@ -3,6 +3,7 @@
 namespace app\components;
 
 use yii\base\Widget;
+use yii\db\Exception;
 
 class DynamicWidget extends Widget
 {
@@ -44,6 +45,12 @@ class DynamicWidget extends Widget
             'formId' => $this->formId,
             'formFields' => $this->formFields,
         ]);
+    }
+
+    public static function getData($modelName, $inputName, $post)
+    {
+        return array_key_exists($modelName, $post) && array_key_exists($inputName, $post[$modelName]) ?
+            $post[$modelName][$inputName] : -1;
     }
 
     public function registerAssets()

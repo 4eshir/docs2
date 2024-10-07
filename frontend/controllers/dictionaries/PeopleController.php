@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\dictionaries;
 
+use app\components\DynamicWidget;
 use app\events\dictionaries\PeopleEventCreate;
 use app\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
 use common\components\dictionaries\base\BranchDictionary;
@@ -73,17 +74,12 @@ class PeopleController extends Controller
         $positions = $this->positionRepository->getList();
         $branches = Yii::$app->branches->getList();
         $post = Yii::$app->request->post();
-        if ($model->load($post)  && $model->validate()) {
-            $postPos = $model->getPositionsByPost($post);
-            $postBranch = $model->getBranchByPost($post) ;
+        if ($model->load($post) && $model->validate()) {
+            $postPositions = DynamicWidget::getData(PeopleWork::class, 'positions', $post);
+            $postBranches = DynamicWidget::getData(PeopleWork::class, 'branches', $post);
+            $postCompanies = DynamicWidget::getData(PeopleWork::class, 'companies', $post);
             $people_id = $this->repository->save($model);
-            for ($i = 0; $i < count($postPos); $i++) {
-               if ($postPos[$i] != NULL && $postBranch[$i] != NULL){
-                    $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($people_id, (int)$postPos[$i] ,
-                        $model->company_id, $postBranch[$i]),
-                        PeoplePositionCompanyBranchWork::class);
-                }
-            }
+
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
