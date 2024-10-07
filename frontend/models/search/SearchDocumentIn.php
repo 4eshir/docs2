@@ -21,6 +21,11 @@ class SearchDocumentIn extends DocumentInWork
     public $documentTheme;
 
     public $archive;
+
+    public $correspondentName;
+    public $start_date_search;
+    public $finish_date_search;
+
     /**
      * {@inheritdoc}
      */
@@ -28,7 +33,7 @@ class SearchDocumentIn extends DocumentInWork
     {
         return [
             [['id', 'local_number', 'position_id', 'company_id', 'signed_id', 'get_id', 'creator_id', 'archive'], 'integer'],
-            [['realNumber', 'fullNumber'], 'string'],
+            [['realNumber', 'fullNumber', 'key_words'], 'string'],
             [['localDate', 'realDate', 'documentTheme', 'correspondentName', 'companyName', 'sendMethodName'], 'safe'],
         ];
     }

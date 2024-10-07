@@ -236,9 +236,9 @@ class DocumentInWork extends DocumentIn
         return HtmlBuilder::createGroupButton($links);
     }
 
-    public function createFilterButton()
+    public function createFilterPanel($searchModel)
     {
-
+        return HtmlBuilder::createFilterPanel($searchModel);
     }
 
     /*public function getLastNumber($inputString) {
