@@ -63,14 +63,17 @@ class OrderMainController extends Controller
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->repository->save($model);
-            for($i = 0; $i < count($docs); $i++){
-                $model->recordEvent(new ExpireCreateEvent($regulation[$i],
-                    $regulation[$i],$docs[$i],1,1), ExpireWork::class);
+            if($docs[0] != NULL && $regulation[0] != NULL){
+                for($i = 0; $i < count($docs); $i++){
+                        $model->recordEvent(new ExpireCreateEvent($regulation[$i],
+                            $regulation[$i],$docs[$i],1,1), ExpireWork::class);
+                }
             }
-            for($i = 0; $i < count($respPeople); $i++){
-                $model->recordEvent(new OrderPeopleCreateEvent($respPeople[$i], $model->id), OrderPeopleWork::class );
+            if($respPeople[0] != NULL) {
+                for ($i = 0; $i < count($respPeople); $i++) {
+                    $model->recordEvent(new OrderPeopleCreateEvent($respPeople[$i], $model->id), OrderPeopleWork::class);
+                }
             }
-
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
