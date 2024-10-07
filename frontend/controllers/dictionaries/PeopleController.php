@@ -74,20 +74,18 @@ class PeopleController extends Controller
         $branches = Yii::$app->branches->getList();
         $post = Yii::$app->request->post();
         if ($model->load($post)  && $model->validate()) {
-
             $postPos = $model->getPositionsByPost($post);
             $postBranch = $model->getBranchByPost($post) ;
             $people_id = $this->repository->save($model);
-
             for ($i = 0; $i < count($postPos); $i++) {
-                if ($postPos[$i] != NULL && $postBranch[$i] != NULL && $i != 0){
+               if ($postPos[$i] != NULL && $postBranch[$i] != NULL){
                     $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($people_id, (int)$postPos[$i] ,
-                        $model->company_id, BranchDictionary::getByName($postBranch[$i])),
+                        $model->company_id, $postBranch[$i]),
                         PeoplePositionCompanyBranchWork::class);
                 }
             }
             $model->releaseEvents();
-            return $this->redirect(['index']);
+            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
