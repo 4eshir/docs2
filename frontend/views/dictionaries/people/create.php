@@ -10,7 +10,7 @@ use yii\helpers\Html;
 /* @var $model PeopleWork */
 /* @var $companies CompanyWork */
 /* @var $positions PositionWork */
-/* @var $modelPeoplePositionBranch PositionWork */
+/* @var $branches */
 
 /* @var $branches */
 
@@ -24,7 +24,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
-        'modelPeoplePositionBranch' => $modelPeoplePositionBranch,
         'companies' => $companies,
         'positions' => $positions,
         'branches' => $branches,

@@ -12,6 +12,11 @@ class PeoplePositionCompanyBranchRepository
 {
     use CommonDatabaseFunctions;
 
+    public function get($id)
+    {
+        return PeoplePositionCompanyBranchWork::find()->where(['id' => $id])->one();
+    }
+
     public function getByPeople($peopleId)
     {
         return PeoplePositionCompanyBranchWork::find()->where(['people_id' => $peopleId])->all();
@@ -43,6 +48,11 @@ class PeoplePositionCompanyBranchRepository
     {
         $peoplePositions = PeoplePositionCompanyBranchWork::find()->where(['people_id' => $peopleId])->all();
         return PositionWork::find()->where(['IN', 'id', ArrayHelper::getColumn($peoplePositions, 'company_id')])->all();
+    }
+
+    public function delete($id)
+    {
+        return $this->get($id)->delete();
     }
 
     public function prepareCreate($people_id, $position_id, $company_id, $branch)

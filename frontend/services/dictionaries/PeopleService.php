@@ -3,17 +3,26 @@
 namespace frontend\services\dictionaries;
 
 use app\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
+use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\DocumentIn;
 use common\models\scaffold\DocumentOut;
 use common\models\scaffold\People;
 use common\models\scaffold\Regulation;
 use common\models\User;
+use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\general\UserRepository;
 use common\repositories\regulation\RegulationRepository;
 use common\services\DatabaseService;
+use DomainException;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
+use frontend\models\work\general\PeopleWork;
+use PHPUnit\Util\Exception;
+use Yii;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 class PeopleService implements DatabaseService
 {
@@ -46,14 +55,16 @@ class PeopleService implements DatabaseService
         return $result;
     }
 
-    public function attachPositionCompanyBranch($positions, $companies, $branches)
+    public function attachPositionCompanyBranch(PeopleWork $model, array $positions, array $companies, array $branches, int $peopleId)
     {
-        for ($i = 0; $i < count($postPos); $i++) {
-            if ($postPos[$i] != NULL && $postBranch[$i] != NULL){
-                $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($people_id, (int)$postPos[$i] ,
-                    $model->company_id, $postBranch[$i]),
-                    PeoplePositionCompanyBranchWork::class);
-            }
+        if (!(count($positions) == count($companies) && count($companies) == count($branches))) {
+            throw new DomainException('Размеры массивов $positions, $companies и $branches не совпадают');
+        }
+
+        for ($i = 0; $i < count($positions); $i++) {
+            $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($peopleId, (int)$positions[$i],
+                (int)$companies[$i], (int)$branches[$i]),
+                PeoplePositionCompanyBranchWork::class);
         }
     }
 
@@ -69,6 +80,27 @@ class PeopleService implements DatabaseService
         $regulation = $this->regulationRepository->checkDeleteAvailable(Regulation::tableName(), People::tableName(), $entityId);
         $user = $this->userRepository->checkDeleteAvailable(User::tableName(), People::tableName(), $entityId);
 
-        return array_merge($docsIn, $docsOut, $regulation);
+        return array_merge($docsIn, $docsOut, $regulation, $user);
+    }
+
+    public function getPositionCompanyBranchTable(PeopleRepository $repository, int $modelId)
+    {
+        $branchNames = Yii::$app->branches->getList();
+        $positionCompanyBranches = $repository->getPositionsCompanies($modelId);
+        return HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Организация'], ArrayHelper::getColumn($positionCompanyBranches, 'companyWork.name')),
+                array_merge(['Должность'], ArrayHelper::getColumn($positionCompanyBranches, 'positionWork.name')),
+                array_merge(['Отдел (при наличии)'], array_map(function ($number) use ($branchNames) {
+                    return $branchNames[$number] ?? null;
+                }, ArrayHelper::getColumn($positionCompanyBranches, 'branch'))),
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-position'),
+                    ['id' => ArrayHelper::getColumn($positionCompanyBranches, 'id'), 'modelId' => array_fill(0, count($positionCompanyBranches), $modelId)])
+            ]
+        );
     }
 }

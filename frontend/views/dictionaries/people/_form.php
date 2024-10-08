@@ -5,6 +5,7 @@ use app\components\DynamicWidget;
 use common\components\dictionaries\base\BranchDictionary;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
+use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\general\PeopleWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -16,7 +17,9 @@ use yii\widgets\ActiveForm;
 /* @var $companies CompanyWork[] */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $positions PositionWork */
-/* @var $branches BranchDictionary  */
+/* @var $branches BranchDictionary */
+/* @var $modelPeoplePositionBranch PeoplePositionCompanyBranchWork */
+
 ?>
 <style>
     .bordered-div {
@@ -35,6 +38,10 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'firstname')->textInput(['maxlength' => true])->label('Имя') ?>
 
     <?= $form->field($model, 'patronymic')->textInput(['maxlength' => true])->label('Отчество') ?>
+
+    <?php if (strlen($modelPeoplePositionBranch) > 10): ?>
+        <?= $modelPeoplePositionBranch; ?>
+    <?php endif; ?>
 
     <div class="bordered-div">
         <?php DynamicWidget::begin([

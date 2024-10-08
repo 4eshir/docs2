@@ -69,16 +69,16 @@ class PeopleController extends Controller
     public function actionCreate()
     {
         $model = new PeopleWork();
-        $modelPeoplePositionBranch = [new PeoplePositionCompanyBranchWork()];
         $companies = $this->companyRepository->getList();
         $positions = $this->positionRepository->getList();
         $branches = Yii::$app->branches->getList();
         $post = Yii::$app->request->post();
         if ($model->load($post) && $model->validate()) {
-            $postPositions = DynamicWidget::getData(PeopleWork::class, 'positions', $post);
-            $postBranches = DynamicWidget::getData(PeopleWork::class, 'branches', $post);
-            $postCompanies = DynamicWidget::getData(PeopleWork::class, 'companies', $post);
-            $people_id = $this->repository->save($model);
+            $postPositions = DynamicWidget::getData(basename(PeopleWork::class), 'positions', $post);
+            $postCompanies = DynamicWidget::getData(basename(PeopleWork::class), 'companies', $post);
+            $postBranches = DynamicWidget::getData(basename(PeopleWork::class), 'branches', $post);
+            $peopleId = $this->repository->save($model);
+            $this->service->attachPositionCompanyBranch($model, $postPositions, $postCompanies, $postBranches, $peopleId);
 
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
@@ -86,7 +86,6 @@ class PeopleController extends Controller
 
         return $this->render('create', [
             'model' => $model,
-            'modelPeoplePositionBranch' => $modelPeoplePositionBranch,
             'companies' => $companies,
             'positions' => $positions,
             'branches' => $branches
@@ -97,15 +96,20 @@ class PeopleController extends Controller
     {
         $model = $this->repository->get($id);
         /** @var PeopleWork $model */
-        $modelPeoplePositionBranch = [new PeoplePositionCompanyBranchWork()];
+        $modelPeoplePositionBranch = $this->service->getPositionCompanyBranchTable($this->repository, $model->id);
         $companies = $this->companyRepository->getList();
+        $positions = $this->positionRepository->getList();
+        $branches = Yii::$app->branches->getList();
 
-        if ($model->load(Yii::$app->request->post())) {
+        $post = Yii::$app->request->post();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $postPositions = DynamicWidget::getData(basename(PeopleWork::class), 'positions', $post);
+            $postCompanies = DynamicWidget::getData(basename(PeopleWork::class), 'companies', $post);
+            $postBranches = DynamicWidget::getData(basename(PeopleWork::class), 'branches', $post);
+            $peopleId = $this->repository->save($model);
+            $this->service->attachPositionCompanyBranch($model, $postPositions, $postCompanies, $postBranches, $peopleId);
 
-            if ($model->validate()) {
-                $this->repository->save($model);
-            }
-
+            $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -113,16 +117,19 @@ class PeopleController extends Controller
             'model' => $model,
             'modelPeoplePositionBranch' => $modelPeoplePositionBranch,
             'companies' => $companies,
+            'positions' => $positions,
+            'branches' => $branches
         ]);
     }
 
     public function actionDelete($id)
     {
+        /** @var PeopleWork $model */
         $model = $this->repository->get($id);
         $deleteErrors = $this->service->isAvailableDelete($id);
 
         if (count($deleteErrors) == 0) {
-            $model->delete();
+            $this->repository->delete($model);
         }
         else {
             Yii::$app->session->addFlash('error', implode('<br>', $deleteErrors));
@@ -133,9 +140,8 @@ class PeopleController extends Controller
 
     public function actionDeletePosition($id, $modelId)
     {
-        /*$position = PeoplePositionBranchWork::find()->where(['id' => $id])->one();
-        $position->delete();*/
-        return $this->redirect('index?r=people/update&id='.$modelId);
+        $this->repository->deletePosition($id);
+        return $this->redirect(['update', 'id' => $modelId]);
     }
 
     public function beforeAction($action)

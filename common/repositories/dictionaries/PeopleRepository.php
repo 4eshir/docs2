@@ -4,6 +4,7 @@ namespace common\repositories\dictionaries;
 
 use common\components\traits\CommonDatabaseFunctions;
 use common\helpers\SortHelper;
+use common\models\scaffold\People;
 use common\repositories\general\PeoplePositionCompanyBranchRepository;
 use DomainException;
 use frontend\models\work\general\PeopleWork;
@@ -83,7 +84,10 @@ class PeopleRepository
         return $this->getOrderedList(SortHelper::ORDER_TYPE_FIO, SORT_ASC, $query);
     }
 
-
+    public function deletePosition($id)
+    {
+        return $this->peoplePositionCompanyBranchRepository->delete($id);
+    }
 
     public function save(PeopleWork $people)
     {
@@ -92,5 +96,10 @@ class PeopleRepository
         }
 
         return $people->id;
+    }
+
+    public function delete(PeopleWork $model)
+    {
+        return $model->delete();
     }
 }

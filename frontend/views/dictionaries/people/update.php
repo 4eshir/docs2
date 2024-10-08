@@ -1,12 +1,17 @@
 <?php
 
 use frontend\models\work\dictionaries\CompanyWork;
+use frontend\models\work\dictionaries\PositionWork;
+use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\general\PeopleWork;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model PeopleWork */
 /* @var $companies CompanyWork */
+/* @var $positions PositionWork */
+/* @var $branches */
+/* @var $modelPeoplePositionBranch PeoplePositionCompanyBranchWork */
 
 $this->title = 'Редактировать человека: ' . $model->surname.' '.$model->firstname.' '.$model->patronymic;
 $this->params['breadcrumbs'][] = ['label' => 'Люди', 'url' => ['index']];
@@ -21,6 +26,8 @@ $this->params['breadcrumbs'][] = 'Редактирование';
         'model' => $model,
         'modelPeoplePositionBranch' => $modelPeoplePositionBranch,
         'companies' => $companies,
+        'positions' => $positions,
+        'branches' => $branches
     ]) ?>
 
 </div>
