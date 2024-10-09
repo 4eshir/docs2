@@ -1,7 +1,9 @@
 <?php
 namespace frontend\controllers\order;
+use app\components\DynamicWidget;
 use app\models\work\general\OrderPeopleWork;
 use app\models\work\order\ExpireWork;
+use app\services\OrderMainService;
 use common\helpers\DateFormatter;
 use common\repositories\dictionaries\PeopleRepository;
 use app\models\work\order\OrderMainWork;
@@ -19,6 +21,7 @@ use yii;
 class OrderMainController extends Controller
 {
     private OrderMainRepository $repository;
+    private OrderMainService $service;
     private FileService $fileService;
     private FilesRepository $filesRepository;
     private PeopleRepository $peopleRepository;
@@ -26,12 +29,15 @@ class OrderMainController extends Controller
         $id,
         $module,
         OrderMainRepository $repository,
+        OrderMainService $service,
         PeopleRepository $peopleRepository,
         FileService          $fileService,
         FilesRepository      $filesRepository,
         $config = [])
     {
+        $this->services = $service;
         $this->fileService = $fileService;
+
         $this->filesRepository = $filesRepository;
         $this->peopleRepository = $peopleRepository;
         $this->repository = $repository;
@@ -53,27 +59,17 @@ class OrderMainController extends Controller
         $orders = OrderMainWork::find()->all();
         $regulations = RegulationWork::find()->all();
         if ($model->load($post)) {
-            $respPeople = $model->getResponsiblePeople($post);
-            //$statuses = $model->getStatusExpire($post);
-            $docs = $model->getDocumentExpire($post);
-            $regulation = $model->getRegulationExpire($post);
             $model->order_copy_id = 1;
+            $respPeople = DynamicWidget::getData(OrderPeopleWork::class, "names", $post);
+            $docs = DynamicWidget::getData(OrderPeopleWork::class, "orders", $post);
+            $regulation = DynamicWidget::getData(OrderMainWork::class, "regulations", $post);
             $model->order_date = DateFormatter::format($model->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
             if(!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->repository->save($model);
-            if($docs[0] != NULL && $regulation[0] != NULL){
-                for($i = 0; $i < count($docs); $i++){
-                        $model->recordEvent(new ExpireCreateEvent($regulation[$i],
-                            $regulation[$i],$docs[$i],1,1), ExpireWork::class);
-                }
-            }
-            if($respPeople[0] != NULL) {
-                for ($i = 0; $i < count($respPeople); $i++) {
-                    $model->recordEvent(new OrderPeopleCreateEvent($respPeople[$i], $model->id), OrderPeopleWork::class);
-                }
-            }
+            $this->service->addExpireEvent($docs, $regulation, $model);
+            $this->service->addOrderPeopleEvent($respPeople, $model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
