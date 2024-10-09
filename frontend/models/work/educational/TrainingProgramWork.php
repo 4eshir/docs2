@@ -30,6 +30,9 @@ class TrainingProgramWork extends TrainingProgram
 
     public $branches;
 
+    public $themes;
+    public $controls;
+
     private FileService $fileService;
     private TrainingProgramRepository $repository;
 

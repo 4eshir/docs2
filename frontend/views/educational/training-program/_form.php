@@ -1,5 +1,6 @@
 <?php
 
+use app\components\DynamicWidget;
 use common\helpers\html\HtmlBuilder;
 use yii\helpers\Html;
 use yii\jui\DatePicker;
@@ -101,6 +102,43 @@ use yii\widgets\ActiveForm;
     <?php if (strlen($modelThematicPlan) > 10): ?>
         <?= $modelThematicPlan; ?>
     <?php endif; ?>
+
+    <div class="bordered-div">
+        <?php DynamicWidget::begin([
+            'widgetContainer' => 'dynamicform_wrapper',
+            'widgetBody' => '.container-items',
+            'widgetItem' => '.item',
+            'model' => $model,
+            'formId' => 'dynamic-form',
+            'formFields' => [
+                'position',
+                'branch'
+            ],
+        ]);
+        ?>
+
+        <div class="container-items">
+            <h5 class="panel-title pull-left">Учебно-тематический план</h5><!-- widgetBody -->
+            <div class="pull-right">
+                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+            </div>
+            <div class="item panel panel-default" id = "item"><!-- widgetItem -->
+                <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
+                <div class="panel-heading">
+                    <div class="clearfix"></div>
+                </div>
+                <div class = "form-label">
+                    <div class="panel-body">
+                        <?= $form->field($model, 'themes[]')->textInput()->label('Тема'); ?>
+                        <?= $form->field($model, 'controls[]')->dropDownList(Yii::$app->controlType->getList())->label('Форма контроля'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
+        DynamicWidget::end()
+        ?>
+    </div>
 
     <?= $form->field($model, 'mainFile')->fileInput() ?>
 

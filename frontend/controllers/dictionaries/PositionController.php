@@ -3,6 +3,7 @@
 namespace frontend\controllers\dictionaries;
 
 use common\repositories\dictionaries\PositionRepository;
+use DomainException;
 use frontend\models\search\SearchPosition;
 use frontend\models\work\dictionaries\PositionWork;
 use frontend\services\dictionaries\PositionService;
@@ -47,7 +48,10 @@ class PositionController extends Controller
     {
         $model = new PositionWork();
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
 
             $this->repository->save($model);
 
@@ -64,7 +68,10 @@ class PositionController extends Controller
         $model = $this->repository->get($id);
         /** @var PositionWork $model */
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
 
             $this->repository->save($model);
 

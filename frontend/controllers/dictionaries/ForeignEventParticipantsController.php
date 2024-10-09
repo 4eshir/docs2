@@ -4,6 +4,7 @@ namespace frontend\controllers\dictionaries;
 
 use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PersonalDataParticipantRepository;
+use DomainException;
 use frontend\events\foreign_event_participants\PersonalDataParticipantAttachEvent;
 use frontend\models\search\SearchForeignEventParticipants;
 use frontend\models\work\auxiliary\LoadParticipants;
@@ -64,7 +65,11 @@ class ForeignEventParticipantsController extends Controller
     {
         $model = new ForeignEventParticipantsWork();
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
             $this->repository->save($model);
 
             $model->recordEvent(new PersonalDataParticipantAttachEvent($model->id, $model->pd), PersonalDataParticipantWork::class);
@@ -86,7 +91,11 @@ class ForeignEventParticipantsController extends Controller
         $model = $this->repository->get($id);
         $model->fillPersonalDataRestrict($this->personalDataRepository->getPersonalDataRestrict($id));
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
             $model->recordEvent(new PersonalDataParticipantAttachEvent($model->id, $model->pd), PersonalDataParticipantWork::class);
             $this->repository->save($model);
             $model->releaseEvents();

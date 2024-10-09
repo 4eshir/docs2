@@ -10,6 +10,7 @@ use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
+use DomainException;
 use frontend\events\educational\training_program\CreateThemeInPlanEvent;
 use frontend\events\educational\training_program\ResetThematicPlanEvent;
 use frontend\events\general\FileCreateEvent;
@@ -180,9 +181,13 @@ class TrainingProgramService implements DatabaseService
 
     public function getDependencyTables($authors, $themes)
     {
+        $controlNames = Yii::$app->controlType->getList();
         $modelThematicPlan = HtmlBuilder::createTableWithActionButtons(
             [
-                array_merge(['Тема'], ArrayHelper::getColumn($themes, 'theme'))
+                array_merge(['Тема'], ArrayHelper::getColumn($themes, 'theme')),
+                array_merge(['Форма контроля'], array_map(function ($number) use ($controlNames) {
+                    return $controlNames[$number] ?? null;
+                }, ArrayHelper::getColumn($themes, 'control_type'))),
             ],
             [
                 HtmlBuilder::createButtonsArray(
@@ -218,5 +223,18 @@ class TrainingProgramService implements DatabaseService
     public function isAvailableDelete($id)
     {
         return [];
+    }
+
+    public function attachUtp(TrainingProgramWork $model, array $themes, array $controls)
+    {
+        if (!(count($themes) == count($controls))) {
+            throw new DomainException('Размеры массивов $themes и $controls не совпадают');
+        }
+
+        for ($i = 0; $i < count($themes); $i++) {
+            if ($themes[$i] !== "") {
+                $model->recordEvent(new CreateThemeInPlanEvent((int)$themes[$i], $model->id, (int)$controls[$i]), ThematicPlanWork::class);
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@
 namespace frontend\controllers\dictionaries;
 
 use common\repositories\dictionaries\CompanyRepository;
+use DomainException;
 use frontend\models\search\SearchCompany;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\services\dictionaries\CompanyService;
@@ -62,7 +63,10 @@ class CompanyController extends Controller
     {
         $model = new CompanyWork();
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
 
             $this->repository->save($model);
 
@@ -86,7 +90,10 @@ class CompanyController extends Controller
         $model = $this->repository->get($id);
         /** @var CompanyWork $model */
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
 
             $this->repository->save($model);
 

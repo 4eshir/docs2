@@ -9,6 +9,7 @@ use common\components\dictionaries\base\BranchDictionary;
 use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\dictionaries\PositionRepository;
+use DomainException;
 use frontend\models\search\SearchPeople;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\general\PeopleWork;
@@ -73,7 +74,11 @@ class PeopleController extends Controller
         $positions = $this->positionRepository->getList();
         $branches = Yii::$app->branches->getList();
         $post = Yii::$app->request->post();
-        if ($model->load($post) && $model->validate()) {
+        if ($model->load($post)) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
             $postPositions = DynamicWidget::getData(basename(PeopleWork::class), 'positions', $post);
             $postCompanies = DynamicWidget::getData(basename(PeopleWork::class), 'companies', $post);
             $postBranches = DynamicWidget::getData(basename(PeopleWork::class), 'branches', $post);
@@ -102,12 +107,16 @@ class PeopleController extends Controller
         $branches = Yii::$app->branches->getList();
 
         $post = Yii::$app->request->post();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
             $postPositions = DynamicWidget::getData(basename(PeopleWork::class), 'positions', $post);
             $postCompanies = DynamicWidget::getData(basename(PeopleWork::class), 'companies', $post);
             $postBranches = DynamicWidget::getData(basename(PeopleWork::class), 'branches', $post);
-            $peopleId = $this->repository->save($model);
-            $this->service->attachPositionCompanyBranch($model, $postPositions, $postCompanies, $postBranches, $peopleId);
+            $this->repository->save($model);
+            $this->service->attachPositionCompanyBranch($model, $postPositions, $postCompanies, $postBranches);
 
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
@@ -129,7 +138,13 @@ class PeopleController extends Controller
         $deleteErrors = $this->service->isAvailableDelete($id);
 
         if (count($deleteErrors) == 0) {
-            $this->repository->delete($model);
+            if ($this->repository->delete($model)) {
+                Yii::$app->session->addFlash('success', $model->getFIO(PeopleWork::FIO_FULL).' успешно удален');
+            }
+            else {
+                Yii::$app->session->addFlash('error', 'Произошла ошибка при удалении человека');
+                Yii::error($model->getErrors());
+            }
         }
         else {
             Yii::$app->session->addFlash('error', implode('<br>', $deleteErrors));

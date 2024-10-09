@@ -47,15 +47,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'scanFile')->fileInput()
         ->label('Скан положения')?>
 
-    <?php if (is_array($scanFile) && count($scanFile) > 0): ?>
-        <table class="table table-bordered">
-            <?php foreach ($scanFile as $file): ?>
-                <tr>
-                    <td><?= $file['link'] ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+    <?php if (strlen($scanFile) > 10): ?>
+        <?= $scanFile; ?>
     <?php endif; ?>
 
     <?= $form->field($model, 'regulation_type')->hiddenInput(['value' => RegulationTypeDictionary::TYPE_EVENT])->label(false) ?>

@@ -53,7 +53,6 @@ class RegulationController extends DocumentController
         $model = new RegulationWork();
 
         if ($model->load(Yii::$app->request->post())) {
-
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -77,7 +76,7 @@ class RegulationController extends DocumentController
     {
         $model = $this->repository->get($id);
         /** @var RegulationWork $model */
-        $scanFile = $model->getFileLinks(FilesHelper::TYPE_SCAN);;
+        $fileTables = $this->service->getUploadedFilesTables($model);
 
         if ($model->load(Yii::$app->request->post())) {
             if (!$model->validate()) {
@@ -95,7 +94,7 @@ class RegulationController extends DocumentController
 
         return $this->render('update', [
             'model' => $model,
-            'scanFile' => $scanFile,
+            'scanFile' => $fileTables['scan'],
         ]);
     }
 

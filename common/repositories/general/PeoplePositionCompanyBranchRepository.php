@@ -50,9 +50,9 @@ class PeoplePositionCompanyBranchRepository
         return PositionWork::find()->where(['IN', 'id', ArrayHelper::getColumn($peoplePositions, 'company_id')])->all();
     }
 
-    public function delete($id)
+    public function delete(PeoplePositionCompanyBranchWork $model)
     {
-        return $this->get($id)->delete();
+        return $model->delete();
     }
 
     public function prepareCreate($people_id, $position_id, $company_id, $branch)

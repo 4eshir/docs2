@@ -10,6 +10,7 @@ use common\repositories\event\EventRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\regulation\RegulationRepository;
 use common\services\general\files\FileService;
+use DomainException;
 use frontend\events\event\CreateEventBranchEvent;
 use frontend\events\event\CreateEventScopeEvent;
 use frontend\models\search\SearchEvent;
@@ -110,7 +111,11 @@ class OurEventController extends DocumentController
         //$modelEventsLinks = [new EventsLinkWork];
         //$modelGroups = [new EventTrainingGroupWork];
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
             $this->service->getFilesInstances($model);
 
             $this->repository->save($model);
@@ -151,6 +156,10 @@ class OurEventController extends DocumentController
         $tables = $this->service->getUploadedFilesTables($model);
 
         if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
             $this->service->getFilesInstances($model);
 
             $this->repository->save($model);

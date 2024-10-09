@@ -50,7 +50,7 @@ class DynamicWidget extends Widget
     public static function getData($modelName, $inputName, $post)
     {
         return array_key_exists($modelName, $post) && array_key_exists($inputName, $post[$modelName]) ?
-            $post[$modelName][$inputName] : -1;
+            $post[$modelName][$inputName] : [];
     }
 
     public function registerAssets()

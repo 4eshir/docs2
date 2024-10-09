@@ -2,16 +2,19 @@
 
 namespace frontend\controllers\educational;
 
+use app\components\DynamicWidget;
 use common\controllers\DocumentController;
 use common\helpers\html\HtmlBuilder;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
+use DomainException;
 use frontend\events\educational\training_program\CreateTrainingProgramBranchEvent;
 use frontend\models\search\SearchTrainingProgram;
 use frontend\models\work\educational\AuthorProgramWork;
 use frontend\models\work\educational\ThematicPlanWork;
 use frontend\models\work\educational\TrainingProgramWork;
+use frontend\models\work\general\PeopleWork;
 use frontend\services\educational\TrainingProgramService;
 use Yii;
 use yii\filters\VerbFilter;
@@ -88,12 +91,19 @@ class TrainingProgramController extends DocumentController
     public function actionCreate()
     {
         $model = new TrainingProgramWork();
-        $modelAuthor = [new AuthorProgramWork];
-        $modelThematicPlan = [new ThematicPlanWork];
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        $post = Yii::$app->request->post();
+        if ($model->load($post)) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
+            $postThemes = DynamicWidget::getData(basename(TrainingProgramWork::class), 'themes', $post);
+            $postControls = DynamicWidget::getData(basename(TrainingProgramWork::class), 'controls', $post);
             $this->service->getFilesInstances($model);
             $this->repository->save($model);
+
+            $this->service->attachUtp($model, $postThemes, $postControls);
             $this->service->saveFilesFromModel($model);
             $this->service->saveUtpFromFile($model);
 
@@ -105,8 +115,6 @@ class TrainingProgramController extends DocumentController
 
         return $this->render('create', [
             'model' => $model,
-            'modelAuthor' => $modelAuthor,
-            'modelThematicPlan' => $modelThematicPlan,
         ]);
     }
 
@@ -126,9 +134,18 @@ class TrainingProgramController extends DocumentController
         $fileTables = $this->service->getUploadedFilesTables($model);
         $depTables = $this->service->getDependencyTables($authors, $themes);
 
-        if ($model->load(Yii::$app->request->post())) {
+        $post = Yii::$app->request->post();
+        if ($model->load($post)) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
+            $postThemes = DynamicWidget::getData(basename(TrainingProgramWork::class), 'themes', $post);
+            $postControls = DynamicWidget::getData(basename(TrainingProgramWork::class), 'controls', $post);
             $this->service->getFilesInstances($model);
             $this->repository->save($model);
+
+            $this->service->attachUtp($model, $postThemes, $postControls);
             $this->service->saveFilesFromModel($model);
             $this->service->saveUtpFromFile($model);
 

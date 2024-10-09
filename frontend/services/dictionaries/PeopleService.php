@@ -55,16 +55,18 @@ class PeopleService implements DatabaseService
         return $result;
     }
 
-    public function attachPositionCompanyBranch(PeopleWork $model, array $positions, array $companies, array $branches, int $peopleId)
+    public function attachPositionCompanyBranch(PeopleWork $model, array $positions, array $companies, array $branches)
     {
         if (!(count($positions) == count($companies) && count($companies) == count($branches))) {
             throw new DomainException('Размеры массивов $positions, $companies и $branches не совпадают');
         }
 
         for ($i = 0; $i < count($positions); $i++) {
-            $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($peopleId, (int)$positions[$i],
-                (int)$companies[$i], (int)$branches[$i]),
-                PeoplePositionCompanyBranchWork::class);
+            if ($positions[$i] !== "" && $companies[$i] !== "") {
+                $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($model->id, (int)$positions[$i],
+                    (int)$companies[$i], (int)$branches[$i]),
+                    PeoplePositionCompanyBranchWork::class);
+            }
         }
     }
 

@@ -9,6 +9,7 @@ use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\educational\training_program\DeleteTrainingProgramBranchEvent;
+use frontend\events\educational\training_program\ResetThematicPlanEvent;
 use frontend\events\general\FileDeleteEvent;
 use frontend\models\work\educational\AuthorProgramWork;
 use frontend\models\work\educational\BranchProgramWork;
@@ -108,6 +109,7 @@ class TrainingProgramRepository
     {
         /** @var TrainingProgramWork $model */
         $model->recordEvent(new DeleteTrainingProgramBranchEvent($model->id), get_class($model));
+        $model->recordEvent(new ResetThematicPlanEvent($model->id), get_class($model));
 
         $main = $this->filesRepository->get(TrainingProgramWork::tableName(), $model->id, FilesHelper::TYPE_MAIN);
         $doc = $this->filesRepository->get(TrainingProgramWork::tableName(), $model->id, FilesHelper::TYPE_DOC);

@@ -100,6 +100,11 @@ class PeopleRepository
 
     public function delete(PeopleWork $model)
     {
+        $positions = $this->peoplePositionCompanyBranchRepository->getByPeople($model->id);
+        foreach ($positions as $position) {
+            $this->peoplePositionCompanyBranchRepository->delete($position);
+        }
+
         return $model->delete();
     }
 }

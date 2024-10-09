@@ -60,7 +60,7 @@ class DocumentOutController extends Controller
         $searchModel = new SearchDocumentOut();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $people = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
-        if($model->load(Yii::$app->request->post())){
+        if ($model->load(Yii::$app->request->post())){
             $model->generateDocumentNumber();
             $this->repository->createReserve($model);
             $this->repository->save($model);
