@@ -2,22 +2,19 @@
 namespace frontend\controllers\order;
 use app\components\DynamicWidget;
 use app\models\work\general\OrderPeopleWork;
-use app\models\work\order\ExpireWork;
-use app\services\OrderMainService;
+use app\models\work\order\OrderMainWork;
+use app\services\order\OrderMainService;
 use common\helpers\DateFormatter;
 use common\repositories\dictionaries\PeopleRepository;
-use app\models\work\order\OrderMainWork;
 use common\repositories\general\FilesRepository;
-use common\repositories\general\OrderPeopleRepository;
+use common\repositories\order\OrderMainRepository;
 use common\services\general\files\FileService;
 use DomainException;
-use frontend\events\expire\ExpireCreateEvent;
-use frontend\events\general\OrderPeopleCreateEvent;
 use frontend\models\search\SearchOrderMain;
-use common\repositories\order\OrderMainRepository;
 use frontend\models\work\regulation\RegulationWork;
-use yii\web\Controller;
 use yii;
+use yii\web\Controller;
+
 class OrderMainController extends Controller
 {
     private OrderMainRepository $repository;
@@ -35,7 +32,7 @@ class OrderMainController extends Controller
         FilesRepository      $filesRepository,
         $config = [])
     {
-        $this->services = $service;
+        $this->service = $service;
         $this->fileService = $fileService;
 
         $this->filesRepository = $filesRepository;

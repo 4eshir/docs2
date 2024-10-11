@@ -1,5 +1,5 @@
 <?php
-namespace app\services;
+namespace app\services\order;
 use app\models\work\general\OrderPeopleWork;
 use app\models\work\order\ExpireWork;
 use frontend\events\expire\ExpireCreateEvent;
