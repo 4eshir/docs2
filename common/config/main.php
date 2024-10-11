@@ -70,6 +70,12 @@ return [
         'controlType' => [
             'class' => 'common\\components\\dictionaries\\base\\ControlTypeDictionary',
         ],
+        'auditoriumType' => [
+            'class' => 'common\\components\\dictionaries\\base\\AuditoriumTypeDictionary',
+        ],
+        'ResponsibilityType' => [
+            'class' => 'common\\components\\dictionaries\\base\\ResponsibilityTypeDictionary',
+        ],
         'rac' => [
             'class' => 'common\\components\\access\\RacComponent',
         ],

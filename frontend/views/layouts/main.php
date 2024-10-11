@@ -62,6 +62,7 @@ AppAsset::register($this);
                 ['label' => 'Организации', 'url' => ['/dictionaries/company/index']],
                 ['label' => 'Должности', 'url' => ['/dictionaries/position/index']],
                 ['label' => 'Участники деятельности', 'url' => ['/dictionaries/foreign-event-participants/index']],
+                ['label' => 'Помещения', 'url' => ['/dictionaries/auditorium/index']],
             ],
         ],
     ];

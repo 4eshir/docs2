@@ -3,6 +3,7 @@
 use common\components\access\RacComponent;
 use common\components\access\RulesConfig;
 use common\components\dictionaries\base\AllowRemoteDictionary;
+use common\components\dictionaries\base\AuditoriumTypeDictionary;
 use common\components\dictionaries\base\BranchDictionary;
 use common\components\dictionaries\base\CategorySmspDictionary;
 use common\components\dictionaries\base\CertificateTypeDictionary;
@@ -18,6 +19,7 @@ use common\components\dictionaries\base\OwnershipTypeDictionary;
 use common\components\dictionaries\base\ParticipationScopeDictionary;
 use common\components\dictionaries\base\PersonalDataDictionary;
 use common\components\dictionaries\base\RegulationTypeDictionary;
+use common\components\dictionaries\base\ResponsibilityTypeDictionary;
 use common\components\dictionaries\base\SendMethodDictionary;
 use common\components\dictionaries\base\ThematicDirectionDictionary;
 use common\components\dictionaries\TableDictionary;
@@ -62,6 +64,8 @@ class Yii {
  * @property AllowRemoteDictionary $allowRemote
  * @property CertificateTypeDictionary $certificateType
  * @property ControlTypeDictionary $controlType
+ * @property AuditoriumTypeDictionary $auditoriumType
+ * @property ResponsibilityTypeDictionary $responsibilityType
  * @property RacComponent $rac
  */
 class __Application {
