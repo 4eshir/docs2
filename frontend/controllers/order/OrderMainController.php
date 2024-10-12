@@ -4,46 +4,44 @@ use app\components\DynamicWidget;
 use app\models\work\general\OrderPeopleWork;
 use app\models\work\order\OrderMainWork;
 use app\services\order\OrderMainService;
+use common\controllers\DocumentController;
 use common\helpers\DateFormatter;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\general\FilesRepository;
-use common\repositories\order\OrderMainRepository;
 use common\services\general\files\FileService;
+use common\repositories\order\OrderMainRepository;
+
 use DomainException;
 use frontend\models\search\SearchOrderMain;
 use frontend\models\work\regulation\RegulationWork;
 use yii;
+use yii\base\InvalidConfigException;
 use yii\web\Controller;
 
 class OrderMainController extends Controller
 {
     private OrderMainRepository $repository;
     private OrderMainService $service;
-    private FileService $fileService;
-    private FilesRepository $filesRepository;
     private PeopleRepository $peopleRepository;
+
+
     public function __construct(
         $id,
         $module,
         OrderMainRepository $repository,
         OrderMainService $service,
         PeopleRepository $peopleRepository,
-        FileService          $fileService,
-        FilesRepository      $filesRepository,
         $config = [])
     {
+        parent::__construct($id, $module, $config);
         $this->service = $service;
-        $this->fileService = $fileService;
-
-        $this->filesRepository = $filesRepository;
         $this->peopleRepository = $peopleRepository;
         $this->repository = $repository;
-        parent::__construct($id, $module, $config);
+
     }
     public function actionIndex(){
         $searchModel = new SearchOrderMain();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -56,6 +54,7 @@ class OrderMainController extends Controller
         $orders = OrderMainWork::find()->all();
         $regulations = RegulationWork::find()->all();
         if ($model->load($post)) {
+            //var_dump(Yii::$app->request->post());
             $model->order_copy_id = 1;
             $respPeople = DynamicWidget::getData(OrderPeopleWork::class, "names", $post);
             $docs = DynamicWidget::getData(OrderPeopleWork::class, "orders", $post);
@@ -67,6 +66,8 @@ class OrderMainController extends Controller
             $this->repository->save($model);
             $this->service->addExpireEvent($docs, $regulation, $model);
             $this->service->addOrderPeopleEvent($respPeople, $model);
+
+            $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }

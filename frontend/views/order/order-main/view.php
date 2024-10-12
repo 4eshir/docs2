@@ -50,8 +50,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $model->executorWork ? $model->executorWork->getFullFio() : '';
             }],
             ['label' => 'Скан документа', 'attribute' => 'scan', 'value' => function (OrderMainWork $model) {
-                //return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
-                return "111";
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
+
             }, 'format' => 'raw'],
             ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => function (OrderMainWork $model) {
                 return $model->creatorWork ? $model->creatorWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';

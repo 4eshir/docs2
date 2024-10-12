@@ -10,10 +10,9 @@ use common\models\scaffold\DocumentOut;
 use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\document_in_out\InOutDocumentsRepository;
-use common\repositories\general\FilesRepository;
+
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
-use frontend\models\work\general\FilesWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 use Yii;

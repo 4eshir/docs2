@@ -30,7 +30,6 @@ class DocumentInController extends DocumentController
     private PositionRepository $positionRepository;
     private CompanyRepository $companyRepository;
     private DocumentInService $service;
-
     public function __construct(
                              $id,
                              $module,

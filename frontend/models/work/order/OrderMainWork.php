@@ -1,8 +1,10 @@
 <?php
 namespace app\models\work\order;
 use common\events\EventTrait;
+use common\helpers\files\FilesHelper;
 use common\models\scaffold\OrderMain;
 use frontend\models\work\general\PeopleWork;
+use InvalidArgumentException;
 
 /**
  * @property PeopleWork $correspondentWork
@@ -23,7 +25,7 @@ class OrderMainWork extends OrderMain
     public $names;
     public $orders;
     public $statuses;
-    public $regulations ;
+    public $regulations;
     public $scanName;
     public $docName;
     public $appName;
@@ -46,7 +48,6 @@ class OrderMainWork extends OrderMain
             'state' => 'Статус'
         ]);
     }
-
     public function rules()
     {
         return array_merge(parent::rules(), [
@@ -126,5 +127,26 @@ class OrderMainWork extends OrderMain
         else {
             return $this->bring_id;
         }
+    }
+    public function getFileLinks($filetype)
+    {
+        if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
+            throw new InvalidArgumentException('Неизвестный тип файла');
+        }
+
+        $addPath = '';
+        switch ($filetype) {
+            case FilesHelper::TYPE_SCAN:
+                $addPath = FilesHelper::createAdditionalPath(OrderMainWork::tableName(), FilesHelper::TYPE_SCAN);
+                break;
+            case FilesHelper::TYPE_DOC:
+                $addPath = FilesHelper::createAdditionalPath(OrderMainWork::tableName(), FilesHelper::TYPE_DOC);
+                break;
+            case FilesHelper::TYPE_APP:
+                $addPath = FilesHelper::createAdditionalPath(OrderMainWork::tableName(), FilesHelper::TYPE_APP);
+                break;
+        }
+
+        return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
 }
