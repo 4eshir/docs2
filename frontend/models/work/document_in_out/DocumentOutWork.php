@@ -79,6 +79,9 @@ class DocumentOutWork extends DocumentOut
         else
             return $this->document_number.'/'.$this->document_postfix;
     }
+    public function getAnswer(){
+        return $this->is_answer;
+    }
     public function getFileLinks($filetype)
     {
         if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
@@ -273,6 +276,8 @@ class DocumentOutWork extends DocumentOut
     */
     public function beforeValidate()
     {
+        $this->document_name = 'NAME';
+        $this->is_answer = $this->isAnswer;
         $this->creator_id = 1/*Yii::$app->user->identity->getId()*/;
         $this->document_date = DateFormatter::format($this->document_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $this->sent_date = DateFormatter::format($this->sent_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);

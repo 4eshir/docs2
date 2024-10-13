@@ -55,18 +55,19 @@ class OrderMainController extends Controller
         $regulations = RegulationWork::find()->all();
         if ($model->load($post)) {
             //var_dump(Yii::$app->request->post());
-            $model->order_copy_id = 1;
+            //beforeValidate
+            //$model->order_copy_id = 1;
             $respPeople = DynamicWidget::getData(OrderPeopleWork::class, "names", $post);
             $docs = DynamicWidget::getData(OrderPeopleWork::class, "orders", $post);
             $regulation = DynamicWidget::getData(OrderMainWork::class, "regulations", $post);
-            $model->order_date = DateFormatter::format($model->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
+            //beforeValidate
+            //$model->order_date = DateFormatter::format($model->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
             if(!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->repository->save($model);
             $this->service->addExpireEvent($docs, $regulation, $model);
             $this->service->addOrderPeopleEvent($respPeople, $model);
-
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);

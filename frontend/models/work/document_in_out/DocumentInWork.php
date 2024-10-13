@@ -274,6 +274,7 @@ class DocumentInWork extends DocumentIn
     }*/
     public function beforeValidate()
     {
+        $this->need_answer = $this->needAnswer;
         $this->creator_id = 1/*Yii::$app->user->identity->getId()*/;
         $this->local_date = DateFormatter::format($this->local_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $this->real_date = DateFormatter::format($this->real_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
