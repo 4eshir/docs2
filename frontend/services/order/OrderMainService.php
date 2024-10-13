@@ -10,6 +10,7 @@ use frontend\events\expire\ExpireCreateEvent;
 use frontend\events\general\FileCreateEvent;
 use frontend\events\general\OrderPeopleCreateEvent;
 use frontend\models\work\document_in_out\DocumentInWork;
+use yii\web\UploadedFile;
 
 class OrderMainService {
     private FileService $fileService;
@@ -23,7 +24,11 @@ class OrderMainService {
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
     }
-
+    public function getFilesInstances(OrderMainWork $model)
+    {
+        $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
+        $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
+    }
     public function addExpireEvent($docs, $regulation, $model) {
         if($docs[0] != NULL && $regulation[0] != NULL){
             for($i = 0; $i < count($docs); $i++){

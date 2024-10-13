@@ -6,7 +6,6 @@ use common\helpers\files\FilesHelper;
 use common\models\scaffold\OrderMain;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
-
 /**
  * @property PeopleWork $correspondentWork
  * @property PeopleWork $creatorWork
@@ -150,6 +149,7 @@ class OrderMainWork extends OrderMain
 
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
+
     public function beforeValidate()
     {
         $this->order_copy_id = 1;
