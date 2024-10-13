@@ -173,7 +173,7 @@ class DocumentOutWork extends DocumentOut
     {
         return $this->hasOne(CompanyWork::class, ['id' => 'company_id']);
     }
-    public function TestOut(){
+    public function generateDocumentNumber(){
         $year = substr(DateFormatter::format($this->document_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
         $document_date = DateFormatter::format($this->document_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $docs = DocumentOutWork::find()->all();
@@ -183,7 +183,7 @@ class DocumentOutWork extends DocumentOut
         }
         else {
             $down = DocumentOutWork::find()
-                ->where(['<', 'document_date', $document_date]) // условие для даты больше заданной
+                ->where(['<=', 'document_date', $document_date]) // условие для даты больше заданной
                 ->andWhere(['>=', 'document_date', $year."-01-01"]) // начало года
                 ->andWhere(['<=', 'document_date', $year."-12-31"]) // конец года
                 ->orderBy(['document_date' => SORT_DESC])
@@ -200,7 +200,7 @@ class DocumentOutWork extends DocumentOut
                 ->andWhere(['<=', 'document_date', $year."-12-31"])
                 ->max('document_number');
             if($up == null && $down == null) {
-                $this->document_number = '0';
+                $this->document_number = '1';
                 $this->document_postfix = 0;
 
             }
@@ -227,7 +227,7 @@ class DocumentOutWork extends DocumentOut
             }
         }
     }
-    public function generateDocumentNumber()
+    /*public function generateDocumentNumber()
     {
         $repository = Yii::createObject(DocumentOutRepository::class);
         $docs = $repository->getAllDocumentsDescDate();
@@ -270,7 +270,7 @@ class DocumentOutWork extends DocumentOut
             }
         }
     }
-
+    */
     public function beforeValidate()
     {
         $this->creator_id = 1/*Yii::$app->user->identity->getId()*/;

@@ -74,7 +74,7 @@ class DocumentInController extends DocumentController
         $availableCompanies = $this->companyRepository->getList();
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
         if ($model->load(Yii::$app->request->post())) {
-            $model->TestIn();
+            $model->generateDocumentNumber();
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }

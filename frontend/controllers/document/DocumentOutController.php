@@ -89,7 +89,7 @@ class DocumentOutController extends Controller
         $filesAnswer = $this->repository->getDocumentInWithoutAnswer();
         if ($model->load(Yii::$app->request->post())) {
             $local_id = $model->is_answer;
-            $model->testOut();
+            $model->generateDocumentNumber();
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }

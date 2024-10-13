@@ -176,7 +176,7 @@ class DocumentInWork extends DocumentIn
         }
         return '';
     }
-    public function TestIn(){
+    public function generateDocumentNumber(){
         $year = substr(DateFormatter::format($this->local_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
         $local_date = DateFormatter::format($this->local_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $docs = DocumentInWork::find()->all();
@@ -186,7 +186,7 @@ class DocumentInWork extends DocumentIn
         }
         else {
             $down = DocumentInWork::find()
-                ->where(['<', 'local_date', $local_date]) // условие для даты больше заданной
+                ->where(['<=', 'local_date', $local_date]) // условие для даты больше заданной
                 ->andWhere(['>=', 'local_date', $year."-01-01"]) // начало года
                 ->andWhere(['<=', 'local_date', $year."-12-31"]) // конец года
                 ->orderBy(['local_date' => SORT_DESC])
@@ -203,11 +203,10 @@ class DocumentInWork extends DocumentIn
                 ->andWhere(['<=', 'local_date', $year."-12-31"])
                 ->max('local_number');
             if($up == null && $down == null) {
-                $this->local_number = '0';
+                $this->local_number = '1';
                 $this->local_postfix = 0;
             }
             if($up == null && $down != null) {
-
                 $this->local_number = $down_max + 1;
                 $this->local_postfix = 0;
             }

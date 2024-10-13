@@ -72,7 +72,7 @@ class HtmlBuilder
 
     public static function createFilterPanel($searchModel)
     {
-        var_dump($searchModel);
+        //var_dump($searchModel);
         $documentNumber = Html::activeTextInput($searchModel, 'realNumber', [
             'class' => 'form-control',
             'placeholder' => 'Номер документа',
