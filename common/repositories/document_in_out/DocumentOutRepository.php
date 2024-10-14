@@ -42,7 +42,7 @@ class DocumentOutRepository
     {
 
         $model->document_name = 'NAME';
-        $model->sent_date = '2000-01-01';
+        $model->sent_date = date('Y-m-d');
         $model->document_theme = 'Резерв';
     }
 

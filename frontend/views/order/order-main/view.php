@@ -11,7 +11,7 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model \app\models\work\order\OrderMainWork */
-
+/* @var $modelResponsiblePeople */
 $this->title = $model->order_name;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об основной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -34,7 +34,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
-    <?= DetailView::widget([
+    <?=
+        DetailView::widget([
         'model' => $model,
         'attributes' => [
             ['label' => 'Регистрационный номер приказа', 'attribute' => 'order_number'],
@@ -49,9 +50,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ['label' => 'Исполнитель', 'attribute' => 'executor_id', 'value' => function (OrderMainWork $model) {
                 return $model->executorWork ? $model->executorWork->getFullFio() : '';
             }],
+            ['label' => 'Ответственные', 'value' => $modelResponsiblePeople, 'format' => 'raw'],
             ['label' => 'Скан документа', 'attribute' => 'scan', 'value' => function (OrderMainWork $model) {
-                //return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
-                return "111";
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
+
             }, 'format' => 'raw'],
             ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => function (OrderMainWork $model) {
                 return $model->creatorWork ? $model->creatorWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';

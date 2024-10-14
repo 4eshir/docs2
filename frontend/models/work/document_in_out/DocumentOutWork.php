@@ -10,10 +10,9 @@ use common\models\scaffold\DocumentOut;
 use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\document_in_out\InOutDocumentsRepository;
-use common\repositories\general\FilesRepository;
+
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
-use frontend\models\work\general\FilesWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 use Yii;
@@ -79,6 +78,9 @@ class DocumentOutWork extends DocumentOut
             return $this->document_number;
         else
             return $this->document_number.'/'.$this->document_postfix;
+    }
+    public function getAnswer(){
+        return $this->is_answer;
     }
     public function getFileLinks($filetype)
     {
@@ -174,7 +176,7 @@ class DocumentOutWork extends DocumentOut
     {
         return $this->hasOne(CompanyWork::class, ['id' => 'company_id']);
     }
-    public function TestOut(){
+    public function generateDocumentNumber(){
         $year = substr(DateFormatter::format($this->document_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
         $document_date = DateFormatter::format($this->document_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $docs = DocumentOutWork::find()->all();
@@ -184,7 +186,7 @@ class DocumentOutWork extends DocumentOut
         }
         else {
             $down = DocumentOutWork::find()
-                ->where(['<', 'document_date', $document_date]) // условие для даты больше заданной
+                ->where(['<=', 'document_date', $document_date]) // условие для даты больше заданной
                 ->andWhere(['>=', 'document_date', $year."-01-01"]) // начало года
                 ->andWhere(['<=', 'document_date', $year."-12-31"]) // конец года
                 ->orderBy(['document_date' => SORT_DESC])
@@ -201,7 +203,7 @@ class DocumentOutWork extends DocumentOut
                 ->andWhere(['<=', 'document_date', $year."-12-31"])
                 ->max('document_number');
             if($up == null && $down == null) {
-                $this->document_number = '0';
+                $this->document_number = '1';
                 $this->document_postfix = 0;
 
             }
@@ -228,7 +230,7 @@ class DocumentOutWork extends DocumentOut
             }
         }
     }
-    public function generateDocumentNumber()
+    /*public function generateDocumentNumber()
     {
         $repository = Yii::createObject(DocumentOutRepository::class);
         $docs = $repository->getAllDocumentsDescDate();
@@ -271,9 +273,11 @@ class DocumentOutWork extends DocumentOut
             }
         }
     }
-
+    */
     public function beforeValidate()
     {
+        $this->document_name = 'NAME';
+        $this->is_answer = $this->isAnswer;
         $this->creator_id = 1/*Yii::$app->user->identity->getId()*/;
         $this->document_date = DateFormatter::format($this->document_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $this->sent_date = DateFormatter::format($this->sent_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
