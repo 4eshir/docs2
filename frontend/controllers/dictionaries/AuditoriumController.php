@@ -3,7 +3,13 @@
 namespace frontend\controllers\dictionaries;
 
 use common\controllers\DocumentController;
+use common\repositories\dictionaries\AuditoriumRepository;
+use common\repositories\general\FilesRepository;
+use common\services\general\files\FileService;
+use DomainException;
 use frontend\models\search\SearchAuditorium;
+use frontend\models\work\dictionaries\AuditoriumWork;
+use frontend\services\dictionaries\AuditoriumService;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -15,6 +21,16 @@ use yii\web\UploadedFile;
  */
 class AuditoriumController extends DocumentController
 {
+    private AuditoriumRepository $repository;
+    private AuditoriumService $service;
+
+    public function __construct($id, $module, AuditoriumService $service, AuditoriumRepository $repository, $config = [])
+    {
+        parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
+        $this->service = $service;
+        $this->repository = $repository;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -68,12 +84,15 @@ class AuditoriumController extends DocumentController
         $model = new AuditoriumWork();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->filesList = UploadedFile::getInstances($model, 'filesList');
-            $model->files = '';
-            if ($model->filesList !== null)
-                $model->uploadFiles();
-            $model->save();
-            Logger::WriteLog(Yii::$app->user->identity->getId(), 'Добавлено помещение '.$model->name);
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
+            $this->service->getFilesInstances($model);
+            $this->repository->save($model);
+            $this->service->saveFilesFromModel($model);
+            $model->releaseEvents();
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -98,7 +117,6 @@ class AuditoriumController extends DocumentController
             if ($model->filesList !== null)
                 $model->uploadFiles(10);
             $model->save();
-            Logger::WriteLog(Yii::$app->user->identity->getId(), 'Изменено помещение '.$model->name);
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -119,7 +137,6 @@ class AuditoriumController extends DocumentController
         $model = $this->findModel($id);
         $name = $model->name;
         $model->delete();
-        Logger::WriteLog(Yii::$app->user->identity->getId(), 'Удалено помещение '.$name);
 
         return $this->redirect(['index']);
     }

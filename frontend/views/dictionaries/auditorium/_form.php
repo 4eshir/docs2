@@ -1,10 +1,11 @@
 <?php
 
+use frontend\models\work\dictionaries\AuditoriumWork;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\AuditoriumWork */
+/* @var $model AuditoriumWork */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -21,44 +22,22 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'is_education')->checkbox(['id' => 'org', 'onclick' => "checkEdu()"]) ?>
 
     <?php
-    if ($model->is_education === 1)
-    {
+    if ($model->is_education === 1) {
         echo '<div id="orghid">';
     }
-    else
-    {
+    else {
         echo '<div id="orghid" hidden>';
     }
     ?>
 
     <?= $form->field($model, 'capacity')->textInput() ?>
-
-    <?php
-    $types = \app\models\work\AuditoriumTypeWork::find()->all();
-    $items = \yii\helpers\ArrayHelper::map($types,'id','name');
-    $params = [
-        'prompt' => '--',
-    ];
-
-    echo $form->field($model, 'auditorium_type_id')->dropDownList($items,$params);
-    ?>
+    <?= $form->field($model, 'auditorium_type')->dropDownList(Yii::$app->auditoriumType->getList(), ['prompt' => '---']); ?>
 
     </div>
 
-    <?php
-    $branchs = \app\models\work\BranchWork::find()->all();
-    $items = \yii\helpers\ArrayHelper::map($branchs,'id','name');
-    $params = [];
-
-    echo $form->field($model, 'branch_id')->dropDownList($items,$params);
-    ?>
-
-
-
+    <?= $form->field($model, 'branch')->dropDownList(Yii::$app->branches->getList()); ?>
     <?= $form->field($model, 'window_count')->textInput(['type' => 'number', 'style' => 'width: 40%']) ?>
-
     <?= $form->field($model, 'include_square')->checkbox() ?>
-
     <?= $form->field($model, 'filesList[]')->fileInput(['multiple' => true]) ?>
 
     <div class="form-group">

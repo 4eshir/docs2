@@ -59,10 +59,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ['label' => 'Скан документа', 'attribute' => 'scan', 'value' => function (DocumentInWork $model) {
                 return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
             }, 'format' => 'raw'],
-            ['label' => 'Редактируемые документы', 'attribute' => 'docFiles', 'value' => function ($model) {
+            ['label' => 'Редактируемые документы', 'attribute' => 'docFiles', 'value' => function (DocumentInWork $model) {
                 return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_DOC), 'link'));
             }, 'format' => 'raw'],
-            ['label' => 'Приложения', 'attribute' => 'applications', 'value' => function ($model) {
+            ['label' => 'Приложения', 'attribute' => 'applications', 'value' => function (DocumentInWork $model) {
                 return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_APP), 'link'));
             }, 'format' => 'raw'],
             ['label' => 'Ключевые слова', 'attribute' => 'key_words'],

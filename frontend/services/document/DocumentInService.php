@@ -78,7 +78,7 @@ class DocumentInService implements DatabaseService
                     $model->id,
                     FilesHelper::TYPE_DOC,
                     $filename,
-                    FilesHelper::LOAD_TYPE_SINGLE
+                    FilesHelper::LOAD_TYPE_MULTI
                 ),
                 get_class($model)
             );
@@ -102,7 +102,7 @@ class DocumentInService implements DatabaseService
                     $model->id,
                     FilesHelper::TYPE_APP,
                     $filename,
-                    FilesHelper::LOAD_TYPE_SINGLE
+                    FilesHelper::LOAD_TYPE_MULTI
                 ),
                 get_class($model)
             );
