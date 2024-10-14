@@ -1,9 +1,11 @@
 <?php
 namespace app\models\work\order;
+use app\models\work\general\OrderPeopleWork;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\OrderMain;
+use common\models\scaffold\People;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 /**
@@ -133,7 +135,6 @@ class OrderMainWork extends OrderMain
         if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
             throw new InvalidArgumentException('Неизвестный тип файла');
         }
-
         $addPath = '';
         switch ($filetype) {
             case FilesHelper::TYPE_SCAN:

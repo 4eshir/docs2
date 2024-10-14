@@ -9,6 +9,7 @@ use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\general\FilesRepository;
+use common\repositories\general\OrderPeopleRepository;
 use common\services\general\files\FileService;
 use common\repositories\order\OrderMainRepository;
 
@@ -27,6 +28,7 @@ class OrderMainController extends Controller
     private OrderMainRepository $repository;
     private OrderMainService $service;
     private PeopleRepository $peopleRepository;
+    private OrderPeopleRepository $orderPeopleRepository;
     private FileService $fileService;
     private FilesRepository $filesRepository;
 
@@ -38,6 +40,7 @@ class OrderMainController extends Controller
         FileService $fileService,
         FilesRepository $filesRepository,
         PeopleRepository $peopleRepository,
+        OrderPeopleRepository $orderPeopleRepository,
         $config = [])
     {
         parent::__construct($id, $module, $config);
@@ -45,6 +48,7 @@ class OrderMainController extends Controller
         $this->filesRepository = $filesRepository;
         $this->fileService = $fileService;
         $this->peopleRepository = $peopleRepository;
+        $this->orderPeopleRepository = $orderPeopleRepository;
         $this->repository = $repository;
 
     }
@@ -62,14 +66,12 @@ class OrderMainController extends Controller
         $post = Yii::$app->request->post();
         $orders = OrderMainWork::find()->all();
         $regulations = RegulationWork::find()->all();
-
         if ($model->load($post)) {
-
             //beforeValidate
             //$model->order_copy_id = 1;
-            $respPeople = DynamicWidget::getData(OrderPeopleWork::class, "names", $post);
-            $docs = DynamicWidget::getData(OrderPeopleWork::class, "orders", $post);
-            $regulation = DynamicWidget::getData(OrderMainWork::class, "regulations", $post);
+            $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
+            $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
+            $regulation = DynamicWidget::getData(basename(OrderMainWork::class), "regulations", $post);
             //beforeValidate
             //$model->order_date = DateFormatter::format($model->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
             if(!$model->validate()) {
@@ -90,6 +92,38 @@ class OrderMainController extends Controller
             'regulations' => $regulations,
         ]);
     }
+    public function actionUpdate($id)
+    {
+        /* @var OrderMainWork $model */
+        $model = $this->repository->get($id);
+        $bringPeople = $this->peopleRepository->getOrderedList();
+        $post = Yii::$app->request->post();
+        $orders = OrderMainWork::find()->all();
+        $regulations = RegulationWork::find()->all();
+        $modelResponsiblePeople = $this->service->getResponsiblePeopleTable($model->id);
+        if($model->load($post)){
+            $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
+            $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
+            $regulation = DynamicWidget::getData(basename(OrderMainWork::class), "regulations", $post);
+            if(!$model->validate()){
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+            $this->service->getFilesInstances($model);
+            $this->repository->save($model);
+            $this->service->addExpireEvent($docs, $regulation, $model);
+            $this->service->addOrderPeopleEvent($respPeople, $model);
+            $this->service->saveFilesFromModel($model);
+            $model->releaseEvents();
+            return $this->redirect(['update', 'id' => $model->id]);
+        }
+        return $this->render('update', [
+            'orders' => $orders,
+            'model' => $model,
+            'bringPeople' => $bringPeople,
+            'regulations' => $regulations,
+            'modelResponsiblePeople' => $modelResponsiblePeople,
+        ]);
+    }
     public function actionDelete($id){
         $model = $this->repository->get($id);
         $number = $model->order_number;
@@ -103,8 +137,15 @@ class OrderMainController extends Controller
         }
     }
     public function actionView($id){
+        $modelResponsiblePeople = implode('<br>',
+            $this->service->createOrderPeopleArray(
+                $this->orderPeopleRepository->getResponsiblePeople($id)
+            )
+        );
+
         return $this->render('view', [
             'model' => $this->repository->get($id),
+            'modelResponsiblePeople' => $modelResponsiblePeople
         ]);
     }
     public function actionGetFile($filepath)
@@ -137,5 +178,10 @@ class OrderMainController extends Controller
         catch (DomainException $e) {
             return 'Oops! Something wrong';
         }
+    }
+    public function actionDeletePeople($id, $modelId)
+    {
+        $this->orderPeopleRepository->deleteByPeopleId($id);
+        return $this->redirect(['update', 'id' => $modelId]);
     }
 }

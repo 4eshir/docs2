@@ -18,6 +18,7 @@ use yii\jui\DatePicker;
 /* @var $docFiles */
 /* @var $orders */
 /* @var $regulations */
+/* @var $modelResponsiblePeople */
 
 ?>
 <style>
@@ -78,6 +79,13 @@ use yii\jui\DatePicker;
         ?>
 
     </div>
+
+    <?php if (strlen($modelResponsiblePeople) > 10): ?>
+        <?= $modelResponsiblePeople; ?>
+    <?php endif; ?>
+
+
+
     <div class="bordered-div">
         <?php DynamicWidget::begin([
             'widgetContainer' => 'dynamicform_wrapper',
