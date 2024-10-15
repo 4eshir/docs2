@@ -7,6 +7,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model AuditoriumWork */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $otherFiles */
 ?>
 
 <div class="auditorium-form">
@@ -39,6 +40,10 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'window_count')->textInput(['type' => 'number', 'style' => 'width: 40%']) ?>
     <?= $form->field($model, 'include_square')->checkbox() ?>
     <?= $form->field($model, 'filesList[]')->fileInput(['multiple' => true]) ?>
+
+    <?php if (strlen($otherFiles) > 10): ?>
+        <?= $otherFiles; ?>
+    <?php endif; ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
