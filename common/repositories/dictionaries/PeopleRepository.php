@@ -2,6 +2,7 @@
 
 namespace common\repositories\dictionaries;
 
+use app\events\dictionaries\PeoplePositionCompanyBranchEventDelete;
 use common\components\traits\CommonDatabaseFunctions;
 use common\helpers\SortHelper;
 use common\models\scaffold\People;
@@ -102,8 +103,10 @@ class PeopleRepository
     {
         $positions = $this->peoplePositionCompanyBranchRepository->getByPeople($model->id);
         foreach ($positions as $position) {
-            $this->peoplePositionCompanyBranchRepository->delete($position);
+            $model->recordEvent(new PeoplePositionCompanyBranchEventDelete($position->id), get_class($model));
         }
+
+        $model->releaseEvents();
 
         return $model->delete();
     }

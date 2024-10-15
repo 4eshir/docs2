@@ -73,9 +73,17 @@ class HtmlBuilder
 
     public static function createFilterPanel($searchModel)
     {
+
         /*echo '<div style="margin-bottom: 10px; margin-top: 20px">' . Html::a('Показать просроченные документы', \yii\helpers\Url::to(['document-in/index', 'sort' => '1'])) .
             ' || ' . Html::a('Показать документы, требующие ответа', \yii\helpers\Url::to(['document-in/index', 'sort' => '2'])) .
             ' || ' . Html::a('Показать все документы', \yii\helpers\Url::to(['document-in/index'])) . '</div>' */
+
+        //var_dump($searchModel);
+        $documentNumber = Html::activeTextInput($searchModel, 'realNumber', [
+            'class' => 'form-control',
+            'placeholder' => 'Номер документа',
+            'autocomplete' => 'off',
+        ]);
 
         //var_dump($searchModel);
         $output = '<div class="filter-panel" id="filterPanel">

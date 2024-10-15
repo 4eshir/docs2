@@ -62,4 +62,12 @@ class PeoplePositionCompanyBranchRepository
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
+
+    public function prepareDelete($modelId)
+    {
+        $model = $this->get($modelId);
+        $command = Yii::$app->db->createCommand();
+        $command->delete($model::tableName(), ['id' => $modelId]);
+        return $command->getRawSql();
+    }
 }

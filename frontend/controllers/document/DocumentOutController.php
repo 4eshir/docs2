@@ -81,21 +81,23 @@ class DocumentOutController extends Controller
     public function actionCreate(){
 
         $model = new DocumentOutWork();
-        $model->document_name = 'NAME';
+        //в beforeValidate
+        //$model->document_name = 'NAME';
         $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
         $availablePositions = $this->positionRepository->getList();
         $availableCompanies = $this->companyRepository->getList();
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
         $filesAnswer = $this->repository->getDocumentInWithoutAnswer();
         if ($model->load(Yii::$app->request->post())) {
-            $local_id = $model->is_answer;
-            $model->testOut();
+            $local_id = $model->getAnswer();
+            $model->generateDocumentNumber();
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
-            $model->is_answer = $this->repository->setAnswer($model);
+            //в beforeValidate
+            //$model->is_answer = $this->repository->setAnswer($model);
             $this->service->getFilesInstances($model);
-            $id = $this->repository->save($model);;
+            $this->repository->save($model);
             if ($model->isAnswer) {
                 $model->recordEvent(
                     new InOutDocumentUpdateEvent(
@@ -134,12 +136,14 @@ class DocumentOutController extends Controller
         $tables = $this->service->getUploadedFilesTables($model);
         $filesAnswer = $this->repository->getDocumentInWithoutAnswer();
         if ($model->load(Yii::$app->request->post())) {
+            $local_id = $model->getAnswer();
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->service->getFilesInstances($model);
-            $local_id = $model->is_answer;
-            $model->is_answer = $this->repository->setAnswer($model);
+
+            //в beforeValidate
+            //$model->is_answer = $this->repository->setAnswer($model);
             $this->repository->save($model);
             if ($model->isAnswer) {
                 $model->recordEvent(
@@ -206,7 +210,7 @@ class DocumentOutController extends Controller
             /** @var FilesWork $file */
             $filepath = $file ? basename($file->filepath) : '';
             $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
-            $file->recordEvent(new FileDeleteEvent($file->filepath), get_class($file));
+            $file->recordEvent(new FileDeleteEvent($file->id), get_class($file));
             $file->releaseEvents();
 
             Yii::$app->session->setFlash('success', "Файл $filepath успешно удален");
@@ -222,7 +226,6 @@ class DocumentOutController extends Controller
         $response = '';
 
         if ($id === '') {
-            // Получаем позиции и компании
             $response .= HtmlBuilder::buildOptionList($this->positionRepository->getList());
             $response .= "|split|";
             $response .= HtmlBuilder::buildOptionList($this->companyRepository->getList());

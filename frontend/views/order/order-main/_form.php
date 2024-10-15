@@ -18,7 +18,8 @@ use yii\jui\DatePicker;
 /* @var $docFiles */
 /* @var $orders */
 /* @var $regulations */
-
+/* @var $modelResponsiblePeople */
+/* @var $modelChangedDocuments */
 ?>
 <style>
     .bordered-div {
@@ -29,7 +30,7 @@ use yii\jui\DatePicker;
     }
 </style>
 <div class="order-main-form">
-    <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
+    <?php $form = ActiveForm::begin(); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
         'dateFormat' => 'php:d.m.Y',
         'language' => 'ru',
@@ -43,7 +44,6 @@ use yii\jui\DatePicker;
             'changeYear' => true,
             'yearRange' => '2000:2100',
         ]])->label('Дата приказа') ?>
-
     <div id="archive" class="col-xs-4"<?= $model->study_type == 0 ? 'hidden' : '' ?>>
         <?= $form->field($model, 'order_number')->textInput()->label('Архивный номер') ?>
     </div>
@@ -52,8 +52,6 @@ use yii\jui\DatePicker;
     </div>
     <?= $form->field($model, 'archive')->checkbox(['id' => 'study_type', 'onchange' => 'checkArchive()']) ?>
     <?= $form->field($model, 'order_name')->textInput()->label('Наименование приказа') ?>
-
-
     <div id="bring">
         <?php
         $params = [
@@ -81,6 +79,12 @@ use yii\jui\DatePicker;
         ?>
 
     </div>
+
+    <?php if (strlen($modelResponsiblePeople) > 10): ?>
+        <?= $modelResponsiblePeople; ?>
+    <?php endif; ?>
+
+
     <div class="bordered-div">
         <?php DynamicWidget::begin([
             'widgetContainer' => 'dynamicform_wrapper',
@@ -90,7 +94,6 @@ use yii\jui\DatePicker;
             'formId' => 'dynamic-form',
             'formFields' => ['order_name'],
         ]); ?>
-
         <div class="container-items">
             <h5 class="panel-title pull-left">Ответственные</h5><!-- widgetBody -->
             <div class="pull-right">
@@ -122,7 +125,9 @@ use yii\jui\DatePicker;
         DynamicWidget::end()
         ?>
     </div>
-
+    <?php if (strlen($modelChangedDocuments) > 10): ?>
+        <?= $modelChangedDocuments; ?>
+    <?php endif; ?>
     <div class="bordered-div">
         <?php DynamicWidget::begin([
             'widgetContainer' => 'dynamicform_wrapper',
@@ -136,7 +141,7 @@ use yii\jui\DatePicker;
         <div class="container-items">
             <h5 class="panel-title pull-left">Изменение документов</h5><!-- widgetBody -->
             <div class="pull-right">
-                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+                <button type="button" class="add-item btn btn-success btn-xs" onclick = updateName()><span class="glyphicon glyphicon-plus"></span></button>
             </div>
             <div class="item panel panel-default" id = "item"><!-- widgetItem -->
                 <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
@@ -159,6 +164,18 @@ use yii\jui\DatePicker;
                             ->field($model, 'regulations[]')
                             ->dropDownList(ArrayHelper::map($regulations, 'id', 'name'), $params)
                             ->label('Положение');
+                        echo $form
+                            ->field($model, "status[]") // Используем индекс для статуса
+                            ->radioList([
+                                '1' => 'Первый вариант',
+                                '2' => 'Второй вариант'
+                            ], [
+                                'itemOptions' => [
+                                    'class' => 'radio-inline'
+                                ],
+                                'separator' => '<br>' // Разделяем радиокнопки
+                            ])
+                            ->label('Статус');
                         ?>
                     </div>
                 </div>
@@ -168,43 +185,18 @@ use yii\jui\DatePicker;
         DynamicWidget::end()
         ?>
     </div>
-
-
-
     <?= $form->field($model, 'key_words')->textInput(['maxlength' => true])->label('Ключевые слова') ?>
-
     <div class="panel-body" style="padding: 0; margin: 0"></div>
-    <?= $form->field($model, 'scanFile')->fileInput()
-        ->label('Скан документа') ?>
-
-    <?php if (is_array($scanFile) && count($scanFile) > 0): ?>
-        <table class="table table-bordered">
-            <?php foreach ($scanFile as $file): ?>
-                <tr>
-                    <td><?= $file['link'] ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+    <?= $form->field($model, 'scanFile')->fileInput()->label('Скан документа') ?>
+    <?php if (strlen($scanFile) > 10): ?>
+        <?= $scanFile; ?>
     <?php endif; ?>
 
-    <?= $form->field($model, 'docFiles[]')
-        ->fileInput(['multiple' => true])
-        ->label('Редактируемые документы') ?>
+    <?= $form->field($model, 'docFiles[]')->fileInput(['multiple' => true])->label('Редактируемые документы') ?>
 
-    <?php if (is_array($docFiles) && count($docFiles) > 0): ?>
-        <table class="table table-bordered">
-            <?php foreach ($docFiles as $file): ?>
-                <tr>
-                    <td><?= $file['link'] ?></td>
-                    <td><?= Html::a('Удалить', Url::to(['delete-file', 'modelId' => $model->id, 'fileId' => $file['id']])) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+    <?php if (strlen($docFiles) > 10): ?>
+        <?= $docFiles; ?>
     <?php endif; ?>
-
-
-
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
     </div>

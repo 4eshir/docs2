@@ -1,10 +1,13 @@
 <?php
 
+use common\helpers\files\FilesHelper;
+use frontend\models\work\dictionaries\AuditoriumWork;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\AuditoriumWork */
+/* @var $model AuditoriumWork */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Помещения', 'url' => ['index']];
@@ -39,13 +42,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'branchName', 'label' => 'Название отдела', 'format' => 'html'],
             ['attribute' => 'isIncludeSquare', 'label' => 'Учитывается при подсчете общей площади'],
             'window_count',
-            ['attribute' => 'files', 'value' => function ($model) {
-                $split = explode(" ", $model->files);
-                $result = '';
-                for ($i = 0; $i < count($split); $i++)
-                    $result = $result.Html::a($split[$i], \yii\helpers\Url::to(['auditorium/get-file', 'fileName' => $split[$i], 'modelId' => $model->id, 'type' => 'files'])).'<br>';
-                return $result;
-                //return Html::a($model->Scan, 'index.php?r=docs-out/get-file&filename='.$model->Scan);
+            ['attribute' => 'filesList', 'value' => function (AuditoriumWork $model) {
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_OTHER), 'link'));
             }, 'format' => 'raw'],
         ],
     ]) ?>

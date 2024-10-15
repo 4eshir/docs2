@@ -36,10 +36,10 @@ class DocumentInRepository
     {
         return DocumentInWork::find()->where(['id' => $id])->one();
     }
-    public function createReserve(DocumentInWork  $model)
+    public function createReserve(DocumentInWork $model)
     {
-        $model->local_date = '2000-01-01';
-        $model->real_date = '2000-01-01';
+        $model->local_date = date('Y-m-d');
+        $model->real_date = date('Y-m-d');
         $model->document_theme = 'Резерв';
     }
     public function setAnswer($model)

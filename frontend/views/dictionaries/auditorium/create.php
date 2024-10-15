@@ -1,9 +1,10 @@
 <?php
 
+use frontend\models\work\dictionaries\AuditoriumWork;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\AuditoriumWork */
+/* @var $model AuditoriumWork */
 
 $this->title = 'Добавить помещение';
 $this->params['breadcrumbs'][] = ['label' => 'Помещения', 'url' => ['index']];
