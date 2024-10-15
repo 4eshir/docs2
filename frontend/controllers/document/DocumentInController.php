@@ -20,6 +20,7 @@ use frontend\models\search\SearchDocumentIn;
 use frontend\models\work\document_in_out\DocumentInWork;
 use frontend\services\document\DocumentInService;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
@@ -51,10 +52,15 @@ class DocumentInController extends DocumentController
 
     public function actionIndex()
     {
+        $model = new DocumentInWork();
         $searchModel = new SearchDocumentIn();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        if ($model->load(Yii::$app->request->post())){
+            $this->repository->createReserve($model);
+            $this->repository->save($model);
+        }
         return $this->render('index', [
+            'model' => $model,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

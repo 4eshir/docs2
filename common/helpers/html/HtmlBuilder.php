@@ -6,6 +6,7 @@ use common\helpers\common\BaseFunctions;
 use DomainException;
 use Yii;
 use yii\helpers\Html;
+use yii\widgets\ActiveForm;
 
 class HtmlBuilder
 {
@@ -72,36 +73,29 @@ class HtmlBuilder
 
     public static function createFilterPanel($searchModel)
     {
-        var_dump($searchModel);
-        $documentNumber = Html::activeTextInput($searchModel, 'realNumber', [
-            'class' => 'form-control',
-            'placeholder' => 'Номер документа',
-            'autocomplete' => 'off',
-        ]);
+        /*echo '<div style="margin-bottom: 10px; margin-top: 20px">' . Html::a('Показать просроченные документы', \yii\helpers\Url::to(['document-in/index', 'sort' => '1'])) .
+            ' || ' . Html::a('Показать документы, требующие ответа', \yii\helpers\Url::to(['document-in/index', 'sort' => '2'])) .
+            ' || ' . Html::a('Показать все документы', \yii\helpers\Url::to(['document-in/index'])) . '</div>' */
 
-        $documentTheme = Html::activeTextInput($searchModel, 'documentTheme', [
-            'class' => 'form-control',
-            'placeholder' => 'Тема документа',
-            'autocomplete' => 'off',
-        ]);
-
-        $keywords = Html::activeTextInput($searchModel, 'key_words', [
-            'class' => 'form-control',
-            'placeholder' => 'Ключевые слова',
-            'autocomplete' => 'off',
-        ]);
-        return '<div class="filter-panel" id="filterPanel">
-        <h3><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        //var_dump($searchModel);
+        $output = '<div class="filter-panel" id="filterPanel">
+        <h3>
+            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                 <path d="M9 12L4 4H15M20 4L15 12V21L9 18V16" stroke="#009580" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg> Поиск</h3>
-        <div class="flexx">
-            <div>
-                ' . $documentNumber . '
-                ' . $documentTheme . '
-                ' . $keywords . '
-            </div>
-        </div>
-    </div>';
+            </svg> Фильтры поиска:
+        </h3>
+        <div class="flexx">';
+
+        //$form = ActiveForm::begin();
+        //$output .= $form->field($searchModel, 'fullNumber');
+
+        $output .= '<div class="form-group">';
+        $output .= Html::submitButton('Поиск', ['class' => 'btn btn-primary']);
+        $output .= Html::submitButton('Очистить', ['class' => 'btn btn-secondary', 'style' => 'font-weight: 500;']);
+        $output .= '</div>';
+
+        $output .= '</div></div>';
+        return $output;
     }
 
     /**

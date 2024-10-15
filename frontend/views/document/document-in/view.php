@@ -34,6 +34,45 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
+    <div class="card">
+        <div class="card-block-1">
+            <div>
+                <title>Основное</title>
+                <div>Имя</div>
+                <div>Вид</div>
+                <div>Тема</div>
+            </div>
+            <div>
+                <title>От кого</title>
+                <div>Корреспондент</div>
+                <div>Дата и номер</div>
+                <div>ФИО и должность</div>
+            </div>
+            <div>
+                <title>Ответ</title>
+                <div>Ответственный и срок</div>
+            </div>
+        </div>
+        <div class="card-block-2">
+            <div>
+                <title>Дата и номер</title>
+                <div>Порядковый номер</div>
+                <div>Дата</div>
+                <div>Способ отправки</div>
+            </div>
+            <div>
+                <title>Ключевые слова</title>
+                <div>слова-слова-слова</div>
+            </div>
+            <div>
+                <title>Файлы</title>
+                <div>Сканы</div>
+                <div>Редактируемые</div>
+                <div>Приложения</div>
+            </div>
+        </div>
+    </div>
+<br>
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [

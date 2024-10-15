@@ -1,0 +1,19 @@
+.card {
+    display: flex;
+    flex-direction: row;
+    border-radius: var(--border-radius);
+}
+
+.card .card-block-1, .card .card-block-2 {
+    padding: 1em;
+}
+
+.card-block-1 {
+    background-color: white;
+    flex-basis: 60%;
+}
+
+.card-block-2 {
+    background-color: rgb(232, 237, 241); /* Цвет второго блока */
+    flex-basis: 40%;
+}

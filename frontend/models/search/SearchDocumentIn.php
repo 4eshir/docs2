@@ -26,6 +26,13 @@ class SearchDocumentIn extends DocumentInWork
     public $start_date_search;
     public $finish_date_search;
 
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'correspondentName' => 'Корреспондент',
+        ]);
+    }
+
     /**
      * {@inheritdoc}
      */

@@ -77,19 +77,19 @@ table th {
     vertical-align: middle;
 }
 
-th:first-child, .grid-view tbody tr:hover td:first-child {
+th:first-child, .grid-view tbody tr:hover td:first-child, .card-block-1 {
     border-top-left-radius: var(--border-radius);
 }
 
-th:last-child, .grid-view tbody tr:hover td:last-child {
+th:last-child, .grid-view tbody tr:hover td:last-child, .card-block-2 {
     border-top-right-radius: var(--border-radius);
 }
 
-.grid-view tbody tr:hover td:first-child, .grid-view tbody tr:last-child td:first-child {
+.grid-view tbody tr:hover td:first-child, .grid-view tbody tr:last-child td:first-child, .card-block-1 {
     border-bottom-left-radius: var(--border-radius);
 }
 
-.grid-view tbody tr:hover td:last-child, .grid-view tbody tr:last-child td:last-child {
+.grid-view tbody tr:hover td:last-child, .grid-view tbody tr:last-child td:last-child, .card-block-2 {
     border-bottom-right-radius: var(--border-radius);
 }
 
@@ -302,6 +302,14 @@ a:hover {
     display: flex;
 }
 
+.filter-panel .form-group {
+    margin: 0 auto 1em;
+}
+
+.filter-panel .form-group button {
+    margin: 0 1em;
+}
+
 .export-menu {
     margin: auto 2em;
 }
@@ -315,6 +323,39 @@ a:hover {
     border-radius: var(--border-radius);
     padding: 1em;
     border: 1px solid var(--border-color);
+}
+
+.substrate, .filter-panel {
+    margin-bottom: 1em;
+}
+
+.pagination {
+    justify-content: center;
+}
+
+.pagination li {
+    background: white;
+    padding: 0.375em 0.75em;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin: 0 0.25em;
+    font-weight: 500;
+    text-align: justify;
+    align-items: center;
+    display: flex;
+}
+
+.pagination li:not(.prev):not(.next):not(.active) {
+    visibility: hidden;
+    display: none;
+}
+
+.pagination li.prev a, .pagination li.next a {
+    text-decoration: none;
+}
+.pagination li.prev a:hover, .pagination li.next a:hover, .pagination li.active input:hover{
+    color: var(--primary-hover);
+    font-weight: 500;
 }
 
 body {
