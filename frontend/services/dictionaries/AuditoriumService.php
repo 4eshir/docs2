@@ -4,11 +4,14 @@ namespace frontend\services\dictionaries;
 
 use common\helpers\files\filenames\AuditoriumFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\dictionaries\AuditoriumWork;
 use frontend\models\work\document_in_out\DocumentInWork;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\UploadedFile;
 
 class AuditoriumService implements DatabaseService
@@ -60,5 +63,23 @@ class AuditoriumService implements DatabaseService
     public function isAvailableDelete($id)
     {
         // TODO: Implement isAvailableDelete() method.
+    }
+
+    public function getUploadedFilesTables(AuditoriumWork $model)
+    {
+        $otherLinks = $model->getFileLinks(FilesHelper::TYPE_OTHER);
+        $otherFiles = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($otherLinks, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-file'),
+                    ['modelId' => array_fill(0, count($otherLinks), $model->id), 'fileId' => ArrayHelper::getColumn($otherLinks, 'id')])
+            ]
+        );
+
+        return ['other' => $otherFiles];
     }
 }
