@@ -19,7 +19,7 @@ use yii\jui\DatePicker;
 /* @var $orders */
 /* @var $regulations */
 /* @var $modelResponsiblePeople */
-
+/* @var $modelChangedDocuments */
 ?>
 <style>
     .bordered-div {
@@ -85,7 +85,6 @@ use yii\jui\DatePicker;
     <?php endif; ?>
 
 
-
     <div class="bordered-div">
         <?php DynamicWidget::begin([
             'widgetContainer' => 'dynamicform_wrapper',
@@ -95,7 +94,6 @@ use yii\jui\DatePicker;
             'formId' => 'dynamic-form',
             'formFields' => ['order_name'],
         ]); ?>
-
         <div class="container-items">
             <h5 class="panel-title pull-left">Ответственные</h5><!-- widgetBody -->
             <div class="pull-right">
@@ -127,6 +125,9 @@ use yii\jui\DatePicker;
         DynamicWidget::end()
         ?>
     </div>
+    <?php if (strlen($modelChangedDocuments) > 10): ?>
+        <?= $modelChangedDocuments; ?>
+    <?php endif; ?>
     <div class="bordered-div">
         <?php DynamicWidget::begin([
             'widgetContainer' => 'dynamicform_wrapper',
@@ -140,7 +141,7 @@ use yii\jui\DatePicker;
         <div class="container-items">
             <h5 class="panel-title pull-left">Изменение документов</h5><!-- widgetBody -->
             <div class="pull-right">
-                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+                <button type="button" class="add-item btn btn-success btn-xs" onclick = updateName()><span class="glyphicon glyphicon-plus"></span></button>
             </div>
             <div class="item panel panel-default" id = "item"><!-- widgetItem -->
                 <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
@@ -163,6 +164,18 @@ use yii\jui\DatePicker;
                             ->field($model, 'regulations[]')
                             ->dropDownList(ArrayHelper::map($regulations, 'id', 'name'), $params)
                             ->label('Положение');
+                        echo $form
+                            ->field($model, "status[]") // Используем индекс для статуса
+                            ->radioList([
+                                '1' => 'Первый вариант',
+                                '2' => 'Второй вариант'
+                            ], [
+                                'itemOptions' => [
+                                    'class' => 'radio-inline'
+                                ],
+                                'separator' => '<br>' // Разделяем радиокнопки
+                            ])
+                            ->label('Статус');
                         ?>
                     </div>
                 </div>

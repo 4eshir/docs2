@@ -24,5 +24,4 @@ class OrderMainRepository
         }
         return $model->id;
     }
-
 }

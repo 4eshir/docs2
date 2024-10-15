@@ -8,6 +8,9 @@ use yii\helpers\Html;
 /* @var $orders */
 /* @var $regulations */
 /* @var $modelResponsiblePeople */
+/* @var $modelChangedDocuments */
+/* @var $scanFile */
+/* @var $docFiles */
 
 
 
@@ -24,6 +27,9 @@ $this->params['breadcrumbs'][] = 'Редактирование';
         'bringPeople' => $bringPeople,
         'orders' => $orders,
         'regulations' => $regulations,
-        'modelResponsiblePeople' => $modelResponsiblePeople
+        'modelResponsiblePeople' => $modelResponsiblePeople,
+        'modelChangedDocuments' => $modelChangedDocuments,
+        'scanFile' => $scanFile,
+        'docFiles' => $docFiles,
     ]) ?>
 </div>

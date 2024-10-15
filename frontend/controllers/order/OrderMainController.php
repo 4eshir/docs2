@@ -8,6 +8,7 @@ use common\controllers\DocumentController;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\expire\ExpireRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\general\OrderPeopleRepository;
 use common\services\general\files\FileService;
@@ -19,6 +20,7 @@ use frontend\helpers\HeaderWizard;
 use frontend\models\search\SearchOrderMain;
 use frontend\models\work\general\FilesWork;
 use frontend\models\work\regulation\RegulationWork;
+use PHPUnit\Util\Xml\ValidationResult;
 use yii;
 use yii\base\InvalidConfigException;
 use yii\web\Controller;
@@ -27,6 +29,7 @@ class OrderMainController extends Controller
 {
     private OrderMainRepository $repository;
     private OrderMainService $service;
+    private ExpireRepository $expireRepository;
     private PeopleRepository $peopleRepository;
     private OrderPeopleRepository $orderPeopleRepository;
     private FileService $fileService;
@@ -38,6 +41,7 @@ class OrderMainController extends Controller
         OrderMainRepository $repository,
         OrderMainService $service,
         FileService $fileService,
+        ExpireRepository $expireRepository,
         FilesRepository $filesRepository,
         PeopleRepository $peopleRepository,
         OrderPeopleRepository $orderPeopleRepository,
@@ -45,6 +49,7 @@ class OrderMainController extends Controller
     {
         parent::__construct($id, $module, $config);
         $this->service = $service;
+        $this->expireRepository = $expireRepository;
         $this->filesRepository = $filesRepository;
         $this->fileService = $fileService;
         $this->peopleRepository = $peopleRepository;
@@ -67,13 +72,10 @@ class OrderMainController extends Controller
         $orders = OrderMainWork::find()->all();
         $regulations = RegulationWork::find()->all();
         if ($model->load($post)) {
-            //beforeValidate
-            //$model->order_copy_id = 1;
+            var_dump($post);
             $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
             $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
             $regulation = DynamicWidget::getData(basename(OrderMainWork::class), "regulations", $post);
-            //beforeValidate
-            //$model->order_date = DateFormatter::format($model->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
             if(!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -101,6 +103,8 @@ class OrderMainController extends Controller
         $orders = OrderMainWork::find()->all();
         $regulations = RegulationWork::find()->all();
         $modelResponsiblePeople = $this->service->getResponsiblePeopleTable($model->id);
+        $modelChangedDocuments = $this->service->getChangedDocumentsTable($model->id);
+        $tables = $this->service->getUploadedFilesTables($model);
         if($model->load($post)){
             $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
             $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
@@ -122,6 +126,9 @@ class OrderMainController extends Controller
             'bringPeople' => $bringPeople,
             'regulations' => $regulations,
             'modelResponsiblePeople' => $modelResponsiblePeople,
+            'modelChangedDocuments' => $modelChangedDocuments,
+            'scanFile' => $tables['scan'],
+            'docFiles' => $tables['doc'],
         ]);
     }
     public function actionDelete($id){
@@ -142,10 +149,15 @@ class OrderMainController extends Controller
                 $this->orderPeopleRepository->getResponsiblePeople($id)
             )
         );
-
+        $modelChangedDocuments = implode('<br>',
+            $this->service->createChangedDocumentsArray(
+                $this->expireRepository->getExpireByActiveRegulationId($id)
+            )
+        );
         return $this->render('view', [
             'model' => $this->repository->get($id),
-            'modelResponsiblePeople' => $modelResponsiblePeople
+            'modelResponsiblePeople' => $modelResponsiblePeople,
+            'modelChangedDocuments' => $modelChangedDocuments
         ]);
     }
     public function actionGetFile($filepath)
@@ -165,13 +177,11 @@ class OrderMainController extends Controller
     {
         try {
             $file = $this->filesRepository->getById($fileId);
-
             /** @var FilesWork $file */
             $filepath = $file ? basename($file->filepath) : '';
             $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
-            $file->recordEvent(new FileDeleteEvent($file->filepath), get_class($file));
+            $file->recordEvent(new FileDeleteEvent($file->id), get_class($file));
             $file->releaseEvents();
-
             Yii::$app->session->setFlash('success', "Файл $filepath успешно удален");
             return $this->redirect(['update', 'id' => $modelId]);
         }
@@ -182,6 +192,11 @@ class OrderMainController extends Controller
     public function actionDeletePeople($id, $modelId)
     {
         $this->orderPeopleRepository->deleteByPeopleId($id);
+        return $this->redirect(['update', 'id' => $modelId]);
+    }
+    public function actionDeleteDocument($id, $modelId)
+    {
+        $this->expireRepository->deleteByActiveRegulationId($id);
         return $this->redirect(['update', 'id' => $modelId]);
     }
 }

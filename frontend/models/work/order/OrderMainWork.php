@@ -26,7 +26,7 @@ class OrderMainWork extends OrderMain
      */
     public $names;
     public $orders;
-    public $statuses;
+    public $status;
     public $regulations;
     public $scanName;
     public $docName;

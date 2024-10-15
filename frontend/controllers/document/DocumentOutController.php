@@ -210,7 +210,7 @@ class DocumentOutController extends Controller
             /** @var FilesWork $file */
             $filepath = $file ? basename($file->filepath) : '';
             $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
-            $file->recordEvent(new FileDeleteEvent($file->filepath), get_class($file));
+            $file->recordEvent(new FileDeleteEvent($file->id), get_class($file));
             $file->releaseEvents();
 
             Yii::$app->session->setFlash('success', "Файл $filepath успешно удален");
@@ -226,7 +226,6 @@ class DocumentOutController extends Controller
         $response = '';
 
         if ($id === '') {
-            // Получаем позиции и компании
             $response .= HtmlBuilder::buildOptionList($this->positionRepository->getList());
             $response .= "|split|";
             $response .= HtmlBuilder::buildOptionList($this->companyRepository->getList());

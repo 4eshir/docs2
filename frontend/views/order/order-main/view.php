@@ -12,6 +12,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model \app\models\work\order\OrderMainWork */
 /* @var $modelResponsiblePeople */
+/* @var $modelChangedDocuments */
 $this->title = $model->order_name;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об основной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -61,6 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['label' => 'Последний редактор', 'attribute' => 'last_update_id', 'value' => function (OrderMainWork $model) {
                 return $model->lastUpdateWork ? $model->lastUpdateWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
             }],
+            ['label' => 'Изменение документов', 'value' => $modelChangedDocuments, 'format' => 'raw'],
         ],
     ]) ?>
 
