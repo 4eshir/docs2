@@ -165,15 +165,12 @@ use yii\jui\DatePicker;
                             ->dropDownList(ArrayHelper::map($regulations, 'id', 'name'), $params)
                             ->label('Положение');
                         echo $form
-                            ->field($model, "status[]") // Используем индекс для статуса
-                            ->radioList([
-                                '1' => 'Первый вариант',
-                                '2' => 'Второй вариант'
+                            ->field($model, 'status[]') // Используем обычный статус
+                            ->dropDownList([
+                                '1' => 'Утратило силу',
+                                '2' => 'Изменено',
                             ], [
-                                'itemOptions' => [
-                                    'class' => 'radio-inline'
-                                ],
-                                'separator' => '<br>' // Разделяем радиокнопки
+                                'prompt' => '---', // Подсказка для выбора
                             ])
                             ->label('Статус');
                         ?>

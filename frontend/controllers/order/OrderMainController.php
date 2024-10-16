@@ -72,16 +72,16 @@ class OrderMainController extends Controller
         $orders = OrderMainWork::find()->all();
         $regulations = RegulationWork::find()->all();
         if ($model->load($post)) {
-            var_dump($post);
             $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
             $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
             $regulation = DynamicWidget::getData(basename(OrderMainWork::class), "regulations", $post);
-            if(!$model->validate()) {
+            $status = DynamicWidget::getData(basename(OrderMainWork::class), "status", $post);
+            if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->service->getFilesInstances($model);
             $this->repository->save($model);
-            $this->service->addExpireEvent($docs, $regulation, $model);
+            $this->service->addExpireEvent($docs, $regulation,$status ,$model);
             $this->service->addOrderPeopleEvent($respPeople, $model);
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
@@ -109,12 +109,13 @@ class OrderMainController extends Controller
             $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
             $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
             $regulation = DynamicWidget::getData(basename(OrderMainWork::class), "regulations", $post);
+            $status = DynamicWidget::getData(basename(OrderMainWork::class), "status", $post);
             if(!$model->validate()){
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->service->getFilesInstances($model);
             $this->repository->save($model);
-            $this->service->addExpireEvent($docs, $regulation, $model);
+            $this->service->addExpireEvent($docs, $regulation, $status, $model);
             $this->service->addOrderPeopleEvent($respPeople, $model);
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();

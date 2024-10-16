@@ -156,25 +156,42 @@ class OrderMainService {
         $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
         $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
     }
-    public function addExpireEvent($docs, $regulation, $model) {
+    public function addExpireEvent($docs, $regulation, $status, $model) {
+        $old_docs = $docs;
+        $old_regulation = $regulation;
         $docs = array_unique($docs);
         $regulation = array_unique($regulation);
         foreach ($docs as $doc) {
-            if($doc != NULL) {
-                if($this->expireRepository->checkUnique($model->id, NULL, $doc, 1, 1)) {
+            $index = $this->getIndexByElement($old_docs, $doc);
+            if ($doc != NULL && $status[$index] != NULL && $doc != $model->id) {
+                if ($this->expireRepository->checkUnique($model->id, NULL, $doc, 1, 1) &&
+                    $this->expireRepository->checkUnique($model->id, NULL, $doc, 1, 2)) {
                     $model->recordEvent(new ExpireCreateEvent($model->id,
-                        NULL, $doc, 1, 1), ExpireWork::class);
+                        NULL, $doc, 1, $status[$index]), ExpireWork::class);
                 }
             }
         }
         foreach ($regulation as $reg) {
-            if($reg != NULL) {
-                if($this->expireRepository->checkUnique($model->id, $reg, NULL, 1, 1)) {
+            $index = $this->getIndexByElement($old_regulation, $reg);
+            if ($reg != NULL && $status[$index] != NULL) {
+                if ($this->expireRepository->checkUnique($model->id, $reg, NULL, 1, 1) &&
+                    $this->expireRepository->checkUnique($model->id, $reg, NULL, 1, 2)) {
                     $model->recordEvent(new ExpireCreateEvent($model->id,
-                        $reg, NULL, 1, 1), ExpireWork::class);
+                        $reg, NULL, 1, $status[$index]), ExpireWork::class);
                 }
             }
         }
+    }
+    public function getIndexByElement($array, $element)
+    {
+        $index = 0;
+        foreach ($array as $item) {
+            if ($item == $element) {
+                return $index;
+            }
+            $index++;
+        }
+        return -1;
     }
     public function addOrderPeopleEvent($respPeople, $model)
     {
