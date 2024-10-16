@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             ['label' => 'Регистрационный номер приказа', 'attribute' => 'order_number'],
-            ['label' => 'Наименование приказа', 'attribute' => 'order_number'],
+            ['label' => 'Наименование приказа', 'attribute' => 'order_name'],
             ['label' => 'Дата приказа', 'attribute' => 'order_date', 'value' => function (OrderMainWork $model) {
                 return DateFormatter::format($model->order_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
             }],

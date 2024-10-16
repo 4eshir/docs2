@@ -79,5 +79,8 @@ return [
         'rac' => [
             'class' => 'common\\components\\access\\RacComponent',
         ],
+        'nomenclature' => [
+            'class' => 'common\\components\\dictionaries\\base\\NomenclatureDictionary',
+        ]
     ],
 ];

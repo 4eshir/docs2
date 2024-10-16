@@ -15,6 +15,7 @@ use common\components\dictionaries\base\EventLevelDictionary;
 use common\components\dictionaries\base\EventTypeDictionary;
 use common\components\dictionaries\base\EventWayDictionary;
 use common\components\dictionaries\base\FocusDictionary;
+use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\dictionaries\base\OwnershipTypeDictionary;
 use common\components\dictionaries\base\ParticipationScopeDictionary;
 use common\components\dictionaries\base\PersonalDataDictionary;
@@ -46,6 +47,7 @@ class Yii {
  * @property \yii\web\User|__WebUser $user
  * @property RulesConfig $rulesConfig
  * @property BranchDictionary $branches
+ * @property NomenclatureDictionary $nomenclature
  * @property SendMethodDictionary $sendMethods
  * @property CompanyTypeDictionary $companyType
  * @property CategorySmspDictionary $categorySmsp
