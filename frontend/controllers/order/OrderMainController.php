@@ -72,6 +72,7 @@ class OrderMainController extends Controller
         $orders = OrderMainWork::find()->all();
         $regulations = RegulationWork::find()->all();
         if ($model->load($post)) {
+            $model->generateOrderNumber();
             $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
             $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
             $regulation = DynamicWidget::getData(basename(OrderMainWork::class), "regulations", $post);

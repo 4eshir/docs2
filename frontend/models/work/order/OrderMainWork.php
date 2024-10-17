@@ -150,7 +150,98 @@ class OrderMainWork extends OrderMain
 
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
-
+    public function generateOrderNumber()
+    {
+        $model_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
+        $year = substr(DateFormatter::format($model_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
+        $array_number = [];
+        $upItem = NULL;
+        $equalItem = [];
+        $downItem = NULL;
+        $number = NULL;
+        $postfix = NULL;
+        $records = OrderMainWork::find()
+            ->where(['like', 'order_number', '02-02%', false])
+            ->orderBy(['order_date' => SORT_ASC])
+            ->all();
+        foreach ($records as $record) {
+            /* @var \app\models\work\order\OrderMainWork $record */
+            if($record->order_postfix == NULL) {
+                array_push($array_number, [
+                    $record->order_date,
+                    $record->order_number,
+                    $record->order_number
+                ]);
+            }
+            else {
+                array_push($array_number, [
+                    $record->order_date,
+                    $record->order_number,
+                    $record->order_number.'/'.$record->order_postfix
+                ]);
+            }
+        }
+        for ($i = 0; $i < count($array_number); $i++) {
+            $item = $array_number[$i];
+            if ($item[0] < $model_date) {
+                $downItem = $item;
+            }
+            if ($item[0] == $model_date) {
+                array_push($equalItem, $item);
+            }
+            if ($item[0] > $model_date) {
+                $upItem = $item;
+                break;
+            }
+        }
+        $this->sortArrayByOrderNumber($equalItem);
+        if($equalItem != NULL) {
+            $downItem = $equalItem[count($equalItem) - 1];
+        }
+        $newNumber = $downItem[2];
+        $index = 1;
+        while ($this->findByNumberPostfix($array_number, $newNumber)) {
+            $parts = $this->splitString($newNumber);
+            $number = $parts[0];
+            for ($i = 1; $i < count($parts) - 1; $i++) {
+                $number = $number . '/' . (string)$parts[$i];
+            }
+            $number = $number.'/'.(string)$index;
+            if($upItem[2] < $number.'/'.(string)$index) {
+                $number = $number.'/'.(string)$index;
+            }
+            else {
+                $number = $newNumber.'/'.'1';
+            }
+            $newNumber = $number;
+            $index++;
+        }
+    }
+    function splitString($input) {
+        // Используем функцию explode для разделения строки по символу '/'
+        $words = explode('/', $input);
+        return $words;
+    }
+    function sortArrayByOrderNumber(&$array) {
+        if($array != NULL) {
+            usort($array, function ($a, $b) {
+                return strcmp($a[1], $b[1]); // Сравниваем элементы с индексом 1, которые соответствуют order_number
+            });
+        }
+    }
+    public function findByNumberPostfix($array, $numberPostfix)
+    {
+        if($array != NULL) {
+            foreach ($array as $item) {
+                if($item[2] == $numberPostfix) {
+                    return true;
+                }
+            }
+        }
+        else {
+            return false;
+        }
+    }
     public function beforeValidate()
     {
         $this->order_copy_id = 1;
