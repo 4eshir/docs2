@@ -71,7 +71,15 @@ class OrderMainWork extends OrderMain
         return $this->order_date;
     }
 
-
+    public function getNumberPostfix()
+    {
+        if ($this->order_postfix == null) {
+            return $this->order_number;
+        }
+        else {
+            return $this->order_number.'/'.$this->order_postfix;
+        }
+    }
     public function getOrderName()
     {
         return $this->order_name;
@@ -155,11 +163,11 @@ class OrderMainWork extends OrderMain
         $model_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $year = substr(DateFormatter::format($model_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
         $array_number = [];
+        $index = 1;
         $upItem = NULL;
         $equalItem = [];
         $downItem = NULL;
-        $number = NULL;
-        $postfix = NULL;
+        $isPostfix = NULL;
         $records = OrderMainWork::find()
             ->where(['like', 'order_number', '02-02%', false])
             ->orderBy(['order_date' => SORT_ASC])
@@ -199,23 +207,52 @@ class OrderMainWork extends OrderMain
             $downItem = $equalItem[count($equalItem) - 1];
         }
         $newNumber = $downItem[2];
-        $index = 1;
-        while ($this->findByNumberPostfix($array_number, $newNumber)) {
-            $parts = $this->splitString($newNumber);
-            $number = $parts[0];
-            for ($i = 1; $i < count($parts) - 1; $i++) {
-                $number = $number . '/' . (string)$parts[$i];
+        if($downItem != NULL) {
+            while ($this->findByNumberPostfix($array_number, $newNumber)) {
+                $parts = $this->splitString($newNumber);
+                $number = $parts[0];
+                for ($i = 1; $i < count($parts) - 1; $i++) {
+                    $number = $number . '/' . (string)$parts[$i];
+                }
+                if (($upItem[2] > $number . '/' . (string)((int)$parts[count($parts) - 1] + 1)
+                        && !$this->findByNumberPostfix($array_number, $number . '/' . (string)((int)$parts[count($parts) - 1] + 1))) || $upItem == NULL) {
+                    $number = $number . '/' . (string)((int)$parts[count($parts) - 1] + 1);
+                    $newNumber = $number;
+                    $isPostfix = 0;
+                    break;
+                } else {
+                    $isPostfix = 1;
+                    if ($upItem[2] > $number . '/' . (string)$index && $this->findByNumberPostfix($array_number, $number . '/' . (string)$index)) {
+                        $number = $number . '/' . (string)$index;
+                    } else {
+                        $index = 1;
+                        $number = $newNumber . '/' . '1';
+                    }
+                }
+                $newNumber = $number;
+                //var_dump('ITER', $iter , "   ", $newNumber);
+                $index++;
             }
-            $number = $number.'/'.(string)$index;
-            if($upItem[2] < $number.'/'.(string)$index) {
-                $number = $number.'/'.(string)$index;
+            //var_dump('ИТОГ:', $newNumber);
+            if($isPostfix == 0) {
+                $this->order_number = $newNumber;
+                $this->order_postfix = NULL;
             }
             else {
-                $number = $newNumber.'/'.'1';
+                $parts = $this->splitString($newNumber);
+                $number = $parts[0];
+                for ($i = 1; $i < count($parts) - 1; $i++) {
+                    $number = $number . '/' . (string)$parts[$i];
+                }
+                $this->order_number = $number;
+                $this->order_postfix = $parts[count($parts) - 1];
             }
-            $newNumber = $number;
-            $index++;
         }
+        else {
+            $this->order_number = '02-02';
+            $this->order_postfix = NULL;
+        }
+        //var_dump($this->order_number.' '. $this->order_postfix);
     }
     function splitString($input) {
         // Используем функцию explode для разделения строки по символу '/'

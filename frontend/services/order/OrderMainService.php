@@ -198,8 +198,10 @@ class OrderMainService {
         if ($respPeople[0] != NULL) {
             $respPeople = array_unique($respPeople);
             for ($i = 0; $i < count($respPeople); $i++) {
-                if($this->orderPeopleRepository->checkUnique($respPeople[$i], $model->id)) {
-                    $model->recordEvent(new OrderPeopleCreateEvent($respPeople[$i], $model->id), OrderPeopleWork::class);
+                if ($respPeople[$i] != NULL) {
+                    if ($this->orderPeopleRepository->checkUnique($respPeople[$i], $model->id)) {
+                        $model->recordEvent(new OrderPeopleCreateEvent($respPeople[$i], $model->id), OrderPeopleWork::class);
+                    }
                 }
             }
         }
