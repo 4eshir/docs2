@@ -81,8 +81,6 @@ class DocumentOutController extends Controller
     public function actionCreate(){
 
         $model = new DocumentOutWork();
-        //в beforeValidate
-        //$model->document_name = 'NAME';
         $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
         $availablePositions = $this->positionRepository->getList();
         $availableCompanies = $this->companyRepository->getList();
@@ -94,9 +92,6 @@ class DocumentOutController extends Controller
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
-            //в beforeValidate
-            //$model->is_answer = $this->repository->setAnswer($model);
-            $this->service->getFilesInstances($model);
             $this->repository->save($model);
             if ($model->isAnswer) {
                 $model->recordEvent(
@@ -109,6 +104,7 @@ class DocumentOutController extends Controller
                     DocumentOutWork::class
                 );
             }
+            $this->service->getFilesInstances($model);
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
@@ -140,10 +136,6 @@ class DocumentOutController extends Controller
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
-            $this->service->getFilesInstances($model);
-
-            //в beforeValidate
-            //$model->is_answer = $this->repository->setAnswer($model);
             $this->repository->save($model);
             if ($model->isAnswer) {
                 $model->recordEvent(
@@ -159,7 +151,7 @@ class DocumentOutController extends Controller
             else {
                 $model->recordEvent(new InOutDocumentDeleteEvent($model->id), DocumentOutWork::class);
             }
-
+            $this->service->getFilesInstances($model);
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);

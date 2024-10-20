@@ -80,8 +80,8 @@ class OrderMainController extends Controller
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
-            $this->service->getFilesInstances($model);
             $this->repository->save($model);
+            $this->service->getFilesInstances($model);
             $this->service->addExpireEvent($docs, $regulation,$status ,$model);
             $this->service->addOrderPeopleEvent($respPeople, $model);
             $this->service->saveFilesFromModel($model);
@@ -113,9 +113,10 @@ class OrderMainController extends Controller
             $status = DynamicWidget::getData(basename(OrderMainWork::class), "status", $post);
             if(!$model->validate()){
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+
             }
-            $this->service->getFilesInstances($model);
             $this->repository->save($model);
+            $this->service->getFilesInstances($model);
             $this->service->addExpireEvent($docs, $regulation, $status, $model);
             $this->service->addOrderPeopleEvent($respPeople, $model);
             $this->service->saveFilesFromModel($model);
@@ -130,10 +131,11 @@ class OrderMainController extends Controller
             'modelResponsiblePeople' => $modelResponsiblePeople,
             'modelChangedDocuments' => $modelChangedDocuments,
             'scanFile' => $tables['scan'],
-            'docFiles' => $tables['doc'],
+            'docFiles' => $tables['docs'],
         ]);
     }
     public function actionDelete($id){
+        
         $model = $this->repository->get($id);
         $number = $model->order_number;
         if ($model) {

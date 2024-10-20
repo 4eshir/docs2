@@ -56,7 +56,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ['label' => 'Ответственные', 'value' => $modelResponsiblePeople, 'format' => 'raw'],
             ['label' => 'Скан документа', 'attribute' => 'scan', 'value' => function (OrderMainWork $model) {
                 return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
-
+            }, 'format' => 'raw'],
+            ['label' => 'Редактируемые документы', 'attribute' => 'doc', 'value' => function (OrderMainWork $model) {
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_DOC), 'link'));
             }, 'format' => 'raw'],
             ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => function (OrderMainWork $model) {
                 return $model->creatorWork ? $model->creatorWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';

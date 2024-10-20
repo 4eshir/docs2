@@ -160,6 +160,7 @@ class OrderMainWork extends OrderMain
     }
     public function generateOrderNumber()
     {
+        $formNumber = $this->order_number;
         $model_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $year = substr(DateFormatter::format($model_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
         $array_number = [];
@@ -169,7 +170,7 @@ class OrderMainWork extends OrderMain
         $downItem = NULL;
         $isPostfix = NULL;
         $records = OrderMainWork::find()
-            ->where(['like', 'order_number', '02-02%', false])
+            ->where(['like', 'order_number', $formNumber.'%', false])
             ->orderBy(['order_date' => SORT_ASC])
             ->all();
         foreach ($records as $record) {
@@ -230,10 +231,8 @@ class OrderMainWork extends OrderMain
                     }
                 }
                 $newNumber = $number;
-                //var_dump('ITER', $iter , "   ", $newNumber);
                 $index++;
             }
-            //var_dump('ИТОГ:', $newNumber);
             if($isPostfix == 0) {
                 $this->order_number = $newNumber;
                 $this->order_postfix = NULL;
@@ -249,10 +248,9 @@ class OrderMainWork extends OrderMain
             }
         }
         else {
-            $this->order_number = '02-02';
+            $this->order_number = $formNumber;
             $this->order_postfix = NULL;
         }
-        //var_dump($this->order_number.' '. $this->order_postfix);
     }
     function splitString($input) {
         // Используем функцию explode для разделения строки по символу '/'

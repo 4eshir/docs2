@@ -84,13 +84,11 @@ class DocumentInController extends DocumentController
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
-            $this->service->getFilesInstances($model);
-            //в beforeValidate
-            //$model->need_answer = $this->repository->setAnswer($model);
             $this->repository->save($model);
             if ($model->needAnswer) {
                 $model->recordEvent(new InOutDocumentCreateEvent($model->id, null, $model->dateAnswer, $model->nameAnswer), DocumentInWork::class);
             }
+            $this->service->getFilesInstances($model);
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
@@ -116,23 +114,17 @@ class DocumentInController extends DocumentController
     public function actionUpdate($id)
     {
         $model = $this->repository->get($id);
-
         /** @var DocumentInWork $model */
         $model->setNeedAnswer();
-
         $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
         $availablePositions = $this->positionRepository->getList($model->correspondent_id);
         $availableCompanies = $this->companyRepository->getList($model->correspondent_id);
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
         $tables = $this->service->getUploadedFilesTables($model);
-
         if ($model->load(Yii::$app->request->post())) {
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
-            $this->service->getFilesInstances($model);
-            //в beforeValidate
-            //$model->need_answer = $this->repository->setAnswer($model);
             $this->repository->save($model);
             if ($model->needAnswer) {
                 $model->recordEvent(
@@ -148,6 +140,7 @@ class DocumentInController extends DocumentController
             else {
                 $model->recordEvent(new InOutDocumentDeleteEvent($model->id), DocumentInWork::class);
             }
+            $this->service->getFilesInstances($model);
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
