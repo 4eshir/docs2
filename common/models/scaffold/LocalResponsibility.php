@@ -10,7 +10,7 @@ namespace common\models\scaffold;
  * @property int|null $branch
  * @property int|null $auditorium_id
  * @property int|null $quant
- * @property int|null $people_id
+ * @property int|null $people_stamp_id
  * @property int|null $regulation_id
  *
  * @property Auditorium $auditorium
@@ -35,7 +35,7 @@ class LocalResponsibility extends \yii\db\ActiveRecord
         return [
             [['responsibility_type', 'branch', 'auditorium_id', 'quant', 'people_id', 'regulation_id'], 'integer'],
             [['auditorium_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditorium::class, 'targetAttribute' => ['auditorium_id' => 'id']],
-            [['people_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['people_id' => 'id']],
+            [['people_stamp_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['people_stamp_id' => 'id']],
             [['regulation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Regulation::class, 'targetAttribute' => ['regulation_id' => 'id']],
         ];
     }
@@ -51,7 +51,7 @@ class LocalResponsibility extends \yii\db\ActiveRecord
             'branch' => 'Branch',
             'auditorium_id' => 'Auditorium ID',
             'quant' => 'Quant',
-            'people_id' => 'People ID',
+            'people_stamp_id' => 'People ID',
             'regulation_id' => 'Regulation ID',
         ];
     }
@@ -71,9 +71,9 @@ class LocalResponsibility extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getPeople()
+    public function getPeopleStamp()
     {
-        return $this->hasOne(People::class, ['id' => 'people_id']);
+        return $this->hasOne(PeopleStamp::class, ['id' => 'people_stamp_id']);
     }
 
     /**

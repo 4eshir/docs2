@@ -47,6 +47,7 @@ AppAsset::register($this);
                 ['label' => 'Положения', 'url' => ['/regulation/regulation/index']],
                 ['label' => 'Положения о мероприятиях', 'url' => ['/regulation/regulation-event/index']],
                 ['label' => 'Мероприятия', 'url' => ['/event/our-event/index']],
+                ['label' => 'Учет ответственности работников', 'url' => ['/responsibility/local-responsibility/index']],
             ],
         ],
         [

@@ -31,7 +31,7 @@ class m241010_061849_add_local_responsibility extends Migration
             'branch' => $this->smallInteger(),
             'auditorium_id' => $this->integer(),
             'quant' => $this->smallInteger(),
-            'people_id' => $this->integer(),
+            'people_stamp_id' => $this->integer(),
             'regulation_id' => $this->integer(),
         ]);
 
@@ -47,8 +47,8 @@ class m241010_061849_add_local_responsibility extends Migration
         $this->addForeignKey(
             'fk-local_responsibility-2',
             'local_responsibility',
-            'people_id',
-            'people',
+            'people_stamp_id',
+            'people_stamp',
             'id',
             'RESTRICT',
         );
@@ -64,7 +64,7 @@ class m241010_061849_add_local_responsibility extends Migration
 
         $this->createTable('legacy_responsible', [
             'id' => $this->primaryKey(),
-            'people_id' => $this->integer(),
+            'people_stamp_id' => $this->integer(),
             'responsibility_type' => $this->smallInteger(),
             'branch' => $this->smallInteger(),
             'auditorium_id' => $this->integer(),
@@ -86,8 +86,8 @@ class m241010_061849_add_local_responsibility extends Migration
         $this->addForeignKey(
             'fk-legacy_responsible-2',
             'legacy_responsible',
-            'people_id',
-            'people',
+            'people_stamp_id',
+            'people_stamp',
             'id',
             'RESTRICT',
         );

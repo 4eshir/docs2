@@ -73,7 +73,7 @@ return [
         'auditoriumType' => [
             'class' => 'common\\components\\dictionaries\\base\\AuditoriumTypeDictionary',
         ],
-        'ResponsibilityType' => [
+        'responsibilityType' => [
             'class' => 'common\\components\\dictionaries\\base\\ResponsibilityTypeDictionary',
         ],
         'rac' => [

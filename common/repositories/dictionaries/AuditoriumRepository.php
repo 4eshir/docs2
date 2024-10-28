@@ -33,6 +33,16 @@ class AuditoriumRepository
         return AuditoriumWork::find()->where(['id' => $id])->one();
     }
 
+    public function getAll()
+    {
+        return AuditoriumWork::find()->all();
+    }
+
+    public function getByBranch($branch)
+    {
+        return AuditoriumWork::find()->where(['branch' => $branch])->all();
+    }
+
     public function delete(ActiveRecord $model)
     {
         /** @var AuditoriumWork $model */
