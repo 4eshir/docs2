@@ -1,8 +1,7 @@
 <?php
 
 use app\models\work\order\OrderMainWork;
-use common\models\scaffold\DocumentOrder;
-use frontend\models\work\responsibility\LocalResponsibilityWork;
+use frontend\forms\ResponsibilityForm;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -10,7 +9,7 @@ use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model LocalResponsibilityWork */
+/* @var $model ResponsibilityForm */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $audsList */
 /* @var $peoples */
@@ -42,7 +41,7 @@ use yii\widgets\ActiveForm;
     $params = [
         'disabled' => $model->branch !== null ? 'disabled' : null,
     ];
-    echo $form->field($model, 'responsibility_type')->dropDownList(Yii::$app->responsibilityType->getList(), $params);
+    echo $form->field($model, 'responsibilityType')->dropDownList(Yii::$app->responsibilityType->getList(), $params);
 
     ?>
 
@@ -78,7 +77,7 @@ use yii\widgets\ActiveForm;
         $items = $audsList;
     }
 
-    echo $form->field($model, 'auditorium_id')->dropDownList($items, $params);
+    echo $form->field($model, 'auditoriumId')->dropDownList($items, $params);
 
     ?>
 
@@ -87,8 +86,8 @@ use yii\widgets\ActiveForm;
     <?php
 
     if (!$model->isAttach()) {
-        echo $form->field($model, 'people_stamp_id')->dropDownList(ArrayHelper::map($peoples,'id','fullName'), ['prompt' => '---']);
-        echo $form->field($model, 'start_date')->widget(DatePicker::class, [
+        echo $form->field($model, 'peopleStampId')->dropDownList(ArrayHelper::map($peoples,'id','fullFio'), ['prompt' => '---']);
+        echo $form->field($model, 'startDate')->widget(DatePicker::class, [
             'language' => 'ru',
             'dateFormat' => 'dd.MM.yyyy',
             'options' => [
@@ -107,7 +106,7 @@ use yii\widgets\ActiveForm;
         echo '<table class="table table-bordered">'.
              '<tr><td><b>Ответственное лицо</b></td><td><b>Дата открепления ответственности</b></td><td><b>Приказ</b></td></tr>';
         echo '<tr><td>'.$model->peopleStampWork->peopleWork->shortName.'</td><td>';
-        echo $form->field($model, 'end_date')->widget(DatePicker::class, [
+        echo $form->field($model, 'endDate')->widget(DatePicker::class, [
             'language' => 'ru',
             'dateFormat' => 'dd.MM.yyyy',
             'options' => [
@@ -127,11 +126,11 @@ use yii\widgets\ActiveForm;
 
     ?>
 
-    <?= $form->field($model, 'order_id')->dropDownList(ArrayHelper::map($orders,'id','fullName'), ['prompt' => '---'])->label('Приказ'); ?>
+    <?= $form->field($model, 'orderId')->dropDownList(ArrayHelper::map($orders,'id','fullName'), ['prompt' => '---'])->label('Приказ'); ?>
 
-    <?= $form->field($model, 'regulation_id')->dropDownList(ArrayHelper::map($regulations,'id','name'), ['prompt' => '---']); ?>
+    <?= $form->field($model, 'regulationId')->dropDownList(ArrayHelper::map($regulations,'id','name'), ['prompt' => '---']); ?>
 
-    <?= $form->field($model, 'filesStr[]')->fileInput(['multiple' => true]) ?>
+    <?= $form->field($model, 'filesList[]')->fileInput(['multiple' => true]) ?>
 
     <?php if (strlen($files) > 10): ?>
         <?= $files; ?>

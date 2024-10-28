@@ -2,12 +2,17 @@
 
 namespace frontend\controllers\responsibility;
 
+use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\general\PeopleStampRepository;
 use common\repositories\order\OrderMainRepository;
+use common\repositories\regulation\RegulationRepository;
 use common\repositories\responsibility\LegacyResponsibleRepository;
 use common\repositories\responsibility\LocalResponsibilityRepository;
+use frontend\forms\ResponsibilityForm;
 use frontend\models\search\SearchLocalResponsibility;
+use frontend\models\work\responsibility\LegacyResponsibleWork;
 use frontend\models\work\responsibility\LocalResponsibilityWork;
 use Yii;
 use yii\web\Controller;
@@ -25,6 +30,7 @@ class LocalResponsibilityController extends Controller
     private AuditoriumRepository $auditoriumRepository;
     private PeopleRepository $peopleRepository;
     private OrderMainRepository $orderRepository;
+    private RegulationRepository $regulationRepository;
 
     public function __construct($id, $module,
         LocalResponsibilityRepository $responsibilityRepository,
@@ -32,6 +38,7 @@ class LocalResponsibilityController extends Controller
         AuditoriumRepository $auditoriumRepository,
         PeopleRepository $peopleRepository,
         OrderMainRepository $orderRepository,
+        RegulationRepository $regulationRepository,
         $config = [])
     {
         parent::__construct($id, $module, $config);
@@ -40,6 +47,7 @@ class LocalResponsibilityController extends Controller
         $this->auditoriumRepository = $auditoriumRepository;
         $this->peopleRepository = $peopleRepository;
         $this->orderRepository = $orderRepository;
+        $this->regulationRepository = $regulationRepository;
     }
 
     /**
@@ -97,12 +105,37 @@ class LocalResponsibilityController extends Controller
      */
     public function actionCreate()
     {
-        $model = new LocalResponsibilityWork();
+        $model = new ResponsibilityForm();
         $audsList = $this->auditoriumRepository->getAll();
         $peoples = $this->peopleRepository->getPeopleFromMainCompany();
+        $orders = $this->orderRepository->getAll();
+        $regulations = $this->regulationRepository->getAll();
 
-        if ($model->load(Yii::$app->request->post())) {
-            $this->responsibilityRepository->save($model);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+
+            $modelResponsibility = LocalResponsibilityWork::fill(
+                $model->responsibilityType,
+                $model->branch,
+                $model->auditoriumId,
+                $model->quant,
+                $model->peopleStampId,
+                $model->regulationId
+            );
+
+            $modelLegacy = LegacyResponsibleWork::fill(
+                $model->peopleStampId,
+                $model->responsibilityType,
+                $model->branch,
+                $model->auditoriumId,
+                $model->quant,
+                $model->startDate,
+                $model->endDate,
+                $model->orderId
+            );
+
+            $this->responsibilityRepository->save($modelResponsibility);
+            $this->legacyRepository->save($modelLegacy);
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -110,6 +143,8 @@ class LocalResponsibilityController extends Controller
             'model' => $model,
             'audsList' => $audsList,
             'peoples' => $peoples,
+            'orders' => $orders,
+            'regulations' => $regulations,
         ]);
     }
 
@@ -214,24 +249,20 @@ class LocalResponsibilityController extends Controller
         return $this->redirect('index?r=local-responsibility/update&id='.$model->id);
     }
 
-    public function actionSubcat()
+    public function actionGetAuditorium()
     {
         if ($id = Yii::$app->request->post('id')) {
-            $operationPosts = BranchWork::find()
-                ->where(['id' => $id])
-                ->count();
+            $operationPosts = count(Yii::$app->branches->getList());
 
+            $result = HtmlBuilder::createEmptyOption();
             if ($operationPosts > 0) {
-                $operations = AuditoriumWork::find()
-                    ->where(['branch_id' => $id])
-                    ->all();
-                echo "<option value=0>--</option>";
-                foreach ($operations as $operation)
-                    echo "<option value='" . $operation->id . "'>" . $operation->name . "</option>";
-            } else
-                echo "<option>-</option>";
-
+                $result .= HtmlBuilder::buildOptionList(
+                    (Yii::createObject(AuditoriumRepository::class))->getByBranch($id)
+                );
+            }
         }
+
+        echo $result;
     }
 
     /**

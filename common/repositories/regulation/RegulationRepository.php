@@ -84,4 +84,9 @@ class RegulationRepository
 
         return $model->delete();
     }
+
+    public function getAll()
+    {
+        return RegulationWork::find()->all();
+    }
 }

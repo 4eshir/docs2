@@ -24,4 +24,9 @@ class OrderMainRepository
         }
         return $model->id;
     }
+
+    public function getAll()
+    {
+        return OrderMainWork::find()->all();
+    }
 }

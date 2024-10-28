@@ -3,6 +3,7 @@
 namespace common\repositories\general;
 
 use common\components\traits\CommonDatabaseFunctions;
+use common\repositories\dictionaries\PeopleRepository;
 use DomainException;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
@@ -10,6 +11,13 @@ use frontend\models\work\general\PeopleWork;
 class PeopleStampRepository
 {
     use CommonDatabaseFunctions;
+
+    private PeopleRepository $peopleRepository;
+
+    public function __construct(PeopleRepository $peopleRepository)
+    {
+        $this->peopleRepository = $peopleRepository;
+    }
 
     public function get($id)
     {

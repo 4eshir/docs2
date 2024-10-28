@@ -7,6 +7,8 @@ use yii\helpers\Html;
 /* @var $model LocalResponsibilityWork */
 /* @var $audsList */
 /* @var $peoples */
+/* @var $orders */
+/* @var $regulations */
 
 $this->title = 'Добавление новой ответственности работника';
 $this->params['breadcrumbs'][] = ['label' => 'Учет ответственности работников', 'url' => ['index']];
@@ -20,6 +22,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'audsList' => $audsList,
         'peoples' => $peoples,
+        'orders' => $orders,
+        'regulations' => $regulations,
     ]) ?>
 
 </div>

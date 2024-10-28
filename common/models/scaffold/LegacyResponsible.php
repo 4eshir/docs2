@@ -6,7 +6,7 @@ namespace common\models\scaffold;
  * This is the model class for table "legacy_responsible".
  *
  * @property int $id
- * @property int|null $people_id
+ * @property int|null $people_stamp_id
  * @property int|null $responsibility_type
  * @property int|null $branch
  * @property int|null $auditorium_id
@@ -35,10 +35,10 @@ class LegacyResponsible extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['people_id', 'responsibility_type', 'branch', 'auditorium_id', 'quant', 'order_id'], 'integer'],
+            [['people_stamp_id', 'responsibility_type', 'branch', 'auditorium_id', 'quant', 'order_id'], 'integer'],
             [['start_date', 'end_date'], 'safe'],
             [['auditorium_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditorium::class, 'targetAttribute' => ['auditorium_id' => 'id']],
-            [['people_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['people_id' => 'id']],
+            [['people_stamp_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['people_stamp_id' => 'id']],
             [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentOrder::class, 'targetAttribute' => ['order_id' => 'id']],
         ];
     }
@@ -50,7 +50,7 @@ class LegacyResponsible extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'people_id' => 'People ID',
+            'people_stamp_id' => 'People ID',
             'responsibility_type' => 'Responsibility Type',
             'branch' => 'Branch',
             'auditorium_id' => 'Auditorium ID',
@@ -86,8 +86,8 @@ class LegacyResponsible extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getPeople()
+    public function getPeopleStamp()
     {
-        return $this->hasOne(People::class, ['id' => 'people_id']);
+        return $this->hasOne(PeopleStamp::class, ['id' => 'people_stamp_id']);
     }
 }

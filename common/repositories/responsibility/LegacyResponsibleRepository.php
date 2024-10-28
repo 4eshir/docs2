@@ -2,6 +2,7 @@
 
 namespace common\repositories\responsibility;
 
+use DomainException;
 use frontend\models\work\responsibility\LegacyResponsibleWork;
 use frontend\models\work\responsibility\LocalResponsibilityWork;
 
@@ -20,5 +21,14 @@ class LegacyResponsibleRepository
             ->andWhere(['auditorium_id' => $responsible->auditorium_id])
             ->andWhere(['quant' => $responsible->quant])
             ->all();
+    }
+
+    public function save(LegacyResponsibleWork $legacy)
+    {
+        if (!$legacy->save()) {
+            throw new DomainException('Ошибка сохранения истории ответственности. Проблемы: '.json_encode($legacy->getErrors()));
+        }
+
+        return $legacy->id;
     }
 }
