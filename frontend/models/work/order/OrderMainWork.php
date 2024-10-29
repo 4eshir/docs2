@@ -280,7 +280,12 @@ class OrderMainWork extends OrderMain
 
     public function getNameWithNumber()
     {
-        $result = 'stub';
+        if ($this->order_postfix != null){
+            $result = $this->order_number . '/' . $this->order_postfix.' '.$this->order_name;
+        }
+        else {
+            $result = $this->order_number.' '.$this->order_name;
+        }
         return $result;
     }
 

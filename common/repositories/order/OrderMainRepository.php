@@ -20,7 +20,7 @@ class OrderMainRepository
     public function save(OrderMainWork $model)
     {
         if (!$model->save()) {
-            throw new DomainException('Ошибка сохранения входящего документа. Проблемы: '.json_encode($model->getErrors()));
+            throw new DomainException('Ошибка сохранения документа. Проблемы: '.json_encode($model->getErrors()));
         }
         return $model->id;
     }
