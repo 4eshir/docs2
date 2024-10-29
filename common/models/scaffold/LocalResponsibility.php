@@ -14,7 +14,7 @@ namespace common\models\scaffold;
  * @property int|null $regulation_id
  *
  * @property Auditorium $auditorium
- * @property People $people
+ * @property PeopleStamp $peopleStamp
  * @property Regulation $regulation
  */
 class LocalResponsibility extends \yii\db\ActiveRecord
@@ -33,7 +33,7 @@ class LocalResponsibility extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['responsibility_type', 'branch', 'auditorium_id', 'quant', 'people_id', 'regulation_id'], 'integer'],
+            [['responsibility_type', 'branch', 'auditorium_id', 'quant', 'people_stamp_id', 'regulation_id'], 'integer'],
             [['auditorium_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditorium::class, 'targetAttribute' => ['auditorium_id' => 'id']],
             [['people_stamp_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['people_stamp_id' => 'id']],
             [['regulation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Regulation::class, 'targetAttribute' => ['regulation_id' => 'id']],

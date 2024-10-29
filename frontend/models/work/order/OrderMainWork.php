@@ -176,18 +176,18 @@ class OrderMainWork extends OrderMain
         foreach ($records as $record) {
             /* @var \app\models\work\order\OrderMainWork $record */
             if($record->order_postfix == NULL) {
-                array_push($array_number, [
+                $array_number[] = [
                     $record->order_date,
                     $record->order_number,
                     $record->order_number
-                ]);
+                ];
             }
             else {
-                array_push($array_number, [
+                $array_number[] = [
                     $record->order_date,
                     $record->order_number,
-                    $record->order_number.'/'.$record->order_postfix
-                ]);
+                    $record->order_number . '/' . $record->order_postfix
+                ];
             }
         }
         for ($i = 0; $i < count($array_number); $i++) {
@@ -196,7 +196,7 @@ class OrderMainWork extends OrderMain
                 $downItem = $item;
             }
             if ($item[0] == $model_date) {
-                array_push($equalItem, $item);
+                $equalItem[] = $item;
             }
             if ($item[0] > $model_date) {
                 $upItem = $item;
@@ -277,6 +277,13 @@ class OrderMainWork extends OrderMain
             return false;
         }
     }
+
+    public function getNameWithNumber()
+    {
+        $result = 'stub';
+        return $result;
+    }
+
     public function beforeValidate()
     {
         $this->order_copy_id = 1;

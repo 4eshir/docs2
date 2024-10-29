@@ -3,7 +3,11 @@
 namespace frontend\models\work\general;
 
 use common\models\scaffold\PeopleStamp;
+use InvalidArgumentException;
 
+/**
+ * @property PeopleWork $peopleWork
+ */
 class PeopleStampWork extends PeopleStamp
 {
     public static function fill($peopleId, $surname, $genitiveSurname, $positionId, $companyId)
@@ -16,5 +20,42 @@ class PeopleStampWork extends PeopleStamp
         $entity->company_id = $companyId;
 
         return $entity;
+    }
+
+    public function getFIO($type)
+    {
+        switch ($type) {
+            case PeopleWork::FIO_FULL:
+                return $this->getFullFio();
+            case PeopleWork::FIO_SURNAME_INITIALS:
+                return $this->getSurnameInitials();
+            case PeopleWork::FIO_WITH_POSITION:
+                return $this->getFioPosition();
+            default:
+                throw new InvalidArgumentException('Неизвестный тип вывода ФИО');
+        }
+    }
+
+    public function getFullFio()
+    {
+        return "$this->surname {$this->peopleWork->firstname} {$this->peopleWork->patronymic}";
+    }
+
+    public function getSurnameInitials()
+    {
+        return $this->surname
+            . ' ' . mb_substr($this->peopleWork->firstname, 0, 1)
+            . '. ' . ($this->peopleWork->patronymic ? mb_substr($this->peopleWork->patronymic, 0, 1) . '.' : '');
+    }
+
+    public function getFioPosition()
+    {
+        return 'stub';
+    }
+
+
+    public function getPeopleWork()
+    {
+        return $this->hasOne(PeopleWork::class, ['id' => 'people_id']);
     }
 }

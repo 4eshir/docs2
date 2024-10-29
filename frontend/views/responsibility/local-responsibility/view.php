@@ -1,14 +1,21 @@
 <?php
 
+use common\helpers\StringFormatter;
+use frontend\models\work\general\PeopleWork;
+use frontend\models\work\responsibility\LegacyResponsibleWork;
+use frontend\models\work\responsibility\LocalResponsibilityWork;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\LocalResponsibilityWork */
+/* @var $model LocalResponsibilityWork */
+/* @var $history LegacyResponsibleWork */
 
-$this->title = $model->people->secondname.' '.$model->responsibilityType->name;
-if ($model->quant !== null)
+$this->title = $model->peopleStampWork->surname . ' ' . Yii::$app->responsibilityType->get($model->responsibility_type);
+if ($model->quant !== null) {
     $this->title .= ' №' . $model->quant;
+}
 $this->params['breadcrumbs'][] = ['label' => 'Учет ответственности работников', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -31,12 +38,25 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            ['attribute' => 'responsibilityTypeStr', 'format' => 'raw'],
-            ['attribute' => 'branchStr', 'format' => 'raw'],
-            ['attribute' => 'auditoriumStr', 'format' => 'raw'],
+            ['attribute' => 'responsibility_type', 'format' => 'raw', 'value' => function(LocalResponsibilityWork $model){
+                return Yii::$app->responsibilityType->get($model->responsibility_type);
+            }],
+            ['attribute' => 'branch', 'format' => 'raw', 'value' => function(LocalResponsibilityWork $model){
+                return Yii::$app->branches->get($model->branch);
+            }],
+            ['attribute' => 'auditorium', 'format' => 'raw', 'value' => function(LocalResponsibilityWork $model){
+                return $model->auditoriumWork->name;
+            }],
             ['attribute' => 'quant', 'format' => 'raw'],
-            ['attribute' => 'peopleStr', 'format' => 'raw'],
-            ['attribute' => 'orderStr', 'format' => 'raw', 'label' => 'Приказ'],
+            ['attribute' => 'people', 'format' => 'raw', 'value' => function(LocalResponsibilityWork $model){
+                return StringFormatter::stringAsLink(
+                    $model->peopleStampWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS),
+                    Url::to(['/people/view', 'id' => $model->peopleStampWork->people_id])
+                );
+            }],
+            ['attribute' => 'order', 'format' => 'raw', 'label' => 'Приказ', 'value' => function(LegacyResponsibleWork $model){
+                return $model->orderWork->order;
+            }],
             ['attribute' => 'regulationStr', 'format' => 'raw'],
             ['label' => 'Файлы', 'attribute' => 'files', 'value' => function ($model) {
                 $split = explode(" ", $model->files);

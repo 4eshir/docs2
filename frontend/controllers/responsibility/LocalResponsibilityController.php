@@ -5,15 +5,17 @@ namespace frontend\controllers\responsibility;
 use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\dictionaries\PeopleRepository;
-use common\repositories\general\PeopleStampRepository;
 use common\repositories\order\OrderMainRepository;
 use common\repositories\regulation\RegulationRepository;
 use common\repositories\responsibility\LegacyResponsibleRepository;
 use common\repositories\responsibility\LocalResponsibilityRepository;
+use common\services\general\PeopleStampService;
+use DomainException;
 use frontend\forms\ResponsibilityForm;
 use frontend\models\search\SearchLocalResponsibility;
 use frontend\models\work\responsibility\LegacyResponsibleWork;
 use frontend\models\work\responsibility\LocalResponsibilityWork;
+use frontend\services\responsibility\LocalResponsibilityService;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -32,6 +34,9 @@ class LocalResponsibilityController extends Controller
     private OrderMainRepository $orderRepository;
     private RegulationRepository $regulationRepository;
 
+    private LocalResponsibilityService $service;
+    private PeopleStampService $peopleStampService;
+
     public function __construct($id, $module,
         LocalResponsibilityRepository $responsibilityRepository,
         LegacyResponsibleRepository $legacyRepository,
@@ -39,6 +44,8 @@ class LocalResponsibilityController extends Controller
         PeopleRepository $peopleRepository,
         OrderMainRepository $orderRepository,
         RegulationRepository $regulationRepository,
+        LocalResponsibilityService $service,
+        PeopleStampService $peopleStampService,
         $config = [])
     {
         parent::__construct($id, $module, $config);
@@ -48,6 +55,8 @@ class LocalResponsibilityController extends Controller
         $this->peopleRepository = $peopleRepository;
         $this->orderRepository = $orderRepository;
         $this->regulationRepository = $regulationRepository;
+        $this->service = $service;
+        $this->peopleStampService = $peopleStampService;
     }
 
     /**
@@ -111,32 +120,49 @@ class LocalResponsibilityController extends Controller
         $orders = $this->orderRepository->getAll();
         $regulations = $this->regulationRepository->getAll();
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        if ($model->load(Yii::$app->request->post())) {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->peopleStampId);
+            $model->peopleStampId = $peopleStampId;
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
 
-            $modelResponsibility = LocalResponsibilityWork::fill(
-                $model->responsibilityType,
-                $model->branch,
-                $model->auditoriumId,
-                $model->quant,
-                $model->peopleStampId,
-                $model->regulationId
-            );
+            if ($peopleStampId) {
+                $modelResponsibility = LocalResponsibilityWork::fill(
+                    $model->responsibilityType,
+                    $model->branch,
+                    $model->auditoriumId,
+                    $model->quant,
+                    $peopleStampId,
+                    $model->regulationId,
+                    $model->filesList
+                );
 
-            $modelLegacy = LegacyResponsibleWork::fill(
-                $model->peopleStampId,
-                $model->responsibilityType,
-                $model->branch,
-                $model->auditoriumId,
-                $model->quant,
-                $model->startDate,
-                $model->endDate,
-                $model->orderId
-            );
+                $modelLegacy = LegacyResponsibleWork::fill(
+                    $peopleStampId,
+                    $model->responsibilityType,
+                    $model->branch,
+                    $model->auditoriumId,
+                    $model->quant,
+                    $model->startDate,
+                    $model->endDate,
+                    $model->orderId
+                );
 
-            $this->responsibilityRepository->save($modelResponsibility);
-            $this->legacyRepository->save($modelLegacy);
+                $this->responsibilityRepository->save($modelResponsibility);
 
-            return $this->redirect(['view', 'id' => $model->id]);
+                $this->service->getFilesInstances($modelResponsibility);
+                $this->service->saveFilesFromModel($modelResponsibility);
+                $modelResponsibility->releaseEvents();
+
+                $this->legacyRepository->save($modelLegacy);
+
+                return $this->redirect(['view', 'id' => $modelResponsibility->id]);
+            }
+            else {
+                Yii::$app->session->setFlash('danger', 'Не удалось прикрепить человека к ответственности');
+                return $this->redirect(['index']);
+            }
         }
 
         return $this->render('create', [
@@ -194,59 +220,6 @@ class LocalResponsibilityController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
-    }
-
-    public function actionGetFile($fileName = null, $modelId = null, $type = null)
-    {
-
-        $filePath = '/upload/files/'.Yii::$app->controller->id;
-        $filePath .= $type == null ? '/' : '/'.$type.'/';
-
-        $downloadServ = new FileDownloadServer($filePath, $fileName);
-        $downloadYadi = new FileDownloadYandexDisk($filePath, $fileName);
-
-        $downloadServ->LoadFile();
-        if (!$downloadServ->success) $downloadYadi->LoadFile();
-        else return \Yii::$app->response->sendFile($downloadServ->file);
-
-        if (!$downloadYadi->success) throw new \Exception('File not found');
-        else {
-
-            $fp = fopen('php://output', 'r');
-
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename=' . $downloadYadi->filename);
-            header('Content-Transfer-Encoding: binary');
-            header('Content-Length: ' . $downloadYadi->file->size);
-
-            $downloadYadi->file->download($fp);
-
-            fseek($fp, 0);
-        }
-    }
-
-    public function actionDeleteFile($fileName = null, $modelId = null)
-    {
-
-        $model = LocalResponsibilityWork::find()->where(['id' => $modelId])->one();
-
-        if ($fileName !== null && !Yii::$app->user->isGuest && $modelId !== null) {
-
-            $result = '';
-            $split = explode(" ", $model->files);
-            $deleteFile = '';
-            for ($i = 0; $i < count($split) - 1; $i++) {
-                if ($split[$i] !== $fileName) {
-                    $result = $result . $split[$i] . ' ';
-                } else
-                    $deleteFile = $split[$i];
-            }
-            $model->files = $result;
-            $model->save(false);
-            Logger::WriteLog(Yii::$app->user->identity->getId(), 'Удален файл ' . $deleteFile);
-        }
-        return $this->redirect('index?r=local-responsibility/update&id='.$model->id);
     }
 
     public function actionGetAuditorium()

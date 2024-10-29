@@ -24,11 +24,11 @@ class ResponsibilityForm extends Model
     public function rules()
     {
         return [
-            [['responsibilityType', 'branch', 'auditoriumId', 'quant', 'peopleId', 'regulationId', 'orderId'], 'integer'],
-            [['auditoriumId'], 'exist', 'skipOnError' => true, 'targetClass' => AuditoriumWork::class, 'targetAttribute' => ['auditorium_id' => 'id']],
-            [['peopleStampId'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['people_stamp_id' => 'id']],
-            [['regulationId'], 'exist', 'skipOnError' => true, 'targetClass' => RegulationWork::class, 'targetAttribute' => ['regulation_id' => 'id']],
-            [['orderId'], 'exist', 'skipOnError' => true, 'targetClass' => OrderMainWork::class, 'targetAttribute' => ['order_id' => 'id']],
+            [['responsibilityType', 'branch', 'auditoriumId', 'quant', 'peopleStampId', 'regulationId', 'orderId'], 'integer'],
+            [['auditoriumId'], 'exist', 'skipOnError' => true, 'targetClass' => AuditoriumWork::class, 'targetAttribute' => ['auditoriumId' => 'id']],
+            [['peopleStampId'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['peopleStampId' => 'id']],
+            [['regulationId'], 'exist', 'skipOnError' => true, 'targetClass' => RegulationWork::class, 'targetAttribute' => ['regulationId' => 'id']],
+            [['orderId'], 'exist', 'skipOnError' => true, 'targetClass' => OrderMainWork::class, 'targetAttribute' => ['orderId' => 'id']],
             [['startDate', 'endDate'], 'safe'],
             [['filesList'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10]
         ];
