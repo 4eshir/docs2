@@ -95,7 +95,7 @@ class OrderEventController extends Controller
             $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
             $modelOrderEvent->releaseEvents();
-            return $this->render('view', [
+            return $this->redirect('view', [
                 'id' => $modelOrderEvent->id
             ]);
         }
@@ -104,6 +104,12 @@ class OrderEventController extends Controller
             'people' => $people
         ]);
     }
+    public function actionView($id)
+    {
+        return $this->render('view'
+        );
+    }
+
     public function actionUpdate($id) {
 
     }
