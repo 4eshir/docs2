@@ -58,6 +58,8 @@ class OrderEventForm extends Model {
     public $teacher_id;
     public $focus;
     public $formRealization;
+    public $teamList;
+    public $nominationList;
     //
 
     public $scanFile;

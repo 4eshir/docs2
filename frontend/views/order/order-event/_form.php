@@ -246,7 +246,7 @@ use yii\jui\DatePicker;
             ?>
         </div>
     </div>
-    <div class="bordered-div">
+    <div class="bordered-div" id = "commands">
         <h4>Номинации и команды</h4>
         <div>
             <div class="container">
@@ -348,7 +348,28 @@ use yii\jui\DatePicker;
                         <h3>
                             Представленные материалы<br>
                             В составе команды<br>
+                            <!-- Выпадающий список для команд -->
+                            <div class="container">
+                                <?php
+                                $params = [
+                                    'id' => 'teamDropdown',
+                                    'class' => 'form-control pos',
+                                    'prompt' => '--- Выберите команду ---',
+                                ];
+                                echo $form->field($model, 'teamList[]')->dropDownList([], $params)->label('Выберите команду');
+                                ?>
+                            </div>
                             Номинация
+                            <div class="container">
+                                <?php
+                                $params = [
+                                    'id' => 'nominationDropdown',
+                                    'class' => 'form-control pos',
+                                    'prompt' => '--- Выберите номинацию ---',
+                                ];
+                                echo $form->field($model, 'nominationList[]')->dropDownList([], $params)->label('Выберите номинацию');
+                                ?>
+                            </div>
                         </h3>
                     </div>
                 </div>
@@ -388,16 +409,39 @@ use yii\jui\DatePicker;
         teamListContainer.innerHTML = '';
         nominationListContainer.innerHTML = '';
 
+        // Обновляем список вардов
+        const teamDropdown = document.getElementById('teamDropdown');
+        teamDropdown.innerHTML = '<option value="">--- Выберите команду ---</option>'; // Сброс
+
         teamList.forEach((team, index) => {
             const listContainer = createListItem(team, index, 'teamList');
             teamListContainer.appendChild(listContainer);
+
+            // Добавление команды в выпадающий список
+            const dropdownOption = document.createElement('option');
+            dropdownOption.value = team;
+            dropdownOption.textContent = team;
+            teamDropdown.appendChild(dropdownOption);
         });
+
+        // Обновляем список номинаций
+        const nominationDropdown = document.getElementById('nominationDropdown');
+        nominationDropdown.innerHTML = '<option value="">--- Выберите номинацию ---</option>'; // Сброс
 
         nominationList.forEach((nomination, index) => {
             const listContainer = createListItem(nomination, index, 'nominationList');
             nominationListContainer.appendChild(listContainer);
+
+            // Добавление номинации в выпадающий список
+            const nominationOption = document.createElement('option');
+            nominationOption.value = nomination;
+            nominationOption.textContent = nomination;
+            nominationDropdown.appendChild(nominationOption);
         });
     }
+
+
+    // Остальные функции (createListItem, addToList, deleteItem, prepareAndSubmit) остаются без изменений...
     // Функция для создания элемента списка
     function createListItem(item, index, type) {
         const listContainer = document.createElement('div');

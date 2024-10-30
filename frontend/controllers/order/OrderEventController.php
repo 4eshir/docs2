@@ -49,8 +49,12 @@ class OrderEventController extends Controller
         $model = new OrderEventForm();
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
-
         if($model->load($post)) {
+            //вынести в другую функцию
+            $teams = $post['teams'];
+            $nominations = $post['nominations'];
+            $actTeamList = $post['teamList'];
+            $actNominationsList = $post['nominationList'];
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
