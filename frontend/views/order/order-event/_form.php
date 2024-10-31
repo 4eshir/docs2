@@ -345,20 +345,21 @@ use yii\jui\DatePicker;
                         ?>
                         <?= $form->field($model, 'formRealization[]')->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
                             ->label('Форма реализации') ?>
-                        <h3>
-                            Представленные материалы<br>
-                            В составе команды<br>
-                            <!-- Выпадающий список для команд -->
-                            <div class="container">
-                                <?php
-                                $params = [
+
+                        Представленные материалы<br>
+                        <?= $form->field($model, 'actFiles[]')->fileInput(['multiple' => true])->label('Представленные материалы') ?>
+                        В составе команды<br>
+                        <!-- Выпадающий список для команд -->
+                        <div class="container">
+                            <?php
+                            $params = [
                                     'id' => 'teamDropdown',
                                     'class' => 'form-control pos',
                                     'prompt' => '--- Выберите команду ---',
-                                ];
-                                echo $form->field($model, 'teamList[]')->dropDownList([], $params)->label('Выберите команду');
-                                ?>
-                            </div>
+                            ];
+                            echo $form->field($model, 'teamList[]')->dropDownList([], $params)->label('Выберите команду');
+                            ?>
+                        </div>
                             Номинация
                             <div class="container">
                                 <?php
@@ -370,7 +371,7 @@ use yii\jui\DatePicker;
                                 echo $form->field($model, 'nominationList[]')->dropDownList([], $params)->label('Выберите номинацию');
                                 ?>
                             </div>
-                        </h3>
+
                     </div>
                 </div>
             </div>

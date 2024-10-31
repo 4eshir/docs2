@@ -1,0 +1,17 @@
+<?php
+
+namespace common\repositories\act_participant;
+
+use app\models\work\team\ActParticipantWork;
+use Yii;
+
+class ActParticipantRepository
+{
+    public function prepareCreate($participantId, $teacherId, $teacher2Id, $foreignEventId,$branch,$focus, $allowRemoteId, $nomination)
+    {
+        $model = ActParticipantWork::fill($participantId, $teacherId, $teacher2Id, $foreignEventId,$branch,$focus, $allowRemoteId, $nomination);
+        $command = Yii::$app->db->createCommand();
+        $command->insert($model::tableName(), $model->getAttributes());
+        return $command->getRawSql();
+    }
+}

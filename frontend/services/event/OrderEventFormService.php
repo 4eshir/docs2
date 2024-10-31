@@ -11,5 +11,6 @@ class OrderEventFormService
     {
         $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
         $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
+        $model->actFiles = UploadedFile::getInstances($model, 'actFiles');
     }
 }

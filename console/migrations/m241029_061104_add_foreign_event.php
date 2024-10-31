@@ -14,6 +14,7 @@ class m241029_061104_add_foreign_event extends Migration
     {
         $this->createTable('foreign_event', [
             'id' => $this->primaryKey(),
+            'order_participant_id' => $this->integer()->notNull(),
             'name' => $this->string(128)->notNull(),
             'organizer_id' => $this->integer(),
             'begin_date' => $this->date()->notNull(),

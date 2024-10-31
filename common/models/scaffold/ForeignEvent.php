@@ -7,6 +7,7 @@ use Yii;
  * This is the model class for table "foreign_event".
  *
  * @property int $id
+ * @property int $order_participant_id
  * @property string $name
  * @property int|null $organizer_id
  * @property string $begin_date
@@ -36,7 +37,7 @@ class ForeignEvent extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'begin_date', 'end_date'], 'required'],
-            [['organizer_id', 'format', 'level', 'minister', 'min_age', 'max_age'], 'integer'],
+            [['order_participant_id', 'organizer_id', 'format', 'level', 'minister', 'min_age', 'max_age'], 'integer'],
             [['begin_date', 'end_date'], 'safe'],
             [['name', 'city', 'key_words'], 'string', 'max' => 128],
         ];
@@ -49,6 +50,7 @@ class ForeignEvent extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'order_participant_id' => 'Order Participant ID',
             'name' => 'Name',
             'organizer_id' => 'Organizer ID',
             'begin_date' => 'Begin Date',

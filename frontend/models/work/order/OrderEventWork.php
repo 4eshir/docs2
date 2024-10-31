@@ -2,16 +2,19 @@
 
 namespace app\models\work\order;
 
+use common\events\EventTrait;
 use common\models\scaffold\OrderMain;
 
 class OrderEventWork extends OrderMainWork
 {
+    use EventTrait;
+    public $actFiles;
     public static function fill(
          $order_copy_id, $order_number, $order_postfix,
          $order_date, $order_name, $signed_id,
          $bring_id, $executor_id, $key_words, $creator_id,
          $last_edit_id, $target, $type, $state, $nomenclature_id,
-         $study_type, $scanFile, $docFiles
+         $study_type, $scanFile, $docFiles, $actFiles
     ){
         $entity = new static();
         $entity->order_copy_id = $order_copy_id;
@@ -32,6 +35,7 @@ class OrderEventWork extends OrderMainWork
         $entity->study_type = $study_type;
         $entity->scanFile = $scanFile;
         $entity->docFiles = $docFiles;
+        $entity->actFiles = $actFiles;
         return $entity;
     }
 }

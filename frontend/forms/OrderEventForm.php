@@ -1,9 +1,12 @@
 <?php
 namespace frontend\forms;
+use common\events\EventTrait;
 use common\models\scaffold\People;
 use yii\base\Model;
 
 class OrderEventForm extends Model {
+
+    use EventTrait;
 
     public $id;
     public $order_copy_id;
@@ -64,16 +67,17 @@ class OrderEventForm extends Model {
 
     public $scanFile;
     public $docFiles;
+    public $actFiles;
     public function rules()
     {
         return [
             [['order_date'], 'required'],
             [['order_copy_id', 'order_postfix', 'signed_id', 'bring_id', 'executor_id',  'creator_id', 'last_edit_id',
-                'nomenclature_id', 'type', 'state', 'organizer_id' , 'eventWay','eventLevel' ,'minister','minAge', 'maxAge' , 'keyEventWords',
+                'nomenclature_id', 'type', 'state', 'organizer_id' , 'eventWay','eventLevel' ,'minister','minAge', 'maxAge' ,
                 'purpose' ,'docEvent', 'respPeopleInfo', 'timeProvisionDay', 'extraRespInsert', 'timeInsertDay', 'extraRespMethod', 'extraRespInfoStuff'], 'integer'],
             [['order_date'], 'safe'],
             [['order_number', 'order_name'], 'string', 'max' => 64],
-            [['key_words'], 'string', 'max' => 512],
+            [['key_words', 'keyEventWords'], 'string', 'max' => 512],
             [['eventName' ,'dateBegin', 'dateEnd', 'city'], 'string'],
             [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['signed_id' => 'id']],
             [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['bring_id' => 'id']],

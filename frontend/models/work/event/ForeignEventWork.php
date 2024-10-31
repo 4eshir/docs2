@@ -13,7 +13,8 @@ class ForeignEventWork extends ForeignEvent
         $format, $level,
         $minister,
         $minAge, $maxAge,
-        $keyWords
+        $keyWords,
+        $orderParticipantId
     ){
         $entity = new static();
         $entity->name = $name;
@@ -27,6 +28,7 @@ class ForeignEventWork extends ForeignEvent
         $entity->min_age = $minAge;
         $entity->max_age = $maxAge;
         $entity->key_words = $keyWords;
+        $entity->order_participant_id = $orderParticipantId;
         return $entity;
     }
     public function beforeValidate()
