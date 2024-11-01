@@ -5,10 +5,12 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\jui\DatePicker;
-/* @var $model \app\models\work\order\OrderEventWork */
+/* @var $model */
 /* @var $people */
 /* @var $scanFile */
 /* @var $docFiles */
+/* @var $teamList */
+/* @var $awardList */
 ?>
 <style>
     .bordered-div {
@@ -246,6 +248,29 @@ use yii\jui\DatePicker;
     </div>
     <div class="bordered-div" id = "commands">
         <h4>Номинации и команды</h4>
+        <div>
+            <div class="container">
+                <?php
+                echo $form->field($model, 'team')->textInput(['id' => 'teamInput', 'class' => 'form-control pos', 'placeholder' => 'Название команды'])->label('Команды');
+                ?>
+                <button type="button" onclick="addToList('teamInput', 'teamList')">Добавить</button>
+            </div>
+            <div id="teamListContainer"></div>
+            <div class="container">
+            <?php
+                $params = [
+                'id' => 'nominationInput',
+                'class' => 'form-control pos',
+                'prompt' => '---',
+                ];
+            echo $form->field($model, 'award')->textInput(['id' => 'nominationInput', 'class' => 'form-control pos', 'placeholder' => 'Номинация'])->label('Номинации');
+            ?>
+                <button type="button" onclick="addToList('nominationInput', 'nominationList')">Добавить</button>
+            </div>
+            <div id="nominationListContainer"></div>
+            <!-- Скрытые поля для отправки массивов -->
+            <div id="hiddenFieldsContainer"></div>
+        </div>
     </div>
     <?= Html::button('Перейти к заполнению участников мероприятия', [
             'class' => 'btn btn-secondary',
@@ -318,13 +343,35 @@ use yii\jui\DatePicker;
                             ->dropDownList(Yii::$app->focus->getList(), $params)
                             ->label('Направленность');
                         ?>
-                        <?= $form->field($model, 'formRealization')->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
+                        <?= $form->field($model, 'formRealization[]')->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
                             ->label('Форма реализации') ?>
-                        <h3>
-                            Представленные материалы<br>
-                            В составе команды<br>
+
+                        Представленные материалы<br>
+                        <?= $form->field($model, 'actFiles[]')->fileInput(['multiple' => true])->label('Представленные материалы') ?>
+                        В составе команды<br>
+                        <!-- Выпадающий список для команд -->
+                        <div class="container">
+                            <?php
+                            $params = [
+                                    'id' => 'teamDropdown',
+                                    'class' => 'form-control pos',
+                                    'prompt' => '--- Выберите команду ---',
+                            ];
+                            echo $form->field($model, 'teamList[]')->dropDownList([], $params)->label('Выберите команду');
+                            ?>
+                        </div>
                             Номинация
-                        </h3>
+                            <div class="container">
+                                <?php
+                                $params = [
+                                    'id' => 'nominationDropdown',
+                                    'class' => 'form-control pos',
+                                    'prompt' => '--- Выберите номинацию ---',
+                                ];
+                                echo $form->field($model, 'nominationList[]')->dropDownList([], $params)->label('Выберите номинацию');
+                                ?>
+                            </div>
+
                     </div>
                 </div>
             </div>
@@ -345,10 +392,127 @@ use yii\jui\DatePicker;
         <?= $docFiles; ?>
     <?php endif; ?>
     <div class="form-group">
-        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Сохранить', [
+            'class' => 'btn btn-success',
+            'onclick' => 'prepareAndSubmit();' // Подготовка скрытых полей перед отправкой
+        ]) ?>
     </div>
     <?php ActiveForm::end(); ?>
 </div>
+<script>
+    let teamList = []; // Temporary storage
+    let nominationList = []; // Temporary storage
+    // Функция для обновления списка
+    function updateList() {
+        const teamListContainer = document.getElementById('teamListContainer');
+        const nominationListContainer = document.getElementById('nominationListContainer');
+
+        teamListContainer.innerHTML = '';
+        nominationListContainer.innerHTML = '';
+
+        // Обновляем список вардов
+        const teamDropdown = document.getElementById('teamDropdown');
+        teamDropdown.innerHTML = '<option value="">--- Выберите команду ---</option>'; // Сброс
+
+        teamList.forEach((team, index) => {
+            const listContainer = createListItem(team, index, 'teamList');
+            teamListContainer.appendChild(listContainer);
+
+            // Добавление команды в выпадающий список
+            const dropdownOption = document.createElement('option');
+            dropdownOption.value = team;
+            dropdownOption.textContent = team;
+            teamDropdown.appendChild(dropdownOption);
+        });
+
+        // Обновляем список номинаций
+        const nominationDropdown = document.getElementById('nominationDropdown');
+        nominationDropdown.innerHTML = '<option value="">--- Выберите номинацию ---</option>'; // Сброс
+
+        nominationList.forEach((nomination, index) => {
+            const listContainer = createListItem(nomination, index, 'nominationList');
+            nominationListContainer.appendChild(listContainer);
+
+            // Добавление номинации в выпадающий список
+            const nominationOption = document.createElement('option');
+            nominationOption.value = nomination;
+            nominationOption.textContent = nomination;
+            nominationDropdown.appendChild(nominationOption);
+        });
+    }
+
+
+    // Остальные функции (createListItem, addToList, deleteItem, prepareAndSubmit) остаются без изменений...
+    // Функция для создания элемента списка
+    function createListItem(item, index, type) {
+        const listContainer = document.createElement('div');
+        listContainer.classList.add('list-container');
+
+        const itemText = document.createElement('span');
+        itemText.textContent = item;
+        listContainer.appendChild(itemText);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Удалить';
+        deleteButton.classList.add('delete-btn');
+        deleteButton.onclick = function() {
+            deleteItem(index, type);
+        };
+        listContainer.appendChild(deleteButton);
+
+        return listContainer;
+    }
+    // Функция добавления элемента в список
+    function addToList(inputId, listType) {
+        const inputField = document.getElementById(inputId);
+        const inputText = inputField.value.trim();
+
+        if (inputText !== "") {
+            if (listType === 'teamList') {
+                teamList.push(inputText);
+            } else if (listType === 'nominationList') {
+                nominationList.push(inputText);
+            }
+
+            updateList(); // Обновляем отображение
+            inputField.value = ""; // Очищаем текстовое поле
+        }
+    }
+    // Функция удаления элемента из списка
+    function deleteItem(index, listType) {
+        if (listType === 'teamList') {
+            teamList.splice(index, 1);
+        } else if (listType === 'nominationList') {
+            nominationList.splice(index, 1);
+        }
+        updateList(); // Обновляем отображение
+    }
+    // Функция подготовки и отправки формы
+    function prepareAndSubmit() {
+        const hiddenFieldsContainer = document.getElementById('hiddenFieldsContainer');
+        hiddenFieldsContainer.innerHTML = ''; // Удаляем старые скрытые поля
+
+        // Добавляем команды в скрытые поля
+        teamList.forEach(team => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'teams[]'; // Обратите внимание на использование 'teams[]'
+            input.value = team;
+            hiddenFieldsContainer.appendChild(input);
+        });
+
+        // Добавляем номинации в скрытые поля
+        nominationList.forEach(nomination => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'nominations[]'; // Аналогично для номинаций
+            input.value = nomination;
+            hiddenFieldsContainer.appendChild(input);
+        });
+    }
+    // Первоначальное обновление списка
+    updateList();
+</script>
 <script>
     document.getElementById('toggle-button').addEventListener('click', function() {
         const actsDiv = document.getElementById('acts');
@@ -371,9 +535,6 @@ use yii\jui\DatePicker;
         }
     });
 </script>
-
-
-
 
 
 
