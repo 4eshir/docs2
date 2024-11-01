@@ -1,9 +1,11 @@
 <?php
 
+use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\responsibility\LegacyResponsibleWork;
 use frontend\models\work\responsibility\LocalResponsibilityWork;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
@@ -38,42 +40,47 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            ['attribute' => 'responsibility_type', 'format' => 'raw', 'value' => function(LocalResponsibilityWork $model){
+            ['attribute' => 'responsibility_type', 'format' => 'raw', 'value' => function (LocalResponsibilityWork $model){
                 return Yii::$app->responsibilityType->get($model->responsibility_type);
             }],
-            ['attribute' => 'branch', 'format' => 'raw', 'value' => function(LocalResponsibilityWork $model){
+            ['attribute' => 'branch', 'format' => 'raw', 'value' => function (LocalResponsibilityWork $model){
                 return Yii::$app->branches->get($model->branch);
             }],
-            ['attribute' => 'auditorium', 'format' => 'raw', 'value' => function(LocalResponsibilityWork $model){
+            ['attribute' => 'auditorium', 'format' => 'raw', 'value' => function (LocalResponsibilityWork $model){
                 return $model->auditoriumWork->name;
             }],
             ['attribute' => 'quant', 'format' => 'raw'],
-            ['attribute' => 'people', 'format' => 'raw', 'value' => function(LocalResponsibilityWork $model){
+            ['attribute' => 'people', 'format' => 'raw', 'value' => function (LocalResponsibilityWork $model){
+                return $model->peopleStampWork ?
+                    StringFormatter::stringAsLink(
+                        $model->peopleStampWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS),
+                        Url::to(['/dictionaries/people/view', 'id' => $model->peopleStampWork->people_id])
+                    ) :
+                    '---';
+            }],
+            ['attribute' => 'regulation', 'format' => 'raw', 'value' => function (LocalResponsibilityWork $model){
                 return StringFormatter::stringAsLink(
-                    $model->peopleStampWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS),
-                    Url::to(['/people/view', 'id' => $model->peopleStampWork->people_id])
+                    $model->regulationWork->name,
+                    Url::to(['/regulation/regulation/view', 'id' => $model->regulation_id])
                 );
             }],
-            ['attribute' => 'order', 'format' => 'raw', 'label' => 'Приказ', 'value' => function(LegacyResponsibleWork $model){
-                return $model->orderWork->order;
-            }],
-            ['attribute' => 'regulationStr', 'format' => 'raw'],
-            ['label' => 'Файлы', 'attribute' => 'files', 'value' => function ($model) {
-                $split = explode(" ", $model->files);
-                $result = '';
-                for ($i = 0; $i < count($split) - 1; $i++)
-                    $result = $result.Html::a($split[$i], \yii\helpers\Url::to(['local-responsibility/get-file', 'fileName' => $split[$i]])).'<br>';
-                return $result;
+            ['label' => 'Файлы', 'attribute' => 'filesList', 'value' => function (LocalResponsibilityWork $model) {
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_OTHER), 'link'));
             }, 'format' => 'raw'],
         ],
     ]) ?>
     <br>
     <h4><u>История ответственности</u></h4>
-    <?= DetailView::widget([
-        'model' => $model,
+    <?php /*= DetailView::widget([
+        'model' => $history,
         'attributes' => [
-            ['attribute' => 'legacyResp', 'label' => 'История', 'format' => 'raw'],
+            ['attribute' => 'order', 'format' => 'raw', 'label' => 'Приказ', 'value' => function (LegacyResponsibleWork $history){
+                return StringFormatter::stringAsLink(
+                    $history->orderWork->getNameWithNumber(),
+                    Url::to(['/order/order-main/view', 'id' => $history->order_id])
+                );
+            }],
         ],
-    ]) ?>
+    ]) */?>
 
 </div>

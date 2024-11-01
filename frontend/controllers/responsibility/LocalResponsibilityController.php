@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\responsibility;
 
+use common\components\BaseConsts;
 use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\dictionaries\PeopleRepository;
@@ -99,7 +100,7 @@ class LocalResponsibilityController extends Controller
     {
         /** @var LocalResponsibilityWork $responsible */
         $responsible = $this->responsibilityRepository->get($id);
-        $history = $this->legacyRepository->getByResponsible($responsible);
+        $history = $this->legacyRepository->getByResponsibility($responsible, BaseConsts::QUERY_ALL);
 
         return $this->render('view', [
             'model' => $responsible,
@@ -123,6 +124,7 @@ class LocalResponsibilityController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $peopleStampId = $this->peopleStampService->createStampFromPeople($model->peopleStampId);
             $model->peopleStampId = $peopleStampId;
+            $model->getFilesInstances($model);
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -151,7 +153,6 @@ class LocalResponsibilityController extends Controller
 
                 $this->responsibilityRepository->save($modelResponsibility);
 
-                $this->service->getFilesInstances($modelResponsibility);
                 $this->service->saveFilesFromModel($modelResponsibility);
                 $modelResponsibility->releaseEvents();
 
@@ -183,28 +184,73 @@ class LocalResponsibilityController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-        $subModel = LegacyResponsibleWork::find()->where(['people_id' => $model->people_id])->andWhere(['responsibility_type_id' => $model->responsibility_type_id])
-            ->andWhere(['branch_id' => $model->branch_id])->andWhere(['auditorium_id' => $model->auditorium_id])->one();
+        /** @var LocalResponsibilityWork $modelResponsibility */
+        /** @var LegacyResponsibleWork $modelLegacy */
+        $modelResponsibility = $this->responsibilityRepository->get($id);
+        $modelLegacy = $this->legacyRepository->getByResponsibility($modelResponsibility, BaseConsts::QUERY_ONE, ['people']);
+        $audsList = $this->auditoriumRepository->getAll();
+        $peoples = $this->peopleRepository->getPeopleFromMainCompany();
+        $orders = $this->orderRepository->getAll();
+        $regulations = $this->regulationRepository->getAll();
 
-        if ($subModel !== null)
-        {
-            $model->start_date = $subModel->start_date;
-            $model->order_id = $subModel->order_id;
-        }
+        $model = ResponsibilityForm::fillFromModels($modelResponsibility, $modelLegacy);
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->filesStr = UploadedFile::getInstances($model, 'filesStr');
-            if ($model->end_date !== "")
-                $model->detachResponsibility();
-            if ($model->filesStr !== null)
-                $model->uploadFiles(10);
-            $model->save();
-            return $this->redirect(['view', 'id' => $model->id]);
+            $model->getFilesInstances($model);
+            if ($model->isDetach()) {
+                if ($model->endDate == "") {
+                    Yii::$app->session->setFlash('danger', 'Невозможно открепить ответственность, т.к. не заполнено поле "Дата открепления ответственности"');
+                }
+                else {
+                    $this->service->detachResponsibility($modelResponsibility, $model->endDate);
+                }
+            }
+            else {
+                $peopleStampId = $this->peopleStampService->createStampFromPeople($model->peopleStampId);
+                $model->peopleStampId = $peopleStampId;
+
+                $modelLegacy = LegacyResponsibleWork::fill(
+                    $model->peopleStampId,
+                    $model->responsibilityType,
+                    $model->branch,
+                    $model->auditoriumId,
+                    $model->quant,
+                    $model->startDate,
+                    $model->endDate,
+                    $model->orderId
+                );
+
+                $modelResponsibility->loadField(
+                    $model->responsibilityType,
+                    $model->branch,
+                    $model->auditoriumId,
+                    $model->quant,
+                    $model->peopleStampId,
+                    $model->regulationId,
+                    $model->filesList
+                );
+
+                if ($modelLegacy->start_date == null) {
+                    Yii::$app->session->setFlash('danger', 'Невозможно прикрепить ответственность, т.к. не заполнено поле "Дата прикрепления ответственности"');
+                }
+                else {
+                    $this->responsibilityRepository->save($modelResponsibility);
+                    $this->legacyRepository->save($modelLegacy);
+                }
+
+                $this->service->saveFilesFromModel($modelResponsibility);
+            }
+
+            return $this->redirect(['view', 'id' => $id]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'audsList' => $audsList,
+            'peoples' => $peoples,
+            'orders' => $orders,
+            'regulations' => $regulations,
+            'modelResponsibility' => $modelResponsibility,
         ]);
     }
 
@@ -217,7 +263,7 @@ class LocalResponsibilityController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $this->responsibilityRepository->delete($this->responsibilityRepository->get($id));
 
         return $this->redirect(['index']);
     }

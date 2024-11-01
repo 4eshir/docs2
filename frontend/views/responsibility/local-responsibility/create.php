@@ -1,10 +1,10 @@
 <?php
 
-use frontend\models\work\responsibility\LocalResponsibilityWork;
+use frontend\forms\ResponsibilityForm;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model LocalResponsibilityWork */
+/* @var $model ResponsibilityForm */
 /* @var $audsList */
 /* @var $peoples */
 /* @var $orders */

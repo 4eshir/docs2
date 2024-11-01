@@ -39,7 +39,7 @@ class PeopleStampRepository
     public function save(PeopleStampWork $stamp)
     {
         if (!$stamp->save()) {
-            throw new DomainException('Ошибка сохранения человека. Проблемы: '.json_encode($stamp->getErrors()));
+            throw new DomainException('Ошибка сохранения копии человека. Проблемы: '.json_encode($stamp->getErrors()));
         }
 
         return $stamp->id;

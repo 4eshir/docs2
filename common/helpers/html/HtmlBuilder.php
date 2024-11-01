@@ -179,4 +179,19 @@ class HtmlBuilder
 
         return $result;
     }
+
+    public static function createWarningMessage($boldMessage, $regularMessage)
+    {
+        return "<div class='alert alert-warning alert-dismissible fade show' role='alert' style='z-index: 1050;'>
+                    <strong>$boldMessage</strong> $regularMessage
+                </div>";
+    }
+
+    public static function createInfoMessage($regularMessage)
+    {
+        return "<div class='alert alert-info alert-dismissible fade show' role='alert' style='z-index: 1050;'>
+                    $regularMessage
+                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>";
+    }
 }

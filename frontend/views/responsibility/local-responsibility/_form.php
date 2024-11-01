@@ -2,6 +2,8 @@
 
 use app\models\work\order\OrderMainWork;
 use frontend\forms\ResponsibilityForm;
+use frontend\models\work\general\PeopleWork;
+use frontend\models\work\responsibility\LocalResponsibilityWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -17,6 +19,7 @@ use yii\widgets\ActiveForm;
 /* @var array $orders список всех доступных приказов */
 /* @var array $regulations список всех доступных положений */
 /* @var $files */
+/* @var $modelResponsibility LocalResponsibilityWork */
 ?>
 
 <script>
@@ -77,7 +80,7 @@ use yii\widgets\ActiveForm;
         $items = $audsList;
     }
 
-    echo $form->field($model, 'auditoriumId')->dropDownList($items, $params);
+    echo $form->field($model, 'auditoriumId')->dropDownList(ArrayHelper::map($audsList,'id','name'), $params);
 
     ?>
 
@@ -105,7 +108,7 @@ use yii\widgets\ActiveForm;
         // возможно стоит вынести оформление таблицы в к-нибудь билдер
         echo '<table class="table table-bordered">'.
              '<tr><td><b>Ответственное лицо</b></td><td><b>Дата открепления ответственности</b></td><td><b>Приказ</b></td></tr>';
-        echo '<tr><td>'.$model->peopleStampWork->peopleWork->shortName.'</td><td>';
+        echo '<tr><td>'.$modelResponsibility->peopleStampWork->peopleWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS).'</td><td>';
         echo $form->field($model, 'endDate')->widget(DatePicker::class, [
             'language' => 'ru',
             'dateFormat' => 'dd.MM.yyyy',

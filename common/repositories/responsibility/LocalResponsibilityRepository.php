@@ -2,11 +2,20 @@
 
 namespace common\repositories\responsibility;
 
+use common\components\BaseConsts;
 use DomainException;
+use frontend\models\work\responsibility\LegacyResponsibleWork;
 use frontend\models\work\responsibility\LocalResponsibilityWork;
 
 class LocalResponsibilityRepository
 {
+    private LegacyResponsibleRepository $legacyRepository;
+
+    public function __construct(LegacyResponsibleRepository $legacyRepository)
+    {
+        $this->legacyRepository = $legacyRepository;
+    }
+
     public function get($id)
     {
         return LocalResponsibilityWork::find()->where(['id' => $id])->one();
@@ -19,5 +28,18 @@ class LocalResponsibilityRepository
         }
 
         return $responsibility->id;
+    }
+
+    public function delete(LocalResponsibilityWork $responsibility)
+    {
+        $legacies = $this->legacyRepository->getByResponsibility($responsibility, BaseConsts::QUERY_ALL);
+        foreach ($legacies as $legacy) {
+            /** @var LegacyResponsibleWork $legacy */
+            $this->legacyRepository->delete($legacy);
+        }
+
+        if (!$responsibility->delete()) {
+            throw new DomainException('Ошибка удаления ответственности. Проблемы: '.json_encode($responsibility->getErrors()));
+        }
     }
 }

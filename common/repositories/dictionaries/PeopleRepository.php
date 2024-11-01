@@ -5,7 +5,6 @@ namespace common\repositories\dictionaries;
 use app\events\dictionaries\PeoplePositionCompanyBranchEventDelete;
 use common\components\traits\CommonDatabaseFunctions;
 use common\helpers\SortHelper;
-use common\models\scaffold\People;
 use common\repositories\general\PeoplePositionCompanyBranchRepository;
 use DomainException;
 use frontend\models\work\general\PeopleWork;

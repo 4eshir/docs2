@@ -13,14 +13,31 @@ class LegacyResponsibleRepository
         return LegacyResponsibleWork::find()->where(['id' => $id])->one();
     }
 
-    public function getByResponsible(LocalResponsibilityWork $responsible)
+    /**
+     * @param LocalResponsibilityWork $responsibility
+     * @param int $type тип возвращаемого значения: 0 - массив, 1 - одиночный элемент
+     * @param array $params дополнительные условия в запросе - "people" (поиск по человеку), "end" (поиск по пустой дате окончания)
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getByResponsibility(LocalResponsibilityWork $responsibility, int $type, $params = [])
     {
-        return LegacyResponsibleWork::find()
-            ->where(['responsibility_type' => $responsible->responsibility_type])
-            ->andWhere(['branch' => $responsible->branch])
-            ->andWhere(['auditorium_id' => $responsible->auditorium_id])
-            ->andWhere(['quant' => $responsible->quant])
-            ->all();
+        $query = LegacyResponsibleWork::find()
+            ->where(['responsibility_type' => $responsibility->responsibility_type])
+            ->andWhere(['branch' => $responsibility->branch])
+            ->andWhere(['auditorium_id' => $responsibility->auditorium_id])
+            ->andWhere(['quant' => $responsibility->quant]);
+
+        if (in_array('people', $params)) {
+            $query = $query->andWhere(['people_stamp_id' => $responsibility->people_stamp_id]);
+        }
+
+        if (in_array('end', $params)) {
+            $query = $query->andWhere(['IS', 'end_date', null]);
+        }
+
+        return $type == 0 ?
+            $query->all() :
+            $query->one();
     }
 
     public function save(LegacyResponsibleWork $legacy)
@@ -30,5 +47,12 @@ class LegacyResponsibleRepository
         }
 
         return $legacy->id;
+    }
+
+    public function delete(LegacyResponsibleWork $legacy)
+    {
+        if (!$legacy->delete()) {
+            throw new DomainException('Ошибка удаления истории ответственности. Проблемы: '.json_encode($legacy->getErrors()));
+        }
     }
 }

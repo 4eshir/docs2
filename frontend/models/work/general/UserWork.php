@@ -6,6 +6,8 @@ use common\models\scaffold\User;
 use Yii;
 use yii\web\IdentityInterface;
 
+/** @property PeopleWork $akaWork */
+
 class UserWork extends User implements IdentityInterface
 {
     public static function fill(
@@ -39,9 +41,19 @@ class UserWork extends User implements IdentityInterface
         return static::findOne($id);
     }
 
+    public function getFullName()
+    {
+        return $this->surname . ' ' . $this->firstname . ' ' . $this->patronymic;
+    }
+
     public static function findIdentityByAccessToken($token, $type = null)
     {
         // TODO: Implement findIdentityByAccessToken() method.
+    }
+
+    public function getAkaWork()
+    {
+        return $this->hasOne(PeopleWork::class, ['id' => 'aka']);
     }
 
     public function getId()

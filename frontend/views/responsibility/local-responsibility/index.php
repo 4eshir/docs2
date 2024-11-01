@@ -48,12 +48,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'rowOptions' => function($data) {
-            if ($data['people_id'] === null)
-                return ['class' => 'danger'];
-            else
-                return ['class' => 'default'];
-        },
         'formatter' => ['class' => 'yii\i18n\Formatter', 'nullDisplay' => ''],
         'columns' => [
 

@@ -10,6 +10,11 @@ class UserRepository
 {
     use CommonDatabaseFunctions;
 
+    public function get($id)
+    {
+        return UserWork::find()->where(['id' => $id])->one();
+    }
+
     public function findByUsername($username)
     {
         return UserWork::find()->where(['username' => $username])->one();

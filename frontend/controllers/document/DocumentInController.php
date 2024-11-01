@@ -2,11 +2,13 @@
 
 namespace frontend\controllers\document;
 
+use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\SortHelper;
+use common\helpers\StringFormatter;
 use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\dictionaries\PositionRepository;
@@ -31,6 +33,7 @@ class DocumentInController extends DocumentController
     private PositionRepository $positionRepository;
     private CompanyRepository $companyRepository;
     private DocumentInService $service;
+    private LockWizard $lockWizard;
     public function __construct(
                              $id,
                              $module,
@@ -39,6 +42,7 @@ class DocumentInController extends DocumentController
         PositionRepository   $positionRepository,
         CompanyRepository    $companyRepository,
         DocumentInService    $service,
+        LockWizard           $lockWizard,
                              $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
@@ -47,6 +51,7 @@ class DocumentInController extends DocumentController
         $this->positionRepository = $positionRepository;
         $this->companyRepository = $companyRepository;
         $this->service = $service;
+        $this->lockWizard = $lockWizard;
     }
 
     public function actionIndex()
@@ -113,49 +118,57 @@ class DocumentInController extends DocumentController
 
     public function actionUpdate($id)
     {
-        $model = $this->repository->get($id);
-        /** @var DocumentInWork $model */
-        $model->setNeedAnswer();
-        $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
-        $availablePositions = $this->positionRepository->getList($model->correspondent_id);
-        $availableCompanies = $this->companyRepository->getList($model->correspondent_id);
-        $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
-        $tables = $this->service->getUploadedFilesTables($model);
-        if ($model->load(Yii::$app->request->post())) {
-            if (!$model->validate()) {
-                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+        if ($this->lockWizard->lockObject($id, DocumentInWork::tableName(), Yii::$app->user->id)) {
+            $model = $this->repository->get($id);
+            /** @var DocumentInWork $model */
+            $model->setNeedAnswer();
+            $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
+            $availablePositions = $this->positionRepository->getList($model->correspondent_id);
+            $availableCompanies = $this->companyRepository->getList($model->correspondent_id);
+            $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
+            $tables = $this->service->getUploadedFilesTables($model);
+            if ($model->load(Yii::$app->request->post())) {
+                $this->lockWizard->unlockObject($id, StringFormatter::getLastSegmentBySlash($this->id));
+                if (!$model->validate()) {
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                }
+                $this->repository->save($model);
+                if ($model->needAnswer) {
+                    $model->recordEvent(
+                        new InOutDocumentCreateEvent(
+                            $model->id,
+                            null,
+                            DateFormatter::format($model->dateAnswer, DateFormatter::dmY_dot, DateFormatter::Ymd_dash),
+                            $model->nameAnswer
+                        ),
+                        DocumentInWork::class
+                    );
+                }
+                else {
+                    $model->recordEvent(new InOutDocumentDeleteEvent($model->id), DocumentInWork::class);
+                }
+                $this->service->getFilesInstances($model);
+                $this->service->saveFilesFromModel($model);
+                $model->releaseEvents();
+                return $this->redirect(['view', 'id' => $model->id]);
             }
-            $this->repository->save($model);
-            if ($model->needAnswer) {
-                $model->recordEvent(
-                    new InOutDocumentCreateEvent(
-                        $model->id,
-                        null,
-                        DateFormatter::format($model->dateAnswer, DateFormatter::dmY_dot, DateFormatter::Ymd_dash),
-                        $model->nameAnswer
-                    ),
-                    DocumentInWork::class
-                );
-            }
-            else {
-                $model->recordEvent(new InOutDocumentDeleteEvent($model->id), DocumentInWork::class);
-            }
-            $this->service->getFilesInstances($model);
-            $this->service->saveFilesFromModel($model);
-            $model->releaseEvents();
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
 
-        return $this->render('update', [
-            'model' => $model,
-            'correspondentList' => $correspondentList,
-            'availablePositions' => $availablePositions,
-            'availableCompanies' => $availableCompanies,
-            'mainCompanyWorkers' => $mainCompanyWorkers,
-            'scanFile' => $tables['scan'],
-            'docFiles' => $tables['doc'],
-            'appFiles' => $tables['app'],
-        ]);
+            return $this->render('update', [
+                'model' => $model,
+                'correspondentList' => $correspondentList,
+                'availablePositions' => $availablePositions,
+                'availableCompanies' => $availableCompanies,
+                'mainCompanyWorkers' => $mainCompanyWorkers,
+                'scanFile' => $tables['scan'],
+                'docFiles' => $tables['doc'],
+                'appFiles' => $tables['app'],
+            ]);
+        }
+        else {
+            Yii::$app->session->setFlash
+                ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, DocumentInWork::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
 
     public function actionDelete($id)

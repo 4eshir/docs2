@@ -29,7 +29,8 @@
         "guzzlehttp/psr7": "^2.6",
         "php-http/message-factory": "^1.1",
         "phpoffice/phpspreadsheet": "^1.29",
-        "fortawesome/font-awesome": "^6.6"
+        "fortawesome/font-awesome": "^6.6",
+        "yiisoft/yii2-redis": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

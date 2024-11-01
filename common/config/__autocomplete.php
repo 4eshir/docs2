@@ -24,6 +24,8 @@ use common\components\dictionaries\base\ResponsibilityTypeDictionary;
 use common\components\dictionaries\base\SendMethodDictionary;
 use common\components\dictionaries\base\ThematicDirectionDictionary;
 use common\components\dictionaries\TableDictionary;
+use common\components\RedisComponent;
+use yii\caching\FileCache;
 
 /**
  * This class only exists here for IDE (PHPStorm/Netbeans/...) autocompletion.
@@ -45,6 +47,8 @@ class Yii {
 /**
  * @property yii\rbac\DbManager $authManager
  * @property \yii\web\User|__WebUser $user
+ * @property RedisComponent $redis
+ * @property FileCache $cache
  * @property RulesConfig $rulesConfig
  * @property BranchDictionary $branches
  * @property NomenclatureDictionary $nomenclature

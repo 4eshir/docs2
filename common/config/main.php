@@ -11,7 +11,16 @@ return [
     ],
     'components' => [
 
-        // another data
+        'redis' => [
+            'class' => 'common\\components\\RedisComponent',
+            'hostname' => 'localhost',
+            'port' => 6379,
+            'database' => 0,
+        ],
+
+        'cache' => [
+            'class' => 'yii\\caching\\FileCache',
+        ],
 
         'rulesConfig' => [
             'class' => 'common\\components\\access\\RulesConfig',

@@ -28,7 +28,11 @@ class PeopleStampService
     {
         /** @var PeopleWork $people */
         $people = $this->peopleRepository->get($peopleId);
-        $stamp = PeopleStampWork::fill($people->id, $people->surname, $people->genitive_surname, $people->position_id, $people->company_id);
+        $stamp = $this->stampRepository->getSimilar($people);
+
+        if ($stamp == null) {
+            $stamp = PeopleStampWork::fill($people->id, $people->surname, $people->genitive_surname, $people->position_id, $people->company_id);
+        }
 
         return $this->stampRepository->save($stamp);
     }
