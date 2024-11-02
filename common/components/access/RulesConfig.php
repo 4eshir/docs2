@@ -96,6 +96,25 @@ class RulesConfig
                 'update-theme',
                 'delete-theme',
                 'delete-author',
+                'delete-file',
+            ]
+        ],
+
+        'view_local_resp' => [
+            \frontend\controllers\responsibility\LocalResponsibilityController::class => [
+                'index',
+                'view',
+                'get-file',
+            ]
+        ],
+
+        'edit_local_resp' => [
+            \frontend\controllers\responsibility\LocalResponsibilityController::class => [
+                'create',
+                'update',
+                'delete',
+                'delete-file',
+                'get-auditorium',
             ]
         ]
     ];

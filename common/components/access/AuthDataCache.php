@@ -23,14 +23,47 @@ class AuthDataCache
         $this->userFunctionRepository = $userFunctionRepository;
     }
 
-    public function loadDataFromDB($userId)
+    /**
+     * Загрузка данных в Redis по id пользователя
+     *
+     * @param int $userId id пользователя системы
+     * @return void
+     * @throws \yii\db\Exception
+     */
+    public function loadDataFromDB(int $userId)
     {
-        $functions = $this->userFunctionRepository->getPermissionsByUser($userId);
-        $key = $this->getSetKey($userId);
+        // Проверка на существование данных о пользователей в кэше
+        $key = $this->getAuthSetKey($userId);
+        if (Yii::$app->redis->executeCommand('EXISTS', [$key])) {
+            return;
+        }
+
+        $permissions = $this->userFunctionRepository->getPermissionsByUser($userId);
+        $this->loadDataFromPermissions($permissions, $userId);
+    }
+
+    /**
+     * Загрузка данных в Redis из готово массива правил
+     *
+     * @param array $permissions массив правил @see PermissionFunctionWork
+     * @param int $userId
+     * @return void
+     * @throws \yii\db\Exception
+     */
+    public function loadDataFromPermissions(array $permissions, int $userId)
+    {
+        // Проверка на существование данных о пользователей в кэше
+        $key = $this->getAuthSetKey($userId);
+        if (Yii::$app->redis->executeCommand('EXISTS', [$key])) {
+            return;
+        }
+
         $transactionFlag = true;
-        foreach ($functions as $function) {
-            /** @var PermissionFunctionWork $function */
-            if (Yii::$app->redis->executeCommand('SADD', [$key, $function->id, 'EX', self::CACHE_LIFETIME]) != 'OK') {
+
+        foreach ($permissions as $permission) {
+            /** @var PermissionFunctionWork $permission */
+            $result = Yii::$app->redis->executeCommand('SADD', [$key, $permission->short_code]);
+            if ($result == 0) {
                 $transactionFlag = false;
             }
         }
@@ -38,9 +71,45 @@ class AuthDataCache
         if (!$transactionFlag) {
             Yii::$app->redis->executeCommand('DEL', $key);
         }
+        else {
+            Yii::$app->redis->executeCommand('EXPIRE', [$key, self::CACHE_LIFETIME]);
+        }
     }
 
-    private function getSetKey($userId)
+    public function getAllPermissionsFromUser($userId)
+    {
+        $key = $this->getAuthSetKey($userId);
+        return Yii::$app->redis->executeCommand('SMEMBERS', [$key]);
+    }
+
+    /**
+     * Проверка на наличие правила accessId у пользователя userId
+     *
+     * @param int $accessId id правила @see PermissionFunctionWork
+     * @param int $userId id пользователя системы
+     * @return array|bool|string|null
+     * @throws \yii\db\Exception
+     */
+    public function checkAccessForUser(int $accessId, int $userId)
+    {
+        $key = $this->getAuthSetKey($userId);
+        return Yii::$app->redis->executeCommand('SISMEMBER', [$key, $accessId]);
+    }
+
+    /**
+     * Очистка правил по конкретному пользователю
+     *
+     * @param int $userId id пользователя системы
+     * @return array|bool|string|null
+     * @throws \yii\db\Exception
+     */
+    public function clearAuthData(int $userId)
+    {
+        $key = $this->getAuthSetKey($userId);
+        return Yii::$app->redis->executeCommand('DEL', [$key]);
+    }
+
+    private function getAuthSetKey($userId)
     {
         return "user:permissions:{$userId}";
     }

@@ -17,6 +17,7 @@ use common\models\scaffold\DocumentOut;
 use common\models\scaffold\Entry;
 use common\models\scaffold\Errors;
 use common\models\scaffold\Event;
+use common\models\scaffold\EventBranch;
 use common\models\scaffold\EventExternal;
 use common\models\scaffold\EventScope;
 use common\models\scaffold\Expire;
@@ -67,6 +68,7 @@ class TableDictionary extends BaseDictionary
             Entry::tableName() => 'Документы о поступлении',
             Errors::tableName() => 'Ошибки',
             Event::tableName() => 'Мероприятия',
+            EventBranch::tableName() => 'Отделы-мероприятия',
             EventExternal::tableName() => 'Внешние мероприятия',
             EventScope::tableName() => 'Направленности мероприятий',
             Expire::tableName() => 'Ограничения или изменения документов',

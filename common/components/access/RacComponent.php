@@ -12,23 +12,29 @@ class RacComponent
     private UserPermissionFunctionRepository $userPermissionFunctionRepository;
     private UserRepository $userRepository;
     private RulesConfig $racConfig;
+    private AuthDataCache $authCache;
     private $permissions = [];
 
     public function __construct(
         UserPermissionFunctionRepository $userPermissionFunctionRepository,
         RulesConfig $racConfig,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        AuthDataCache $authCache
     )
     {
         $this->userPermissionFunctionRepository = $userPermissionFunctionRepository;
         $this->racConfig = $racConfig;
         $this->userRepository = $userRepository;
+        $this->authCache = $authCache;
     }
 
     public function init()
     {
         if (Yii::$app->user->identity->getId()) {
-            $this->permissions = $this->userPermissionFunctionRepository->getPermissionsByUser(Yii::$app->user->identity->getId());
+            $userId = Yii::$app->user->identity->getId();
+            $permissions = $this->userPermissionFunctionRepository->getPermissionsByUser($userId);
+            $this->permissions = $permissions;
+            $this->authCache->loadDataFromPermissions($permissions, $userId);
             return true;
         }
 
@@ -42,6 +48,7 @@ class RacComponent
 
     /**
      * Проверка доступа к экшну для конкретного пользователя
+     *
      * @param $userId
      * @param $controller
      * @param $action
@@ -49,10 +56,10 @@ class RacComponent
      */
     public function checkUserAccess($userId, $controller, $action) : bool
     {
-        $permissions = $this->userPermissionFunctionRepository->getPermissionsByUser($userId);
+        $this->authCache->loadDataFromDB($userId);
+        $permissions = $this->authCache->getAllPermissionsFromUser($userId);
         foreach ($permissions as $permission) {
-            /** @var PermissionFunctionWork $permission */
-            if ($this->checkAllow($permission->short_code, $controller, $action->id)) {
+            if ($this->checkAllow($permission, $controller, $action->id)) {
                 return true;
             }
         }
