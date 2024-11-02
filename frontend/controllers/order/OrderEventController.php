@@ -15,6 +15,7 @@ use common\repositories\order\OrderEventRepository;
 use common\repositories\order\OrderMainRepository;
 use DomainException;
 use frontend\forms\OrderEventForm;
+use frontend\services\event\ForeignEventService;
 use Yii;
 use yii\web\Controller;
 class OrderEventController extends Controller
@@ -24,6 +25,7 @@ class OrderEventController extends Controller
     private ForeignEventRepository $foreignEventRepository;
     private OrderMainService $orderMainService;
     private OrderEventFormService $orderEventFormService;
+    private ForeignEventService $foreignEventService;
     private OrderEventService $orderEventService;
     private TeamService $teamService;
     private ActParticipantService $actParticipantService;
@@ -34,6 +36,7 @@ class OrderEventController extends Controller
         ForeignEventRepository $foreignEventRepository,
         OrderMainService $orderMainService,
         OrderEventFormService $orderEventFormService,
+        ForeignEventService $foreignEventService,
         OrderEventService $orderEventService,
         TeamService  $teamService,
         ActParticipantService $actParticipantService,
@@ -46,6 +49,7 @@ class OrderEventController extends Controller
         $this->orderEventRepository = $orderEventRepository;
         $this->orderEventService = $orderEventService;
         $this->orderEventFormService = $orderEventFormService;
+        $this->foreignEventService = $foreignEventService;
         $this->teamService = $teamService;
         $this->actParticipantService = $actParticipantService;
         parent::__construct($id, $module, $config);
@@ -58,39 +62,44 @@ class OrderEventController extends Controller
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         if($model->load($post)) {
-            //вынести в другую функцию
+
             $teams = $post['teams'];
             $nominations = $post['nominations'];
-            $actTeamList = $post['teamList'];
-            $actNominationsList = $post['nominationList'];
-
+            $participants = $post['OrderEventForm']['participant_id'];
+            $teachers_id = $post['OrderEventForm']['teacher_id'];
+            $teachers2_id = $post['OrderEventForm']['teacher2_id'];
+            $branches = $post['OrderEventForm']['branch'];
+            $focuses = $post['OrderEventForm']['focus'];
+            $eventWays = $post['OrderEventForm']['formRealization'];
+            $actTeamList = $post['OrderEventForm']['teamList'];
+            $actNominationsList = $post['OrderEventForm']['nominationList'];
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->orderEventFormService->getFilesInstances($model);
             $respPeopleId = DynamicWidget::getData(basename(OrderEventForm::class), "responsible_id", $post);
             $modelOrderEvent = OrderEventWork::fill(
-                    $model->order_copy_id,
-                    $model->order_number,
-                    $model->order_postfix,
-                    $model->order_date,
-                    $model->order_name,
-                    $model->signed_id,
-                    $model->bring_id,
-                    $model->executor_id,
-                    $model->key_words,
-                    $model->creator_id,
-                    $model->last_edit_id,
-                    $model->target,
-                    $model->type,
-                    $model->state,
-                    $model->nomenclature_id,
-                    $model->study_type,
-                    $model->scanFile,
-                    $model->docFiles,
-                    $model->actFiles
+                $model->order_copy_id,
+                $model->order_number,
+                $model->order_postfix,
+                $model->order_date,
+                $model->order_name,
+                $model->signed_id,
+                $model->bring_id,
+                $model->executor_id,
+                $model->key_words,
+                $model->creator_id,
+                $model->last_edit_id,
+                $model->target,
+                $model->type,
+                $model->state,
+                $model->nomenclature_id,
+                $model->study_type,
+                $model->scanFile,
+                $model->docFiles,
             );
             $modelOrderEvent->generateOrderNumber();
+            $number = $modelOrderEvent->getNumberPostfix();
             $this->orderEventRepository->save($modelOrderEvent);
             $modelForeignEvent = ForeignEventWork::fill(
                 $model->eventName,
@@ -104,18 +113,23 @@ class OrderEventController extends Controller
                 $model->minAge,
                 $model->maxAge,
                 $model->keyEventWords,
-                $modelOrderEvent->id
+                $modelOrderEvent->id,
+                $model->actFiles
             );
             $this->foreignEventRepository->save($modelForeignEvent);
             $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
             $this->teamService->addTeamNameEvent($teams, $model, $modelForeignEvent->id);
-            //$this->actParticipantService->addActParticipantEvent(/* parameters */);
-            //$this->teamService->addTeamEvent($model, $actParticipantId, $modelForeignEvent->id, $participantId, $teamNameId);
+            $this->actParticipantService->addActParticipantEvent(
+                $model, $participants, $teachers_id, $teachers2_id,
+                $modelForeignEvent->id, $branches, $focuses, NULL, $actNominationsList);
+            // $this->teamService->addTeamEvent($model, $actParticipantId, $modelForeignEvent->id, $participantId, $teamNameId);*/
+
+            $this->foreignEventService->saveFilesFromModel($modelForeignEvent, $model->actFiles, $number);
             $modelOrderEvent->releaseEvents();
+            $modelForeignEvent->releaseEvents();
             $model->releaseEvents();
-            return $this->redirect('view'
-            );
+            return $this->redirect('view');
         }
         return $this->render('create', [
             'model' => $model,

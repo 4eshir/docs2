@@ -6,15 +6,18 @@ use app\events\team\TeamCreateEvent;
 use app\events\team\TeamNameCreateEvent;
 use app\models\work\team\TeamNameWork;
 use app\models\work\team\TeamWork;
+use common\models\scaffold\Team;
 use frontend\forms\OrderEventForm;
 
 class TeamService
 {
     public function addTeamNameEvent($teams, OrderEventForm $model  , $foreignEventId)
     {
-        foreach ($teams as $team) {
-            if($team != NULL && $foreignEventId != NULL){
-                $model->recordEvent(new TeamNameCreateEvent($team, $foreignEventId), TeamNameWork::class);
+        if($teams != NULL) {
+            foreach ($teams as $team) {
+                if ($team != NULL && $foreignEventId != NULL) {
+                    $model->recordEvent(new TeamNameCreateEvent($team, $foreignEventId), TeamNameWork::class);
+                }
             }
         }
     }

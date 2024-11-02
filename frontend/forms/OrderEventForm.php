@@ -59,6 +59,7 @@ class OrderEventForm extends Model {
     public $participant_id;
     public $branch;
     public $teacher_id;
+    public $teacher2_id;
     public $focus;
     public $formRealization;
     public $teamList;
@@ -84,6 +85,8 @@ class OrderEventForm extends Model {
             [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['executor_id' => 'id']],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['creator_id' => 'id']],
             [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['last_edit_id' => 'id']],
+            [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
+                'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt']
         ];
     }
     public static function fill()

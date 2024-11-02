@@ -15,13 +15,13 @@ class m241031_101903_add_act_participant_table extends Migration
         $this->createTable('act_participant', [
             'id' => $this->primaryKey(),
             'participant_id' => $this->integer()->notNull(),
-            'teacher_id' => $this->integer()->notNull(),
-            'teacher2_id' => $this->integer()->notNull(),
+            'teacher_id' => $this->integer(),
+            'teacher2_id' => $this->integer(),
             'foreign_event_id' => $this->integer()->notNull(),
             'branch' => $this->integer()->notNull(),
             'focus' => $this->integer()->notNull(),
-            'allow_remote_id' => $this->integer()->notNull(),
-            'nomination' => $this->integer()->notNull(),
+            'allow_remote_id' => $this->integer(),
+            'nomination' => $this->string()
         ]);
 
     }

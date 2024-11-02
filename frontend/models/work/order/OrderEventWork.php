@@ -14,7 +14,7 @@ class OrderEventWork extends OrderMainWork
          $order_date, $order_name, $signed_id,
          $bring_id, $executor_id, $key_words, $creator_id,
          $last_edit_id, $target, $type, $state, $nomenclature_id,
-         $study_type, $scanFile, $docFiles, $actFiles
+         $study_type, $scanFile, $docFiles
     ){
         $entity = new static();
         $entity->order_copy_id = $order_copy_id;
@@ -35,7 +35,7 @@ class OrderEventWork extends OrderMainWork
         $entity->study_type = $study_type;
         $entity->scanFile = $scanFile;
         $entity->docFiles = $docFiles;
-        $entity->actFiles = $actFiles;
         return $entity;
     }
+
 }
