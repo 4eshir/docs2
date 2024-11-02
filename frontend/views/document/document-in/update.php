@@ -1,5 +1,6 @@
 <?php
 
+use common\components\wizards\AlertMessageWizard;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\DocumentIn;
 use yii\helpers\Html;
@@ -24,17 +25,7 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
 
 <div class="document-in-create">
 
-    <?php if (!Yii::$app->redis->isConnected()): ?>
-        <?= HtmlBuilder::createWarningMessage(
-            'Внимание!',
-            'Отключена система блокировки ресурсов. Будьте оперативны при заполнении карточек и не оставляйте надолго открытой форму редактирования'
-        ) ?>
-    <?php else: ?>
-        <?= HtmlBuilder::createInfoMessage(
-            'Работает система блокировки ресурсов. Данный ресурс сейчас заблокирован для других пользователей, пока Вы не завершите редактирование<hr>
-                            <i>Вас автоматически перенаправит на страницу просмотра после <b>10 минут бездействия</b>. Внесенные изменения не будут применены. Будьте внимательны!</i>'
-        ) ?>
-    <?php endif; ?>
+    <?= AlertMessageWizard::showRedisConnectMessage() ?>
 
     <h3><?= Html::encode($this->title) ?></h3>
 
