@@ -3,7 +3,9 @@
 namespace app\models\work\order;
 
 use common\events\EventTrait;
+use common\helpers\files\FilesHelper;
 use common\models\scaffold\OrderMain;
+use InvalidArgumentException;
 
 class OrderEventWork extends OrderMainWork
 {
@@ -37,5 +39,4 @@ class OrderEventWork extends OrderMainWork
         $entity->docFiles = $docFiles;
         return $entity;
     }
-
 }

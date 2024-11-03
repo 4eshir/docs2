@@ -12,6 +12,10 @@ class ForeignEventRepository
     {
         return ForeignEventWork::find()->where(['id' => $id])->one();
     }
+    public function getByDocOrderId($id)
+    {
+        return ForeignEventWork::find()->where(['order_participant_id' => $id])->one();
+    }
     public function delete($id)
     {
         return ForeignEventWork::deleteAll(['id' => $id]);

@@ -11,6 +11,8 @@ use yii\jui\DatePicker;
 /* @var $docFiles */
 /* @var $teamList */
 /* @var $awardList */
+/* @var $modelResponsiblePeople */
+/* @var $foreignEventTable */
 ?>
 <style>
     .bordered-div {
@@ -168,6 +170,9 @@ use yii\jui\DatePicker;
         DynamicWidget::end()
         ?>
     </div>
+    <?php if (strlen($modelResponsiblePeople) > 10): ?>
+        <?= $modelResponsiblePeople; ?>
+    <?php endif; ?>
     <div class="bordered-div">
         <h4>Дополнительная информация для генерации приказа</h4>
         <?= $form->field($model, 'purpose')->radioList([
@@ -384,6 +389,9 @@ use yii\jui\DatePicker;
         DynamicWidget::end()
         ?>
     </div>
+    <?php if (strlen($foreignEventTable) > 50): ?>
+        <?= $foreignEventTable; ?>
+    <?php endif; ?>
     <?= $form->field($model, 'key_words')->textInput()->label('Ключевые слова') ?>
     <?= $form->field($model, 'scanFile')->fileInput()->label('Скан документа') ?>
     <?php if (strlen($scanFile) > 10): ?>

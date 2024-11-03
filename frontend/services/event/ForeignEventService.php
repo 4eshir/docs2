@@ -3,23 +3,31 @@
 namespace frontend\services\event;
 
 use app\models\work\event\ForeignEventWork;
+use app\models\work\team\ActParticipantWork;
 use common\helpers\files\filenames\ForeignEventFileNameGenerator;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
+use common\repositories\act_participant\ActParticipantRepository;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 class ForeignEventService
 {
     private FileService $fileService;
     private ForeignEventFileNameGenerator $filenameGenerator;
+    private ActParticipantRepository $actParticipantRepository;
     public function __construct(
         FileService $fileService,
-        ForeignEventFileNameGenerator $filenameGenerator
+        ForeignEventFileNameGenerator $filenameGenerator,
+        ActParticipantRepository $actParticipantRepository
     )
     {
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
+        $this->actParticipantRepository = $actParticipantRepository;
     }
     public function saveFilesFromModel(ForeignEventWork $model , $actFiles , $number)
     {
@@ -47,5 +55,24 @@ class ForeignEventService
             }
         }
 
+    }
+    public function getForeignEventTable(ForeignEventWork $model)
+    {
+        /* @var ActParticipantWork $actParticipan t*/
+        $actParticipant = $this->actParticipantRepository->getByForeignEventId($model->id);
+        $foreignEvent = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['АКТЫ'], ArrayHelper::getColumn($actParticipant, 'id'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-foreign-event'),
+                    [
+                        'modelId' => array_fill(0, count($actParticipant), $actParticipant->id),
+                        'fileId' => ArrayHelper::getColumn($actParticipant, 'id')])
+            ]
+        );
+        return $foreignEvent;
     }
 }

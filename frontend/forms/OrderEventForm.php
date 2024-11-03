@@ -89,7 +89,10 @@ class OrderEventForm extends Model {
                 'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt']
         ];
     }
-    public static function fill()
+    public static function fill(
+        $modelOrderEvent,
+        $foreignEvent
+    )
     {
         $entity = new static();
         return $entity;
