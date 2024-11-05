@@ -11,6 +11,8 @@ use yii\jui\DatePicker;
 /* @var $docFiles */
 /* @var $teamList */
 /* @var $awardList */
+/* @var $modelResponsiblePeople */
+/* @var $foreignEventTable */
 ?>
 <style>
     .bordered-div {
@@ -168,6 +170,9 @@ use yii\jui\DatePicker;
         DynamicWidget::end()
         ?>
     </div>
+    <?php if (strlen($modelResponsiblePeople) > 10): ?>
+        <?= $modelResponsiblePeople; ?>
+    <?php endif; ?>
     <div class="bordered-div">
         <h4>Дополнительная информация для генерации приказа</h4>
         <?= $form->field($model, 'purpose')->radioList([
@@ -331,6 +336,10 @@ use yii\jui\DatePicker;
                             ->field($model, 'teacher_id[]')
                             ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
                             ->label('ФИО учителя');
+                        echo $form
+                            ->field($model, 'teacher2_id[]')
+                            ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                            ->label('ФИО учителя');
                         ?>
                         <?php
                         $params = [
@@ -347,7 +356,7 @@ use yii\jui\DatePicker;
                             ->label('Форма реализации') ?>
 
                         Представленные материалы<br>
-                        <?= $form->field($model, 'actFiles[]')->fileInput(['multiple' => true])->label('Представленные материалы') ?>
+                        <?= $form->field($model, 'actFiles[]')->fileInput()->label('Представленные материалы') ?>
                         В составе команды<br>
                         <!-- Выпадающий список для команд -->
                         <div class="container">
@@ -380,6 +389,9 @@ use yii\jui\DatePicker;
         DynamicWidget::end()
         ?>
     </div>
+    <?php if (strlen($foreignEventTable) > 50): ?>
+        <?= $foreignEventTable; ?>
+    <?php endif; ?>
     <?= $form->field($model, 'key_words')->textInput()->label('Ключевые слова') ?>
     <?= $form->field($model, 'scanFile')->fileInput()->label('Скан документа') ?>
     <?php if (strlen($scanFile) > 10): ?>

@@ -55,8 +55,6 @@ class OrderMainWork extends OrderMain
         return array_merge(parent::rules(), [
             [['scanFile'], 'file', 'skipOnEmpty' => true,
                 'extensions' => 'png, jpg, pdf, zip, rar, 7z, tag, txt'],
-            [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
-                'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt']
         ]);
     }
     public function getFullNumber()

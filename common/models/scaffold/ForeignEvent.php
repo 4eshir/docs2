@@ -40,6 +40,7 @@ class ForeignEvent extends \yii\db\ActiveRecord
             [['order_participant_id', 'organizer_id', 'format', 'level', 'minister', 'min_age', 'max_age'], 'integer'],
             [['begin_date', 'end_date'], 'safe'],
             [['name', 'city', 'key_words'], 'string', 'max' => 128],
+
         ];
     }
 

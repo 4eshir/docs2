@@ -25,7 +25,7 @@ class ActParticipantCreateEvent implements EventInterface
          $branch,
          $focus,
          $allowRemoteId,
-         $nomination,
+         $nomination
     )
     {
         $this->participantId = $participantId;
@@ -43,17 +43,17 @@ class ActParticipantCreateEvent implements EventInterface
         return false;
     }
     public function execute() {
-        $this->actParticipantRepository->prepareCreate(
-            $this->participantId,
-            $this->teacherId,
-            $this->teacher2Id,
-            $this->foreignEventId,
-            $this->branch,
-            $this->focus,
-            $this->allowRemoteId,
-            $this->nomination
-        );
-
-
+        return [
+            $this->actParticipantRepository->prepareCreate(
+                $this->participantId,
+                $this->teacherId,
+                $this->teacher2Id,
+                $this->foreignEventId,
+                $this->branch,
+                $this->focus,
+                $this->allowRemoteId,
+                $this->nomination
+            )
+        ];
     }
 }

@@ -9,21 +9,33 @@ use app\services\event\OrderEventFormService;
 use app\services\order\OrderEventService;
 use app\services\order\OrderMainService;
 use app\services\team\TeamService;
+use common\helpers\files\FilesHelper;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\event\ForeignEventRepository;
+use common\repositories\general\FilesRepository;
+use common\repositories\general\OrderPeopleRepository;
 use common\repositories\order\OrderEventRepository;
 use common\repositories\order\OrderMainRepository;
+use common\services\general\files\FileService;
 use DomainException;
+use frontend\events\general\FileDeleteEvent;
 use frontend\forms\OrderEventForm;
+use frontend\helpers\HeaderWizard;
+use frontend\models\work\general\FilesWork;
+use frontend\services\event\ForeignEventService;
 use Yii;
 use yii\web\Controller;
 class OrderEventController extends Controller
 {
     private PeopleRepository $peopleRepository;
+    private FileService $fileService;
+    private FilesRepository $fileRepository;
     private OrderEventRepository $orderEventRepository;
+    private OrderPeopleRepository $orderPeopleRepository;
     private ForeignEventRepository $foreignEventRepository;
     private OrderMainService $orderMainService;
     private OrderEventFormService $orderEventFormService;
+    private ForeignEventService $foreignEventService;
     private OrderEventService $orderEventService;
     private TeamService $teamService;
     private ActParticipantService $actParticipantService;
@@ -31,23 +43,31 @@ class OrderEventController extends Controller
         $id, $module,
         PeopleRepository $peopleRepository,
         OrderEventRepository $orderEventRepository,
+        OrderPeopleRepository $orderPeopleRepository,
         ForeignEventRepository $foreignEventRepository,
         OrderMainService $orderMainService,
         OrderEventFormService $orderEventFormService,
+        ForeignEventService $foreignEventService,
         OrderEventService $orderEventService,
         TeamService  $teamService,
         ActParticipantService $actParticipantService,
+        FileService $fileService,
+        FilesRepository $fileRepository,
         $config = []
     )
     {
         $this->peopleRepository = $peopleRepository;
         $this->orderMainService = $orderMainService;
+        $this->orderPeopleRepository = $orderPeopleRepository;
         $this->foreignEventRepository = $foreignEventRepository;
         $this->orderEventRepository = $orderEventRepository;
         $this->orderEventService = $orderEventService;
         $this->orderEventFormService = $orderEventFormService;
+        $this->foreignEventService = $foreignEventService;
         $this->teamService = $teamService;
         $this->actParticipantService = $actParticipantService;
+        $this->fileService = $fileService;
+        $this->fileRepository = $fileRepository;
         parent::__construct($id, $module, $config);
     }
     public function actionIndex() {
@@ -58,39 +78,44 @@ class OrderEventController extends Controller
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         if($model->load($post)) {
-            //вынести в другую функцию
+
             $teams = $post['teams'];
             $nominations = $post['nominations'];
-            $actTeamList = $post['teamList'];
-            $actNominationsList = $post['nominationList'];
-
+            $participants = $post['OrderEventForm']['participant_id'];
+            $teachers_id = $post['OrderEventForm']['teacher_id'];
+            $teachers2_id = $post['OrderEventForm']['teacher2_id'];
+            $branches = $post['OrderEventForm']['branch'];
+            $focuses = $post['OrderEventForm']['focus'];
+            $eventWays = $post['OrderEventForm']['formRealization'];
+            $actTeamList = $post['OrderEventForm']['teamList'];
+            $actNominationsList = $post['OrderEventForm']['nominationList'];
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->orderEventFormService->getFilesInstances($model);
             $respPeopleId = DynamicWidget::getData(basename(OrderEventForm::class), "responsible_id", $post);
             $modelOrderEvent = OrderEventWork::fill(
-                    $model->order_copy_id,
-                    $model->order_number,
-                    $model->order_postfix,
-                    $model->order_date,
-                    $model->order_name,
-                    $model->signed_id,
-                    $model->bring_id,
-                    $model->executor_id,
-                    $model->key_words,
-                    $model->creator_id,
-                    $model->last_edit_id,
-                    $model->target,
-                    $model->type,
-                    $model->state,
-                    $model->nomenclature_id,
-                    $model->study_type,
-                    $model->scanFile,
-                    $model->docFiles,
-                    $model->actFiles
+                $model->order_copy_id,
+                $model->order_number,
+                $model->order_postfix,
+                $model->order_date,
+                $model->order_name,
+                $model->signed_id,
+                $model->bring_id,
+                $model->executor_id,
+                $model->key_words,
+                $model->creator_id,
+                $model->last_edit_id,
+                $model->target,
+                $model->type,
+                $model->state,
+                $model->nomenclature_id,
+                $model->study_type,
+                $model->scanFile,
+                $model->docFiles,
             );
             $modelOrderEvent->generateOrderNumber();
+            $number = $modelOrderEvent->getNumberPostfix();
             $this->orderEventRepository->save($modelOrderEvent);
             $modelForeignEvent = ForeignEventWork::fill(
                 $model->eventName,
@@ -104,18 +129,23 @@ class OrderEventController extends Controller
                 $model->minAge,
                 $model->maxAge,
                 $model->keyEventWords,
-                $modelOrderEvent->id
+                $modelOrderEvent->id,
+                $model->actFiles
             );
             $this->foreignEventRepository->save($modelForeignEvent);
             $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
             $this->teamService->addTeamNameEvent($teams, $model, $modelForeignEvent->id);
-            //$this->actParticipantService->addActParticipantEvent(/* parameters */);
-            //$this->teamService->addTeamEvent($model, $actParticipantId, $modelForeignEvent->id, $participantId, $teamNameId);
+            $this->actParticipantService->addActParticipantEvent(
+                $model, $participants, $teachers_id, $teachers2_id,
+                $modelForeignEvent->id, $branches, $focuses, NULL, $actNominationsList);
+            //$this->teamService->addTeamEvent($model, $actParticipantId, $modelForeignEvent->id, $participants, $teamNameId);
+
+            $this->foreignEventService->saveFilesFromModel($modelForeignEvent, $model->actFiles, $number);
             $modelOrderEvent->releaseEvents();
+            $modelForeignEvent->releaseEvents();
             $model->releaseEvents();
-            return $this->redirect('view'
-            );
+            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
         }
         return $this->render('create', [
             'model' => $model,
@@ -124,10 +154,83 @@ class OrderEventController extends Controller
     }
     public function actionView($id)
     {
-        return $this->render('view');
+        /* @var OrderEventWork $modelOrderEvent */
+        /* @var ForeignEventWork $foreignEvent */
+        $modelResponsiblePeople = implode('<br>',
+            $this->orderMainService->createOrderPeopleArray(
+                $this->orderPeopleRepository->getResponsiblePeople($id)
+            )
+        );
+        $modelOrderEvent = $this->orderEventRepository->get($id);
+        $foreignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
+        return $this->render('view',
+            [
+                'model' => $modelOrderEvent,
+                'foreignEvent' => $foreignEvent,
+                'modelResponsiblePeople' => $modelResponsiblePeople
+            ]
+        );
     }
-
     public function actionUpdate($id) {
-
+        /* @var OrderEventWork $modelOrderEvent */
+        /* @var ForeignEventWork $foreignEvent */
+        /* @var OrderEventForm $model */
+        $modelOrderEvent = $this->orderEventRepository->get($id);
+        $people = $this->peopleRepository->getOrderedList();
+        $post = Yii::$app->request->post();
+        $foreignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
+        $model = OrderEventForm::fill($modelOrderEvent, $foreignEvent);
+        $tables = $this->orderMainService->getUploadedFilesTables($modelOrderEvent);
+        $modelResponsiblePeople = $this->orderMainService->getResponsiblePeopleTable($modelOrderEvent->id);
+        $foreignEventTable = $this->foreignEventService->getForeignEventTable($foreignEvent);
+        if($model->load($post)){
+            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
+        }
+        return $this->render('update', [
+            'model' => $model,
+            'people' => $people,
+            'modelResponsiblePeople' => $modelResponsiblePeople,
+            'scanFile' => $tables['scan'],
+            'docFiles' => $tables['docs'],
+            'foreignEventTable' => $foreignEventTable,
+        ]);
+    }
+    public function actionGetFile($filepath)
+    {
+        $data = $this->fileService->downloadFile($filepath);
+        if ($data['type'] == FilesHelper::FILE_SERVER) {
+            Yii::$app->response->sendFile($data['obj']->file);
+        }
+        else {
+            $fp = fopen('php://output', 'r');
+            HeaderWizard::setFileHeaders(FilesHelper::getFilenameFromPath($data['obj']->filepath), $data['obj']->file->size);
+            $data['obj']->file->download($fp);
+            fseek($fp, 0);
+        }
+    }
+    public function actionDeleteFile($modelId, $fileId)
+    {
+        try {
+            $file = $this->fileRepository->getById($fileId);
+            /** @var FilesWork $file */
+            $filepath = $file ? basename($file->filepath) : '';
+            $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
+            $file->recordEvent(new FileDeleteEvent($file->id), get_class($file));
+            $file->releaseEvents();
+            Yii::$app->session->setFlash('success', "Файл $filepath успешно удален");
+            return $this->redirect(['update', 'id' => $modelId]);
+        }
+        catch (DomainException $e) {
+            return 'Oops! Something wrong';
+        }
+    }
+    public function actionDeletePeople($id, $modelId)
+    {
+        $this->orderPeopleRepository->deleteByPeopleId($id);
+        return $this->redirect(['update', 'id' => $modelId]);
+    }
+    public function actionDeleteForeignEvent($id)
+    {
+        return $this->redirect(['update', 'id' => $id]);
     }
 }
