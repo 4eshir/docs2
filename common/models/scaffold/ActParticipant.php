@@ -1,5 +1,8 @@
 <?php
 namespace common\models\scaffold;
+use app\models\work\team\TeamNameWork;
+use app\models\work\team\TeamWork;
+use frontend\models\work\general\PeopleWork;
 use Yii;
 /**
  * This is the model class for table "act_participant".

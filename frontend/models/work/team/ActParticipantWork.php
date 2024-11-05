@@ -3,6 +3,7 @@
 namespace app\models\work\team;
 
 use common\models\scaffold\ActParticipant;
+use frontend\models\work\general\PeopleWork;
 
 class ActParticipantWork extends ActParticipant
 {
@@ -26,5 +27,20 @@ class ActParticipantWork extends ActParticipant
         $entity->allow_remote_id = $allowRemoteId;
         $entity->nomination = $nomination;
         return $entity;
+    }
+    public function getParticipant()
+    {
+        $person = PeopleWork::findOne($this->participant_id);
+        return $person->firstname . ' ' . $person->surname . ' ' . $person->patronymic;
+    }
+    public function getTeam() {
+        $team = TeamWork::find()->where([
+            'act_participant' => $this->id,
+        ])->one();
+        /* @var TeamNameWork $teamName */
+        $teamName = TeamNameWork::find()->where([
+            'id' => $team->team_name_id,
+        ])->one();
+        return $teamName->name;
     }
 }

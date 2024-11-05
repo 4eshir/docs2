@@ -20,4 +20,10 @@ class TeamWork extends Team
         $entity->team_name_id = $teamNameId;
         return $entity;
     }
+    public function getName()
+    {
+        /* @var TeamNameWork $team */
+        $team = TeamNameWork::find()->where(['id' => $this->team_name_id])->one();
+        return $team->name;
+    }
 }

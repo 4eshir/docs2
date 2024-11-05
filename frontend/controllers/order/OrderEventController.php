@@ -21,6 +21,7 @@ use DomainException;
 use frontend\events\general\FileDeleteEvent;
 use frontend\forms\OrderEventForm;
 use frontend\helpers\HeaderWizard;
+use frontend\models\search\SearchOrderMain;
 use frontend\models\work\general\FilesWork;
 use frontend\services\event\ForeignEventService;
 use Yii;
@@ -71,6 +72,12 @@ class OrderEventController extends Controller
         parent::__construct($id, $module, $config);
     }
     public function actionIndex() {
+        $searchModel = new SearchOrderMain();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
     public function actionCreate() {
         /* @var OrderEventForm $model */
@@ -78,7 +85,6 @@ class OrderEventController extends Controller
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         if($model->load($post)) {
-
             $teams = $post['teams'];
             $nominations = $post['nominations'];
             $participants = $post['OrderEventForm']['participant_id'];
@@ -183,7 +189,47 @@ class OrderEventController extends Controller
         $tables = $this->orderMainService->getUploadedFilesTables($modelOrderEvent);
         $modelResponsiblePeople = $this->orderMainService->getResponsiblePeopleTable($modelOrderEvent->id);
         $foreignEventTable = $this->foreignEventService->getForeignEventTable($foreignEvent);
+        $awardTable = $this->foreignEventService->getAwardTable($foreignEvent);
+        $teamTable = $this->teamService->getTeamTable($foreignEvent);
+        $respPeopleId = DynamicWidget::getData(basename(OrderEventForm::class), "responsible_id", $post);
         if($model->load($post)){
+            $modelOrderEvent->fillUpdate(
+                $model->order_copy_id,
+                $model->order_number,
+                $model->order_postfix,
+                $model->order_date,
+                $model->order_name,
+                $model->signed_id,
+                $model->bring_id,
+                $model->executor_id,
+                $model->key_words,
+                $model->creator_id,
+                $model->last_edit_id,
+                $model->target,
+                $model->type,
+                $model->state,
+                $model->nomenclature_id,
+                $model->study_type,
+                $model->scanFile,
+                $model->docFiles,
+            );
+            $this->orderEventRepository->save($modelOrderEvent);
+
+            $foreignEvent->fillUpdate(
+                $model->eventName,
+                $model->organizer_id,
+                $model->dateBegin,
+                $model->dateEnd,
+                $model->city,
+                $model->eventWay,
+                $model->eventLevel,
+                $model->minister,
+                $model->minAge,
+                $model->maxAge,
+                $model->keyEventWords,
+                $modelOrderEvent->id,
+                $model->actFiles
+            );
             return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
         }
         return $this->render('update', [
@@ -193,6 +239,8 @@ class OrderEventController extends Controller
             'scanFile' => $tables['scan'],
             'docFiles' => $tables['docs'],
             'foreignEventTable' => $foreignEventTable,
+            'teamTable' => $teamTable,
+            'awardTable' => $awardTable
         ]);
     }
     public function actionGetFile($filepath)
@@ -229,7 +277,15 @@ class OrderEventController extends Controller
         $this->orderPeopleRepository->deleteByPeopleId($id);
         return $this->redirect(['update', 'id' => $modelId]);
     }
-    public function actionDeleteForeignEvent($id)
+    public function actionDeleteActParticipant($id)
+    {
+        return $this->redirect(['update', 'id' => $id]);
+    }
+    public function actionDeleteTeam($id)
+    {
+        return $this->redirect(['update', 'id' => $id]);
+    }
+    public function actionDeleteAward($id)
     {
         return $this->redirect(['update', 'id' => $id]);
     }
