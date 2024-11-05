@@ -27,15 +27,19 @@ class AuthDataCache
      * Загрузка данных в Redis по id пользователя
      *
      * @param int $userId id пользователя системы
-     * @return void
+     * @return void|bool
      * @throws \yii\db\Exception
      */
     public function loadDataFromDB(int $userId)
     {
+        if (!Yii::$app->redis->isConnected()) {
+            return false;
+        }
+
         // Проверка на существование данных о пользователей в кэше
         $key = $this->getAuthSetKey($userId);
         if (Yii::$app->redis->executeCommand('EXISTS', [$key])) {
-            return;
+            return false;
         }
 
         $permissions = $this->userFunctionRepository->getPermissionsByUser($userId);
@@ -52,6 +56,10 @@ class AuthDataCache
      */
     public function loadDataFromPermissions(array $permissions, int $userId)
     {
+        if (!Yii::$app->redis->isConnected()) {
+            return;
+        }
+
         // Проверка на существование данных о пользователей в кэше
         $key = $this->getAuthSetKey($userId);
         if (Yii::$app->redis->executeCommand('EXISTS', [$key])) {
@@ -78,6 +86,10 @@ class AuthDataCache
 
     public function getAllPermissionsFromUser($userId)
     {
+        if (!Yii::$app->redis->isConnected()) {
+            return false;
+        }
+
         $key = $this->getAuthSetKey($userId);
         return Yii::$app->redis->executeCommand('SMEMBERS', [$key]);
     }
@@ -92,6 +104,10 @@ class AuthDataCache
      */
     public function checkAccessForUser(int $accessId, int $userId)
     {
+        if (!Yii::$app->redis->isConnected()) {
+            return false;
+        }
+
         $key = $this->getAuthSetKey($userId);
         return Yii::$app->redis->executeCommand('SISMEMBER', [$key, $accessId]);
     }
@@ -105,6 +121,10 @@ class AuthDataCache
      */
     public function clearAuthData(int $userId)
     {
+        if (!Yii::$app->redis->isConnected()) {
+            return false;
+        }
+
         $key = $this->getAuthSetKey($userId);
         return Yii::$app->redis->executeCommand('DEL', [$key]);
     }

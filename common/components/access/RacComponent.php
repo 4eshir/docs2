@@ -6,6 +6,7 @@ use common\repositories\general\UserRepository;
 use common\repositories\rac\UserPermissionFunctionRepository;
 use frontend\models\work\rac\PermissionFunctionWork;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class RacComponent
 {
@@ -58,6 +59,10 @@ class RacComponent
     {
         $this->authCache->loadDataFromDB($userId);
         $permissions = $this->authCache->getAllPermissionsFromUser($userId);
+        if (!$permissions) {
+            $permissions = ArrayHelper::getColumn($this->userPermissionFunctionRepository->getPermissionsByUser($userId), 'short_code');
+        }
+
         foreach ($permissions as $permission) {
             if ($this->checkAllow($permission, $controller, $action->id)) {
                 return true;
@@ -69,6 +74,7 @@ class RacComponent
 
     /**
      * Определяет, разрешает ли правило $rule получить доступ к экшну $controller/$action
+     *
      * @param $rule
      * @param $controller
      * @param $action
