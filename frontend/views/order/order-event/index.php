@@ -8,19 +8,13 @@ use yii\helpers\Html;
 /* @var $searchModel \frontend\models\search\SearchOrderEvent */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Приказы по осн. деятельности';
+$this->title = 'Приказы по мероприятиям';
 $this->params['breadcrumbs'][] = $this->title;
 $session = Yii::$app->session;
 $tempArchive = $session->get("archiveIn");
 ?>
 <div class="order-main-index">
     <h1><?= Html::encode($this->title) ?></h1>
-    <p>
-        <?= Html::a('Добавить приказ по основной деятельности', ['create'], ['class' => 'btn btn-success', 'style' => 'display: inline-block;']) ?>
-        <?= Html::a('Добавить образовательный приказ', ['create'], ['class' => 'btn btn-warning', 'style' => 'display: inline-block;']) ?>
-        <?= Html::a('Добавить приказ об участии', ['order/order-event/create'], ['class' => 'btn btn-success', 'style' => 'display: inline-block;']) ?>
-        <?= Html::a('Добавить резерв', ['reserve'], ['class' => 'btn btn-secondary','style' => 'display: inline-block;',]) ?>
-    </p>
     <?php
     $gridColumns = [
     ['attribute' => 'fullNumber'],

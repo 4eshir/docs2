@@ -9,6 +9,7 @@ use yii\data\ActiveDataProvider;
 
 class SearchOrderMain extends OrderMainWork
 {
+    const ORDER_TYPE = 1;
     public $fullNumber;
     public $Date;
     public $orderName;
@@ -37,6 +38,7 @@ class SearchOrderMain extends OrderMainWork
     {
         $this->load($params);
         $query = OrderMainWork::find()
+            ->where(['type' => self::ORDER_TYPE])
             ->joinWith('bring');
         if ($this->Date !== '' && $this->Date !== null) {
             $dates = DateFormatter::splitDates($this->Date);

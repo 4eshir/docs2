@@ -21,6 +21,7 @@ use DomainException;
 use frontend\events\general\FileDeleteEvent;
 use frontend\forms\OrderEventForm;
 use frontend\helpers\HeaderWizard;
+use frontend\models\search\SearchOrderEvent;
 use frontend\models\search\SearchOrderMain;
 use frontend\models\work\general\FilesWork;
 use frontend\services\event\ForeignEventService;
@@ -72,7 +73,7 @@ class OrderEventController extends Controller
         parent::__construct($id, $module, $config);
     }
     public function actionIndex() {
-        $searchModel = new SearchOrderMain();
+        $searchModel = new SearchOrderEvent();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('index', [
             'searchModel' => $searchModel,
