@@ -36,6 +36,10 @@ class DocumentInRepository
     {
         return DocumentInWork::find()->where(['id' => $id])->one();
     }
+    public function getAll()
+    {
+        return DocumentInWork::find()->all();
+    }
     public function createReserve(DocumentInWork $model)
     {
         $model->local_date = date('Y-m-d');
@@ -99,5 +103,37 @@ class DocumentInRepository
         $model->releaseEvents();
 
         return $model->delete();
+    }
+    public function findUpNumber($year, $local_date){
+        return DocumentInWork::find()
+            ->where(['>', 'local_date', $local_date])
+            ->andWhere(['>=', 'local_date', $year."-01-01"])
+            ->andWhere(['<=', 'local_date', $year."-12-31"])
+            ->orderBy(['local_date' => SORT_DESC])
+            ->all();
+    }
+    public function findDownNumber($year, $local_date){
+        return DocumentInWork::find()
+            ->where(['<=', 'local_date', $local_date]) // условие для даты больше заданной
+            ->andWhere(['>=', 'local_date', $year."-01-01"]) // начало года
+            ->andWhere(['<=', 'local_date', $year."-12-31"]) // конец года
+            ->orderBy(['local_date' => SORT_DESC])
+            ->all();
+    }
+    public function findMaxDownNumber($year, $local_date)
+    {
+        return DocumentInWork::find()
+            ->where(['<=', 'local_date', $local_date])
+            ->andWhere(['>=', 'local_date', $year."-01-01"])
+            ->andWhere(['<=', 'local_date', $year."-12-31"])
+            ->max('local_number');
+    }
+    public function findMaxPostfix($year, $number)
+    {
+        return DocumentInWork::find()
+            ->where(['<=', 'local_number', $number])
+            ->andWhere(['>=', 'local_date', $year."-01-01"]) // начало года
+            ->andWhere(['<=', 'local_date', $year."-12-31"]) // конец года
+            ->max('local_postfix');
     }
 }

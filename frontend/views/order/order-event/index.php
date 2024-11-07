@@ -13,18 +13,18 @@ $this->params['breadcrumbs'][] = $this->title;
 $session = Yii::$app->session;
 $tempArchive = $session->get("archiveIn");
 ?>
-<div class="order-main-index">
+<div class="order-event-index">
     <h1><?= Html::encode($this->title) ?></h1>
     <?php
     $gridColumns = [
-    ['attribute' => 'fullNumber'],
-    ['attribute' => 'orderDate', 'encodeLabel' => false],
-    ['attribute' => 'orderName', 'encodeLabel' => false],
-    ['attribute' => 'bringName', 'encodeLabel' => false],
-    ['attribute' => 'creatorName', 'encodeLabel' => false],
-    ['attribute' => 'state', 'encodeLabel' => false],
-     'format' => 'raw'
-    ];
+        ['attribute' => 'fullNumber'],
+        ['attribute' => 'orderDate', 'encodeLabel' => false],
+        ['attribute' => 'orderName', 'encodeLabel' => false],
+        ['attribute' => 'bringName', 'encodeLabel' => false],
+        ['attribute' => 'creatorName', 'encodeLabel' => false],
+        ['attribute' => 'state', 'encodeLabel' => false],
+            'format' => 'raw'
+        ];
     ?>
     <?=
         GridView::widget([

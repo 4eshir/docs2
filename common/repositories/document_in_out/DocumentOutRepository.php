@@ -122,4 +122,36 @@ class DocumentOutRepository
 
         return $model->delete();
     }
+    public function findUpNumber($year, $document_date){
+        return DocumentOutWork::find()
+            ->where(['>', 'document_date', $document_date])
+            ->andWhere(['>=', 'document_date', $year."-01-01"])
+            ->andWhere(['<=', 'document_date', $year."-12-31"])
+            ->orderBy(['document_date' => SORT_DESC])
+            ->all();
+    }
+    public function findDownNumber($year, $document_date){
+        return DocumentOutWork::find()
+            ->where(['<=', 'document_date', $document_date]) // условие для даты больше заданной
+            ->andWhere(['>=', 'document_date', $year."-01-01"]) // начало года
+            ->andWhere(['<=', 'document_date', $year."-12-31"]) // конец года
+            ->orderBy(['document_date' => SORT_DESC])
+            ->all();
+    }
+    public function findMaxDownNumber($year, $document_date)
+    {
+        return DocumentOutWork::find()
+            ->where(['<=', 'document_date', $document_date])
+            ->andWhere(['>=', 'document_date', $year."-01-01"])
+            ->andWhere(['<=', 'document_date', $year."-12-31"])
+            ->max('document_number');
+    }
+    public function findMaxPostfix($year, $document_number)
+    {
+        return DocumentOutWork::find()
+            ->where(['<=', 'document_number', $document_number])
+            ->andWhere(['>=', 'document_date', $year."-01-01"]) // начало года
+            ->andWhere(['<=', 'document_date', $year."-12-31"]) // конец года
+            ->max('document_postfix');
+    }
 }

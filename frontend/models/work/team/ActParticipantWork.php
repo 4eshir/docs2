@@ -14,7 +14,7 @@ class ActParticipantWork extends ActParticipant
         $foreignEventId,
         $branch,
         $focus,
-        $allowRemoteId,
+        $allowRemote,
         $nomination
     ){
         $entity = new static();
@@ -24,7 +24,7 @@ class ActParticipantWork extends ActParticipant
         $entity->foreign_event_id = $foreignEventId;
         $entity->branch = $branch;
         $entity->focus = $focus;
-        $entity->allow_remote_id = $allowRemoteId;
+        $entity->allow_remote = $allowRemote;
         $entity->nomination = $nomination;
         return $entity;
     }

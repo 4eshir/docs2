@@ -185,95 +185,29 @@ class DocumentOutWork extends DocumentOut
             $this->document_postfix = 0;
         }
         else {
-            $down = DocumentOutWork::find()
-                ->where(['<=', 'document_date', $document_date]) // условие для даты больше заданной
-                ->andWhere(['>=', 'document_date', $year."-01-01"]) // начало года
-                ->andWhere(['<=', 'document_date', $year."-12-31"]) // конец года
-                ->orderBy(['document_date' => SORT_DESC])
-                ->all();
-            $up = DocumentOutWork::find()
-                ->where(['>', 'document_date', $document_date])
-                ->andWhere(['>=', 'document_date', $year."-01-01"])
-                ->andWhere(['<=', 'document_date', $year."-12-31"])
-                ->orderBy(['document_date' => SORT_DESC])
-                ->all();
-            $down_max = DocumentOutWork::find()
-                ->where(['<=', 'document_date', $document_date])
-                ->andWhere(['>=', 'document_date', $year."-01-01"])
-                ->andWhere(['<=', 'document_date', $year."-12-31"])
-                ->max('document_number');
+            $down = Yii::createObject(DocumentOutRepository::class)->findDownNumber($year, $document_date);
+            $up = Yii::createObject(DocumentOutRepository::class)->findUpNumber($year, $document_date);
+            $down_max = Yii::createObject(DocumentOutRepository::class)->findMaxDownNumber($year, $document_date);
             if($up == null && $down == null) {
                 $this->document_number = '1';
                 $this->document_postfix = 0;
-
             }
             if($up == null && $down != null) {
-
                 $this->document_number = $down_max + 1;
                 $this->document_postfix = 0;
-
             }
             if($up != null && $down == null){
-                //вопрос???
                 $this->document_number = '0';
                 $this->document_postfix = '0';
-
             }
             if($up != null && $down != null){
                 $this->document_number = $down_max ;
-                $max_postfix  = DocumentOutWork::find()
-                    ->where(['<=', 'document_number', $this->document_number])
-                    ->andWhere(['>=', 'document_date', $year."-01-01"]) // начало года
-                    ->andWhere(['<=', 'document_date', $year."-12-31"]) // конец года
-                    ->max('document_postfix');
+                $max_postfix  = Yii::createObject(DocumentOutRepository::class)->findMaxPostfix($year, $this->document_number);
                 $this->document_postfix = $max_postfix + 1;
             }
         }
     }
-    /*public function generateDocumentNumber()
-    {
-        $repository = Yii::createObject(DocumentOutRepository::class);
-        $docs = $repository->getAllDocumentsDescDate();
-        if (date('Y') !== substr($docs[0]->document_date, 0, 4)) {
-            $this->document_number = 1;
-        }
-        else {
-            $docs = $repository->getAllDocumentsInYear();
-            if (end($docs)->document_date > $this->document_date && $this->document_theme != 'Резерв') {
-                $tempId = 0;
-                $tempPre = 0;
-                if (count($docs) == 0) {
-                    $tempId = 1;
-                }
-                for ($i = count($docs) - 1; $i >= 0; $i--) {
-                    if ($docs[$i]->document_date <= $this->document_date) {
-                        $tempId = $docs[$i]->document_number;
-                        if ($docs[$i]->document_postfix != null) {
-                            $tempPre = $docs[$i]->document_postfix + 1;
-                        }
-                        else {
-                            $tempPre = 1;
-                        }
-                        break;
-                    }
-                }
 
-                $this->document_number = $tempId;
-                $this->document_postfix = $tempPre;
-                Yii::$app->session->addFlash('warning', 'Добавленный документ должен был быть зарегистрирован раньше. Номер документа: '.$this->document_number.'/'.$this->document_postfix);
-            }
-            else
-            {
-                if (count($docs) == 0) {
-                    $this->document_number = 1;
-                }
-                else {
-                    $this->document_number = end($docs)->document_number + 1;
-                }
-            }
-        }
-    }
-    */
     public function beforeValidate()
     {
         $this->document_name = 'NAME';
