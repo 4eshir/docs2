@@ -5,6 +5,7 @@ namespace frontend\controllers\educational;
 use app\components\DynamicWidget;
 use common\controllers\DocumentController;
 use common\helpers\html\HtmlBuilder;
+use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
@@ -30,12 +31,21 @@ class TrainingProgramController extends DocumentController
 {
     private TrainingProgramService $service;
     private TrainingProgramRepository $repository;
+    private PeopleRepository $peopleRepository;
 
-    public function __construct($id, $module, TrainingProgramService $service, TrainingProgramRepository $repository, $config = [])
+    public function __construct(
+        $id,
+        $module,
+        TrainingProgramService $service,
+        TrainingProgramRepository $repository,
+        PeopleRepository $peopleRepository,
+        $config = []
+    )
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->service = $service;
         $this->repository = $repository;
+        $this->peopleRepository = $peopleRepository;
     }
 
     /**
@@ -91,6 +101,7 @@ class TrainingProgramController extends DocumentController
     public function actionCreate()
     {
         $model = new TrainingProgramWork();
+        $ourPeople = $this->peopleRepository->getPeopleFromMainCompany();
 
         $post = Yii::$app->request->post();
         if ($model->load($post)) {
@@ -100,12 +111,14 @@ class TrainingProgramController extends DocumentController
 
             $postThemes = DynamicWidget::getData(basename(TrainingProgramWork::class), 'themes', $post);
             $postControls = DynamicWidget::getData(basename(TrainingProgramWork::class), 'controls', $post);
+            $postAuthors = DynamicWidget::getData(basename(TrainingProgramWork::class), 'authors', $post);
             $this->service->getFilesInstances($model);
             $this->repository->save($model);
 
             $this->service->attachUtp($model, $postThemes, $postControls);
             $this->service->saveFilesFromModel($model);
             $this->service->saveUtpFromFile($model);
+            $this->service->attachAuthors($model, $postAuthors);
 
             $model->recordEvent(new CreateTrainingProgramBranchEvent($model->id, $model->branches), TrainingProgramWork::class);
             $model->releaseEvents();
@@ -115,6 +128,7 @@ class TrainingProgramController extends DocumentController
 
         return $this->render('create', [
             'model' => $model,
+            'ourPeople' => $ourPeople,
         ]);
     }
 
@@ -133,6 +147,7 @@ class TrainingProgramController extends DocumentController
         $themes = $this->repository->getThematicPlan($id);
         $fileTables = $this->service->getUploadedFilesTables($model);
         $depTables = $this->service->getDependencyTables($authors, $themes);
+        $ourPeople = $this->peopleRepository->getPeopleFromMainCompany();
 
         $post = Yii::$app->request->post();
         if ($model->load($post)) {
@@ -142,12 +157,14 @@ class TrainingProgramController extends DocumentController
 
             $postThemes = DynamicWidget::getData(basename(TrainingProgramWork::class), 'themes', $post);
             $postControls = DynamicWidget::getData(basename(TrainingProgramWork::class), 'controls', $post);
+            $postAuthors = DynamicWidget::getData(basename(TrainingProgramWork::class), 'authors', $post);
             $this->service->getFilesInstances($model);
             $this->repository->save($model);
 
             $this->service->attachUtp($model, $postThemes, $postControls);
             $this->service->saveFilesFromModel($model);
             $this->service->saveUtpFromFile($model);
+            $this->service->attachAuthors($model, $postAuthors);
 
             $model->recordEvent(new CreateTrainingProgramBranchEvent($model->id, $model->branches), TrainingProgramWork::class);
             $model->releaseEvents();
@@ -157,6 +174,7 @@ class TrainingProgramController extends DocumentController
 
         return $this->render('update', [
             'model' => $model,
+            'ourPeople' => $ourPeople,
             'modelAuthor' => $depTables['authors'],
             'modelThematicPlan' => $depTables['themes'],
             'mainFile' => $fileTables['main'],

@@ -70,7 +70,6 @@ class LockWizard
             return;
         }
 
-        var_dump($objectId, $objectType);
         $key = $this->getLockKey($objectId, $objectType);
         $keyUserdata = $this->getLockUserdataKey($objectId, $objectType);
         Yii::$app->redis->executeCommand('DEL', [$key]);

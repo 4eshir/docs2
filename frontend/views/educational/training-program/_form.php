@@ -2,12 +2,15 @@
 
 use app\components\DynamicWidget;
 use common\helpers\html\HtmlBuilder;
+use frontend\models\work\educational\TrainingProgramWork;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model \frontend\models\work\educational\TrainingProgramWork */
+/* @var $model TrainingProgramWork */
+/* @var $ourPeople */
 /* @var $modelAuthor */
 /* @var $modelThematicPlan */
 /* @var $mainFile */
@@ -45,6 +48,42 @@ use yii\widgets\ActiveForm;
     <?php if (strlen($modelAuthor) > 10): ?>
         <?= $modelAuthor; ?>
     <?php endif; ?>
+
+    <div class="bordered-div">
+        <?php DynamicWidget::begin([
+            'widgetContainer' => 'dynamicform_wrapper',
+            'widgetBody' => '.container-items',
+            'widgetItem' => '.item',
+            'model' => $model,
+            'formId' => 'dynamic-form',
+            'formFields' => [
+                'position',
+                'branch'
+            ],
+        ]);
+        ?>
+
+        <div class="container-items">
+            <h5 class="panel-title pull-left">Составители</h5><!-- widgetBody -->
+            <div class="pull-right">
+                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+            </div>
+            <div class="item panel panel-default" id = "item"><!-- widgetItem -->
+                <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
+                <div class="panel-heading">
+                    <div class="clearfix"></div>
+                </div>
+                <div class = "form-label">
+                    <div class="panel-body">
+                        <?= $form->field($model, 'authors[]')->dropDownList(ArrayHelper::map($ourPeople, 'id', 'fullFio'))->label('ФИО'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php
+        DynamicWidget::end()
+        ?>
+    </div>
 
     <?= $form->field($model, 'capacity')->textInput() ?>
 

@@ -5,6 +5,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model TrainingProgramWork */
+/* @var $ourPeople */
 /* @var $modelAuthor array */
 /* @var $modelThematicPlan array */
 /* @var $mainFile */
@@ -22,6 +23,7 @@ $this->params['breadcrumbs'][] = 'Редактирование';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'ourPeople' => $ourPeople,
         'modelAuthor' => $modelAuthor,
         'modelThematicPlan' => $modelThematicPlan,
         'mainFile' => $mainFile,
