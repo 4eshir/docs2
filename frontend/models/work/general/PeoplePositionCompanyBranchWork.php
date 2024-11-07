@@ -6,6 +6,10 @@ use common\models\scaffold\PeoplePositionCompanyBranch;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
 
+/**
+ * @property PositionWork $positionWork
+ */
+
 class PeoplePositionCompanyBranchWork extends PeoplePositionCompanyBranch
 {
     public static function fill(
@@ -22,6 +26,12 @@ class PeoplePositionCompanyBranchWork extends PeoplePositionCompanyBranch
         $entity->branch = $branch;
         return $entity;
     }
+
+    public function getPositionName()
+    {
+        return $this->positionWork->getPos();
+    }
+
     public function getCompanyWork()
     {
         return $this->hasOne(CompanyWork::class, ['id' => 'company_id']);

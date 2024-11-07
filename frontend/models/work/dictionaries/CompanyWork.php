@@ -61,4 +61,14 @@ class CompanyWork extends Company
     {
         return $this->id == Yii::$app->params['mainCompanyId'];
     }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getShortName()
+    {
+        return $this->short_name;
+    }
 }

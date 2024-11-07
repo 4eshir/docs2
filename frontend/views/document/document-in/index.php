@@ -53,7 +53,7 @@ $helper = new DocumentInWork();
                         ['attribute' => 'documentTheme', 'encodeLabel' => false],
                         ['attribute' => 'sendMethodName', 'value' => 'sendMethod.name'],
                         ['attribute' => 'needAnswer', 'value' => function(DocumentInWork $model) {
-                            return $model->getNeedAnswer();
+                            return $model->getNeedAnswerString();
                         }, 'format' => 'raw'],
 
                     ];
@@ -140,7 +140,7 @@ $helper = new DocumentInWork();
                     'filter' => Yii::$app->sendMethods->getList(),
                 ],
                 ['attribute' => 'needAnswer', 'value' => function(DocumentInWork $model) {
-                    return $model->getNeedAnswer(StringFormatter::FORMAT_LINK);
+                    return $model->getNeedAnswerString(StringFormatter::FORMAT_LINK);
                 }, 'format' => 'raw'],
 
                 //['class' => 'yii\grid\ActionColumn'],

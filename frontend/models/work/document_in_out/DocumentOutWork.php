@@ -111,6 +111,12 @@ class DocumentOutWork extends DocumentOut
 
         return $repository->getDocumentInWithoutAnswer();
     }
+
+    public function getDate()
+    {
+        return $this->document_date;
+    }
+
     public function getDocumentNumber()
     {
         return $this->document_number;

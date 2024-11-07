@@ -17,3 +17,23 @@
     background-color: rgb(232, 237, 241); /* Цвет второго блока */
     flex-basis: 40%;
 }
+
+.card-head {
+    font-size: 0.8em;
+    color: gray;
+    border-bottom: 1px dashed gray;
+    margin: 1em 0.5em;
+}
+
+.card-field {
+    margin: 0.5em;
+}
+
+.field-title {
+    margin-right: 1em;
+    flex: 1;
+}
+
+.field-date {
+    flex: 4;
+}

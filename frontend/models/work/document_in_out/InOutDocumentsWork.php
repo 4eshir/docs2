@@ -67,6 +67,16 @@ class InOutDocumentsWork extends InOutDocuments
         }
     }
 
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    public function getIsEmptyDocumentOut()
+    {
+        return empty($this->document_out_id);
+    }
+
     // --relationships--
 
     public function getResponsibleWork()
