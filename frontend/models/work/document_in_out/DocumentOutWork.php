@@ -84,10 +84,12 @@ class DocumentOutWork extends DocumentOut
 
     public function getFullNumber()
     {
-        if ($this->document_postfix == null)
+        if ($this->document_postfix == null) {
             return $this->document_number;
-        else
-            return $this->document_number.'/'.$this->document_postfix;
+        }
+        else {
+            return $this->document_number . '/' . $this->document_postfix;
+        }
     }
     public function getAnswer(){
         return $this->is_answer;

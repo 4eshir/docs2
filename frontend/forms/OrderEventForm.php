@@ -67,7 +67,8 @@ class OrderEventForm extends Model {
     public $teamList;
     public $nominationList;
     //
-
+    public $typeActParticipant;
+    //
     public $scanFile;
     public $docFiles;
     public $actFiles;
@@ -90,6 +91,11 @@ class OrderEventForm extends Model {
             [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
                 'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt']
         ];
+    }
+    public function attributeLabels(){
+        return array_merge(parent::attributeLabels(), [
+            'typeActParticipant' => 'Личный тип участия'
+        ]);
     }
     public static function fill(
         OrderEventWork $modelOrderEvent,
