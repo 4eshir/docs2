@@ -14,7 +14,9 @@ $session = Yii::$app->session;
 $tempArchive = $session->get("archiveIn");
 ?>
 <div class="order-event-index">
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title) ?></h1><p>
+        <?= Html::a('Добавить приказ по мероприятиям', ['create'], ['class' => 'btn btn-success', 'style' => 'display: inline-block;']) ?>
+    </p>
     <?php
     $gridColumns = [
         ['attribute' => 'fullNumber'],

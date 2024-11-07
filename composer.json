@@ -31,7 +31,8 @@
         "phpoffice/phpspreadsheet": "^1.29",
         "fortawesome/font-awesome": "^6.6",
         "yiisoft/yii2-redis": "^2.0",
-        "predis/predis": "^2.2"
+        "predis/predis": "^2.2",
+        "2amigos/yii2-select2-widget": ">=1.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

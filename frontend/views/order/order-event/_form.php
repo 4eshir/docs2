@@ -1,6 +1,6 @@
 <?php
 use app\components\DynamicWidget;
-use app\models\work\order\OrderMainWork;
+use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -23,8 +23,9 @@ use yii\jui\DatePicker;
         border-radius: 5px;    /* Скругленные углы (по желанию) */
         margin: 10px 0;        /* Отступы сверху и снизу */
     }
-    .act-participant {
-
+    .act-team-participant {
+    }
+    .act-personal-participant {
     }
 </style>
 <script>
@@ -319,27 +320,41 @@ use yii\jui\DatePicker;
                         <input type="checkbox" class="type-participant" id="type-participant" onchange="checkType(this.name)"/>
                         Личное участие
                     </label>
-                        <div id="personal-participant" class="col-xs-4" hidden>
-                            <div class = "bordered-div">
-                                <h4>Личное участие</h4>
-                            </div>
-                        </div>
-                        <div id="team-participant" class="col-xs-4 bordered-div act-participant">
-                            <div>
-                                <h4>Командное участие</h4>
-                            </div>
                         <div class="panel-body">
-                            <?php
-                            $params = [
-                                'id' => 'participant',
-                                'class' => 'form-control pos',
-                                'prompt' => '---',
-                            ];
-                            echo $form
-                                ->field($model, 'participant_id[]')
-                                ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                ->label('ФИО участника');
-                            ?>
+                            <div id="team-participant" class="col-xs-4 bordered-div act-team-participant">
+                                <div>
+                                    <h4>Командное участие</h4>
+                                </div>
+                                <div id = "team-participant-people">
+                                    <?php
+                                    echo $form->field($model, 'participant_id[]')->widget(Select2::class, [
+                                        'data' => ArrayHelper::map($people, 'id', 'fullFio'),
+                                        'options' => [
+                                            'multiple' => true,
+                                            'placeholder' => '---'
+                                        ],
+                                    ])->label('ФИО участника');
+                                    ?>
+                                </div>
+                            </div>
+                            <div id="personal-participant" class="col-xs-4 act-personal-participant" hidden>
+                                <div class = "bordered-div">
+                                    <h4>Личное участие</h4>
+                                    <div id = "person-participant-people">
+                                        <?php
+                                            $params = [
+                                                'id' => 'participant',
+                                                'class' => 'form-control pos',
+                                                'prompt' => '---'
+                                            ];
+                                            echo $form
+                                                ->field($model, 'participant_id[]')
+                                                ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                                                ->label('ФИО участника');
+                                        ?>
+                                    </div>
+                                </div>
+                            </div>
                             <?php
                             $params = [
                                 'id' => 'branch',
@@ -406,7 +421,6 @@ use yii\jui\DatePicker;
                                     ?>
                                 </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -437,39 +451,18 @@ use yii\jui\DatePicker;
     <?php ActiveForm::end(); ?>
 </div>
 <script>
-    /*function checkType() {
-        var chkBox = document.getElementById('type-participant'); // Получаем чекбокс по ID
-        // Если чекбокс отмечен
-        if (chkBox.checked) {
-            // Показываем элемент, убирая атрибут hidden
-            $("#team-participant").prop("hidden",true );
-            $("#personal-participant").prop("hidden", false);
-        } else {
-            // Скрываем элемент, добавляя атрибут hidden
-            $("#team-participant").prop("hidden", false);
-            $("#personal-participant").prop("hidden",true );
-        }
-    }*/
-
     function checkType(chkBoxName) {
 
-        // Извлекаем номер участника из имени чекбокса
         var participantNumber = chkBoxName.split('-')[1]; // Разделяем строку и берем номер
-
         var chkBox = document.querySelector(`input[type="checkbox"][name="${chkBoxName}"]`); // Получаем чекбокс по имени
-        var teamDiv = document.getElementById(`act-participant-${participantNumber}`); // Получаем соответствующий div по ID
-
-        // Если чекбокс отмечен
+        var teamDiv = document.getElementById(`act-team-participant-${participantNumber}`); // Получаем соответствующий div по ID
+        var personDiv = document.getElementById(`act-personal-participant-${participantNumber}`); // Получаем соответствующий div по ID
         if (chkBox.checked) {
-            // Скрываем div с id `type-participant-номер`
             teamDiv.hidden = true;
-            // Показываем div, который, например, имеет id `personal-participant`
-            $("#personal-participant").prop("hidden", false);
+            personDiv.hidden = false;
         } else {
-            // Показываем div с id `type-participant-номер`
             teamDiv.hidden = false;
-            // Скрываем div, который, например, имеет id `personal-participant`
-            $("#personal-participant").prop("hidden", true);
+            personDiv.hidden = true;
         }
     }
 </script>
@@ -623,12 +616,23 @@ use yii\jui\DatePicker;
 </script>
 <script>
     function updateDivNames() {
-        const divs = document.querySelectorAll('div.act-participant');
+        const divs = document.querySelectorAll('div.act-team-participant');
         divs.forEach((div, index) => {
-            div.id = `act-participant-${index + 1}`; // Уникальное имя с индексом
+            div.id = `act-team-participant-${index + 1}`; // Уникальное имя с индексом
         });
         requestAnimationFrame(updateDivNames);
     }
     // Запускаем первую функцию вызова
     requestAnimationFrame(updateDivNames);
+</script>
+<script>
+    function updateDivPersonalNames() {
+        const divs = document.querySelectorAll('div.act-personal-participant');
+        divs.forEach((div, index) => {
+            div.id = `act-personal-participant-${index + 1}`; // Уникальное имя с индексом
+        });
+        requestAnimationFrame(updateDivPersonalNames);
+    }
+    // Запускаем первую функцию вызова
+    requestAnimationFrame(updateDivPersonalNames);
 </script>
