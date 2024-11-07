@@ -7,17 +7,24 @@ use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\models\scaffold\Event;
+use common\models\scaffold\User;
 use common\repositories\event\EventRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\regulation\RegulationRepository;
 use frontend\models\work\general\FilesWork;
+use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\models\work\general\UserWork;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
+
+/** @property UserWork $creatorWork */
+/** @property PeopleStampWork $responsible1Work */
+/** @property PeopleStampWork $responsible2Work */
 
 class EventWork extends Event
 {
@@ -64,12 +71,12 @@ class EventWork extends Event
 
     public function getResponsible1Work()
     {
-        return $this->hasOne(PeopleWork::class, ['id' => 'responsible1_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'responsible1_id']);
     }
 
     public function getResponsible2Work()
     {
-        return $this->hasOne(PeopleWork::class, ['id' => 'responsible2_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'responsible2_id']);
     }
 
     public function getEventBranches()
@@ -98,10 +105,10 @@ class EventWork extends Event
     {
         $resbonsibles = [];
         if ($this->responsible1_id) {
-            $resbonsibles[] = StringFormatter::stringAsLink($this->responsible1Work->getFio(PeopleWork::FIO_SURNAME_INITIALS), Url::to(['dictionaries/people/view', 'id' => $this->responsible1_id]));
+            $resbonsibles[] = StringFormatter::stringAsLink($this->responsible1Work->peopleWork->getFio(PeopleWork::FIO_SURNAME_INITIALS), Url::to(['dictionaries/people/view', 'id' => $this->responsible1Work->people_id]));
         }
         if ($this->responsible2_id) {
-            $resbonsibles[] = StringFormatter::stringAsLink($this->responsible2Work->getFio(PeopleWork::FIO_SURNAME_INITIALS), Url::to(['dictionaries/people/view', 'id' => $this->responsible2_id]));
+            $resbonsibles[] = StringFormatter::stringAsLink($this->responsible2Work->peopleWork->getFio(PeopleWork::FIO_SURNAME_INITIALS), Url::to(['dictionaries/people/view', 'id' => $this->responsible2Work->people_id]));
         }
 
         return implode('<br>', $resbonsibles);
@@ -170,5 +177,16 @@ class EventWork extends Event
 
         $this->branches = $branchArray;
         $this->scopes = $scopesArray;
+    }
+
+    public function getCreatorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
+    }
+
+    public function setValuesForUpdate()
+    {
+        $this->responsible1_id = $this->responsible1Work->people_id;
+        $this->responsible2_id = $this->responsible2Work->people_id;
     }
 }

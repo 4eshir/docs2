@@ -19,7 +19,7 @@ class PeoplePositionCompanyBranchRepository
 
     public function getByPeople($peopleId)
     {
-        return PeoplePositionCompanyBranchWork::find()->where(['people_id' => $peopleId])->all();
+        return PeoplePositionCompanyBranchWork::find()->where(['people_id' => $peopleId])->orderBy(['id' => SORT_DESC])->all();
     }
 
     public function getPeopleByCompany($companyId)

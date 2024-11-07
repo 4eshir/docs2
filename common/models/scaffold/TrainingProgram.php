@@ -28,7 +28,7 @@ namespace common\models\scaffold;
  * @property string|null $created_at
  * @property string|null $updated_at
  *
- * @property People $author
+ * @property PeopleStamp $author
  * @property User $creator
  * @property User $lastUpdate
  */
@@ -53,7 +53,7 @@ class TrainingProgram extends \yii\db\ActiveRecord
             [['student_left_age'], 'number'],
             [['name', 'description', 'key_words'], 'string', 'max' => 1024],
             [['ped_council_number'], 'string', 'max' => 128],
-            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['author_id' => 'id']],
+            [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['author_id' => 'id']],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
             [['last_update_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['last_update_id' => 'id']],
         ];
@@ -97,7 +97,7 @@ class TrainingProgram extends \yii\db\ActiveRecord
      */
     public function getAuthor()
     {
-        return $this->hasOne(People::class, ['id' => 'author_id']);
+        return $this->hasOne(PeopleStamp::class, ['id' => 'author_id']);
     }
 
     /**

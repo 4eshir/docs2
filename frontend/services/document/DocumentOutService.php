@@ -7,9 +7,11 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
+use common\services\general\PeopleStampService;
 use frontend\controllers\document\DocumentOutController;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\document_in_out\DocumentOutWork;
+use PhpParser\Comment\Doc;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
@@ -17,15 +19,28 @@ use yii\web\UploadedFile;
 class DocumentOutService implements DatabaseService
 {
     private FileService $fileService;
+    private PeopleStampService $peopleStampService;
     private DocumentOutFileNameGenerator $filenameGenerator;
 
     public function __construct(
         FileService $fileService,
+        PeopleStampService $peopleStampService,
         DocumentOutFileNameGenerator $filenameGenerator
     )
     {
         $this->fileService = $fileService;
+        $this->peopleStampService = $peopleStampService;
         $this->filenameGenerator = $filenameGenerator;
+    }
+
+    public function getPeopleStamps(DocumentOutWork $model)
+    {
+        $peopleStampId = $this->peopleStampService->createStampFromPeople($model->correspondent_id);
+        $model->correspondent_id = $peopleStampId;
+        $peopleStampId = $this->peopleStampService->createStampFromPeople($model->signed_id);
+        $model->signed_id = $peopleStampId;
+        $peopleStampId = $this->peopleStampService->createStampFromPeople($model->executor_id);
+        $model->executor_id = $peopleStampId;
     }
 
     public function getFilesInstances(DocumentOutWork $model)

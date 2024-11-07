@@ -14,18 +14,21 @@ use common\repositories\general\FilesRepository;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
 use frontend\models\work\general\FilesWork;
+use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\models\work\general\UserWork;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\Url;
+use yii\web\User;
 
 /**
- * @property PeopleWork $correspondentWork
+ * @property PeopleStampWork $correspondentWork
  * @property PositionWork $positionWork
  * @property CompanyWork $companyWork
  * @property InOutDocumentsWork $inOutDocumentsWork
- * @property PeopleWork $creatorWork
- * @property PeopleWork $lastUpdateWork
+ * @property UserWork $creatorWork
+ * @property User $lastUpdateWork
  */
 class DocumentInWork extends DocumentIn
 {
@@ -301,21 +304,27 @@ class DocumentInWork extends DocumentIn
 
     public function getCorrespondentWork()
     {
-        return $this->hasOne(PeopleWork::class, ['id' => 'correspondent_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'correspondent_id']);
     }
 
     public function getCreatorWork()
     {
-        return $this->hasOne(PeopleWork::class, ['id' => 'creator_id']);
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
     }
 
     public function getLastUpdateWork()
     {
-        return $this->hasOne(PeopleWork::class, ['id' => 'last_update_id']);
+        return $this->hasOne(UserWork::class, ['id' => 'last_update_id']);
     }
 
     public function setNeedAnswer()
     {
         $this->needAnswer = (Yii::createObject(InOutDocumentsRepository::class))->getByDocumentInId($this->id) ? 1 : 0;
+    }
+
+    public function setValuesForUpdate()
+    {
+        $this->correspondent_id = $this->correspondentWork->people_id;
+        $this->setNeedAnswer();
     }
 }

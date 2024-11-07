@@ -5,6 +5,7 @@ namespace common\repositories\general;
 use common\components\traits\CommonDatabaseFunctions;
 use common\repositories\dictionaries\PeopleRepository;
 use DomainException;
+use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 
@@ -27,12 +28,15 @@ class PeopleStampRepository
     // Поиск такого же отпечатка по данным (чтобы не создавать новый)
     public function getSimilar(PeopleWork $people)
     {
+        /** @var PeoplePositionCompanyBranchWork $positionsCompanies */
+        $positionsCompanies = $this->peopleRepository->getLastPositionsCompanies($people->id);
+
         return PeopleStampWork::find()
             ->where(['people_id' => $people->id])
             ->andWhere(['surname' => $people->surname])
             ->andWhere(['genitive_surname' => $people->genitive_surname])
-            ->andWhere(['position_id' => $people->position_id])
-            ->andWhere(['company_id' => $people->company_id])
+            ->andWhere(['position_id' => $positionsCompanies->position_id])
+            ->andWhere(['company_id' => $positionsCompanies->company_id])
             ->one();
     }
 

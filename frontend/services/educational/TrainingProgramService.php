@@ -10,6 +10,7 @@ use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
+use common\services\general\PeopleStampService;
 use DomainException;
 use frontend\events\educational\training_program\CreateThemeInPlanEvent;
 use frontend\events\educational\training_program\ResetThematicPlanEvent;
@@ -24,11 +25,16 @@ use yii\web\UploadedFile;
 class TrainingProgramService implements DatabaseService
 {
     private FileService $fileService;
+    private PeopleStampService $peopleStampService;
     private TrainingProgramFileNameGenerator $filenameGenerator;
 
-    public function __construct(FileService $fileService, TrainingProgramFileNameGenerator $filenameGenerator)
+    public function __construct(
+        FileService $fileService,
+        PeopleStampService $peopleStampService,
+        TrainingProgramFileNameGenerator $filenameGenerator)
     {
         $this->fileService = $fileService;
+        $this->peopleStampService = $peopleStampService;
         $this->filenameGenerator = $filenameGenerator;
     }
 

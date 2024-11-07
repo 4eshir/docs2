@@ -40,8 +40,8 @@ use Yii;
  * @property User $creator
  * @property EventBranch[] $eventBranches
  * @property Regulation $regulation
- * @property People $responsible1
- * @property People $responsible2
+ * @property PeopleStamp $responsible1
+ * @property PeopleStamp $responsible2
  */
 class Event extends \yii\db\ActiveRecord
 {
@@ -64,8 +64,8 @@ class Event extends \yii\db\ActiveRecord
             [['age_left_border'], 'number'],
             [['name', 'old_name'], 'string', 'max' => 512],
             [['address', 'key_words', 'comment'], 'string', 'max' => 1024],
-            [['responsible1_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['responsible1_id' => 'id']],
-            [['responsible2_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['responsible2_id' => 'id']],
+            [['responsible1_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['responsible1_id' => 'id']],
+            [['responsible2_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['responsible2_id' => 'id']],
             [['regulation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Regulation::class, 'targetAttribute' => ['regulation_id' => 'id']],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
         ];
@@ -146,7 +146,7 @@ class Event extends \yii\db\ActiveRecord
      */
     public function getResponsible1()
     {
-        return $this->hasOne(People::class, ['id' => 'responsible1_id']);
+        return $this->hasOne(PeopleStamp::class, ['id' => 'responsible1_id']);
     }
 
     /**
@@ -156,6 +156,6 @@ class Event extends \yii\db\ActiveRecord
      */
     public function getResponsible2()
     {
-        return $this->hasOne(People::class, ['id' => 'responsible2_id']);
+        return $this->hasOne(PeopleStamp::class, ['id' => 'responsible2_id']);
     }
 }

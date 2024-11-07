@@ -2,22 +2,19 @@
 
 namespace frontend\models\work\educational;
 
-use common\components\wizards\ExcelWizard;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
-use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
-use common\helpers\StringFormatter;
-use common\models\scaffold\ThematicPlan;
 use common\models\scaffold\TrainingProgram;
 use common\repositories\educational\TrainingProgramRepository;
 use common\services\general\files\FileService;
-use frontend\events\educational\training_program\CreateThemeInPlanEvent;
-use frontend\events\educational\training_program\ResetThematicPlanEvent;
+use frontend\models\work\general\PeopleStampWork;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+
+/** @property PeopleStampWork $authorWork */
 
 class TrainingProgramWork extends TrainingProgram
 {
@@ -72,6 +69,10 @@ class TrainingProgramWork extends TrainingProgram
                 },
             ],
         ];
+    }
+    public function getAuthorWork()
+    {
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'author_id']);
     }
 
     public function beforeValidate()

@@ -39,6 +39,11 @@ class PeopleRepository
         return $this->peoplePositionCompanyBranchRepository->getByPeople($id);
     }
 
+    public function getLastPositionsCompanies($id)
+    {
+        return $this->getPositionsCompanies($id)[0];
+    }
+
     public function getCompaniesPositionsByPeople($peopleId)
     {
         return [

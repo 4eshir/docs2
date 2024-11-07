@@ -13,13 +13,14 @@ use common\repositories\document_in_out\InOutDocumentsRepository;
 
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
+use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\Url;
 
 /**
- * @property PeopleWork $correspondentWork
+ * @property PeopleStampWork $correspondentWork
  * @property PositionWork $positionWork
  * @property CompanyWork $companyWork
  * @property InOutDocumentsWork $inOutDocumentsWork
@@ -46,6 +47,7 @@ class DocumentOutWork extends DocumentOut
     public $isAnswer;
     public $dateAnswer;
     public $nameAnswer;
+
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
@@ -72,6 +74,14 @@ class DocumentOutWork extends DocumentOut
                 'extensions' => 'ppt, pptx, xls, xlsx, pdf, png, jpg, doc, docx, zip, rar, 7z, tag, txt'],
         ]);
     }
+
+    public function setValuesForUpdate()
+    {
+        $this->correspondent_id = $this->correspondentWork->people_id;
+        $this->document_name = 'NAME';
+        $this->setIsAnswer();
+    }
+
     public function getFullNumber()
     {
         if ($this->document_postfix == null)
@@ -135,7 +145,7 @@ class DocumentOutWork extends DocumentOut
 
     public function getCorrespondentWork()
     {
-        return $this->hasOne(PeopleWork::class, ['id' => 'correspondent_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'correspondent_id']);
     }
 
     public function getCreatorWork()
