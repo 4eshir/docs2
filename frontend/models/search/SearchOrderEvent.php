@@ -2,14 +2,15 @@
 
 namespace frontend\models\search;
 
+use app\models\work\order\OrderEventWork;
 use common\helpers\DateFormatter;
-use app\models\work\order\OrderMainWork;
+use frontend\models\search\SearchOrderMain;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
-class SearchOrderMain extends OrderMainWork
+class SearchOrderEvent extends SearchOrderMain
 {
-    const ORDER_TYPE = 1;
+    const ORDER_TYPE = 2;
     public $fullNumber;
     public $Date;
     public $orderName;
@@ -20,13 +21,11 @@ class SearchOrderMain extends OrderMainWork
             [['Date', 'orderName'], 'safe'],
         ];
     }
-
     public function scenarios()
     {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
-
     /**
      * Creates data provider instance with search query applied
      *
@@ -37,7 +36,7 @@ class SearchOrderMain extends OrderMainWork
     public function search($params)
     {
         $this->load($params);
-        $query = OrderMainWork::find()
+        $query = OrderEventWork::find()
             ->where(['type' => self::ORDER_TYPE])
             ->joinWith('bring');
         if ($this->Date !== '' && $this->Date !== null) {
@@ -75,8 +74,6 @@ class SearchOrderMain extends OrderMainWork
             'asc' => ['bring_id' => SORT_ASC],
             'desc' => ['bring_id' => SORT_DESC],
         ];
-
-
         $dataProvider->sort->attributes['orderName'] = [
             'asc' => ['order_name' => SORT_ASC],
             'desc' => ['order_name' => SORT_DESC],
@@ -85,7 +82,6 @@ class SearchOrderMain extends OrderMainWork
         if (!$this->validate()) {
             return $dataProvider;
         }
-        // строгие фильтры
 
         // гибкие фильтры Like
         $query->andFilterWhere(['like', "CONCAT(order_number, '/', order_postfix)", $this->fullNumber])

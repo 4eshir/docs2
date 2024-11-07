@@ -1,13 +1,18 @@
 <?php
 namespace app\models\work\order;
 use app\models\work\general\OrderPeopleWork;
+use app\services\order\OrderMainService;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
+use common\helpers\OrderNumberHelper;
 use common\models\scaffold\OrderMain;
 use common\models\scaffold\People;
+use common\repositories\order\OrderMainRepository;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
+use Yii;
+
 /**
  * @property PeopleWork $correspondentWork
  * @property PeopleWork $creatorWork
@@ -167,113 +172,12 @@ class OrderMainWork extends OrderMain
         $equalItem = [];
         $downItem = NULL;
         $isPostfix = NULL;
-        $records = OrderMainWork::find()
-            ->where(['like', 'order_number', $formNumber.'%', false])
-            ->orderBy(['order_date' => SORT_ASC])
-            ->all();
-        foreach ($records as $record) {
-            /* @var \app\models\work\order\OrderMainWork $record */
-            if($record->order_postfix == NULL) {
-                $array_number[] = [
-                    $record->order_date,
-                    $record->order_number,
-                    $record->order_number
-                ];
-            }
-            else {
-                $array_number[] = [
-                    $record->order_date,
-                    $record->order_number,
-                    $record->order_number . '/' . $record->order_postfix
-                ];
-            }
-        }
-        for ($i = 0; $i < count($array_number); $i++) {
-            $item = $array_number[$i];
-            if ($item[0] < $model_date) {
-                $downItem = $item;
-            }
-            if ($item[0] == $model_date) {
-                $equalItem[] = $item;
-            }
-            if ($item[0] > $model_date) {
-                $upItem = $item;
-                break;
-            }
-        }
-        $this->sortArrayByOrderNumber($equalItem);
-        if($equalItem != NULL) {
-            $downItem = $equalItem[count($equalItem) - 1];
-        }
-        $newNumber = $downItem[2];
-        if($downItem != NULL) {
-            while ($this->findByNumberPostfix($array_number, $newNumber)) {
-                $parts = $this->splitString($newNumber);
-                $number = $parts[0];
-                for ($i = 1; $i < count($parts) - 1; $i++) {
-                    $number = $number . '/' . (string)$parts[$i];
-                }
-                if (($upItem[2] > $number . '/' . (string)((int)$parts[count($parts) - 1] + 1)
-                        && !$this->findByNumberPostfix($array_number, $number . '/' . (string)((int)$parts[count($parts) - 1] + 1))) || $upItem == NULL) {
-                    $number = $number . '/' . (string)((int)$parts[count($parts) - 1] + 1);
-                    $newNumber = $number;
-                    $isPostfix = 0;
-                    break;
-                } else {
-                    $isPostfix = 1;
-                    if ($upItem[2] > $number . '/' . (string)$index && $this->findByNumberPostfix($array_number, $number . '/' . (string)$index)) {
-                        $number = $number . '/' . (string)$index;
-                    } else {
-                        $index = 1;
-                        $number = $newNumber . '/' . '1';
-                    }
-                }
-                $newNumber = $number;
-                $index++;
-            }
-            if($isPostfix == 0) {
-                $this->order_number = $newNumber;
-                $this->order_postfix = NULL;
-            }
-            else {
-                $parts = $this->splitString($newNumber);
-                $number = $parts[0];
-                for ($i = 1; $i < count($parts) - 1; $i++) {
-                    $number = $number . '/' . (string)$parts[$i];
-                }
-                $this->order_number = $number;
-                $this->order_postfix = $parts[count($parts) - 1];
-            }
-        }
-        else {
-            $this->order_number = $formNumber;
-            $this->order_postfix = NULL;
-        }
-    }
-    function splitString($input) {
-        // Используем функцию explode для разделения строки по символу '/'
-        $words = explode('/', $input);
-        return $words;
-    }
-    function sortArrayByOrderNumber(&$array) {
-        if($array != NULL) {
-            usort($array, function ($a, $b) {
-                return strcmp($a[1], $b[1]); // Сравниваем элементы с индексом 1, которые соответствуют order_number
-            });
-        }
-    }
-    public function findByNumberPostfix($array, $numberPostfix)
-    {
-        if($array != NULL) {
-            foreach ($array as $item) {
-                if($item[2] == $numberPostfix) {
-                    return true;
-                }
-            }
-        }
-        else {
-            return false;
-        }
+        $records = Yii::createObject(OrderMainRepository::class)->getEqualPrefix($formNumber);
+        $array_number = Yii::createObject(OrderMainService::class)->createArrayNumber($records, $array_number);
+        $numberPostfix = Yii::createObject(OrderMainService::class)
+            ->createOrderNumber($array_number, $downItem, $equalItem, $upItem, $isPostfix, $index, $formNumber, $model_date);
+        $this->order_number = $numberPostfix['number'];
+        $this->order_postfix = $numberPostfix['postfix'];
     }
 
     public function getNameWithNumber()
@@ -290,6 +194,7 @@ class OrderMainWork extends OrderMain
     public function beforeValidate()
     {
         $this->order_copy_id = 1;
+        $this->type = 1;
         $this->order_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         return parent::beforeValidate(); // TODO: Change the autogenerated stub
     }

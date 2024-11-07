@@ -8,6 +8,7 @@ use common\helpers\files\filenames\ForeignEventFileNameGenerator;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
+use common\models\scaffold\ActParticipant;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
@@ -62,12 +63,33 @@ class ForeignEventService
         $actParticipant = $this->actParticipantRepository->getByForeignEventId($model->id);
         $foreignEvent = HtmlBuilder::createTableWithActionButtons(
             [
-                array_merge(['АКТЫ'], ArrayHelper::getColumn($actParticipant, 'id'))
+                array_merge(['Id'], ArrayHelper::getColumn($actParticipant, 'id')),
+                array_merge(['Участник'], ArrayHelper::getColumn($actParticipant, 'participant')),
+                array_merge(['Название команды'], ArrayHelper::getColumn($actParticipant, 'team'))
             ],
             [
                 HtmlBuilder::createButtonsArray(
                     'Удалить',
-                    Url::to('delete-foreign-event'),
+                    Url::to('delete-act-participant'),
+                    [
+                        'modelId' => array_fill(0, count($actParticipant), $actParticipant->id),
+                        'fileId' => ArrayHelper::getColumn($actParticipant, 'id')])
+            ]
+        );
+        return $foreignEvent;
+    }
+    public function getAwardTable(ForeignEventWork $model)
+    {
+        /* @var ActParticipantWork $actParticipan t*/
+        $actParticipant = $this->actParticipantRepository->getByForeignEventId($model->id);
+        $foreignEvent = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Номинация'], ArrayHelper::getColumn($actParticipant, 'nomination'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-award'),
                     [
                         'modelId' => array_fill(0, count($actParticipant), $actParticipant->id),
                         'fileId' => ArrayHelper::getColumn($actParticipant, 'id')])

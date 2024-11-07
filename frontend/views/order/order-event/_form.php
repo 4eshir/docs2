@@ -13,6 +13,8 @@ use yii\jui\DatePicker;
 /* @var $awardList */
 /* @var $modelResponsiblePeople */
 /* @var $foreignEventTable */
+/* @var $teamTable */
+/* @var $awardTable */
 ?>
 <style>
     .bordered-div {
@@ -261,6 +263,9 @@ use yii\jui\DatePicker;
                 <button type="button" onclick="addToList('teamInput', 'teamList')">Добавить</button>
             </div>
             <div id="teamListContainer"></div>
+            <?php if (strlen($teamTable) > 10): ?>
+                <?= $teamTable; ?>
+            <?php endif; ?>
             <div class="container">
             <?php
                 $params = [
@@ -275,6 +280,9 @@ use yii\jui\DatePicker;
             <div id="nominationListContainer"></div>
             <!-- Скрытые поля для отправки массивов -->
             <div id="hiddenFieldsContainer"></div>
+            <?php if (strlen($awardTable) > 10): ?>
+                <?= $awardTable; ?>
+            <?php endif; ?>
         </div>
     </div>
     <?= Html::button('Перейти к заполнению участников мероприятия', [

@@ -6,6 +6,7 @@ use app\models\work\order\OrderMainWork;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
+use common\helpers\OrderNumberHelper;
 use common\models\scaffold\OrderMain;
 use common\repositories\expire\ExpireRepository;
 use common\repositories\general\OrderPeopleRepository;
@@ -255,5 +256,91 @@ class OrderMainService {
                 );
             }
         }
+    }
+    public function createArrayNumber($records, $array_number)
+    {
+        foreach ($records as $record) {
+            /* @var \app\models\work\order\OrderMainWork $record */
+            if($record->order_postfix == NULL) {
+                $array_number[] = [
+                    $record->order_date,
+                    $record->order_number,
+                    $record->order_number
+                ];
+            }
+            else {
+                $array_number[] = [
+                    $record->order_date,
+                    $record->order_number,
+                    $record->order_number . '/' . $record->order_postfix
+                ];
+            }
+        }
+        return $array_number;
+    }
+    public function createOrderNumber($array_number, $downItem, $equalItem , $upItem, $isPostfix, $index, $formNumber, $model_date)
+    {
+        for ($i = 0; $i < count($array_number); $i++) {
+            $item = $array_number[$i];
+            if ($item[0] < $model_date) {
+                $downItem = $item;
+            }
+            if ($item[0] == $model_date) {
+                $equalItem[] = $item;
+            }
+            if ($item[0] > $model_date) {
+                $upItem = $item;
+                break;
+            }
+        }
+        OrderNumberHelper::sortArrayByOrderNumber($equalItem);
+        if($equalItem != NULL) {
+            $downItem = $equalItem[count($equalItem) - 1];
+        }
+        $newNumber = $downItem[2];
+        if($downItem != NULL) {
+            while (OrderNumberHelper::findByNumberPostfix($array_number, $newNumber)) {
+                $parts = OrderNumberHelper::splitString($newNumber);
+                $number = $parts[0];
+                for ($i = 1; $i < count($parts) - 1; $i++) {
+                    $number = $number . '/' . (string)$parts[$i];
+                }
+                if (($upItem[2] > $number . '/' . (string)((int)$parts[count($parts) - 1] + 1)
+                        && !OrderNumberHelper::findByNumberPostfix($array_number, $number . '/' . (string)((int)$parts[count($parts) - 1] + 1))) || $upItem == NULL) {
+                    $number = $number . '/' . (string)((int)$parts[count($parts) - 1] + 1);
+                    $newNumber = $number;
+                    $isPostfix = 0;
+                    break;
+                } else {
+                    $isPostfix = 1;
+                    if ($upItem[2] > $number . '/' . (string)$index && OrderNumberHelper::findByNumberPostfix($array_number, $number . '/' . (string)$index)) {
+                        $number = $number . '/' . (string)$index;
+                    } else {
+                        $index = 1;
+                        $number = $newNumber . '/' . '1';
+                    }
+                }
+                $newNumber = $number;
+                $index++;
+            }
+            if($isPostfix == 0) {
+                $order_number = $newNumber;
+                $order_postfix = NULL;
+            }
+            else {
+                $parts = OrderNumberHelper::splitString($newNumber);
+                $number = $parts[0];
+                for ($i = 1; $i < count($parts) - 1; $i++) {
+                    $number = $number . '/' . (string)$parts[$i];
+                }
+                $order_number = $number;
+                $order_postfix = $parts[count($parts) - 1];
+            }
+        }
+        else {
+            $order_number = $formNumber;
+            $order_postfix = NULL;
+        }
+        return ['number' => $order_number, 'postfix' => $order_postfix];
     }
 }

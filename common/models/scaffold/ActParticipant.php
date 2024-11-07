@@ -1,5 +1,8 @@
 <?php
 namespace common\models\scaffold;
+use app\models\work\team\TeamNameWork;
+use app\models\work\team\TeamWork;
+use frontend\models\work\general\PeopleWork;
 use Yii;
 /**
  * This is the model class for table "act_participant".
@@ -11,7 +14,7 @@ use Yii;
  * @property int $foreign_event_id
  * @property int $branch
  * @property int $focus
- * @property int $allow_remote_id
+ * @property int $allow_remote
  * @property int $nomination
  */
 class ActParticipant extends \yii\db\ActiveRecord
@@ -30,8 +33,8 @@ class ActParticipant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['participant_id', 'teacher_id', 'teacher2_id', 'foreign_event_id', 'branch', 'focus', 'allow_remote_id', 'nomination'], 'required'],
-            [['participant_id', 'teacher_id', 'teacher2_id', 'foreign_event_id', 'branch', 'focus', 'allow_remote_id', 'nomination'], 'integer'],
+            [['participant_id', 'teacher_id', 'teacher2_id', 'foreign_event_id', 'branch', 'focus', 'allow_remote', 'nomination'], 'required'],
+            [['participant_id', 'teacher_id', 'teacher2_id', 'foreign_event_id', 'branch', 'focus', 'allow_remote', 'nomination'], 'integer'],
         ];
     }
 
@@ -48,7 +51,7 @@ class ActParticipant extends \yii\db\ActiveRecord
             'foreign_event_id' => 'Foreign Event ID',
             'branch' => 'Branch',
             'focus' => 'Focus',
-            'allow_remote_id' => 'Allow Remote ID',
+            'allow_remote' => 'Allow Remote',
             'nomination' => 'Nomination',
         ];
     }
