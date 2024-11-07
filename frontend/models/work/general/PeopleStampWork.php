@@ -31,6 +31,8 @@ class PeopleStampWork extends PeopleStamp
                 return $this->getSurnameInitials();
             case PeopleWork::FIO_WITH_POSITION:
                 return $this->getFioPosition();
+            case PeopleWork::FIO_SURNAME_INITIALS_WITH_POSITION:
+                return $this->getPositionSurnameInitials();
             default:
                 throw new InvalidArgumentException('Неизвестный тип вывода ФИО');
         }
@@ -53,9 +55,23 @@ class PeopleStampWork extends PeopleStamp
         return 'stub';
     }
 
+    public function getPositionSurnameInitials()
+    {
+        return "{$this->getPositionName()} {$this->getSurnameInitials()}";
+    }
+
+    public function getPositionName()
+    {
+        return $this->positionWork->getPositionName();
+    }
 
     public function getPeopleWork()
     {
         return $this->hasOne(PeopleWork::class, ['id' => 'people_id']);
+    }
+
+    public function getPositionWork()
+    {
+        return $this->hasOne(PeoplePositionCompanyBranchWork::class, ['people_id' => 'id']);
     }
 }

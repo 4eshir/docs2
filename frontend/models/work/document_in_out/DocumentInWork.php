@@ -27,7 +27,7 @@ use yii\web\User;
  * @property PeopleStampWork $correspondentWork
  * @property PositionWork $positionWork
  * @property CompanyWork $companyWork
- * @property InOutDocumentsWork $inOutDocumentsWork
+ * @property InOutDocumentsWork $inOutDocumentWork
  * @property UserWork $creatorWork
  * @property User $lastUpdateWork
  */
