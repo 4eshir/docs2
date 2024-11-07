@@ -4,11 +4,14 @@ namespace common\repositories\team;
 
 use app\models\work\team\TeamNameWork;
 use app\models\work\team\TeamWork;
-use common\models\scaffold\TeamName;
 use Yii;
 
 class TeamRepository
 {
+    public function getByForeignEventId($id)
+    {
+        return TeamWork::find()->where(['foreign_event_id' => $id])->all();
+    }
     public function prepareTeamNameCreate($name, $foreignEventId){
         $model = TeamNameWork::fill($name, $foreignEventId);
         $command = Yii::$app->db->createCommand();

@@ -3,10 +3,11 @@
 namespace frontend\models\work\document_in_out;
 
 use common\models\scaffold\InOutDocuments;
+use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 
 /**
- * @property PeopleWork $responsibleWork
+ * @property PeopleStampWork $responsibleWork
  */
 class InOutDocumentsWork extends InOutDocuments
 {
@@ -81,6 +82,6 @@ class InOutDocumentsWork extends InOutDocuments
 
     public function getResponsibleWork()
     {
-        return $this->hasOne(PeopleWork::class, ['id' => 'responsible_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'responsible_id']);
     }
 }

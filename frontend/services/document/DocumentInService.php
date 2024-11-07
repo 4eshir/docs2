@@ -7,6 +7,7 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
+use common\services\general\PeopleStampService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\document_in_out\DocumentInWork;
 use yii\helpers\ArrayHelper;
@@ -16,14 +17,17 @@ use yii\web\UploadedFile;
 class DocumentInService implements DatabaseService
 {
     private FileService $fileService;
+    private PeopleStampService $peopleStampService;
     private DocumentInFileNameGenerator $filenameGenerator;
 
     public function __construct(
         FileService $fileService,
+        PeopleStampService $peopleStampService,
         DocumentInFileNameGenerator $filenameGenerator
     )
     {
         $this->fileService = $fileService;
+        $this->peopleStampService = $peopleStampService;
         $this->filenameGenerator = $filenameGenerator;
     }
 
@@ -156,5 +160,16 @@ class DocumentInService implements DatabaseService
     public function isAvailableDelete($id)
     {
         return [];
+    }
+
+    public function getPeopleStamps(DocumentInWork $model)
+    {
+        $peopleStampId = $this->peopleStampService->createStampFromPeople($model->correspondent_id);
+        $model->correspondent_id = $peopleStampId;
+
+        if ($model->nameAnswer !== '') {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->nameAnswer);
+            $model->nameAnswer = $peopleStampId;
+        }
     }
 }

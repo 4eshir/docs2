@@ -2,12 +2,14 @@
 
 namespace common\repositories\educational;
 
+use common\components\traits\CommonDatabaseFunctions;
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\AuthorProgram;
 use common\models\scaffold\ThematicPlan;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
+use frontend\events\educational\training_program\DeleteAuthorsEvent;
 use frontend\events\educational\training_program\DeleteTrainingProgramBranchEvent;
 use frontend\events\educational\training_program\ResetThematicPlanEvent;
 use frontend\events\general\FileDeleteEvent;
@@ -19,6 +21,8 @@ use Yii;
 
 class TrainingProgramRepository
 {
+    use CommonDatabaseFunctions;
+
     private FileService $fileService;
     private FilesRepository $filesRepository;
 
@@ -85,6 +89,14 @@ class TrainingProgramRepository
         return AuthorProgramWork::find()->joinWith('authorWork authorWork')->where(['training_program_id' => $programId])->all();
     }
 
+    public function prepareCreateAuthorProgram($programId, $authorId)
+    {
+        $model = AuthorProgramWork::fill($programId, $authorId);
+        $command = Yii::$app->db->createCommand();
+        $command->insert($model::tableName(), $model->getAttributes());
+        return $command->getRawSql();
+    }
+
     public function prepareCreateTheme($theme, $programId, $controlType)
     {
         $model = ThematicPlanWork::fill($theme, $programId, $controlType);
@@ -100,6 +112,13 @@ class TrainingProgramRepository
         return $command->getRawSql();
     }
 
+    public function prepareDeleteAuthor($id)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(AuthorProgram::tableName(), ['id' => $id]);
+        return $command->getRawSql();
+    }
+
     public function deleteTheme($themeId)
     {
         return (ThematicPlanWork::find()->where(['id' => $themeId])->one())->delete();
@@ -110,6 +129,7 @@ class TrainingProgramRepository
         /** @var TrainingProgramWork $model */
         $model->recordEvent(new DeleteTrainingProgramBranchEvent($model->id), get_class($model));
         $model->recordEvent(new ResetThematicPlanEvent($model->id), get_class($model));
+        $model->recordEvent(new DeleteAuthorsEvent($model->id), get_class($model));
 
         $main = $this->filesRepository->get(TrainingProgramWork::tableName(), $model->id, FilesHelper::TYPE_MAIN);
         $doc = $this->filesRepository->get(TrainingProgramWork::tableName(), $model->id, FilesHelper::TYPE_DOC);

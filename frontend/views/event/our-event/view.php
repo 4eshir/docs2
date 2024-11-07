@@ -113,8 +113,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_OTHER), 'link'));
             }, 'format' => 'raw'],
             ['attribute' => 'linkGroups', 'format' => 'raw'],
-            'creatorString',
-            'editorString'
+            ['label' => 'Создатель карточки', 'attribute' => 'creatorString', 'value' => function (EventWork $model) {
+                return $model->creatorWork ? $model->creatorWork->getFullName() : '';
+            }, 'format' => 'raw'],
         ],
     ]) ?>
 

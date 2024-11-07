@@ -29,4 +29,11 @@ class OrderMainRepository
     {
         return OrderMainWork::find()->all();
     }
+    public function getEqualPrefix($formNumber)
+    {
+        return OrderMainWork::find()
+            ->where(['like', 'order_number', $formNumber.'%', false])
+            ->orderBy(['order_date' => SORT_ASC])
+            ->all();
+    }
 }

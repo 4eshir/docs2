@@ -11,6 +11,7 @@ use common\repositories\dictionaries\PositionRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
+use common\services\general\PeopleStampService;
 use DomainException;
 use frontend\events\document_in\InOutDocumentDeleteEvent;
 use frontend\events\document_in\InOutDocumentUpdateEvent;
@@ -30,6 +31,7 @@ class DocumentOutController extends Controller
     private PositionRepository $positionRepository;
     private CompanyRepository $companyRepository;
     private FileService $fileService;
+    private PeopleStampService $peopleStampService;
     private FilesRepository $filesRepository;
     private DocumentOutService $service;
 
@@ -41,6 +43,7 @@ class DocumentOutController extends Controller
         PositionRepository    $positionRepository,
         CompanyRepository     $companyRepository,
         FileService           $fileService,
+        PeopleStampService    $peopleStampService,
         FilesRepository       $filesRepository,
         DocumentOutService    $service,
                               $config = [])
@@ -53,6 +56,7 @@ class DocumentOutController extends Controller
         $this->fileService = $fileService;
         $this->filesRepository = $filesRepository;
         $this->service = $service;
+        $this->peopleStampService = $peopleStampService;
     }
     public function actionIndex()
     {
@@ -89,6 +93,8 @@ class DocumentOutController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $local_id = $model->getAnswer();
             $model->generateDocumentNumber();
+            $this->service->getPeopleStamps($model);
+
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -123,16 +129,18 @@ class DocumentOutController extends Controller
     {
         $model = $this->repository->get($id);
         /** @var DocumentOutWork $model */
-        $model->document_name = 'NAME';
-        $model->setIsAnswer();
+        $model->setValuesForUpdate();
+
         $correspondentList = $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO);
-        $availablePositions = $this->positionRepository->getList($model->correspondent_id);
-        $availableCompanies = $this->companyRepository->getList($model->correspondent_id);
+        $availablePositions = $this->positionRepository->getList($model->correspondentWork->people_id);
+        $availableCompanies = $this->companyRepository->getList($model->correspondentWork->people_id);
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
         $tables = $this->service->getUploadedFilesTables($model);
         $filesAnswer = $this->repository->getDocumentInWithoutAnswer();
         if ($model->load(Yii::$app->request->post())) {
             $local_id = $model->getAnswer();
+            $this->service->getPeopleStamps($model);
+
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -170,6 +178,7 @@ class DocumentOutController extends Controller
     }
     public function actionDelete($id)
     {
+        /** @var DocumentOutWork $model */
         $model = $this->repository->get($id);
         $number = $model->fullNumber;
         if ($model) {

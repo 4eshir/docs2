@@ -30,6 +30,14 @@ AppAsset::register($this);
 
 <header>
     <?php
+    if (Yii::$app->rac->isGuest()) {
+        $menuItems[] = ['label' => 'Войти', 'url' => ['/auth/login']];
+    }
+    else {
+        $menuItems[] = ['label' => 'Личный кабинет', 'url' => ['/user/lk/info', 'id' => Yii::$app->user->identity->getId()]];
+        $menuItems[] = ['label' => 'Выйти', 'url' => ['/auth/logout']];
+    }
+
     NavBar::begin([
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
@@ -44,6 +52,7 @@ AppAsset::register($this);
                 ['label' => 'Входящая документация', 'url' => ['/document/document-in/index']],
                 ['label' => 'Исходящая документация', 'url' => ['/document/document-out/index']],
                 ['label' => 'Приказы по осн. деятельности', 'url' => ['/order/order-main/index']],
+                ['label' => 'Приказы по мероприятиям', 'url' => ['/order/order-event/index']],
                 ['label' => 'Положения', 'url' => ['/regulation/regulation/index']],
                 ['label' => 'Положения о мероприятиях', 'url' => ['/regulation/regulation-event/index']],
                 ['label' => 'Мероприятия', 'url' => ['/event/our-event/index']],
@@ -66,25 +75,26 @@ AppAsset::register($this);
                 ['label' => 'Помещения', 'url' => ['/dictionaries/auditorium/index']],
             ],
         ],
+        [
+            'label' => Yii::$app->user->isGuest ? 'Профиль' : 'Профиль (' . Yii::$app->user->identity->username . ')',
+            'items' => $menuItems,
+        ]
     ];
-    if (Yii::$app->rac->isGuest()) {
-        $menuItems[] = ['label' => 'Signup', 'url' => ['/auth/login']];
-    }
 
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav me-auto mb-2 mb-md-0'],
         'items' => $menuItems,
     ]);
-    if (Yii::$app->rac->isGuest()) {
-        echo Html::tag('div',Html::a('Login',['/auth/login'],['class' => ['btn btn-link login text-decoration-none']]),['class' => ['d-flex']]);
+    /*if (Yii::$app->rac->isGuest()) {
+        echo Html::tag('div',Html::a('Войти',['/auth/login'],['class' => ['btn btn-link login text-decoration-none']]),['class' => ['d-flex']]);
     } else {
         echo Html::beginForm(['/auth/logout'], 'post', ['class' => 'd-flex'])
             . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
+                'Выйти (' . Yii::$app->user->identity->username . ')',
                 ['class' => 'btn btn-link logout text-decoration-none']
             )
             . Html::endForm();
-    }
+    }*/
     NavBar::end();
     ?>
 </header>

@@ -2,18 +2,24 @@
 
 namespace frontend\services\educational;
 
+use app\models\AuthorProgram;
 use common\components\wizards\ExcelWizard;
 use common\helpers\files\filenames\TrainingProgramFileNameGenerator;
 use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
+use common\models\scaffold\TrainingProgram;
+use common\repositories\educational\TrainingProgramRepository;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
+use common\services\general\PeopleStampService;
 use DomainException;
+use frontend\events\educational\training_program\CreateAuthorProgramEvent;
 use frontend\events\educational\training_program\CreateThemeInPlanEvent;
 use frontend\events\educational\training_program\ResetThematicPlanEvent;
 use frontend\events\general\FileCreateEvent;
+use frontend\models\work\educational\AuthorProgramWork;
 use frontend\models\work\educational\ThematicPlanWork;
 use frontend\models\work\educational\TrainingProgramWork;
 use Yii;
@@ -24,12 +30,20 @@ use yii\web\UploadedFile;
 class TrainingProgramService implements DatabaseService
 {
     private FileService $fileService;
+    private PeopleStampService $peopleStampService;
     private TrainingProgramFileNameGenerator $filenameGenerator;
+    private TrainingProgramRepository $repository;
 
-    public function __construct(FileService $fileService, TrainingProgramFileNameGenerator $filenameGenerator)
+    public function __construct(
+        FileService $fileService,
+        PeopleStampService $peopleStampService,
+        TrainingProgramFileNameGenerator $filenameGenerator,
+        TrainingProgramRepository $repository
+    )
     {
         $this->fileService = $fileService;
-        $this->filenameGenerator = $filenameGenerator;
+        $this->peopleStampService = $peopleStampService;
+        $this->repository = $repository;
     }
 
     public function getFilesInstances(TrainingProgramWork $model)
@@ -200,9 +214,10 @@ class TrainingProgramService implements DatabaseService
                     ['id' => ArrayHelper::getColumn($themes, 'id'), 'modelId' => ArrayHelper::getColumn($themes, 'training_program_id')])
             ]
         );
-        $nameAuthors = ArrayHelper::getColumn($authors, 'authorWork.firstname');
-        $surnameAuthors = ArrayHelper::getColumn($authors, 'authorWork.surname');
-        $patronymicAuthors = ArrayHelper::getColumn($authors, 'authorWork.patronymic');
+
+        $nameAuthors = ArrayHelper::getColumn($authors, 'authorWork.peopleWork.firstname');
+        $surnameAuthors = ArrayHelper::getColumn($authors, 'authorWork.peopleWork.surname');
+        $patronymicAuthors = ArrayHelper::getColumn($authors, 'authorWork.peopleWork.patronymic');
         $modelAuthor = HtmlBuilder::createTableWithActionButtons(
             [
                 array_merge(['ФИО'], array_map(function($nameAuthors, $surnameAuthors, $patronymicAuthors) {
@@ -222,6 +237,9 @@ class TrainingProgramService implements DatabaseService
 
     public function isAvailableDelete($id)
     {
+        //$authors = $this->repository->checkDeleteAvailable(AuthorProgram::tableName(), TrainingProgram::tableName(), $id);
+
+        //return array_merge($authors);
         return [];
     }
 
@@ -235,6 +253,14 @@ class TrainingProgramService implements DatabaseService
             if ($themes[$i] !== "") {
                 $model->recordEvent(new CreateThemeInPlanEvent((int)$themes[$i], $model->id, (int)$controls[$i]), ThematicPlanWork::class);
             }
+        }
+    }
+
+    public function attachAuthors(TrainingProgramWork $model, array $authors)
+    {
+        foreach ($authors as $author) {
+            $authorStamp = $this->peopleStampService->createStampFromPeople($author);
+            $model->recordEvent(new CreateAuthorProgramEvent($model->id, $authorStamp), AuthorProgramWork::class);
         }
     }
 }

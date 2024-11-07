@@ -38,6 +38,33 @@ class ForeignEventWork extends ForeignEvent
         $entity->actFiles = $actFiles;
         return $entity;
     }
+    public function fillUpdate(
+        $name,
+        $organizerId,
+        $beginDate, $endDate,
+        $city,
+        $format, $level,
+        $minister,
+        $minAge, $maxAge,
+        $keyWords,
+        $orderParticipantId,
+        $actFiles
+    )
+    {
+        $this->name = $name;
+        $this->organizer_id = $organizerId;
+        $this->begin_date = $beginDate;
+        $this->end_date = $endDate;
+        $this->city = $city;
+        $this->format = $format;
+        $this->level = $level;
+        $this->minister = $minister;
+        $this->min_age = $minAge;
+        $this->max_age = $maxAge;
+        $this->key_words = $keyWords;
+        $this->order_participant_id = $orderParticipantId;
+        $this->actFiles = $actFiles;
+    }
     public function beforeValidate()
     {
         $this->begin_date = DateFormatter::format($this->begin_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);

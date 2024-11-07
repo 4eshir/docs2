@@ -9,7 +9,7 @@ use Yii;
 class ActParticipantRepository
 {
     public function getByForeignEventId($foreignEventId){
-        return ActParticipant::find(['foreign_event_id' => $foreignEventId])->all();
+        return ActParticipantWork::find()->where(['foreign_event_id' => $foreignEventId])->all();
     }
     public function prepareCreate($participantId, $teacherId, $teacher2Id, $foreignEventId, $branch, $focus, $allowRemoteId, $nomination)
     {

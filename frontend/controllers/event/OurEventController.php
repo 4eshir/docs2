@@ -94,6 +94,7 @@ class OurEventController extends DocumentController
      */
     public function actionView($id)
     {
+        /** @var EventWork $model */
         $model = $this->repository->get($id);
         return $this->render('view', [
             'model' => $model,
@@ -108,10 +109,9 @@ class OurEventController extends DocumentController
     public function actionCreate()
     {
         $model = new EventWork();
-        //$modelEventsLinks = [new EventsLinkWork];
-        //$modelGroups = [new EventTrainingGroupWork];
 
         if ($model->load(Yii::$app->request->post())) {
+            $this->service->getPeopleStamps($model);
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -148,10 +148,7 @@ class OurEventController extends DocumentController
         /** @var EventWork $model */
         $model = $this->repository->get($id);
         $model->fillSecondaryFields();
-        //$modelEventsLinks = [new EventsLinkWork];
-        //$modelGroups = [new EventTrainingGroupWork];
-
-        //$model->old_name = $model->name;
+        $model->setValuesForUpdate();
 
         $tables = $this->service->getUploadedFilesTables($model);
 

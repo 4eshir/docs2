@@ -5,6 +5,7 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model TrainingProgramWork */
+/* @var $ourPeople */
 /* @var $modelAuthor array */
 /* @var $modelThematicPlan array */
 
@@ -18,6 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'ourPeople' => $ourPeople,
         'modelAuthor' => $modelAuthor,
         'modelThematicPlan' => $modelThematicPlan,
     ]) ?>

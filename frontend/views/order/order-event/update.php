@@ -10,6 +10,8 @@ use yii\helpers\Html;
 /* @var $scanFile */
 /* @var $docFiles */
 /* @var $foreignEventTable */
+/* @var $teamTable */
+/* @var $awardTable */
 
 $this->title = 'Приказ об участии' . $model->order_number;
 $this->params['breadcrumbs'][] = ['label' => 'Приказ об участии', 'url' => ['index']];
@@ -26,6 +28,8 @@ $this->params['breadcrumbs'][] = 'Редактирование';
             'scanFile' => $scanFile,
             'docFiles' => $docFiles,
             'foreignEventTable' => $foreignEventTable,
+            'teamTable' => $teamTable,
+            'awardTable' => $awardTable,
         ]
     ) ?>
 </div>

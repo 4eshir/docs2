@@ -75,4 +75,9 @@ class UserWork extends User implements IdentityInterface
     {
         return Yii::$app->security->validatePassword($password, $this->password_hash);
     }
+
+    public function setPassword(string $passwordHash)
+    {
+        $this->password_hash = $passwordHash;
+    }
 }

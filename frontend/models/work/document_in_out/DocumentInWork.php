@@ -8,24 +8,28 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\models\scaffold\DocumentIn;
+use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\document_in_out\InOutDocumentsRepository;
 use common\repositories\general\FilesRepository;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
 use frontend\models\work\general\FilesWork;
+use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\models\work\general\UserWork;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\Url;
+use yii\web\User;
 
 /**
- * @property PeopleWork $correspondentWork
+ * @property PeopleStampWork $correspondentWork
  * @property PositionWork $positionWork
  * @property CompanyWork $companyWork
- * @property InOutDocumentsWork $inOutDocumentWork
- * @property PeopleWork $creatorWork
- * @property PeopleWork $lastUpdateWork
+ * @property InOutDocumentsWork $inOutDocumentsWork
+ * @property UserWork $creatorWork
+ * @property User $lastUpdateWork
  */
 class DocumentInWork extends DocumentIn
 {
@@ -240,29 +244,15 @@ class DocumentInWork extends DocumentIn
     {
         $year = substr(DateFormatter::format($this->local_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
         $local_date = DateFormatter::format($this->local_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
-        $docs = DocumentInWork::find()->all();
+        $docs = Yii::createObject(DocumentInRepository::class)->getAll();
         if($docs == NULL){
             $this->local_number = '1';
             $this->local_postfix = 0;
         }
         else {
-            $down = DocumentInWork::find()
-                ->where(['<=', 'local_date', $local_date]) // условие для даты больше заданной
-                ->andWhere(['>=', 'local_date', $year."-01-01"]) // начало года
-                ->andWhere(['<=', 'local_date', $year."-12-31"]) // конец года
-                ->orderBy(['local_date' => SORT_DESC])
-                ->all();
-            $up = DocumentInWork::find()
-                ->where(['>', 'local_date', $local_date])
-                ->andWhere(['>=', 'local_date', $year."-01-01"])
-                ->andWhere(['<=', 'local_date', $year."-12-31"])
-                ->orderBy(['local_date' => SORT_DESC])
-                ->all();
-            $down_max = DocumentInWork::find()
-                ->where(['<=', 'local_date', $local_date])
-                ->andWhere(['>=', 'local_date', $year."-01-01"])
-                ->andWhere(['<=', 'local_date', $year."-12-31"])
-                ->max('local_number');
+            $down = Yii::createObject(DocumentInRepository::class)->findDownNumber($year, $local_date);
+            $up = Yii::createObject(DocumentInRepository::class)->findUpNumber($year, $local_date);
+            $down_max = Yii::createObject(DocumentInRepository::class)->findMaxDownNumber($year, $local_date);
             if($up == null && $down == null) {
                 $this->local_number = '1';
                 $this->local_postfix = 0;
@@ -277,16 +267,11 @@ class DocumentInWork extends DocumentIn
             }
             if($up != null && $down != null){
                 $this->local_number = $down_max ;
-                $max_postfix  = DocumentInWork::find()
-                    ->where(['<=', 'local_number', $this->local_number])
-                    ->andWhere(['>=', 'local_date', $year."-01-01"]) // начало года
-                    ->andWhere(['<=', 'local_date', $year."-12-31"]) // конец года
-                    ->max('local_postfix');
+                $max_postfix  = Yii::createObject(DocumentInRepository::class)->findMaxPostfix($year, $this->local_number);
                 $this->local_postfix = $max_postfix + 1;
             }
         }
     }
-
     public function createGroupButton()
     {
         $links = [
@@ -301,38 +286,6 @@ class DocumentInWork extends DocumentIn
         return HtmlBuilder::createFilterPanel($searchModel);
     }
 
-    /*public function getLastNumber($inputString) {
-        $parts = explode('/', $inputString);
-        return $parts;
-    }
-    public function maxPostfix($model) {
-        $max = '0';
-        foreach ($model as $doc){
-            $parts = $this->getLastNumber($doc->local_postfix);
-            $parts_max = $this->getLastNumber($max);
-            $length = count($parts);
-            $max_length = count($parts_max);
-            if($length > $max_length){
-                $max = $doc->local_postfix;
-            }
-            else if($length = $max_length){
-                $parts_max = $this->getLastNumber($max);
-                for($i = 0; $i < $length; $i++){
-                    if((int)$parts[$i] > (int)$parts_max[$i]){
-                        $max = $doc->local_postfix;
-                        break;
-                    }
-                }
-            }
-        }
-        return $max;
-    }
-    public function getIncrementedLastNumberString($inputString) {
-        $parts = explode('/', $inputString);
-        $lastNumber = end($parts) + 1;
-        $parts[count($parts) - 1] = $lastNumber;
-        return implode('/', $parts);
-    }*/
     public function beforeValidate()
     {
         $this->need_answer = $this->needAnswer;
@@ -342,9 +295,7 @@ class DocumentInWork extends DocumentIn
         $this->dateAnswer = DateFormatter::format($this->dateAnswer, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         return parent::beforeValidate(); // TODO: Change the autogenerated stub
     }
-
     // --relationships--
-
     public function getCompanyWork()
     {
         return $this->hasOne(CompanyWork::class, ['id' => 'company_id']);
@@ -362,17 +313,17 @@ class DocumentInWork extends DocumentIn
 
     public function getCorrespondentWork()
     {
-        return $this->hasOne(PeopleWork::class, ['id' => 'correspondent_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'correspondent_id']);
     }
 
     public function getCreatorWork()
     {
-        return $this->hasOne(PeopleWork::class, ['id' => 'creator_id']);
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
     }
 
     public function getLastUpdateWork()
     {
-        return $this->hasOne(PeopleWork::class, ['id' => 'last_update_id']);
+        return $this->hasOne(UserWork::class, ['id' => 'last_update_id']);
     }
 
     public function getNeedAnswer()
@@ -383,5 +334,11 @@ class DocumentInWork extends DocumentIn
     public function setNeedAnswer()
     {
         $this->needAnswer = (Yii::createObject(InOutDocumentsRepository::class))->getByDocumentInId($this->id) ? 1 : 0;
+    }
+
+    public function setValuesForUpdate()
+    {
+        $this->correspondent_id = $this->correspondentWork->people_id;
+        $this->setNeedAnswer();
     }
 }

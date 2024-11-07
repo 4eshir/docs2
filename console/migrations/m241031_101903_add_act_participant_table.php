@@ -20,7 +20,7 @@ class m241031_101903_add_act_participant_table extends Migration
             'foreign_event_id' => $this->integer()->notNull(),
             'branch' => $this->integer()->notNull(),
             'focus' => $this->integer()->notNull(),
-            'allow_remote_id' => $this->integer(),
+            'allow_remote' => $this->integer(),
             'nomination' => $this->string()
         ]);
 

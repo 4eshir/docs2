@@ -2,6 +2,7 @@
 
 namespace console\controllers;
 
+use common\components\access\AuthDataCache;
 use common\repositories\rac\UserPermissionFunctionRepository;
 use Exception;
 use yii\console\Controller;
@@ -12,15 +13,18 @@ use yii\console\Controller;
 class AccessModelController extends Controller
 {
     private UserPermissionFunctionRepository $userFunctionRepository;
+    private AuthDataCache $authCache;
 
     public function __construct(
                                          $id,
                                          $module,
         UserPermissionFunctionRepository $userFunctionRepository,
+                           AuthDataCache $authCache,
                                          $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->userFunctionRepository = $userFunctionRepository;
+        $this->authCache = $authCache;
     }
 
     //-----------------------------------------------
@@ -45,6 +49,7 @@ class AccessModelController extends Controller
 
         if (!$hasException) {
             echo "Права успешно назначены пользователю";
+            $this->authCache->clearAuthData($userId);
         }
     }
 }

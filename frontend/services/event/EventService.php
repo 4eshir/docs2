@@ -7,6 +7,7 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
+use common\services\general\PeopleStampService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\document_in_out\DocumentOutWork;
 use frontend\models\work\event\EventWork;
@@ -17,15 +18,18 @@ use yii\web\UploadedFile;
 class EventService implements DatabaseService
 {
     private FileService $fileService;
+    private PeopleStampService $peopleStampService;
     private EventNameGenerator $filenameGenerator;
 
     public function __construct(
-        EventNameGenerator $filenameGenerator,
-        FileService $fileService
+        FileService $fileService,
+        PeopleStampService $peopleStampService,
+        EventNameGenerator $filenameGenerator
     )
     {
-        $this->filenameGenerator = $filenameGenerator;
         $this->fileService = $fileService;
+        $this->peopleStampService = $peopleStampService;
+        $this->filenameGenerator = $filenameGenerator;
     }
 
     public function getFilesInstances(EventWork $model)
@@ -195,5 +199,13 @@ class EventService implements DatabaseService
     public function isAvailableDelete($id)
     {
         return [];
+    }
+
+    public function getPeopleStamps(EventWork $model)
+    {
+        $peopleStampId = $this->peopleStampService->createStampFromPeople($model->responsible1_id);
+        $model->responsible1_id = $peopleStampId;
+        $peopleStampId = $this->peopleStampService->createStampFromPeople($model->responsible2_id);
+        $model->responsible2_id = $peopleStampId;
     }
 }

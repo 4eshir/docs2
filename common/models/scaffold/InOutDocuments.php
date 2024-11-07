@@ -13,7 +13,7 @@ namespace common\models\scaffold;
  *
  * @property DocumentIn $documentIn
  * @property DocumentOut $documentOut
- * @property People $responsible
+ * @property PeopleStamp $responsible
  */
 class InOutDocuments extends \yii\db\ActiveRecord
 {
@@ -36,7 +36,7 @@ class InOutDocuments extends \yii\db\ActiveRecord
             [['date'], 'safe'],
             [['document_in_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentIn::class, 'targetAttribute' => ['document_in_id' => 'id']],
             [['document_out_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentOut::class, 'targetAttribute' => ['document_out_id' => 'id']],
-            [['responsible_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['responsible_id' => 'id']],
+            [['responsible_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['responsible_id' => 'id']],
         ];
     }
 
@@ -81,6 +81,6 @@ class InOutDocuments extends \yii\db\ActiveRecord
      */
     public function getResponsible()
     {
-        return $this->hasOne(People::class, ['id' => 'responsible_id']);
+        return $this->hasOne(PeopleStamp::class, ['id' => 'responsible_id']);
     }
 }
