@@ -27,6 +27,9 @@ use yii\jui\DatePicker;
     }
     .act-personal-participant {
     }
+    .select-item {
+
+    }
 </style>
 <script>
     window.onload = function() {
@@ -331,9 +334,10 @@ use yii\jui\DatePicker;
                                         'data' => ArrayHelper::map($people, 'id', 'fullFio'),
                                         'options' => [
                                             'multiple' => true,
-                                            'placeholder' => '---'
+                                            'placeholder' => '---',
+                                            'class' => 'select-item',
                                         ],
-                                    ])->label('ФИО участника');
+                                    ])->label('ФИО участника ');
                                     ?>
                                 </div>
                             </div>
@@ -636,3 +640,12 @@ use yii\jui\DatePicker;
     // Запускаем первую функцию вызова
     requestAnimationFrame(updateDivPersonalNames);
 </script>
+<script>
+    let number = 0; // Изначальное значение переменной
+
+    function updateNumber() {
+        number += 1; // Увеличиваем значение на 1
+        document.getElementById('numberDisplay').innerText = number; // Обновляем текст на странице
+    }
+</script>
+

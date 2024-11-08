@@ -66,6 +66,7 @@ class DynamicWidget extends Widget
             var item = $('.item:last', container).clone();
             index++; // Увеличиваем счетчик для нового ID
             item.attr('id', 'item' + index); // Назначаем новый ID
+            // item.find('.select-item').attr('id', 'selectItem' + index);
             item.find('input').val(''); // Очистить поля ввода
             container.append(item);
         });
