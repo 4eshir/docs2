@@ -7,7 +7,7 @@ use common\models\scaffold\People;
 use yii\base\Model;
 
 class OrderEventForm extends Model {
-
+    public $isNewRecord;
     use EventTrait;
 
     public $id;
@@ -59,6 +59,7 @@ class OrderEventForm extends Model {
     public $teams;
     public $awards;
     public $participant_id;
+    public $participant_personal_id;
     public $branch;
     public $teacher_id;
     public $teacher2_id;

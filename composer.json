@@ -32,7 +32,8 @@
         "fortawesome/font-awesome": "^6.6",
         "yiisoft/yii2-redis": "^2.0",
         "predis/predis": "^2.2",
-        "2amigos/yii2-select2-widget": ">=1.0"
+        "wbraganca/yii2-selectivity": "2.0.2",
+        "wbraganca/yii2-dynamicform": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

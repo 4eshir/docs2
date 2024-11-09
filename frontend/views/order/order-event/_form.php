@@ -1,10 +1,13 @@
 <?php
 use app\components\DynamicWidget;
-use kartik\select2\Select2;
+use dosamigos\select2\Select2;
+use frontend\models\work\general\PeopleWork;
+use wbraganca\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\jui\DatePicker;
+/* @var $this yii\web\View */
 /* @var $model */
 /* @var $people */
 /* @var $scanFile */
@@ -27,15 +30,11 @@ use yii\jui\DatePicker;
     }
     .act-personal-participant {
     }
-    .select-item {
-
-    }
 </style>
 <script>
     window.onload = function() {
         var actsDiv = document.getElementById('acts');
         var commandsDiv = document.getElementById('commandsDiv');
-
         actsDiv.style.pointerEvents = 'none'; // Блокируем ввод
         actsDiv.style.opacity = '0.5'; // Уменьшаем непрозрачность
         commandsDiv.style.pointerEvents = 'auto'; // Разблокируем ввод
@@ -43,7 +42,7 @@ use yii\jui\DatePicker;
     };
 </script>
 <div class="order-main-form">
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['id' => 'dynamic-form-new']); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
         'dateFormat' => 'php:d.m.Y',
         'language' => 'ru',
@@ -299,7 +298,8 @@ use yii\jui\DatePicker;
     ]) ?>
     <div class="bordered-div" id = "acts">
         <h4>Акты участия</h4>
-        <?php DynamicWidget::begin([
+        <?php
+        DynamicWidget::begin([
             'widgetContainer' => 'dynamicform_wrapper',
             'widgetBody' => '.container-items',
             'widgetItem' => '.item',
@@ -329,16 +329,63 @@ use yii\jui\DatePicker;
                                     <h4>Командное участие</h4>
                                 </div>
                                 <div id = "team-participant-people">
-                                    <?php
-                                    echo $form->field($model, 'participant_id[]')->widget(Select2::class, [
-                                        'data' => ArrayHelper::map($people, 'id', 'fullFio'),
-                                        'options' => [
-                                            'multiple' => true,
-                                            'placeholder' => '---',
-                                            'class' => 'select-item',
-                                        ],
-                                    ])->label('ФИО участника ');
-                                    ?>
+                                    <?php DynamicFormWidget::begin([
+                                    'widgetContainer' => 'dynamicform_wrapper',
+                                    'widgetBody' => '.container-items-part',
+                                    'widgetItem' => '.part-item',
+                                    'limit' => 10,
+                                    'min' => 0,
+                                    'insertButton' => '.add-part',
+                                    'deleteButton' => '.remove-part',
+                                    'model' => $model,
+                                    'formId' => 'dynamic-form-new',
+                                    'formFields' => [
+                                    'description',
+                                    ],
+                                    ]); ?>
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th>ФИО участника</th>
+                                            <th class="text-center" style="width: 90px;">
+                                                <button type="button" class="add-part btn btn-success btn-xs"><span class="fa fa-plus"></span></button>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="container-items-part">
+                                        <tr class="part-item">
+                                            <td class="vcenter">
+                                                <?php
+                                                $params = [
+                                                    'id' => 'part',
+                                                    'class' => 'form-control pos',
+                                                    'prompt' => '---'
+                                                ];
+                                                echo $form
+                                                    ->field($model, 'participant_id[]')
+                                                    ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                                                    ->label('ФИО участника');
+                                                ?>
+                                            </td>
+                                            <td class="text-center vcenter" style="width: 90px; verti">
+                                                <button type="button" class="remove-part btn btn-danger btn-xs"><span class="fa fa-minus"></span></button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <?php DynamicFormWidget::end(); ?>
+                                    <div class = "hidden-select" hidden>
+                                        <?php
+                                        $params = [
+                                            'id' => 'part',
+                                            'class' => 'form-control pos',
+                                        ];
+                                        echo $form
+                                            ->field($model, 'participant_id[]')
+                                            ->dropDownList([-1 => 'stop'], $params)
+                                            ->label('ФИО участника');
+                                        ?>
+                                    </div>
                                 </div>
                             </div>
                             <div id="personal-participant" class="col-xs-4 act-personal-participant" hidden>
@@ -352,7 +399,7 @@ use yii\jui\DatePicker;
                                                 'prompt' => '---'
                                             ];
                                             echo $form
-                                                ->field($model, 'participant_id[]')
+                                                ->field($model, 'participant_personal_id[]')
                                                 ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
                                                 ->label('ФИО участника');
                                         ?>
@@ -640,12 +687,3 @@ use yii\jui\DatePicker;
     // Запускаем первую функцию вызова
     requestAnimationFrame(updateDivPersonalNames);
 </script>
-<script>
-    let number = 0; // Изначальное значение переменной
-
-    function updateNumber() {
-        number += 1; // Увеличиваем значение на 1
-        document.getElementById('numberDisplay').innerText = number; // Обновляем текст на странице
-    }
-</script>
-
