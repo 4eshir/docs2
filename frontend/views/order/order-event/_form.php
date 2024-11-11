@@ -21,7 +21,7 @@ use yii\jui\DatePicker;
 ?>
 <style>
     .bordered-div {
-    border: 2px solid #000; /* Черная рамка */
+        border: 2px solid #000; /* Черная рамка */
         padding: 10px;          /* Отступы внутри рамки */
         border-radius: 5px;    /* Скругленные углы (по желанию) */
         margin: 10px 0;        /* Отступы сверху и снизу */
@@ -273,14 +273,14 @@ use yii\jui\DatePicker;
                 <?= $teamTable; ?>
             <?php endif; ?>
             <div class="container">
-            <?php
+                <?php
                 $params = [
-                'id' => 'nominationInput',
-                'class' => 'form-control pos',
-                'prompt' => '---',
+                    'id' => 'nominationInput',
+                    'class' => 'form-control pos',
+                    'prompt' => '---',
                 ];
-            echo $form->field($model, 'award')->textInput(['id' => 'nominationInput', 'class' => 'form-control pos', 'placeholder' => 'Номинация'])->label('Номинации');
-            ?>
+                echo $form->field($model, 'award')->textInput(['id' => 'nominationInput', 'class' => 'form-control pos', 'placeholder' => 'Номинация'])->label('Номинации');
+                ?>
                 <button type="button" onclick="addToList('nominationInput', 'nominationList')">Добавить</button>
             </div>
             <div id="nominationListContainer"></div>
@@ -292,9 +292,9 @@ use yii\jui\DatePicker;
         </div>
     </div>
     <?= Html::button('Перейти к заполнению участников мероприятия', [
-            'class' => 'btn btn-secondary',
-            'type' => 'button',
-            'id' => 'toggle-button',
+        'class' => 'btn btn-secondary',
+        'type' => 'button',
+        'id' => 'toggle-button',
     ]) ?>
     <div class="bordered-div" id = "acts">
         <h4>Акты участия</h4>
@@ -310,196 +310,196 @@ use yii\jui\DatePicker;
         <div class="container-items">
             <h5 class="panel-title pull-left">
             </h5><!-- widgetBody -->
-                <div class="pull-right">
-                    <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+            <div class="pull-right">
+                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+            </div>
+            <div class="item panel panel-default" id = "item"><!-- widgetItem -->
+                <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
+                <div class="panel-heading">
+                    <div class="clearfix"></div>
                 </div>
-                <div class="item panel panel-default" id = "item"><!-- widgetItem -->
-                    <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
-                    <div class="panel-heading">
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class = "form-label"
-                    <label>
-                        <input type="checkbox" class="type-participant" id="type-participant" onchange="checkType(this.name)"/>
-                        Личное участие
-                    </label>
-                        <div class="panel-body">
-                            <div id="team-participant" class="col-xs-4 bordered-div act-team-participant">
-                                <div>
-                                    <h4>Командное участие</h4>
-                                </div>
-                                <div id = "team-participant-people">
-                                    <?php DynamicFormWidget::begin([
-                                    'widgetContainer' => 'dynamicform_wrapper',
-                                    'widgetBody' => '.container-items-part',
-                                    'widgetItem' => '.part-item',
-                                    'limit' => 10,
-                                    'min' => 0,
-                                    'insertButton' => '.add-part',
-                                    'deleteButton' => '.remove-part',
-                                    'model' => $model,
-                                    'formId' => 'dynamic-form-new',
-                                    'formFields' => [
+                <div class = "form-label"
+                <label>
+                    <input type="checkbox" class="type-participant" id="type-participant" onchange="checkType(this.name)"/>
+                    Личное участие
+                </label>
+                <div class="panel-body">
+                    <div id="team-participant" class="col-xs-4 bordered-div act-team-participant">
+                        <div>
+                            <h4>Командное участие</h4>
+                        </div>
+                        <div id = "team-participant-people">
+                            <?php DynamicFormWidget::begin([
+                                'widgetContainer' => 'dynamicform_wrapper',
+                                'widgetBody' => '.container-items-part',
+                                'widgetItem' => '.part-item',
+                                'limit' => 10,
+                                'min' => 0,
+                                'insertButton' => '.add-part',
+                                'deleteButton' => '.remove-part',
+                                'model' => $model,
+                                'formId' => 'dynamic-form-new',
+                                'formFields' => [
                                     'description',
-                                    ],
-                                    ]); ?>
-                                    <table class="table table-bordered table-striped">
-                                        <thead>
-                                        <tr>
-                                            <th>ФИО участника</th>
-                                            <th class="text-center" style="width: 90px;">
-                                                <button type="button" class="add-part btn btn-success btn-xs"><span class="fa fa-plus"></span></button>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody class="container-items-part">
-                                        <tr class="part-item">
-                                            <td class="vcenter">
-                                                <?php
-                                                $params = [
-                                                    'id' => 'part',
-                                                    'class' => 'form-control pos',
-                                                    'prompt' => '---'
-                                                ];
-                                                echo $form
-                                                    ->field($model, 'participant_id[]')
-                                                    ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                                    ->label('ФИО участника');
-                                                ?>
-                                            </td>
-                                            <td class="text-center vcenter" style="width: 90px; verti">
-                                                <button type="button" class="remove-part btn btn-danger btn-xs"><span class="fa fa-minus"></span></button>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                    <?php DynamicFormWidget::end(); ?>
-                                    <div class = "hidden-select" hidden>
+                                ],
+                            ]); ?>
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>ФИО участника</th>
+                                    <th class="text-center" style="width: 90px;">
+                                        <button type="button" class="add-part btn btn-success btn-xs"><span class="fa fa-plus"></span></button>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody class="container-items-part">
+                                <tr class="part-item">
+                                    <td class="vcenter">
                                         <?php
                                         $params = [
-                                            'id' => 'part',
-                                            'class' => 'form-control pos',
+                                                'id' =>  'participant-select-1',
+                                            'class' => 'form-control pos participant-select',
+                                            'prompt' => '---'
                                         ];
                                         echo $form
                                             ->field($model, 'participant_id[]')
-                                            ->dropDownList([-1 => 'stop'], $params)
+                                            ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
                                             ->label('ФИО участника');
                                         ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="personal-participant" class="col-xs-4 act-personal-participant" hidden>
-                                <div class = "bordered-div">
-                                    <h4>Личное участие</h4>
-                                    <div id = "person-participant-people">
-                                        <?php
-                                            $params = [
-                                                'id' => 'participant',
-                                                'class' => 'form-control pos',
-                                                'prompt' => '---'
-                                            ];
-                                            echo $form
-                                                ->field($model, 'participant_personal_id[]')
-                                                ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                                ->label('ФИО участника');
-                                        ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php
-                            $params = [
-                                'id' => 'branch',
-                                'class' => 'form-control pos',
-                                'prompt' => '---',
-                            ];
-                            echo $form
-                                ->field($model, 'branch[]')
-                                ->dropDownList(Yii::$app->branches->getList(), $params)
-                                ->label('Отделы');
-                            ?>
-                            <?php
-                            $params = [
-                                'id' => 'teacher',
-                                'class' => 'form-control pos',
-                                'prompt' => '---',
-                            ];
-                            echo $form
-                                ->field($model, 'teacher_id[]')
-                                ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                ->label('ФИО учителя');
-                            echo $form
-                                ->field($model, 'teacher2_id[]')
-                                ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                ->label('ФИО учителя');
-                            ?>
-                            <?php
-                            $params = [
-                                'id' => 'focus',
-                                'class' => 'form-control pos',
-                                'prompt' => '---',
-                            ];
-                            echo $form
-                                ->field($model, 'focus[]')
-                                ->dropDownList(Yii::$app->focus->getList(), $params)
-                                ->label('Направленность');
-                            ?>
-                            <?= $form->field($model, 'formRealization[]')->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
-                                ->label('Форма реализации') ?>
-
-                            Представленные материалы<br>
-                            <?= $form->field($model, 'actFiles[]')->fileInput()->label('Представленные материалы') ?>
-                            В составе команды<br>
-                            <!-- Выпадающий список для команд -->
-                            <div class="container">
+                                    </td>
+                                    <td class="text-center vcenter" style="width: 90px; verti">
+                                        <button type="button" class="remove-part btn btn-danger btn-xs"><span class="fa fa-minus"></span></button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <?php DynamicFormWidget::end(); ?>
+                            <div class = "hidden-select" hidden>
                                 <?php
                                 $params = [
-                                        'id' => 'teamDropdown',
-                                        'class' => 'form-control pos',
-                                        'prompt' => '--- Выберите команду ---',
+                                    'id' => 'part',
+                                    'class' => 'form-control pos',
                                 ];
-                                echo $form->field($model, 'teamList[]')->dropDownList([], $params)->label('Выберите команду');
+                                echo $form
+                                    ->field($model, 'participant_id[]')
+                                    ->dropDownList([-1 => 'stop'], $params)
+                                    ->label('ФИО участника');
                                 ?>
                             </div>
-                                Номинация
-                                <div class="container">
-                                    <?php
-                                    $params = [
-                                        'id' => 'nominationDropdown',
-                                        'class' => 'form-control pos',
-                                        'prompt' => '--- Выберите номинацию ---',
-                                    ];
-                                    echo $form->field($model, 'nominationList[]')->dropDownList([], $params)->label('Выберите номинацию');
-                                    ?>
-                                </div>
                         </div>
+                    </div>
+                    <div id="personal-participant" class="col-xs-4 act-personal-participant" hidden>
+                        <div class = "bordered-div">
+                            <h4>Личное участие</h4>
+                            <div id = "person-participant-people">
+                                <?php
+                                $params = [
+                                    'id' => 'participant',
+                                    'class' => 'form-control pos',
+                                    'prompt' => '---'
+                                ];
+                                echo $form
+                                    ->field($model, 'participant_personal_id[]')
+                                    ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                                    ->label('ФИО участника');
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                    $params = [
+                        'id' => 'branch',
+                        'class' => 'form-control pos',
+                        'prompt' => '---',
+                    ];
+                    echo $form
+                        ->field($model, 'branch[]')
+                        ->dropDownList(Yii::$app->branches->getList(), $params)
+                        ->label('Отделы');
+                    ?>
+                    <?php
+                    $params = [
+                        'id' => 'teacher',
+                        'class' => 'form-control pos',
+                        'prompt' => '---',
+                    ];
+                    echo $form
+                        ->field($model, 'teacher_id[]')
+                        ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                        ->label('ФИО учителя');
+                    echo $form
+                        ->field($model, 'teacher2_id[]')
+                        ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                        ->label('ФИО учителя');
+                    ?>
+                    <?php
+                    $params = [
+                        'id' => 'focus',
+                        'class' => 'form-control pos',
+                        'prompt' => '---',
+                    ];
+                    echo $form
+                        ->field($model, 'focus[]')
+                        ->dropDownList(Yii::$app->focus->getList(), $params)
+                        ->label('Направленность');
+                    ?>
+                    <?= $form->field($model, 'formRealization[]')->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
+                        ->label('Форма реализации') ?>
+
+                    Представленные материалы<br>
+                    <?= $form->field($model, 'actFiles[]')->fileInput()->label('Представленные материалы') ?>
+                    В составе команды<br>
+                    <!-- Выпадающий список для команд -->
+                    <div class="container">
+                        <?php
+                        $params = [
+                            'id' => 'teamDropdown',
+                            'class' => 'form-control pos',
+                            'prompt' => '--- Выберите команду ---',
+                        ];
+                        echo $form->field($model, 'teamList[]')->dropDownList([], $params)->label('Выберите команду');
+                        ?>
+                    </div>
+                    Номинация
+                    <div class="container">
+                        <?php
+                        $params = [
+                            'id' => 'nominationDropdown',
+                            'class' => 'form-control pos',
+                            'prompt' => '--- Выберите номинацию ---',
+                        ];
+                        echo $form->field($model, 'nominationList[]')->dropDownList([], $params)->label('Выберите номинацию');
+                        ?>
+                    </div>
                 </div>
             </div>
         </div>
-        <?php
-        DynamicWidget::end()
-        ?>
     </div>
-    <?php if (strlen($foreignEventTable) > 50): ?>
-        <?= $foreignEventTable; ?>
-    <?php endif; ?>
-    <?= $form->field($model, 'key_words')->textInput()->label('Ключевые слова') ?>
-    <?= $form->field($model, 'scanFile')->fileInput()->label('Скан документа') ?>
-    <?php if (strlen($scanFile) > 10): ?>
-        <?= $scanFile; ?>
-    <?php endif; ?>
+    <?php
+    DynamicWidget::end()
+    ?>
+</div>
+<?php if (strlen($foreignEventTable) > 50): ?>
+    <?= $foreignEventTable; ?>
+<?php endif; ?>
+<?= $form->field($model, 'key_words')->textInput()->label('Ключевые слова') ?>
+<?= $form->field($model, 'scanFile')->fileInput()->label('Скан документа') ?>
+<?php if (strlen($scanFile) > 10): ?>
+    <?= $scanFile; ?>
+<?php endif; ?>
 
-    <?= $form->field($model, 'docFiles[]')->fileInput(['multiple' => true])->label('Редактируемые документы') ?>
+<?= $form->field($model, 'docFiles[]')->fileInput(['multiple' => true])->label('Редактируемые документы') ?>
 
-    <?php if (strlen($docFiles) > 10): ?>
-        <?= $docFiles; ?>
-    <?php endif; ?>
-    <div class="form-group">
-        <?= Html::submitButton('Сохранить', [
-            'class' => 'btn btn-success',
-            'onclick' => 'prepareAndSubmit();' // Подготовка скрытых полей перед отправкой
-        ]) ?>
-    </div>
-    <?php ActiveForm::end(); ?>
+<?php if (strlen($docFiles) > 10): ?>
+    <?= $docFiles; ?>
+<?php endif; ?>
+<div class="form-group">
+    <?= Html::submitButton('Сохранить', [
+        'class' => 'btn btn-success',
+        'onclick' => 'prepareAndSubmit();' // Подготовка скрытых полей перед отправкой
+    ]) ?>
+</div>
+<?php ActiveForm::end(); ?>
 </div>
 <script>
     function checkType(chkBoxName) {

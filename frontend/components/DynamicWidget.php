@@ -64,9 +64,10 @@ class DynamicWidget extends Widget
         $('.add-item').click(function() {
             var container = $(this).closest('.container-items');
             var item = $('.item:last', container).clone();
+            $('#participant-select-' + index).select2({ width: '200px' });
             index++; // Увеличиваем счетчик для нового ID
             item.attr('id', 'item' + index); // Назначаем новый ID
-            // item.find('.select-item').attr('id', 'selectItem' + index);
+            item.find('.participant-select').attr('id', 'participant-select-' + index);
             item.find('input').val(''); // Очистить поля ввода
             container.append(item);
         });
