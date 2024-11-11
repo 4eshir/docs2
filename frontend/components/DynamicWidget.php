@@ -60,8 +60,13 @@ class DynamicWidget extends Widget
     public function script()
     {
         $script = <<< JS
+        $('#participant-select-' + 1).select2({ width: '200px' });
         var index = 1; // Инициализируем с 1, так как у нас уже есть один элемент с id=item1
         $('.add-item').click(function() {
+            if(index === 1){
+                isSelected.push(index);
+                $('#participant-select-' + 1).select2('destroy');
+            }
             var container = $(this).closest('.container-items');
             var item = $('.item:last', container).clone();
             $('#participant-select-' + index).select2({ width: '200px' });
@@ -71,10 +76,10 @@ class DynamicWidget extends Widget
             item.find('input').val(''); // Очистить поля ввода
             container.append(item);
         });
-        
         $('.container-items').on('click', '.remove-item', function() {
             var container = $(this).closest('.container-items');
             if (container.children('.item').length > 1) {
+                var a = container.children('.participant-select');
                 $(this).closest('.item').remove();
             }
         });

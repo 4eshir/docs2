@@ -1,7 +1,7 @@
 <?php
 use app\components\DynamicWidget;
-use dosamigos\select2\Select2;
 use frontend\models\work\general\PeopleWork;
+use kartik\select2\Select2;
 use wbraganca\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -357,12 +357,13 @@ use yii\jui\DatePicker;
                                     <td class="vcenter">
                                         <?php
                                         $params = [
-                                                'id' =>  'participant-select-1',
+                                            'id' => 'participant-select-1',
                                             'class' => 'form-control pos participant-select',
-                                            'prompt' => '---'
+                                            'prompt' => '---',
+                                            'multiple' => true // Устанавливаем параметр multiple в true
                                         ];
                                         echo $form
-                                            ->field($model, 'participant_id[]')
+                                            ->field($model, '[part][]participant_id[]')
                                             ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
                                             ->label('ФИО участника');
                                         ?>
@@ -379,6 +380,7 @@ use yii\jui\DatePicker;
                                 $params = [
                                     'id' => 'part',
                                     'class' => 'form-control pos',
+                                    'multiple' => 'multiple'
                                 ];
                                 echo $form
                                     ->field($model, 'participant_id[]')
