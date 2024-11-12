@@ -313,7 +313,7 @@ use yii\jui\DatePicker;
             <div class="pull-right">
                 <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
             </div>
-            <div class="item panel panel-default" id = "item-1"><!-- widgetItem -->
+            <div class="item panel panel-default" id = "item-1" hidden><!-- widgetItem -->
                 <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
                 <div class="panel-heading">
                     <div class="clearfix"></div>
