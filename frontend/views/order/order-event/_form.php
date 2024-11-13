@@ -320,11 +320,13 @@ use yii\jui\DatePicker;
                 </div>
                 <div class = "form-label"
                 <label>
-                    <input type="checkbox" class="type-participant" id="type-participant" onchange="checkType(this.name)"/>
+                    <input type="radio" class="type-participant" id="type-participant" onchange="checkType(this.name)"/>
                     Личное участие
+                    <input type="radio" class="personal-type-participant" id="type-participant" onchange="checkSecondType(this.name)"/>
+                    Командное участие
                 </label>
                 <div class="panel-body">
-                    <div id="team-participant" class="col-xs-4 bordered-div act-team-participant">
+                    <div id="team-participant" class="col-xs-4 bordered-div act-team-participant" hidden>
                         <div>
                             <h4>Командное участие</h4>
                         </div>
@@ -450,24 +452,25 @@ use yii\jui\DatePicker;
 
                     Представленные материалы<br>
                     <?= $form->field($model, 'actFiles[]')->fileInput()->label('Представленные материалы') ?>
-                    В составе команды<br>
+
                     <!-- Выпадающий список для команд -->
-                    <div class="container">
+                    <div class="container team-dropdown-list" hidden>
+                        В составе команды<br>
                         <?php
                         $params = [
                             'id' => 'teamDropdown',
-                            'class' => 'form-control pos',
+                            'class' => 'form-control pos teamDropDownList',
                             'prompt' => '--- Выберите команду ---',
                         ];
                         echo $form->field($model, 'teamList[]')->dropDownList([], $params)->label('Выберите команду');
                         ?>
                     </div>
                     Номинация
-                    <div class="container">
+                    <div class="container nomination-dropdown-list">
                         <?php
                         $params = [
                             'id' => 'nominationDropdown',
-                            'class' => 'form-control pos',
+                            'class' => 'form-control pos nominationDropDownList',
                             'prompt' => '--- Выберите номинацию ---',
                         ];
                         echo $form->field($model, 'nominationList[]')->dropDownList([], $params)->label('Выберите номинацию');
@@ -505,63 +508,78 @@ use yii\jui\DatePicker;
 </div>
 <script>
     function checkType(chkBoxName) {
-
         var participantNumber = chkBoxName.split('-')[1]; // Разделяем строку и берем номер
-        var chkBox = document.querySelector(`input[type="checkbox"][name="${chkBoxName}"]`); // Получаем чекбокс по имени
         var teamDiv = document.getElementById(`act-team-participant-${participantNumber}`); // Получаем соответствующий div по ID
         var personDiv = document.getElementById(`act-personal-participant-${participantNumber}`); // Получаем соответствующий div по ID
-        if (chkBox.checked) {
-            teamDiv.hidden = true;
-            personDiv.hidden = false;
-        } else {
-            teamDiv.hidden = false;
-            personDiv.hidden = true;
-        }
+        var teamDropdownList = document.getElementById(`team-dropdown-list-${participantNumber}`);
+        teamDiv.hidden = true;
+        personDiv.hidden = false;
+        teamDropdownList.hidden = true;
+
+    }
+    function checkSecondType(chkBoxName) {
+        var participantNumber = chkBoxName.split('-')[1]; // Разделяем строку и берем номер
+        var teamDiv = document.getElementById(`act-team-participant-${participantNumber}`); // Получаем соответствующий div по ID
+        var personDiv = document.getElementById(`act-personal-participant-${participantNumber}`); // Получаем соответствующий div по ID
+        var teamDropdownList = document.getElementById(`team-dropdown-list-${participantNumber}`);
+        teamDiv.hidden = false;
+        personDiv.hidden = true;
+        teamDropdownList.hidden = false;
     }
 </script>
 <script>
+    function optionExists(dropdown, value) {
+        // Проверяем, существует ли уже опция с заданным значением
+        return Array.from(dropdown.options).some(option => option.value === value);
+    }
+
     let teamList = []; // Temporary storage
     let nominationList = []; // Temporary storage
     // Функция для обновления списка
     function updateList() {
         const teamListContainer = document.getElementById('teamListContainer');
         const nominationListContainer = document.getElementById('nominationListContainer');
-
         teamListContainer.innerHTML = '';
         nominationListContainer.innerHTML = '';
+        const teamDropdown = document.getElementsByClassName('teamDropDownList');
+        Array.from(teamDropdown).forEach(dropdown => {
+            while (dropdown.firstChild) {
+                dropdown.removeChild(dropdown.firstChild);
+            }
 
-        // Обновляем список вардов
-        const teamDropdown = document.getElementById('teamDropdown');
+        });
         teamDropdown.innerHTML = '<option value="">--- Выберите команду ---</option>'; // Сброс
-
         teamList.forEach((team, index) => {
             const listContainer = createListItem(team, index, 'teamList');
             teamListContainer.appendChild(listContainer);
-
             // Добавление команды в выпадающий список
             const dropdownOption = document.createElement('option');
             dropdownOption.value = team;
             dropdownOption.textContent = team;
-            teamDropdown.appendChild(dropdownOption);
+            Array.from(teamDropdown).forEach(dropdown => {
+                dropdown.appendChild(dropdownOption.cloneNode(true)); // Клонируем опцию для каждого dropdown
+            });
+            //teamDropdown.appendChild(dropdownOption);
         });
-
         // Обновляем список номинаций
-        const nominationDropdown = document.getElementById('nominationDropdown');
+        const nominationDropdown = document.getElementsByClassName('nominationDropDownList');
+        Array.from(nominationDropdown).forEach(dropdown => {
+            while (dropdown.firstChild) {
+                dropdown.removeChild(dropdown.firstChild);
+            }
+        });
         nominationDropdown.innerHTML = '<option value="">--- Выберите номинацию ---</option>'; // Сброс
-
         nominationList.forEach((nomination, index) => {
             const listContainer = createListItem(nomination, index, 'nominationList');
             nominationListContainer.appendChild(listContainer);
-
-            // Добавление номинации в выпадающий список
             const nominationOption = document.createElement('option');
             nominationOption.value = nomination;
             nominationOption.textContent = nomination;
-            nominationDropdown.appendChild(nominationOption);
+            Array.from(nominationDropdown).forEach(dropdown => {
+                dropdown.appendChild(nominationOption.cloneNode(true)); // Клонируем опцию для каждого dropdown
+            });
         });
     }
-
-
     // Остальные функции (createListItem, addToList, deleteItem, prepareAndSubmit) остаются без изменений...
     // Функция для создания элемента списка
     function createListItem(item, index, type) {
@@ -658,7 +676,7 @@ use yii\jui\DatePicker;
 <script>
     // Ждем загрузки DOM
     function updateCheckboxNames() {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"].type-participant');
+        const checkboxes = document.querySelectorAll('input[type="radio"].type-participant');
         checkboxes.forEach((checkbox, index) => {
             checkbox.name = `participant-${index + 1}`;
         });
@@ -666,6 +684,18 @@ use yii\jui\DatePicker;
     }
     // Запускаем первую функцию вызова
     requestAnimationFrame(updateCheckboxNames);
+</script>
+<script>
+    // Ждем загрузки DOM
+    function updatePersonalCheckboxNames() {
+        const checkboxes2 = document.querySelectorAll('input[type="radio"].personal-type-participant');
+        checkboxes2.forEach((checkbox2, index) => {
+            checkbox2.name = `participant-${index + 1}`;
+        });
+        requestAnimationFrame(updatePersonalCheckboxNames);
+    }
+    // Запускаем первую функцию вызова
+    requestAnimationFrame(updatePersonalCheckboxNames);
 </script>
 <script>
     function updateDivNames() {
@@ -677,6 +707,28 @@ use yii\jui\DatePicker;
     }
     // Запускаем первую функцию вызова
     requestAnimationFrame(updateDivNames);
+</script>
+<script>
+    function updateTeamDropdownList() {
+        const divs = document.querySelectorAll('div.team-dropdown-list');
+        divs.forEach((div, index) => {
+            div.id = `team-dropdown-list-${index + 1}`; // Уникальное имя с индексом
+        });
+        requestAnimationFrame(updateTeamDropdownList);
+    }
+    // Запускаем первую функцию вызова
+    requestAnimationFrame(updateTeamDropdownList);
+</script>
+<script>
+    function updateNominationDropdownList() {
+        const divs = document.querySelectorAll('div.nomination-dropdown-list');
+        divs.forEach((div, index) => {
+            div.id = `nomination-dropdown-list-${index + 1}`; // Уникальное имя с индексом
+        });
+        requestAnimationFrame(updateNominationDropdownList);
+    }
+    // Запускаем первую функцию вызова
+    requestAnimationFrame(updateNominationDropdownList);
 </script>
 <script>
     function updateDivPersonalNames() {
