@@ -86,7 +86,7 @@ class OrderEventController extends Controller
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         if($model->load($post)) {
-            var_dump($post['OrderEventForm']);
+            var_dump($this->orderEventFormService->getTeamsWithParticipants($post));
           /*  $teams = $post['teams'];
             $nominations = $post['nominations'];
             $participants = $post['OrderEventForm']['participant_id'];
