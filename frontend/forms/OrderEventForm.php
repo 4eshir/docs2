@@ -7,7 +7,7 @@ use common\models\scaffold\People;
 use yii\base\Model;
 
 class OrderEventForm extends Model {
-
+    public $isNewRecord;
     use EventTrait;
 
     public $id;
@@ -59,6 +59,7 @@ class OrderEventForm extends Model {
     public $teams;
     public $awards;
     public $participant_id;
+    public $participant_personal_id;
     public $branch;
     public $teacher_id;
     public $teacher2_id;
@@ -67,7 +68,8 @@ class OrderEventForm extends Model {
     public $teamList;
     public $nominationList;
     //
-
+    public $typeActParticipant;
+    //
     public $scanFile;
     public $docFiles;
     public $actFiles;
@@ -90,6 +92,11 @@ class OrderEventForm extends Model {
             [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
                 'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt']
         ];
+    }
+    public function attributeLabels(){
+        return array_merge(parent::attributeLabels(), [
+            'typeActParticipant' => 'Личный тип участия'
+        ]);
     }
     public static function fill(
         OrderEventWork $modelOrderEvent,

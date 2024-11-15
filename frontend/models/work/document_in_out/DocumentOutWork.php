@@ -84,10 +84,12 @@ class DocumentOutWork extends DocumentOut
 
     public function getFullNumber()
     {
-        if ($this->document_postfix == null)
+        if ($this->document_postfix == null) {
             return $this->document_number;
-        else
-            return $this->document_number.'/'.$this->document_postfix;
+        }
+        else {
+            return $this->document_number . '/' . $this->document_postfix;
+        }
     }
     public function getAnswer(){
         return $this->is_answer;
@@ -121,6 +123,12 @@ class DocumentOutWork extends DocumentOut
 
         return $repository->getDocumentInWithoutAnswer();
     }
+
+    public function getDate()
+    {
+        return $this->document_date;
+    }
+
     public function getDocumentNumber()
     {
         return $this->document_number;

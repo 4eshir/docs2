@@ -93,6 +93,19 @@ th:last-child, .grid-view tbody tr:hover td:last-child, .card-block-2 {
     border-bottom-right-radius: var(--border-radius);
 }
 
+td:first-child, thead tr th:first-child {
+    padding-left: 1em;
+}
+
+td:last-child, thead tr th:last-child {
+    padding-right: 1em;
+}
+
+.table-bordered thead tr th {
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
 table th a svg {
     overflow: visible;
 }

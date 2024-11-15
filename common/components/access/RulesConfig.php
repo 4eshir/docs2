@@ -13,7 +13,7 @@ class RulesConfig
                 'index',
                 'view',
                 'get-file',
-                'dependencyDropdown',
+                'dependency-dropdown',
             ],
         ],
 

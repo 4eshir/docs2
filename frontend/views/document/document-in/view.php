@@ -36,36 +36,131 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="card">
         <div class="card-block-1">
-            <div>
-                <title>Основное</title>
-                <div>Имя</div>
-                <div>Вид</div>
-                <div>Тема</div>
+            <div class="card-set">
+                <div class="card-head">Основное</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Имя
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getFullName() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Тип
+                    </div>
+                    <div class="field-date">
+                        Входящая документация
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Тема
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getDocumentTheme() ?>
+                    </div>
+                </div>
             </div>
-            <div>
-                <title>От кого</title>
-                <div>Корреспондент</div>
-                <div>Дата и номер</div>
-                <div>ФИО и должность</div>
+            <div class="card-set">
+                <div class="card-head">От кого</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Корреспондент
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getCompanyName() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Дата и номер
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getRealDate() . ' № ' . $model->getRealNumber() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Должность и ФИО
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getCorrespondentName() ?>
+                    </div>
+                </div>
             </div>
-            <div>
-                <title>Ответ</title>
-                <div>Ответственный и срок</div>
+            <?php if ($model->getNeedAnswer()) : ?>
+            <div class="card-set">
+                <div class="card-head">Ответ</div>
+                <?php if ($model->getAnswerNotEmpty()) : ?>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Документ
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getAnswer() ?>
+                    </div>
+                </div>
+                <?php else : ?>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Ответственный
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getResponsibleName() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Cрок ответа
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getResponsibleDate() ?>
+                    </div>
+                </div>
+                <?php endif; ?>
             </div>
+            <?php endif; ?>
         </div>
         <div class="card-block-2">
-            <div>
-                <title>Дата и номер</title>
-                <div>Порядковый номер</div>
-                <div>Дата</div>
-                <div>Способ отправки</div>
+            <div class="card-set">
+                <div class="card-head">Дата и номер</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        № п/п
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getFullNumber() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Дата
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getLocalDate() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Способ получения
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getSendMethodName() ?>
+                    </div>
+                </div>
             </div>
-            <div>
-                <title>Ключевые слова</title>
-                <div>слова-слова-слова</div>
+            <div class="card-set">
+                <div class="card-head">Ключевые слова</div>
+                <div class="card-field">
+                    <div class="field-date">
+                        <?= $model->getKeyWords() ?>
+                    </div>
+                </div>
             </div>
-            <div>
-                <title>Файлы</title>
+            <div class="card-set">
+                <div class="card-head">Файлы</div>
                 <div>Сканы</div>
                 <div>Редактируемые</div>
                 <div>Приложения</div>
@@ -106,7 +201,7 @@ $this->params['breadcrumbs'][] = $this->title;
             }, 'format' => 'raw'],
             ['label' => 'Ключевые слова', 'attribute' => 'key_words'],
             ['attribute' => 'needAnswer', 'label' => 'Ответ', 'value' => function(DocumentInWork $model){
-                return $model->getNeedAnswer(StringFormatter::FORMAT_LINK);
+                return $model->getNeedAnswerString(StringFormatter::FORMAT_LINK);
             }, 'format' => 'raw'],
             ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => function(DocumentInWork $model) {
                 return $model->correspondentWork ? $model->correspondentWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';

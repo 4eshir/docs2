@@ -27,7 +27,7 @@ use yii\web\User;
  * @property PeopleStampWork $correspondentWork
  * @property PositionWork $positionWork
  * @property CompanyWork $companyWork
- * @property InOutDocumentsWork $inOutDocumentsWork
+ * @property InOutDocumentsWork $inOutDocumentWork
  * @property UserWork $creatorWork
  * @property User $lastUpdateWork
  */
@@ -91,6 +91,11 @@ class DocumentInWork extends DocumentIn
         $entity->scan = $scan;
     }
 
+    public function getFullName()
+    {
+        return "Входящее № {$this->getFullNumber()} от {$this->getLocalDate()} из {$this->getCompanyShortName()} \"{$this->getDocumentTheme()}\"";
+    }
+
     public function getFullNumber()
     {
         if ($this->local_postfix == null)
@@ -101,12 +106,30 @@ class DocumentInWork extends DocumentIn
 
     public function getCompanyName()
     {
-        return $this->companyWork->name;
+        $company = $this->companyWork;
+        return $company ? $company->getName() : '---';
+    }
+
+    public function getCompanyShortName()
+    {
+        $company = $this->companyWork;
+        return $company ? $company->getShortName() : '---';
+    }
+
+    public function getCorrespondentName()
+    {
+        $correspondent = $this->correspondentWork;
+        return $correspondent ? $correspondent->getFIO(PeopleWork::FIO_SURNAME_INITIALS_WITH_POSITION) : '---';
     }
 
     public function getSendMethodName()
     {
         return Yii::$app->sendMethods->get($this->send_method);
+    }
+
+    public function getKeyWords()
+    {
+        return $this->key_words ? $this->key_words : '---';
     }
 
     public function getRealDate()
@@ -121,12 +144,30 @@ class DocumentInWork extends DocumentIn
 
     public function getRealNumber()
     {
-        return $this->real_number;
+        return $this->real_number ? $this->real_number : '---';
     }
 
     public function getDocumentTheme()
     {
         return $this->document_theme;
+    }
+
+    public function getResponsibleName()
+    {
+        if ($this->getNeedAnswer() && $responsible = $this->inOutDocumentWork->responsibleWork) {
+            return $responsible->getSurnameInitials();
+        }
+
+        return '---';
+    }
+
+    public function getResponsibleDate()
+    {
+        if ($this->getNeedAnswer() && $date = $this->inOutDocumentWork) {
+            return $date->getDate();
+        }
+
+        return '---';
     }
 
     /**
@@ -159,12 +200,30 @@ class DocumentInWork extends DocumentIn
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
 
+    public function getAnswerNotEmpty()
+    {
+        if ($this->getNeedAnswer()) {
+            return !$this->inOutDocumentWork->getIsEmptyDocumentOut();
+        }
+
+        return false;
+    }
+
+    public function getAnswer(int $format = StringFormatter::FORMAT_RAW)
+    {
+        $inOutDoc = Yii::createObject(InOutDocumentsRepository::class)->getByDocumentInId($this->id);
+        $docOut = Yii::createObject(DocumentOutRepository::class)->get($inOutDoc->document_out_id);
+        $answerName = "Исходящее № {$docOut->getFullNumber()} от {$docOut->getDate()} \"{$docOut->getDocumentTheme()}\"";
+
+        return StringFormatter::stringAsLink($answerName, Url::to(['document/document-out/view', 'id' => $inOutDoc->document_out_id]));
+    }
+
     /**
      * Возвращает строку с отображением необходимости ответа на входящий документ
      * @param int $format формат возвращаемого значения (при наличии такой опции) @see StringFormatter
      * @return string
      */
-    public function getNeedAnswer(int $format = StringFormatter::FORMAT_RAW)
+    public function getNeedAnswerString(int $format = StringFormatter::FORMAT_RAW)
     {
         if($this->need_answer != 0){
             $links = (Yii::createObject(InOutDocumentsRepository::class))->getByDocumentInId($this->id);
@@ -180,7 +239,9 @@ class DocumentInWork extends DocumentIn
         }
         return '';
     }
-    public function generateDocumentNumber(){
+
+    public function generateDocumentNumber()
+    {
         $year = substr(DateFormatter::format($this->local_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
         $local_date = DateFormatter::format($this->local_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $docs = Yii::createObject(DocumentInRepository::class)->getAll();
@@ -245,9 +306,9 @@ class DocumentInWork extends DocumentIn
         return $this->hasOne(PositionWork::class, ['id' => 'position_id']);
     }
 
-    public function getInOutDocumentsWork()
+    public function getInOutDocumentWork()
     {
-        return $this->hasMany(InOutDocumentsWork::class, ['document_in_id' => 'id']);
+        return $this->hasOne(InOutDocumentsWork::class, ['document_in_id' => 'id']);
     }
 
     public function getCorrespondentWork()
@@ -263,6 +324,11 @@ class DocumentInWork extends DocumentIn
     public function getLastUpdateWork()
     {
         return $this->hasOne(UserWork::class, ['id' => 'last_update_id']);
+    }
+
+    public function getNeedAnswer()
+    {
+        return $this->need_answer;
     }
 
     public function setNeedAnswer()

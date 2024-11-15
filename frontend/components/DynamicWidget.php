@@ -60,19 +60,33 @@ class DynamicWidget extends Widget
     public function script()
     {
         $script = <<< JS
+        $('#participant-select-' + 1).select2({ width: '200px' });
+        let isSelected = [];        
         var index = 1; // Инициализируем с 1, так как у нас уже есть один элемент с id=item1
         $('.add-item').click(function() {
+            if(index === 1){
+                isSelected.push(index);
+                $('#participant-select-' + 1).select2('destroy');
+            }
             var container = $(this).closest('.container-items');
             var item = $('.item:last', container).clone();
+            if(!$('#participant-select-' + index).data('select2')) {
+                 $('#participant-select-' + index).select2({ width: '200px' });
+                 $('#item-'+index).removeAttr('hidden');
+            }
             index++; // Увеличиваем счетчик для нового ID
-            item.attr('id', 'item' + index); // Назначаем новый ID
-            item.find('input').val(''); // Очистить поля ввода
+            item.attr('id', 'item-' + index); // Назначаем новый ID
+            item.find('.participant-select').attr('id', 'participant-select-' + index);
+            item.find('input').val('');
             container.append(item);
         });
-        
         $('.container-items').on('click', '.remove-item', function() {
             var container = $(this).closest('.container-items');
             if (container.children('.item').length > 1) {
+                console.log($(this).closest('.item').attr('id'));
+                var itemId = $(this).closest('.item').attr('id');
+                var number = itemId.split('-')[1];
+                $('#participant-select-'+ number).select2('destroy');
                 $(this).closest('.item').remove();
             }
         });

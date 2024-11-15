@@ -86,9 +86,11 @@ class OrderEventController extends Controller
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         if($model->load($post)) {
-            $teams = $post['teams'];
+            var_dump($this->orderEventFormService->getTeamsWithParticipants($post));
+          /*  $teams = $post['teams'];
             $nominations = $post['nominations'];
             $participants = $post['OrderEventForm']['participant_id'];
+            $personalParticipants = $post['OrderEventForm']['participant_personal_id'];
             $teachers_id = $post['OrderEventForm']['teacher_id'];
             $teachers2_id = $post['OrderEventForm']['teacher2_id'];
             $branches = $post['OrderEventForm']['branch'];
@@ -152,7 +154,7 @@ class OrderEventController extends Controller
             $modelOrderEvent->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $model->releaseEvents();
-            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
+            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);*/
         }
         return $this->render('create', [
             'model' => $model,

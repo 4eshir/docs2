@@ -5,10 +5,15 @@ namespace frontend\models\work\general;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\models\scaffold\People;
+use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+
+/**
+ * @property PeoplePositionCompanyBranchWork $positionWork
+ * */
 
 class PeopleWork extends People
 {
@@ -16,6 +21,7 @@ class PeopleWork extends People
     const FIO_FULL = 1;
     const FIO_SURNAME_INITIALS = 2;
     const FIO_WITH_POSITION = 3;
+    const FIO_SURNAME_INITIALS_WITH_POSITION = 4;
 
     public $branches;
     public $positions;
@@ -54,6 +60,7 @@ class PeopleWork extends People
             self::FIO_FULL => 'ФИО полностью',
             self::FIO_SURNAME_INITIALS => 'Фамилия и инициалы',
             self::FIO_WITH_POSITION => 'ФИО полностью и должность с местом работы в скобках',
+            self::FIO_SURNAME_INITIALS_WITH_POSITION => 'Должность и Фамилия c инициалами',
         ];
     }
     public function getFIO($type)
@@ -65,6 +72,8 @@ class PeopleWork extends People
                 return $this->getSurnameInitials();
             case self::FIO_WITH_POSITION:
                 return $this->getFioPosition();
+            case self::FIO_SURNAME_INITIALS_WITH_POSITION:
+                return $this->getPositionSurnameInitials();
             default:
                 throw new InvalidArgumentException('Неизвестный тип вывода ФИО');
         }
@@ -84,7 +93,17 @@ class PeopleWork extends People
 
     public function getFioPosition()
     {
-        return 'stub';
+        return "{$this->getFullFio()} stub";
+    }
+
+    public function getPositionSurnameInitials()
+    {
+        return "{$this->getPositionName()} {$this->getSurnameInitials()}";
+    }
+
+    public function getPositionName()
+    {
+        return $this->positionWork->getPositionName();
     }
 
     public function getSexString()
@@ -98,6 +117,12 @@ class PeopleWork extends People
                 return 'Другое';
         }
     }
+
+    public function getPositionWork()
+    {
+        return $this->hasOne(PeoplePositionCompanyBranchWork::class, ['people_id' => 'id']);
+    }
+
     public function getBranchByPost($post)
     {
         return $post["PeopleWork"]['branches'];
