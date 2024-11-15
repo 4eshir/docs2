@@ -1,5 +1,6 @@
 <?php
 
+use common\widgets\select_search\SelectSearch;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -42,8 +43,8 @@ use yii\widgets\ActiveForm;
         'language' => 'ru',
         'options' => [
             'placeholder' => 'Дата',
-            'class'=> 'form-control',
-            'autocomplete'=>'off'
+            'class' => 'form-control',
+            'autocomplete' => 'off'
         ],
         'clientOptions' => [
             'changeMonth' => true,
@@ -51,9 +52,7 @@ use yii\widgets\ActiveForm;
             'yearRange' => '2000:2100',
         ]])->label('Дата входящего документа') ?>
 
-
     <?= $form->field($model, 'real_number')->textInput()->label('Регистрационный номер входящего документа') ?>
-
 
     <?php
 
@@ -74,13 +73,15 @@ use yii\widgets\ActiveForm;
     ',
     ];
 
-    echo $form->field($model, 'correspondent_id')->widget(Select2::classname(), [
+    /*echo $form->field($model, 'correspondent_id')->widget(SelectSearch::classname(), [
         'data' => ArrayHelper::map($correspondentList, 'id', 'fullFio'),
-        'options' => $params,
-        'pluginOptions' => [
-            'allowClear' => true
-        ],
-    ])->label('ФИО корреспондента');
+        'placeholder' => 'Начните вводить ФИО...',
+    ])->label('ФИО корреспондента');*/
+
+    echo $form->field($model, 'correspondent_id')->widget(SelectSearch::class, [
+        'data' => ArrayHelper::map($correspondentList, 'id', 'fullFio'), // Массив данных для выпадающего списка
+        'placeholder' => 'Выберите корреспондента...',
+    ]);
 
     ?>
 
@@ -145,16 +146,16 @@ use yii\widgets\ActiveForm;
     <div id="nameAnswer" class="col-xs-4" <?= $model->needAnswer == 0 ? 'hidden' : '' ?>>
         <?php
         $params = [
-            'prompt' => ''
+            'prompt' => '---'
         ];
 
-        echo $form->field($model, 'company_id')->widget(Select2::classname(), [
+        /*echo $form->field($model, 'company_id')->widget(Select2::classname(), [
             'data' => ArrayHelper::map($mainCompanyWorkers,'id','fullFio'),
             'options' => $params,
             'pluginOptions' => [
                 'allowClear' => true
             ],
-        ])->label('ФИО ответственного');
+        ])->label('ФИО ответственного');*/
         ?>
     </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>
