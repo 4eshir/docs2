@@ -7,7 +7,7 @@ use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\repositories\general\FilesRepository;
 use DomainException;
-use frontend\models\work\educational\TrainingProgramWork;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use frontend\models\work\general\FilesWork;
 use InvalidArgumentException;
 

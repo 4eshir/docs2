@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\models\work\educational;
+namespace frontend\models\work\educational\training_program;
 
 use common\events\EventTrait;
 use common\helpers\DateFormatter;

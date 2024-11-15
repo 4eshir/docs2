@@ -4,7 +4,6 @@ namespace frontend\controllers\educational;
 
 use app\components\DynamicWidget;
 use common\controllers\DocumentController;
-use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\FilesRepository;
@@ -12,16 +11,11 @@ use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\educational\training_program\CreateTrainingProgramBranchEvent;
 use frontend\models\search\SearchTrainingProgram;
-use frontend\models\work\educational\AuthorProgramWork;
-use frontend\models\work\educational\ThematicPlanWork;
-use frontend\models\work\educational\TrainingProgramWork;
-use frontend\models\work\general\PeopleWork;
+use frontend\models\work\educational\training_program\ThematicPlanWork;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use frontend\services\educational\TrainingProgramService;
 use Yii;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 /**

@@ -63,6 +63,7 @@ AppAsset::register($this);
             'label' => 'Учебная деятельность',
             'items' => [
                 ['label' => 'Образовательные программы', 'url' => ['/educational/training-program/index']],
+                ['label' => 'Учебные группы', 'url' => ['/educational/training-group/index']],
             ],
         ],
         [

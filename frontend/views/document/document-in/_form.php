@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -73,10 +74,13 @@ use yii\widgets\ActiveForm;
     ',
     ];
 
-    echo $form
-        ->field($model, "correspondent_id")
-        ->dropDownList(ArrayHelper::map($correspondentList, 'id', 'fullFio'),$params)
-        ->label('ФИО корреспондента');
+    echo $form->field($model, 'correspondent_id')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map($correspondentList, 'id', 'fullFio'),
+        'options' => $params,
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ])->label('ФИО корреспондента');
 
     ?>
 
@@ -87,10 +91,14 @@ use yii\widgets\ActiveForm;
             'class' => 'form-control com',
             'prompt' => '---',
         ];
-        echo $form
-            ->field($model, 'company_id')
-            ->dropDownList(ArrayHelper::map($availableCompanies, 'id', 'name'), $params)
-            ->label('Организация корреспондента');
+
+        echo $form->field($model, 'company_id')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($availableCompanies, 'id', 'name'),
+            'options' => $params,
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ])->label('Организация корреспондента');
         ?>
     </div>
 
@@ -101,13 +109,16 @@ use yii\widgets\ActiveForm;
             'class' => 'form-control pos',
             'prompt' => '---',
         ];
-        echo $form
-            ->field($model, 'position_id')
-            ->dropDownList(ArrayHelper::map($availablePositions, 'id', 'name'), $params)
-            ->label('Должность корреспондента (при наличии)');
+
+        echo $form->field($model, 'position_id')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($availablePositions, 'id', 'name'),
+            'options' => $params,
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ])->label('Должность корреспондента (при наличии)');
         ?>
     </div>
-
 
     <?= $form->field($model, 'document_theme')->textInput(['maxlength' => true])->label('Тема документа') ?>
 
@@ -136,12 +147,14 @@ use yii\widgets\ActiveForm;
         $params = [
             'prompt' => ''
         ];
-        echo $form->field($model, "nameAnswer")
-            ->dropDownList(
-                ArrayHelper::map($mainCompanyWorkers,'id','fullFio'),
-                $params
-            )
-            ->label('ФИО ответственного');
+
+        echo $form->field($model, 'company_id')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($mainCompanyWorkers,'id','fullFio'),
+            'options' => $params,
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ])->label('ФИО ответственного');
         ?>
     </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>

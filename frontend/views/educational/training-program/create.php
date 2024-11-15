@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\work\educational\TrainingProgramWork;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */

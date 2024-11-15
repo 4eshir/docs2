@@ -10,6 +10,8 @@ use yii\helpers\Url;
 
 class FilesHelper
 {
+    const TYPE_LINK = 'link'; // особый тип, прямая ссылка на хранилище
+
     const TYPE_SCAN = 'scan';
     const TYPE_DOC = 'doc';
     const TYPE_APP = 'app';
@@ -29,6 +31,7 @@ class FilesHelper
     public static function getFileTypes()
     {
         return [
+            self::TYPE_LINK => 'Ссылка',
             self::TYPE_SCAN => 'Сканы документов',
             self::TYPE_DOC => 'Редактируемые файлы документов',
             self::TYPE_APP => 'Приложения к документам',
@@ -60,6 +63,10 @@ class FilesHelper
      */
     public static function createAdditionalPath(string $tableName, string $fileType)
     {
+        if ($fileType == FilesHelper::TYPE_LINK) {
+            return ''; // если тип ссылочный, то не требуется дополнительного пути к filepath
+        }
+
         return FilePaths::BASE_FILEPATH . '/' . $tableName . '/' . $fileType . '/';
     }
 

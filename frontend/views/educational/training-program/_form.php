@@ -1,8 +1,7 @@
 <?php
 
 use app\components\DynamicWidget;
-use common\helpers\html\HtmlBuilder;
-use frontend\models\work\educational\TrainingProgramWork;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\jui\DatePicker;

@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\work\educational\ThematicPlanWork;
+use frontend\models\work\educational\training_program\ThematicPlanWork;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
