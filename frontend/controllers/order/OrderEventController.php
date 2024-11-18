@@ -86,9 +86,9 @@ class OrderEventController extends Controller
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         if($model->load($post)) {
-            var_dump($this->orderEventFormService->getTeamsWithParticipants($post));
-          /*  $teams = $post['teams'];
-            $nominations = $post['nominations'];
+            $teams = $this->orderEventFormService->getTeamsWithParticipants($post);
+            //var_dump($teams);
+            /*$nominations = $post['nominations'];
             $participants = $post['OrderEventForm']['participant_id'];
             $personalParticipants = $post['OrderEventForm']['participant_personal_id'];
             $teachers_id = $post['OrderEventForm']['teacher_id'];
@@ -145,15 +145,16 @@ class OrderEventController extends Controller
             $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
             $this->teamService->addTeamNameEvent($teams, $model, $modelForeignEvent->id);
-            $this->actParticipantService->addActParticipantEvent(
-                $model, $participants, $teachers_id, $teachers2_id,
-                $modelForeignEvent->id, $branches, $focuses, NULL, $actNominationsList);
+            //$this->actParticipantService->addActParticipantEvent(
+            //    $model, $participants, $teachers_id, $teachers2_id,
+            //   $modelForeignEvent->id, $branches, $focuses, NULL, $actNominationsList);
             //$this->teamService->addTeamEvent($model, $actParticipantId, $modelForeignEvent->id, $participants, $teamNameId);
 
             $this->foreignEventService->saveFilesFromModel($modelForeignEvent, $model->actFiles, $number);
             $modelOrderEvent->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $model->releaseEvents();
+
             return $this->redirect(['view', 'id' => $modelOrderEvent->id]);*/
         }
         return $this->render('create', [
