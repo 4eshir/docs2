@@ -170,6 +170,18 @@ class DocumentInWork extends DocumentIn
         return '---';
     }
 
+    public function getCreatorName()
+    {
+        $creator = $this->creatorWork;
+        return $creator ? $creator->getFullName() : '---';
+    }
+
+    public function getLastEditorName()
+    {
+        $editor = $this->lastUpdateWork;
+        return $editor ? $editor->getFullName() : '---';
+    }
+
     /**
      * Возвращает массив
      * link => форматированная ссылка на документ
@@ -284,6 +296,13 @@ class DocumentInWork extends DocumentIn
     public function createFilterPanel($searchModel)
     {
         return HtmlBuilder::createFilterPanel($searchModel);
+    }
+
+    public function createFilesButton()
+    {
+        $links = $this->getFileLinks(FilesHelper::TYPE_SCAN);
+
+        return HtmlBuilder::createGroupFilesInViewCard($links, 'ckan');
     }
 
     public function beforeValidate()

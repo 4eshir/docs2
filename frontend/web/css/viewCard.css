@@ -37,3 +37,7 @@
 .field-date {
     flex: 4;
 }
+
+.fileIcon {
+    width: 4em;
+}

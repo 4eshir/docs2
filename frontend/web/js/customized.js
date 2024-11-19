@@ -121,23 +121,26 @@ document.addEventListener('DOMContentLoaded', function () {
  * Отображение панели фильтров
  */
 document.addEventListener('DOMContentLoaded', function () {
-    const filterToggle = document.getElementById('filterToggle');
-    const filterPanel = document.getElementById('filterPanel');
-    const pathSVG = filterToggle.getElementsByTagName('path');
-    let color = '#000';
+    if (checkPropertiesIndex())
+    {
+        const filterToggle = document.getElementById('filterToggle');
+        const filterPanel = document.getElementById('filterPanel');
+        const pathSVG = filterToggle.getElementsByTagName('path');
+        let color = '#000';
 
-    filterToggle.addEventListener('click', function () {
-        if (filterPanel.style.display === 'none' || filterPanel.style.display === '') {
-            filterPanel.style.display = 'block';
-            color = '#009580';
-        } else {
-            filterPanel.style.display = 'none';
-            color = '#000';
-        }
-        for (let i = 0; i < pathSVG.length; i++) {
-            pathSVG[i].setAttribute('stroke', color);
-        }
-    });
+        filterToggle.addEventListener('click', function () {
+            if (filterPanel.style.display === 'none' || filterPanel.style.display === '') {
+                filterPanel.style.display = 'block';
+                color = '#009580';
+            } else {
+                filterPanel.style.display = 'none';
+                color = '#000';
+            }
+            for (let i = 0; i < pathSVG.length; i++) {
+                pathSVG[i].setAttribute('stroke', color);
+            }
+        });
+    }
 });
 
 /**
@@ -180,20 +183,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
-    }
 
-    const prevItem = document.querySelector('li.prev').firstElementChild;
-    const nextItem = document.querySelector('li.next').firstElementChild;
+        const prevItem = document.querySelector('li.prev').firstElementChild;
+        const nextItem = document.querySelector('li.next').firstElementChild;
 
-    if (prevItem) {
-        prevItem.classList.add('back');
-        const backToggle = new IconToggle(prevItem);
-        backToggle.updateIcon();
-    }
+        if (prevItem) {
+            prevItem.classList.add('back');
+            const backToggle = new IconToggle(prevItem);
+            backToggle.updateIcon();
+        }
 
-    if (nextItem) {
-        nextItem.classList.add('front');
-        const frontToggle = new IconToggle(nextItem);
-        frontToggle.updateIcon();
+        if (nextItem) {
+            nextItem.classList.add('front');
+            const frontToggle = new IconToggle(nextItem);
+            frontToggle.updateIcon();
+        }
     }
 });
+
+function checkPropertiesIndex()
+{
+    return /index$/.test(window.location.href);
+}
