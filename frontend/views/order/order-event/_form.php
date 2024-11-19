@@ -330,53 +330,19 @@ use yii\jui\DatePicker;
                         <div>
                             <h4>Командное участие</h4>
                         </div>
-                        <div id = "team-participant-people">
-                            <?php DynamicFormWidget::begin([
-                                'widgetContainer' => 'dynamicform_wrapper',
-                                'widgetBody' => '.container-items-part',
-                                'widgetItem' => '.part-item',
-                                'limit' => 10,
-                                'min' => 0,
-                                'insertButton' => '.add-part',
-                                'deleteButton' => '.remove-part',
-                                'model' => $model,
-                                'formId' => 'dynamic-form-new',
-                                'formFields' => [
-                                    'description',
-                                ],
-                            ]); ?>
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                <tr>
-                                    <th>ФИО участника</th>
-                                    <th class="text-center" style="width: 90px;">
-                                        <button type="button" class="add-part btn btn-success btn-xs"><span class="fa fa-plus"></span></button>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody class="container-items-part">
-                                <tr class="part-item">
-                                    <td class="vcenter">
-                                        <?php
-                                        $params = [
-                                            'id' => 'participant-select-1',
-                                            'class' => 'form-control pos participant-select',
-                                            'prompt' => '---',
-                                            'multiple' => true // Устанавливаем параметр multiple в true
-                                        ];
-                                        echo $form
-                                            ->field($model, '[part][]participant_id[]')
-                                            ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                            ->label('ФИО участника');
-                                        ?>
-                                    </td>
-                                    <td class="text-center vcenter" style="width: 90px; verti">
-                                        <button type="button" class="remove-part btn btn-danger btn-xs"><span class="fa fa-minus"></span></button>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <?php DynamicFormWidget::end(); ?>
+                       <div id = "team-participant-people">
+                            <?php
+                            $params = [
+                                'id' => 'participant-select-1',
+                                'class' => 'form-control pos participant-select',
+                                'prompt' => '---',
+                                'multiple' => true // Устанавливаем параметр multiple в true
+                            ];
+                            echo $form
+                                ->field($model, '[part][]participant_id[]')
+                                ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                                ->label('ФИО участника');
+                            ?>
                             <div class = "hidden-select" hidden>
                                 <?php
                                 $params = [
@@ -462,7 +428,7 @@ use yii\jui\DatePicker;
                             'class' => 'form-control pos teamDropDownList',
                             'prompt' => '--- Выберите команду ---',
                         ];
-                        echo $form->field($model, 'teamList[]')->dropDownList([], $params)->label('Выберите команду');
+                        echo $form->field($model, '[part][]teamList[]')->dropDownList([], $params)->label('Выберите команду');
                         ?>
                     </div>
                     Номинация

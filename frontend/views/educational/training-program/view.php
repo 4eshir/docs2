@@ -1,7 +1,7 @@
 <?php
 
 use common\helpers\files\FilesHelper;
-use frontend\models\work\educational\TrainingProgramWork;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;

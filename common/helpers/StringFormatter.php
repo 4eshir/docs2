@@ -56,6 +56,16 @@ class StringFormatter
         return $string;
     }
 
+    public static function getLastSegmentByBackslash($string) {
+        $lastSlashPos = strrpos($string, '\\');
+
+        if ($lastSlashPos !== false) {
+            return substr($string, $lastSlashPos + 1);
+        }
+
+        return $string;
+    }
+
     public static function createHash(string $str)
     {
         return MD5($str);

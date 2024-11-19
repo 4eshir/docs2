@@ -4,7 +4,7 @@ namespace frontend\events\educational\training_program;
 
 use common\events\EventInterface;
 use common\repositories\educational\TrainingProgramRepository;
-use frontend\models\work\educational\AuthorProgramWork;
+use frontend\models\work\educational\training_program\AuthorProgramWork;
 use Yii;
 
 class DeleteAuthorsEvent implements EventInterface

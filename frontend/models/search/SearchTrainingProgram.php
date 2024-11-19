@@ -2,7 +2,7 @@
 
 namespace frontend\models\search;
 
-use frontend\models\work\educational\TrainingProgramWork;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use yii\data\ActiveDataProvider;
 
 /**

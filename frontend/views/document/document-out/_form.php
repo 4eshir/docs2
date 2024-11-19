@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -58,12 +59,16 @@ use yii\widgets\ActiveForm;
         );
     ',
     ];
-    echo $form
-        ->field($model, "correspondent_id")
-        ->dropDownList(ArrayHelper::map($correspondentList, 'id', 'fullFio'),$params)
-        ->label('ФИО корреспондента');
 
+    /*echo $form->field($model, 'correspondent_id')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map($correspondentList, 'id', 'fullFio'),
+        'options' => $params,
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ])->label('ФИО корреспондента');*/
     ?>
+
     <div id="corr_div1">
         <?php
         $params = [
@@ -71,10 +76,18 @@ use yii\widgets\ActiveForm;
             'class' => 'form-control pos',
             'prompt' => '---',
         ];
-        echo $form
+        /*echo $form
             ->field($model, 'position_id')
             ->dropDownList(ArrayHelper::map($availablePositions, 'id', 'name'), $params)
-            ->label('Должность корреспондента (при наличии)');
+            ->label('Должность корреспондента (при наличии)');*/
+
+        /*echo $form->field($model, 'position_id')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($availablePositions, 'id', 'name'),
+            'options' => $params,
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ])->label('Должность корреспондента (при наличии)');*/
         ?>
     </div>
     <div id="corr_div2">

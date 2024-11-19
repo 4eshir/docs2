@@ -2,14 +2,12 @@
 
 namespace frontend\services\educational;
 
-use app\models\AuthorProgram;
 use common\components\wizards\ExcelWizard;
 use common\helpers\files\filenames\TrainingProgramFileNameGenerator;
 use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
-use common\models\scaffold\TrainingProgram;
 use common\repositories\educational\TrainingProgramRepository;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
@@ -19,9 +17,9 @@ use frontend\events\educational\training_program\CreateAuthorProgramEvent;
 use frontend\events\educational\training_program\CreateThemeInPlanEvent;
 use frontend\events\educational\training_program\ResetThematicPlanEvent;
 use frontend\events\general\FileCreateEvent;
-use frontend\models\work\educational\AuthorProgramWork;
-use frontend\models\work\educational\ThematicPlanWork;
-use frontend\models\work\educational\TrainingProgramWork;
+use frontend\models\work\educational\training_program\AuthorProgramWork;
+use frontend\models\work\educational\training_program\ThematicPlanWork;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;

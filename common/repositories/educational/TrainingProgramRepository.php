@@ -5,7 +5,6 @@ namespace common\repositories\educational;
 use common\components\traits\CommonDatabaseFunctions;
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\AuthorProgram;
-use common\models\scaffold\ThematicPlan;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
@@ -13,10 +12,10 @@ use frontend\events\educational\training_program\DeleteAuthorsEvent;
 use frontend\events\educational\training_program\DeleteTrainingProgramBranchEvent;
 use frontend\events\educational\training_program\ResetThematicPlanEvent;
 use frontend\events\general\FileDeleteEvent;
-use frontend\models\work\educational\AuthorProgramWork;
-use frontend\models\work\educational\BranchProgramWork;
-use frontend\models\work\educational\ThematicPlanWork;
-use frontend\models\work\educational\TrainingProgramWork;
+use frontend\models\work\educational\training_program\AuthorProgramWork;
+use frontend\models\work\educational\training_program\BranchProgramWork;
+use frontend\models\work\educational\training_program\ThematicPlanWork;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use Yii;
 
 class TrainingProgramRepository

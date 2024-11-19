@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\models\work\educational;
+namespace frontend\models\work\educational\training_program;
 
 use common\models\scaffold\ThematicPlan;
 use InvalidArgumentException;

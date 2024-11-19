@@ -1,10 +1,9 @@
 <?php
 
-namespace frontend\models\work\educational;
+namespace frontend\models\work\educational\training_program;
 
 use common\models\scaffold\AuthorProgram;
 use frontend\models\work\general\PeopleStampWork;
-use frontend\models\work\general\PeopleWork;
 
 /** @property PeopleStampWork $authorWork */
 

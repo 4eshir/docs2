@@ -3,9 +3,8 @@
 namespace frontend\events\educational\training_program;
 
 use common\events\EventInterface;
-use common\models\scaffold\ThematicPlan;
 use common\repositories\educational\TrainingProgramRepository;
-use frontend\models\work\educational\ThematicPlanWork;
+use frontend\models\work\educational\training_program\ThematicPlanWork;
 use Yii;
 
 class ResetThematicPlanEvent implements EventInterface

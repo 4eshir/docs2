@@ -89,6 +89,7 @@ class DocumentInController extends DocumentController
         $availableCompanies = $this->companyRepository->getList();
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
         if ($model->load(Yii::$app->request->post())) {
+            //var_dump(Yii::$app->request->post());
             $model->generateDocumentNumber();
             $peopleStampId = $this->peopleStampService->createStampFromPeople($model->correspondent_id);
             $model->correspondent_id = $peopleStampId;
