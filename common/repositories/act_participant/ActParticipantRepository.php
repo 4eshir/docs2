@@ -11,9 +11,9 @@ class ActParticipantRepository
     public function getByForeignEventId($foreignEventId){
         return ActParticipantWork::find()->where(['foreign_event_id' => $foreignEventId])->all();
     }
-    public function prepareCreate($participantId, $teacherId, $teacher2Id, $foreignEventId, $branch, $focus, $allowRemoteId, $nomination)
+    public function prepareCreate($teacherId, $teacher2Id, $teamNameId, $foreignEventId, $branch, $focus, $type, $allowRemote, $nomination)
     {
-        $model = ActParticipantWork::fill($participantId, $teacherId, $teacher2Id, $foreignEventId,$branch,$focus, $allowRemoteId, $nomination);
+        $model = ActParticipantWork::fill($teacherId, $teacher2Id, $teamNameId, $foreignEventId, $branch, $focus, $type, $allowRemote, $nomination);
         $command = Yii::$app->db->createCommand();
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();

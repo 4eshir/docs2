@@ -24,7 +24,7 @@ class TeamService
        $this->teamRepository = $teamRepository;
     }
 
-    public function addTeamNameEvent($teams, OrderEventForm $model  , $foreignEventId)
+    public function addTeamNameEvent($teams, OrderEventForm $model, $foreignEventId)
     {
         if($teams != NULL) {
             foreach ($teams as $team) {
