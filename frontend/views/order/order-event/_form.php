@@ -385,7 +385,7 @@ use yii\jui\DatePicker;
                             ->label('Форма реализации') ?>
 
                         Представленные материалы<br>
-                        <?= $form->field($model, 'actFiles[]')->fileInput()->label('Представленные материалы') ?>
+                        <?= $form->field($model, '[personal][]actFiles[]')->fileInput()->label('Представленные материалы') ?>
                         <div class="container nomination-dropdown-list">
                             <?php
                             $params = [
@@ -467,7 +467,7 @@ use yii\jui\DatePicker;
                         <?= $form->field($model, '[part][]formRealization[]')->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
                             ->label('Форма реализации') ?>
                         Представленные материалы<br>
-                        <?= $form->field($model, 'actFiles[]')->fileInput()->label('Представленные материалы') ?>
+                        <?= $form->field($model, '[part][]actFiles[]')->fileInput()->label('Представленные материалы') ?>
                         <div class="container nomination-dropdown-list">
                             <?php
                             $params = [

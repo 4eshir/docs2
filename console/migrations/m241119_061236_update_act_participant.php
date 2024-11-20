@@ -19,6 +19,7 @@ class m241119_061236_update_act_participant extends Migration
             'type' => $this->integer()->notNull(),
             'nomination' => $this->string(1000)->notNull(),
             'team_name_id' => $this->integer()->null(),
+            'form' => $this->integer()->null(),
             'foreign_event_id' => $this->integer()->notNull(),
             'allow_remote' => $this->integer()->null(),
         ]);

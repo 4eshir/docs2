@@ -4,6 +4,7 @@ use app\components\DynamicWidget;
 use app\models\work\event\ForeignEventWork;
 use app\models\work\order\OrderEventWork;
 use app\models\work\order\OrderMainWork;
+use app\models\work\team\ActParticipantWork;
 use app\services\act_participant\ActParticipantService;
 use app\services\act_participant\SquadParticipantService;
 use app\services\event\OrderEventFormService;
@@ -28,6 +29,8 @@ use frontend\models\work\general\FilesWork;
 use frontend\services\event\ForeignEventService;
 use Yii;
 use yii\web\Controller;
+use yii\web\UploadedFile;
+
 class OrderEventController extends Controller
 {
     private PeopleRepository $peopleRepository;
@@ -90,11 +93,16 @@ class OrderEventController extends Controller
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         if($model->load($post)) {
+            $this->orderEventFormService->getFilesInstances($model);
             $teams = $this->orderEventFormService->getTeamsWithParticipants($post['OrderEventForm']['part']);
             $persons = $this->orderEventFormService->getPersonalParticipants($post['OrderEventForm']['personal']);
-            $squads = ['teams' => $teams, 'persons' => $persons];
-            var_dump($squads);
-            if (!$model->validate()) {
+            $actFilesPart = UploadedFile::getInstances($model, 'part');
+            $actFilesPersonal = UploadedFile::getInstances($model, 'personal');
+            $act = ActParticipantWork::find()->andWhere(['id' => 152])->one();
+            $this->actParticipantService->saveFilesFromModel($act, $actFilesPersonal);
+            $act->releaseEvents();
+            var_dump($actFilesPersonal);
+            /*if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->orderEventFormService->getFilesInstances($model);
@@ -141,14 +149,16 @@ class OrderEventController extends Controller
             $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
             $this->teamService->addTeamNameEvent($teams, $model, $modelForeignEvent->id);
-            $this->actParticipantService->addActParticipantEvent($model, $post, $modelForeignEvent->id);
-            $this->squadParticipantService->addSquadParticipantEvent();
+            $model->releaseEvents();
+            $this->actParticipantService->addActParticipantEvent($model, $teams, $persons, $modelForeignEvent->id);
+            $model->releaseEvents();
+            $this->squadParticipantService->addSquadParticipantEvent($model, $teams,  $persons, $modelForeignEvent->id);
+            $model->releaseEvents();
             $this->foreignEventService->saveFilesFromModel($modelForeignEvent, $model->actFiles, $number);
             $modelOrderEvent->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $model->releaseEvents();
-
-            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
+            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);*/
         }
         return $this->render('create', [
             'model' => $model,
