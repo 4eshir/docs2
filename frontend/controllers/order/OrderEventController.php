@@ -5,6 +5,7 @@ use app\models\work\event\ForeignEventWork;
 use app\models\work\order\OrderEventWork;
 use app\models\work\order\OrderMainWork;
 use app\services\act_participant\ActParticipantService;
+use app\services\act_participant\SquadParticipantService;
 use app\services\event\OrderEventFormService;
 use app\services\order\OrderEventService;
 use app\services\order\OrderMainService;
@@ -39,6 +40,7 @@ class OrderEventController extends Controller
     private OrderEventFormService $orderEventFormService;
     private ForeignEventService $foreignEventService;
     private OrderEventService $orderEventService;
+    private SquadParticipantService $squadParticipantService;
     private TeamService $teamService;
     private ActParticipantService $actParticipantService;
     public function __construct(
@@ -51,6 +53,7 @@ class OrderEventController extends Controller
         OrderEventFormService $orderEventFormService,
         ForeignEventService $foreignEventService,
         OrderEventService $orderEventService,
+        SquadParticipantService $squadParticipantService,
         TeamService  $teamService,
         ActParticipantService $actParticipantService,
         FileService $fileService,
@@ -65,6 +68,7 @@ class OrderEventController extends Controller
         $this->orderEventRepository = $orderEventRepository;
         $this->orderEventService = $orderEventService;
         $this->orderEventFormService = $orderEventFormService;
+        $this->squadParticipantService = $squadParticipantService;
         $this->foreignEventService = $foreignEventService;
         $this->teamService = $teamService;
         $this->actParticipantService = $actParticipantService;
@@ -86,18 +90,10 @@ class OrderEventController extends Controller
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         if($model->load($post)) {
-            $teams = $this->orderEventFormService->getTeamsWithParticipants($post);
-            //var_dump($teams);
-            /*$nominations = $post['nominations'];
-            $participants = $post['OrderEventForm']['participant_id'];
-            $personalParticipants = $post['OrderEventForm']['participant_personal_id'];
-            $teachers_id = $post['OrderEventForm']['teacher_id'];
-            $teachers2_id = $post['OrderEventForm']['teacher2_id'];
-            $branches = $post['OrderEventForm']['branch'];
-            $focuses = $post['OrderEventForm']['focus'];
-            $eventWays = $post['OrderEventForm']['formRealization'];
-            $actTeamList = $post['OrderEventForm']['teamList'];
-            $actNominationsList = $post['OrderEventForm']['nominationList'];
+            $teams = $this->orderEventFormService->getTeamsWithParticipants($post['OrderEventForm']['part']);
+            $persons = $this->orderEventFormService->getPersonalParticipants($post['OrderEventForm']['personal']);
+            $squads = ['teams' => $teams, 'persons' => $persons];
+            var_dump($squads);
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -145,17 +141,14 @@ class OrderEventController extends Controller
             $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
             $this->teamService->addTeamNameEvent($teams, $model, $modelForeignEvent->id);
-            //$this->actParticipantService->addActParticipantEvent(
-            //    $model, $participants, $teachers_id, $teachers2_id,
-            //   $modelForeignEvent->id, $branches, $focuses, NULL, $actNominationsList);
-            //$this->teamService->addTeamEvent($model, $actParticipantId, $modelForeignEvent->id, $participants, $teamNameId);
-
+            $this->actParticipantService->addActParticipantEvent($model, $post, $modelForeignEvent->id);
+            $this->squadParticipantService->addSquadParticipantEvent();
             $this->foreignEventService->saveFilesFromModel($modelForeignEvent, $model->actFiles, $number);
             $modelOrderEvent->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $model->releaseEvents();
 
-            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);*/
+            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
         }
         return $this->render('create', [
             'model' => $model,
