@@ -89,6 +89,7 @@ class OrderEventController extends Controller
     }
     public function actionCreate() {
         /* @var OrderEventForm $model */
+        /* @var ActParticipantWork $act */
         $model = new OrderEventForm();
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
@@ -101,7 +102,7 @@ class OrderEventController extends Controller
             $act = ActParticipantWork::find()->andWhere(['id' => 152])->one();
             $this->actParticipantService->saveFilesFromModel($act, $actFilesPersonal);
             $act->releaseEvents();
-            var_dump($actFilesPersonal);
+            var_dump('OK!!!');
             /*if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }

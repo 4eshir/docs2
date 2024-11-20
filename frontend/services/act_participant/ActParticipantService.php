@@ -33,7 +33,7 @@ class ActParticipantService
     {
         if ($actFiles != NULL) {
             for ($i = 1; $i < count($actFiles) + 1; $i++) {
-                $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_DOC, ['counter' => $i]);
+                $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_DOC, ['counter' => $i, 'extensions' => $actFiles[$i - 1]]);
                 $this->fileService->uploadFile(
                     $actFiles[$i - 1],
                     $filename,
@@ -56,8 +56,6 @@ class ActParticipantService
         }
 
     }
-
-
     public function addActParticipantEvent(OrderEventForm $model, $teams, $persons, $foreignEventId)
     {
         foreach($teams as $team) {
@@ -95,18 +93,4 @@ class ActParticipantService
             );
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

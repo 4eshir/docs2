@@ -15,7 +15,6 @@ use InvalidArgumentException;
 class ActParticipantFileNameGenerator implements FileNameGeneratorInterface
 {
     private FilesRepository $filesRepository;
-
     public function __construct(FilesRepository $filesRepository)
     {
         $this->filesRepository = $filesRepository;
@@ -39,10 +38,8 @@ class ActParticipantFileNameGenerator implements FileNameGeneratorInterface
             preg_match('/Акт(\d+)_/', basename($lastDocFile->filepath), $matches);
             return (int)$matches[1];
         }
-
         return 0;
     }
-
     private function getOrdinalFileNumberApp($object)
     {
         $lastAppFile = $this->filesRepository->getLastFile($object::tableName(), $object->id, FilesHelper::TYPE_APP);
@@ -51,10 +48,8 @@ class ActParticipantFileNameGenerator implements FileNameGeneratorInterface
             preg_match('/Акт(\d+)_/', basename($lastAppFile->filepath), $matches);
             return (int)$matches[1];
         }
-
         return 0;
     }
-
     public function generateFileName($object, $fileType, $params = []): string
     {
         switch ($fileType) {
@@ -66,19 +61,18 @@ class ActParticipantFileNameGenerator implements FileNameGeneratorInterface
     }
     private function generateActFileName($object, $params = [])
     {
+        $actFiles = $params['extensions'];
         if (!array_key_exists('counter', $params)) {
             throw new DomainException('Параметр \'counter\' обязателен');
         }
         /** @var ActParticipantWork $object */
-        $date = '2024-01-01';
-        $new_date = DateFormatter::format($date, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
+        $number = $object->id;
         $filename =
             'Акт'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_DOC) + $params['counter']).
-            '_Акт.'.$new_date;
+            '_Акт.'.$number;
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
         $res = StringFormatter::CutFilename($res);
-        //return $res . '.' . $object->actFiles[$params['counter'] - 1]->extension;
-        return $res;
+        return $res . '.' . $actFiles->extension;
     }
 }
