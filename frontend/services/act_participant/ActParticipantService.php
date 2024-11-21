@@ -9,6 +9,7 @@ use common\helpers\files\filenames\ActParticipantFileNameGenerator;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\ActParticipant;
+use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\team\TeamRepository;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
@@ -18,15 +19,18 @@ class ActParticipantService
 {
     public TeamRepository $teamRepository;
     private ActParticipantFileNameGenerator $filenameGenerator;
+    private ActParticipantRepository $actParticipantRepository;
     private FileService $fileService;
     public function __construct(
         TeamRepository $teamRepository,
         ActParticipantFileNameGenerator $filenameGenerator,
+        ActParticipantRepository $actParticipantRepository,
         FileService $fileService
     )
     {
         $this->teamRepository = $teamRepository;
         $this->filenameGenerator = $filenameGenerator;
+        $this->actParticipantRepository = $actParticipantRepository;
         $this->fileService = $fileService;
     }
     public function saveFilesFromModel(ActParticipantWork $model , $actFiles)
@@ -54,7 +58,26 @@ class ActParticipantService
                 );
             }
         }
-
+    }
+    public function addActParticipantFile($teams, $persons, $foreignEventId)
+    {
+        /* @var ActParticipantWork $act */
+        $act = $this->actParticipantRepository->getByTypeAndForeignEventId($foreignEventId, 1);
+        for($i = 0; $i < count($teams); $i++) {
+            if($teams[$i]['files'] != NULL) {
+                var_dump($teams[$i]['files']);
+               // $this->saveFilesFromModel($act[$i], $teams[$i]['files']);
+              //  $act[$i]->releaseEvent();
+            }
+        }
+        $act = $this->actParticipantRepository->getByTypeAndForeignEventId($foreignEventId, 0);
+        for($i = 0; $i < count($persons); $i++) {
+            if($persons[$i]['files'] != NULL) {
+                var_dump($persons[$i]['files']);
+                //$this->saveFilesFromModel($act[$i], $persons[$i]['files']);
+                //$act[$i]->releaseEvent();
+            }
+        }
     }
     public function addActParticipantEvent(OrderEventForm $model, $teams, $persons, $foreignEventId)
     {

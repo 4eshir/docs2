@@ -34,4 +34,8 @@ class ActParticipantRepository
             ->andWhere(['nomination' => $nomination])
             ->all();
     }
+    public function getByTypeAndForeignEventId($foreignEventId, $type)
+    {
+        return ActParticipantWork::find()->andWhere(['foreign_event_id' => $foreignEventId])->andWhere(['type' => $type])->all();
+    }
 }

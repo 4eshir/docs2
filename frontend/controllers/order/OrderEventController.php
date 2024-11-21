@@ -95,15 +95,10 @@ class OrderEventController extends Controller
         $post = Yii::$app->request->post();
         if($model->load($post)) {
             $this->orderEventFormService->getFilesInstances($model);
-            $teams = $this->orderEventFormService->getTeamsWithParticipants($post['OrderEventForm']['part']);
-            $persons = $this->orderEventFormService->getPersonalParticipants($post['OrderEventForm']['personal']);
-            $actFilesPart = UploadedFile::getInstances($model, 'part');
-            $actFilesPersonal = UploadedFile::getInstances($model, 'personal');
-            $act = ActParticipantWork::find()->andWhere(['id' => 152])->one();
-            $this->actParticipantService->saveFilesFromModel($act, $actFilesPersonal);
-            $act->releaseEvents();
+            $teams = $this->orderEventFormService->getTeamsWithParticipants($post['OrderEventForm']['part'], $model);
+            $persons = $this->orderEventFormService->getPersonalParticipants($post['OrderEventForm']['personal'], $model);
             var_dump('OK!!!');
-            /*if (!$model->validate()) {
+            if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->orderEventFormService->getFilesInstances($model);
@@ -159,7 +154,8 @@ class OrderEventController extends Controller
             $modelOrderEvent->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $model->releaseEvents();
-            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);*/
+            $this->actParticipantService->addActParticipantFile($teams, $persons, $modelOrderEvent->id);
+            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
         }
         return $this->render('create', [
             'model' => $model,
