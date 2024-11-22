@@ -24,12 +24,12 @@ class TeamService
        $this->teamRepository = $teamRepository;
     }
 
-    public function addTeamNameEvent($teams, OrderEventForm $model  , $foreignEventId)
+    public function addTeamNameEvent($teams, OrderEventForm $model, $foreignEventId)
     {
         if($teams != NULL) {
             foreach ($teams as $team) {
                 if ($team != NULL && $foreignEventId != NULL) {
-                    $model->recordEvent(new TeamNameCreateEvent($team, $foreignEventId), TeamNameWork::class);
+                    $model->recordEvent(new TeamNameCreateEvent($team['team'][0], $foreignEventId), TeamNameWork::class);
                 }
             }
         }

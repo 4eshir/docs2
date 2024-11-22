@@ -4,7 +4,9 @@ use app\components\DynamicWidget;
 use app\models\work\event\ForeignEventWork;
 use app\models\work\order\OrderEventWork;
 use app\models\work\order\OrderMainWork;
+use app\models\work\team\ActParticipantWork;
 use app\services\act_participant\ActParticipantService;
+use app\services\act_participant\SquadParticipantService;
 use app\services\event\OrderEventFormService;
 use app\services\order\OrderEventService;
 use app\services\order\OrderMainService;
@@ -27,6 +29,8 @@ use frontend\models\work\general\FilesWork;
 use frontend\services\event\ForeignEventService;
 use Yii;
 use yii\web\Controller;
+use yii\web\UploadedFile;
+
 class OrderEventController extends Controller
 {
     private PeopleRepository $peopleRepository;
@@ -39,6 +43,7 @@ class OrderEventController extends Controller
     private OrderEventFormService $orderEventFormService;
     private ForeignEventService $foreignEventService;
     private OrderEventService $orderEventService;
+    private SquadParticipantService $squadParticipantService;
     private TeamService $teamService;
     private ActParticipantService $actParticipantService;
     public function __construct(
@@ -51,6 +56,7 @@ class OrderEventController extends Controller
         OrderEventFormService $orderEventFormService,
         ForeignEventService $foreignEventService,
         OrderEventService $orderEventService,
+        SquadParticipantService $squadParticipantService,
         TeamService  $teamService,
         ActParticipantService $actParticipantService,
         FileService $fileService,
@@ -65,6 +71,7 @@ class OrderEventController extends Controller
         $this->orderEventRepository = $orderEventRepository;
         $this->orderEventService = $orderEventService;
         $this->orderEventFormService = $orderEventFormService;
+        $this->squadParticipantService = $squadParticipantService;
         $this->foreignEventService = $foreignEventService;
         $this->teamService = $teamService;
         $this->actParticipantService = $actParticipantService;
@@ -82,22 +89,15 @@ class OrderEventController extends Controller
     }
     public function actionCreate() {
         /* @var OrderEventForm $model */
+        /* @var ActParticipantWork $act */
         $model = new OrderEventForm();
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         if($model->load($post)) {
-            var_dump($this->orderEventFormService->getTeamsWithParticipants($post));
-          /*  $teams = $post['teams'];
-            $nominations = $post['nominations'];
-            $participants = $post['OrderEventForm']['participant_id'];
-            $personalParticipants = $post['OrderEventForm']['participant_personal_id'];
-            $teachers_id = $post['OrderEventForm']['teacher_id'];
-            $teachers2_id = $post['OrderEventForm']['teacher2_id'];
-            $branches = $post['OrderEventForm']['branch'];
-            $focuses = $post['OrderEventForm']['focus'];
-            $eventWays = $post['OrderEventForm']['formRealization'];
-            $actTeamList = $post['OrderEventForm']['teamList'];
-            $actNominationsList = $post['OrderEventForm']['nominationList'];
+            $this->orderEventFormService->getFilesInstances($model);
+            $teams = $this->orderEventFormService->getTeamsWithParticipants($post['OrderEventForm']['part'], $model);
+            $persons = $this->orderEventFormService->getPersonalParticipants($post['OrderEventForm']['personal'], $model);
+            var_dump('OK!!!');
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -145,16 +145,17 @@ class OrderEventController extends Controller
             $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
             $this->teamService->addTeamNameEvent($teams, $model, $modelForeignEvent->id);
-            $this->actParticipantService->addActParticipantEvent(
-                $model, $participants, $teachers_id, $teachers2_id,
-                $modelForeignEvent->id, $branches, $focuses, NULL, $actNominationsList);
-            //$this->teamService->addTeamEvent($model, $actParticipantId, $modelForeignEvent->id, $participants, $teamNameId);
-
+            $model->releaseEvents();
+            $this->actParticipantService->addActParticipantEvent($model, $teams, $persons, $modelForeignEvent->id);
+            $model->releaseEvents();
+            $this->squadParticipantService->addSquadParticipantEvent($model, $teams,  $persons, $modelForeignEvent->id);
+            $model->releaseEvents();
             $this->foreignEventService->saveFilesFromModel($modelForeignEvent, $model->actFiles, $number);
             $modelOrderEvent->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $model->releaseEvents();
-            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);*/
+            $this->actParticipantService->addActParticipantFile($teams, $persons, $modelOrderEvent->id);
+            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
         }
         return $this->render('create', [
             'model' => $model,

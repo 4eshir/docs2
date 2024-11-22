@@ -14,28 +14,36 @@ class ActParticipantCreateEvent implements EventInterface
     public $foreignEventId;
     public $branch;
     public $focus;
-    public $allowRemoteId;
+    public $allowRemote;
     public $nomination;
+    public $type;
+    public $teamNameId;
+    public $form;
+
     private ActParticipantRepository $actParticipantRepository;
     public function __construct(
-         $participantId,
-         $teacherId,
-         $teacher2Id,
-         $foreignEventId,
-         $branch,
-         $focus,
-         $allowRemoteId,
-         $nomination
+        $teacherId,
+        $teacher2Id,
+        $teamNameId,
+        $foreignEventId,
+        $branch,
+        $focus,
+        $type,
+        $allowRemote,
+        $nomination,
+        $form
     )
     {
-        $this->participantId = $participantId;
         $this->teacherId = $teacherId;
         $this->teacher2Id = $teacher2Id;
-        $this->foreignEventId = $foreignEventId;
+        $this->teamNameId = $teamNameId;
         $this->branch = $branch;
         $this->focus = $focus;
-        $this->allowRemoteId = $allowRemoteId;
+        $this->type = $type;
         $this->nomination = $nomination;
+        $this->foreignEventId = $foreignEventId;
+        $this->allowRemote = $allowRemote;
+        $this->form = $form;
         $this->actParticipantRepository = Yii::createObject(ActParticipantRepository::class);
     }
     public function isSingleton(): bool
@@ -45,14 +53,16 @@ class ActParticipantCreateEvent implements EventInterface
     public function execute() {
         return [
             $this->actParticipantRepository->prepareCreate(
-                $this->participantId,
                 $this->teacherId,
                 $this->teacher2Id,
+                $this->teamNameId,
                 $this->foreignEventId,
                 $this->branch,
                 $this->focus,
-                $this->allowRemoteId,
-                $this->nomination
+                $this->type,
+                $this->allowRemote,
+                $this->nomination,
+                $this->form
             )
         ];
     }
