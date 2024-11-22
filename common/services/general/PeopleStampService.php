@@ -4,6 +4,7 @@ namespace common\services\general;
 
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\general\PeopleStampRepository;
+use DomainException;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
@@ -29,15 +30,20 @@ class PeopleStampService
     {
         /** @var PeopleWork $people */
         $people = $this->peopleRepository->get($peopleId);
-        $stamp = $this->stampRepository->getSimilar($people);
-        /** @var PeoplePositionCompanyBranchWork $positionsCompanies */
-        $positionsCompanies = $this->peopleRepository->getLastPositionsCompanies($peopleId);
+        if ($people) {
+            $stamp = $this->stampRepository->getSimilar($people);
+            /** @var PeoplePositionCompanyBranchWork $positionsCompanies */
+            $positionsCompanies = $this->peopleRepository->getLastPositionsCompanies($peopleId);
 
-        if ($stamp == null) {
-            $stamp = PeopleStampWork::fill($people->id, $people->surname, $people->genitive_surname, $positionsCompanies->position_id, $positionsCompanies->company_id);
+            if ($stamp == null) {
+                $stamp = PeopleStampWork::fill($people->id, $people->surname, $people->genitive_surname, $positionsCompanies->position_id, $positionsCompanies->company_id);
+            }
+
+            return $this->stampRepository->save($stamp);
         }
-
-        return $this->stampRepository->save($stamp);
+        else {
+            throw new DomainException('Невозможно создать копию человека');
+        }
     }
 
 }

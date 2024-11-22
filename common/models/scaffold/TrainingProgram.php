@@ -24,7 +24,7 @@ namespace common\models\scaffold;
  * @property string|null $key_words
  * @property int|null $is_network
  * @property int|null $creator_id
- * @property int|null $last_update_id
+ * @property int|null $last_edit_id
  * @property string|null $created_at
  * @property string|null $updated_at
  *

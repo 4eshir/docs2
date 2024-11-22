@@ -26,6 +26,9 @@ class SelectSearch extends Widget
             }, $optionKeys, $optionVals)
         );
 
+        $currentValue = $this->model->{$this->attribute};
+        $currentText = $this->data[$currentValue] ?? '';
+
         $this->registerAssets($inputId, $combinedArray);
 
         return Html::activeDropDownList($this->model, $this->attribute, [], [
@@ -34,13 +37,13 @@ class SelectSearch extends Widget
                 'prompt' => $this->placeholder,
                 'style' => 'display:none;',
                 'name' => StringFormatter::getLastSegmentByBackslash(get_class($this->model)) . '[' . $this->attribute . ']',
-            ]) . Html::textInput(StringFormatter::getLastSegmentByBackslash(get_class($this->model)) . '[' . $this->attribute . ']', '', [
+            ]) . Html::textInput(StringFormatter::getLastSegmentByBackslash(get_class($this->model)) . '[' . $this->attribute . ']', $currentText, [
                 'placeholder' => $this->placeholder,
                 'class' => 'form-control search-choice-result',
                 'autocomplete' => 'off',
                 'id' => $inputId . '_choice',
                 'readonly' => true,
-            ]). Html::textInput(StringFormatter::getLastSegmentByBackslash(get_class($this->model)) . '[' . $this->attribute . ']', '', [
+            ]) . Html::textInput(StringFormatter::getLastSegmentByBackslash(get_class($this->model)) . '[' . $this->attribute . ']', $currentValue, [
                 'placeholder' => $this->placeholder,
                 'class' => 'form-control search-input choice',
                 'autocomplete' => 'off',
@@ -55,6 +58,15 @@ class SelectSearch extends Widget
 
         $js = <<<JS
         var data = $options;
+        $(document).ready(function() {
+            var modelValue = $('#{$inputId}').val();
+            console.log(modelValue);
+            $('#{$inputId}_input').val(modelValue);
+            var selectedItem = data.find(item => item[0] === modelValue);
+            if (selectedItem) {
+                $('#{$inputId}_choice').val(selectedItem[1]);
+            }
+        });
         $('#{$inputId}_choice').on('keyup focus', function() {
             $('.choice').css('display', 'block').val('');
             var value = $(this).val().toLowerCase();
@@ -68,11 +80,11 @@ class SelectSearch extends Widget
             });
         });
         $('#{$inputId}_input').on('keyup focus', function() {
-            $('.choice').css('display', 'block');
+            $(this).next('.choice').css('display', 'block');
             var value = $(this).val().toLowerCase();
-            var results = data.filter(item => item[1].toLowerCase().includes(value));
-            var resultsDiv = $('.search-results');
+            var resultsDiv = $(this).next('.search-results');
             resultsDiv.empty();
+            var results = data.filter(item => item[1].toLowerCase().includes(value));
             $.each(results, function(index, item) {
                 if (item) {
                     resultsDiv.append('<div class="result-item" data-value="' + item[0] + '">' + item[1] + '</div>');
@@ -99,6 +111,12 @@ class SelectSearch extends Widget
         $(document).on('keyup', function(event) {
             if (event.key === "Escape") {
                 $('.search-results').empty();
+                $('.choice').css('display', 'none');
+            }
+        });
+        $(document).on('click', function(event) {
+            if (!$(event.target).closest('.search-input, .search-choice-result, .search-results').length) {
+                $('.search-results').empty(); 
                 $('.choice').css('display', 'none');
             }
         });

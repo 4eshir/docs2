@@ -47,7 +47,7 @@ class DocumentOut extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['document_number', 'document_date', 'document_name', 'document_theme', 'sent_date', 'creator_id'], 'required'],
+            [['document_number', 'document_date', 'document_name', 'document_theme', 'sent_date'], 'required'],
             [['document_number', 'document_postfix', 'correspondent_id', 'position_id', 'company_id', 'signed_id', 'executor_id', 'send_method', 'creator_id', 'last_edit_id', 'is_answer'], 'integer'],
             [['document_date', 'sent_date'], 'safe'],
             [['document_name'], 'string', 'max' => 64],

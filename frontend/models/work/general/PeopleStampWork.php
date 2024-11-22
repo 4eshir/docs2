@@ -3,10 +3,12 @@
 namespace frontend\models\work\general;
 
 use common\models\scaffold\PeopleStamp;
+use frontend\models\work\dictionaries\PositionWork;
 use InvalidArgumentException;
 
 /**
  * @property PeopleWork $peopleWork
+ * @property PeoplePositionCompanyBranchWork $positionWork
  */
 class PeopleStampWork extends PeopleStamp
 {
@@ -62,7 +64,7 @@ class PeopleStampWork extends PeopleStamp
 
     public function getPositionName()
     {
-        return $this->positionWork->getPositionName();
+        return $this->positionWork ? $this->positionWork->getPositionName() : '';
     }
 
     public function getPeopleWork()
@@ -72,6 +74,6 @@ class PeopleStampWork extends PeopleStamp
 
     public function getPositionWork()
     {
-        return $this->hasOne(PeoplePositionCompanyBranchWork::class, ['people_id' => 'id']);
+        return $this->hasOne(PositionWork::class, ['id' => 'position_id']);
     }
 }

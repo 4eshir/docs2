@@ -13,12 +13,14 @@ use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\dictionaries\PositionRepository;
 use common\repositories\document_in_out\DocumentInRepository;
+use common\repositories\document_in_out\InOutDocumentsRepository;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use DomainException;
 use frontend\events\document_in\InOutDocumentCreateEvent;
 use frontend\events\document_in\InOutDocumentDeleteEvent;
+use frontend\events\document_in\InOutDocumentUpdateEvent;
 use frontend\models\search\SearchDocumentIn;
 use frontend\models\work\document_in_out\DocumentInWork;
 use frontend\services\document\DocumentInService;
@@ -30,6 +32,7 @@ use yii\helpers\Url;
 class DocumentInController extends DocumentController
 {
     private DocumentInRepository $repository;
+    private InOutDocumentsRepository $inOutRepository;
     private PeopleRepository $peopleRepository;
     private PositionRepository $positionRepository;
     private CompanyRepository $companyRepository;
@@ -37,19 +40,21 @@ class DocumentInController extends DocumentController
     private PeopleStampService $peopleStampService;
     private LockWizard $lockWizard;
     public function __construct(
-                             $id,
-                             $module,
-        DocumentInRepository $repository,
-        PeopleRepository     $peopleRepository,
-        PositionRepository   $positionRepository,
-        CompanyRepository    $companyRepository,
-        DocumentInService    $service,
-        PeopleStampService   $peopleStampService,
-        LockWizard           $lockWizard,
-                             $config = [])
+                                 $id,
+                                 $module,
+        DocumentInRepository     $repository,
+        InOutDocumentsRepository $inOutRepository,
+        PeopleRepository         $peopleRepository,
+        PositionRepository       $positionRepository,
+        CompanyRepository        $companyRepository,
+        DocumentInService        $service,
+        PeopleStampService       $peopleStampService,
+        LockWizard               $lockWizard,
+                                 $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;
+        $this->inOutRepository = $inOutRepository;
         $this->peopleRepository = $peopleRepository;
         $this->positionRepository = $positionRepository;
         $this->companyRepository = $companyRepository;
@@ -89,10 +94,8 @@ class DocumentInController extends DocumentController
         $availableCompanies = $this->companyRepository->getList();
         $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
         if ($model->load(Yii::$app->request->post())) {
-            //var_dump(Yii::$app->request->post());
             $model->generateDocumentNumber();
-            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->correspondent_id);
-            $model->correspondent_id = $peopleStampId;
+            $this->service->getPeopleStamps($model);
 
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
@@ -145,15 +148,29 @@ class DocumentInController extends DocumentController
                 }
                 $this->repository->save($model);
                 if ($model->needAnswer) {
-                    $model->recordEvent(
-                        new InOutDocumentCreateEvent(
-                            $model->id,
-                            null,
-                            DateFormatter::format($model->dateAnswer, DateFormatter::dmY_dot, DateFormatter::Ymd_dash),
-                            $model->nameAnswer
-                        ),
-                        DocumentInWork::class
-                    );
+                    if ($this->inOutRepository->getByDocumentInId($model->id)){
+                        $model->recordEvent(
+                            new InOutDocumentUpdateEvent(
+                                $model->id,
+                                null,
+                                $model->dateAnswer,
+                                $model->nameAnswer
+                            ),
+                            DocumentInWork::class
+                        );
+                    }
+                    else {
+                        $model->recordEvent(
+                            new InOutDocumentCreateEvent(
+                                $model->id,
+                                null,
+                                $model->dateAnswer,
+                                $model->nameAnswer
+                            ),
+                            DocumentInWork::class
+                        );
+                    }
+
                 }
                 else {
                     $model->recordEvent(new InOutDocumentDeleteEvent($model->id), DocumentInWork::class);
@@ -217,6 +234,7 @@ class DocumentInController extends DocumentController
         }
 
         echo $response;
+        exit;
     }
 
     public function beforeAction($action)
@@ -227,6 +245,6 @@ class DocumentInController extends DocumentController
             return false;
         }*/
 
-        return parent::beforeAction($action); // TODO: Change the autogenerated stub
+        return parent::beforeAction($action); 
     }
 }

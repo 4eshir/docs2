@@ -12,6 +12,8 @@ namespace common\models\scaffold;
  * @property int|null $quant
  * @property int|null $people_stamp_id
  * @property int|null $regulation_id
+ * @property int|null $creator_id
+ * @property int|null $last_edit_id
  *
  * @property Auditorium $auditorium
  * @property PeopleStamp $peopleStamp
@@ -33,7 +35,9 @@ class LocalResponsibility extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['responsibility_type', 'branch', 'auditorium_id', 'quant', 'people_stamp_id', 'regulation_id'], 'integer'],
+            [['responsibility_type', 'branch', 'auditorium_id', 'quant', 'people_stamp_id', 'regulation_id', 'creator_id', 'last_edit_id'], 'integer'],
+            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
+            [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['last_edit_id' => 'id']],
             [['auditorium_id'], 'exist', 'skipOnError' => true, 'targetClass' => Auditorium::class, 'targetAttribute' => ['auditorium_id' => 'id']],
             [['people_stamp_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['people_stamp_id' => 'id']],
             [['regulation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Regulation::class, 'targetAttribute' => ['regulation_id' => 'id']],
@@ -53,6 +57,8 @@ class LocalResponsibility extends \yii\db\ActiveRecord
             'quant' => 'Quant',
             'people_stamp_id' => 'People ID',
             'regulation_id' => 'Regulation ID',
+            'creator_id' => 'Creator ID',
+            'last_edit_id' => 'Last Edit ID',
         ];
     }
 

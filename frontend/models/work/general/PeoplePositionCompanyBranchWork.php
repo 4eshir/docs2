@@ -29,7 +29,7 @@ class PeoplePositionCompanyBranchWork extends PeoplePositionCompanyBranch
 
     public function getPositionName()
     {
-        return $this->positionWork->getPos();
+        return $this->positionWork->getPositionName();
     }
 
     public function getCompanyWork()
