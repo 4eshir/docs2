@@ -23,9 +23,11 @@ use DomainException;
 use frontend\events\general\FileDeleteEvent;
 use frontend\forms\OrderEventForm;
 use frontend\helpers\HeaderWizard;
+use frontend\models\forms\ActParticipantForm;
 use frontend\models\search\SearchOrderEvent;
 use frontend\models\search\SearchOrderMain;
 use frontend\models\work\general\FilesWork;
+use frontend\models\work\general\PeopleWork;
 use frontend\services\event\ForeignEventService;
 use Yii;
 use yii\web\Controller;
@@ -92,6 +94,7 @@ class OrderEventController extends Controller
         /* @var ActParticipantWork $act */
         $model = new OrderEventForm();
         $people = $this->peopleRepository->getOrderedList();
+        $modelActs = [new ActParticipantWork];
         $post = Yii::$app->request->post();
         if($model->load($post)) {
             $this->orderEventFormService->getFilesInstances($model);
@@ -159,7 +162,8 @@ class OrderEventController extends Controller
         }
         return $this->render('create', [
             'model' => $model,
-            'people' => $people
+            'people' => $people,
+            'modelActs' => $modelActs
         ]);
     }
     public function actionView($id)
