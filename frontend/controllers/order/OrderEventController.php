@@ -94,10 +94,11 @@ class OrderEventController extends Controller
         /* @var ActParticipantWork $act */
         $model = new OrderEventForm();
         $people = $this->peopleRepository->getOrderedList();
-        $modelActs = [new ActParticipantWork];
+        $modelActs = [new ActParticipantForm];
         $post = Yii::$app->request->post();
         if($model->load($post)) {
-            $this->orderEventFormService->getFilesInstances($model);
+            var_dump($post);
+            /*$this->orderEventFormService->getFilesInstances($model);
             $teams = $this->orderEventFormService->getTeamsWithParticipants($post['OrderEventForm']['part'], $model);
             $persons = $this->orderEventFormService->getPersonalParticipants($post['OrderEventForm']['personal'], $model);
             var_dump('OK!!!');
@@ -158,7 +159,7 @@ class OrderEventController extends Controller
             $modelForeignEvent->releaseEvents();
             $model->releaseEvents();
             $this->actParticipantService->addActParticipantFile($teams, $persons, $modelOrderEvent->id);
-            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
+            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);*/
         }
         return $this->render('create', [
             'model' => $model,

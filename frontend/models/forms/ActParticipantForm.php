@@ -17,7 +17,16 @@ namespace frontend\models\forms;
  */
 class ActParticipantForm extends \yii\base\Model
 {
-    public $id;
+    public $participant;
+    public $firstTeacher;
+    public $secondTeacher;
+    public $branch;
+    public $focus;
+    public $type;
+    public $nomination;
+    public $team;
+    public $form;
+    public $actFiles;
     /**
      * {@inheritdoc}
      */

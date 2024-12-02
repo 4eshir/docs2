@@ -326,14 +326,78 @@ use yii\jui\DatePicker;
                         </div>
                         <div class="panel-body">
                             <div class="row">
-                                <?= $form->field($modelAct, "[{$i}]id")->widget(Select2::classname(), [
-                                    'data' => ArrayHelper::map($people,'id','fullFio'),
-                                    'size' => Select2::LARGE,
-                                    'options' => ['prompt' => 'Выберите участника'],
-                                    'pluginOptions' => [
-                                        'allowClear' => true
-                                    ],
-                                ])->label('ФИО участника'); ?>
+                                <div>
+                                    <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::classname(), [
+                                            'data' => ArrayHelper::map($people,'id','fullFio'),
+                                            'size' => Select2::LARGE,
+                                            'options' => ['prompt' => 'Выберите участника'],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ])->label('ФИО участника'); ?>
+                                    </div>
+                                    <?php
+                                    $params = [
+                                        'id' => 'branch',
+                                        'class' => 'form-control pos',
+                                        'prompt' => '---',
+                                    ];
+                                    echo $form
+                                        ->field($modelAct, "[{$i}]branch")
+                                        ->dropDownList(Yii::$app->branches->getList(), $params)
+                                        ->label('Отделы');
+                                    ?>
+                                    <?php
+                                    $params = [
+                                        'id' => 'teacher',
+                                        'class' => 'form-control pos',
+                                        'prompt' => '---',
+                                    ];
+                                    echo $form
+                                        ->field($modelAct, "[{$i}]firstTeacher")
+                                        ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                                        ->label('ФИО учителя');
+                                    echo $form
+                                        ->field($modelAct, "[{$i}]secondTeacher")
+                                        ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                                        ->label('ФИО учителя');
+                                    ?>
+                                    <?php
+                                    $params = [
+                                        'id' => 'focus',
+                                        'class' => 'form-control pos',
+                                        'prompt' => '---',
+                                    ];
+                                    echo $form
+                                        ->field($modelAct, "[{$i}]focus")
+                                        ->dropDownList(Yii::$app->focus->getList(), $params)
+                                        ->label('Направленность');
+                                    ?>
+                                    <?= $form->field($modelAct, "[{$i}]form")->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
+                                        ->label('Форма реализации') ?>
+                                    Представленные материалы<br>
+                                    <?= $form->field($modelAct, "[{$i}]actFiles")->fileInput()->label('Представленные материалы') ?>
+                                    <div class="container nomination-dropdown-list">
+                                        <?php
+                                        $params = [
+                                            'id' => 'nominationDropdown',
+                                            'class' => 'form-control pos nominationDropDownList',
+                                            'prompt' => '--- Выберите номинацию ---',
+                                        ];
+                                        echo $form->field($modelAct, "[{$i}]nomination")->dropDownList([], $params)->label('Выберите номинацию');
+                                        ?>
+                                    </div>
+                                    <div class="container team-dropdown-list">
+                                        В составе команды<br>
+                                        <?php
+                                        $params = [
+                                            'id' => 'teamDropdown',
+                                            'class' => 'form-control pos teamDropDownList',
+                                            'prompt' => '--- Выберите команду ---',
+                                        ];
+                                        echo $form->field($modelAct, "[{$i}]team")->dropDownList([], $params)->label('Выберите команду');
+                                        ?>
+                                    </div>
                             </div>
                         </div>
                     </div>
