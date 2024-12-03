@@ -296,7 +296,7 @@ use yii\jui\DatePicker;
         'type' => 'button',
         'id' => 'toggle-button',
     ]) ?>
-    <div class = "bordered-div">
+    <div class = "bordered-div" id = "acts">
         <h3>Акты участия</h3>
         <div class="panel-body">
             <?php DynamicFormWidget::begin([
@@ -316,11 +316,20 @@ use yii\jui\DatePicker;
             <div class="container-items-act"><!-- widgetContainer -->
                 <?php foreach ($modelActs as $i => $modelAct): ?>
                     <div class="item-act panel panel-default"><!-- widgetBody -->
+                        <label>
+                            <?=
+                                $form->field($modelAct, "[{$i}]type")->radioList([
+                                    '0' => 'Личное участие',
+                                    '1' => 'Командное участие',
+                                ], ['itemOptions' => ['class' => 'radio-inline', 'onclick' => 'handleParticipationChange(this)']])
+                                    ->label('Выберите тип участия');
+                            ?>
+                        </label>
                         <div class="panel-heading">
                             <h3 class="panel-title pull-left"></h3>
                             <div class="pull-right">
-                                <button type="button" class="add-item-act btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i></button>
-                                <button type="button" class="remove-item-act btn btn-danger btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
+                                <button type="button" class="add-item-act btn btn-success btn-xs"><i class="glyphicon glyphicon-plus">+</i></button>
+                                <button type="button" class="remove-item-act btn btn-danger btn-xs"><i class="glyphicon glyphicon-minus">-</i></button>
                             </div>
                             <div class="clearfix"></div>
                         </div>
@@ -330,12 +339,15 @@ use yii\jui\DatePicker;
                                     <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::classname(), [
                                             'data' => ArrayHelper::map($people,'id','fullFio'),
                                             'size' => Select2::LARGE,
-                                            'options' => ['prompt' => 'Выберите участника'],
+                                            'options' => [
+                                                    'prompt' => 'Выберите участника' ,
+                                                'multiple' => true
+                                            ],
                                             'pluginOptions' => [
                                                 'allowClear' => true
                                             ],
                                         ])->label('ФИО участника'); ?>
-                                    </div>
+                                </div>
                                     <?php
                                     $params = [
                                         'id' => 'branch',
@@ -375,7 +387,6 @@ use yii\jui\DatePicker;
                                     ?>
                                     <?= $form->field($modelAct, "[{$i}]form")->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
                                         ->label('Форма реализации') ?>
-                                    Представленные материалы<br>
                                     <?= $form->field($modelAct, "[{$i}]actFiles")->fileInput()->label('Представленные материалы') ?>
                                     <div class="container nomination-dropdown-list">
                                         <?php
@@ -596,30 +607,6 @@ use yii\jui\DatePicker;
     });
 </script>
 <script>
-    // Ждем загрузки DOM
-    function updateCheckboxNames() {
-        const checkboxes = document.querySelectorAll('input[type="radio"].type-participant');
-        checkboxes.forEach((checkbox, index) => {
-            checkbox.name = `participant-${index + 1}`;
-        });
-        requestAnimationFrame(updateCheckboxNames);
-    }
-    // Запускаем первую функцию вызова
-    requestAnimationFrame(updateCheckboxNames);
-</script>
-<script>
-    // Ждем загрузки DOM
-    function updatePersonalCheckboxNames() {
-        const checkboxes2 = document.querySelectorAll('input[type="radio"].personal-type-participant');
-        checkboxes2.forEach((checkbox2, index) => {
-            checkbox2.name = `participant-${index + 1}`;
-        });
-        requestAnimationFrame(updatePersonalCheckboxNames);
-    }
-    // Запускаем первую функцию вызова
-    requestAnimationFrame(updatePersonalCheckboxNames);
-</script>
-<script>
     function updateDivNames() {
         const divs = document.querySelectorAll('div.act-team-participant');
         divs.forEach((div, index) => {
@@ -662,4 +649,20 @@ use yii\jui\DatePicker;
     }
     // Запускаем первую функцию вызова
     requestAnimationFrame(updateDivPersonalNames);
+</script>
+<script>
+    function handleParticipationChange(radio) {
+        const name = radio.name;
+        const index = name.match(/\[(\d+)\]/);
+        if (index) {
+            let extractedIndex = index[1];
+            extractedIndex++;
+            var teamDropdownList = document.getElementById(`team-dropdown-list-${extractedIndex}`);
+            if (radio.value === '0') {
+                teamDropdownList.hidden = true;
+            } else if (radio.value === '1') {
+                teamDropdownList.hidden = false;
+            }
+        }
+    }
 </script>
