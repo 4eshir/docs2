@@ -38,8 +38,6 @@ $helper = new DocumentInWork();
                     ?>
                 </p>
 
-                <?= $this->render('_search', ['model' => $searchModel]) ?>
-
                 <div class="export-menu">
                     <?php
 
@@ -75,7 +73,8 @@ $helper = new DocumentInWork();
         </div>
     </div>
 
-    <?= $helper->createFilterPanel($searchModel) ?>
+    <?= $this->render('_search', ['searchModel' => $searchModel]) ?>
+    <?php /*$helper->createFilterPanel($searchModel)*/ ?>
 
     <div style="margin-bottom: 20px">
 

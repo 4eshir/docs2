@@ -74,7 +74,6 @@ class HtmlBuilder
 
     public static function createFilterPanel($searchModel)
     {
-
         /*echo '<div style="margin-bottom: 10px; margin-top: 20px">' . Html::a('Показать просроченные документы', \yii\helpers\Url::to(['document-in/index', 'sort' => '1'])) .
             ' || ' . Html::a('Показать документы, требующие ответа', \yii\helpers\Url::to(['document-in/index', 'sort' => '2'])) .
             ' || ' . Html::a('Показать все документы', \yii\helpers\Url::to(['document-in/index'])) . '</div>' */
@@ -93,7 +92,20 @@ class HtmlBuilder
                 <path d="M9 12L4 4H15M20 4L15 12V21L9 18V16" stroke="#009580" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg> Фильтры поиска:
         </h3>
-        <div class="flexx">';
+        <div class="filter-date">';
+        $output .= '<div class="flexx">
+                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Дата документа с" autocomplete="off"></div>
+                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Дата" autocomplete="off"></div>
+                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Номер документа" autocomplete="off"></div>
+                        </div><div class="flexx">
+                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Тема документа" autocomplete="off"></div>
+                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Ключевые слова" autocomplete="off"></div>
+                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Корреспондент" autocomplete="off"></div>
+                        </div><div class="flexx">
+                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Исполнитель" autocomplete="off"></div>
+                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Способ отправки" autocomplete="off"></div>
+                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Статус документа" autocomplete="off"></div>
+                    </div>';
 
         //$form = ActiveForm::begin();
         //$output .= $form->field($searchModel, 'fullNumber');

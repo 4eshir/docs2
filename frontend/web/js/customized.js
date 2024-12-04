@@ -121,12 +121,17 @@ document.addEventListener('DOMContentLoaded', function () {
  * Отображение панели фильтров
  */
 document.addEventListener('DOMContentLoaded', function () {
-    if (checkPropertiesIndex())
+    const filterToggle = document.getElementById('filterToggle');
+    const filterPanel = document.getElementById('filterPanel');
+    if (filterToggle && filterPanel)
     {
-        const filterToggle = document.getElementById('filterToggle');
-        const filterPanel = document.getElementById('filterPanel');
         const pathSVG = filterToggle.getElementsByTagName('path');
         let color = '#000';
+
+        if (window.location.href.includes('Search'))
+        {
+            filterPanel.style.display = 'block';
+        }
 
         filterToggle.addEventListener('click', function () {
             if (filterPanel.style.display === 'none' || filterPanel.style.display === '') {
@@ -203,5 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function checkPropertiesIndex()
 {
+    console.log(window.location.href);
+    console.log('-----------------');
     return /index$/.test(window.location.href);
 }

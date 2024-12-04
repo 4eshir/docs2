@@ -63,6 +63,7 @@ class DocumentInController extends DocumentController
         $model = new DocumentInWork();
         $searchModel = new SearchDocumentIn();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
         if ($model->load(Yii::$app->request->post())){
             $this->repository->createReserve($model);
             $this->repository->save($model);

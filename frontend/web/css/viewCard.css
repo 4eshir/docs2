@@ -41,3 +41,26 @@
 .fileIcon {
     width: 4em;
 }
+
+.filter-date {
+    text-align: center;
+    padding: 1em;
+}
+
+.filter-date .form-group {
+    margin: 0 auto;
+}
+
+.filter-input {
+    padding: 0 1em 1em;
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+.form-group-button {
+    margin-top: 1em;
+}
+
+select option[value=""] {
+    color: #ced4da;
+}
