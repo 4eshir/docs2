@@ -167,7 +167,7 @@ class DocumentInService implements DatabaseService
         $peopleStampId = $this->peopleStampService->createStampFromPeople($model->correspondent_id);
         $model->correspondent_id = $peopleStampId;
 
-        if ($model->nameAnswer !== '') {
+        if ($model->nameAnswer !== '' && $model->nameAnswer !== NULL) {
             $peopleStampId = $this->peopleStampService->createStampFromPeople($model->nameAnswer);
             $model->nameAnswer = $peopleStampId;
         }

@@ -49,7 +49,7 @@ class DocumentIn extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['local_number', 'local_date', 'real_date', 'document_theme', 'creator_id'], 'required'],
+            [['local_number', 'local_date', 'real_date', 'document_theme'], 'required'],
             [['local_number', 'local_postfix', 'correspondent_id', 'position_id', 'company_id', 'signed_id', 'get_id', 'send_method', 'creator_id', 'last_edit_id', 'need_answer'], 'integer'],
             [['local_date', 'real_date'], 'safe'],
             [['real_number'], 'string', 'max' => 64],

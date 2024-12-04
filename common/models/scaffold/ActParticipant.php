@@ -17,8 +17,9 @@ use Yii;
  * @property int|null $team_name_id
  * @property int $foreign_event_id
  * @property int $allow_remote
+ * @property int $form
  */
-class ActParticipant extends \yii\db\ActiveRecord
+class  ActParticipant extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -34,7 +35,7 @@ class ActParticipant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['teacher_id', 'teacher2_id', 'branch', 'focus', 'type', 'team_name_id', 'foreign_event_id', 'allow_remote'], 'integer'],
+            [['teacher_id', 'teacher2_id', 'branch', 'focus', 'type', 'team_name_id', 'foreign_event_id', 'allow_remote', 'form'], 'integer'],
             [['branch', 'focus', 'type', 'nomination', 'foreign_event_id'], 'required'],
             [['nomination'], 'string', 'max' => 1000],
         ];
@@ -56,6 +57,7 @@ class ActParticipant extends \yii\db\ActiveRecord
             'team_name_id' => 'Team Name ID',
             'foreign_event_id' => 'Foreign Event ID',
             'allow_remote' => 'Allow Remote',
+            'form' => 'Form',
         ];
     }
 }

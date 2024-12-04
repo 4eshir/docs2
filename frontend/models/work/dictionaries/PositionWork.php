@@ -6,7 +6,7 @@ use common\models\scaffold\Position;
 
 class PositionWork extends Position
 {
-    public function getPos(){
+    public function getPositionName(){
         return $this->name;
     }
 }

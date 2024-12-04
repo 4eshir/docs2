@@ -29,7 +29,7 @@ class TeamService
         if($teams != NULL) {
             foreach ($teams as $team) {
                 if ($team != NULL && $foreignEventId != NULL) {
-                    $model->recordEvent(new TeamNameCreateEvent($team['team'], $foreignEventId), TeamNameWork::class);
+                    $model->recordEvent(new TeamNameCreateEvent($team['team'][0], $foreignEventId), TeamNameWork::class);
                 }
             }
         }

@@ -9,6 +9,7 @@ use frontend\models\work\dictionaries\AuditoriumWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\regulation\RegulationWork;
 use InvalidArgumentException;
+use Yii;
 
 /**
  * @property PeopleStampWork $peopleStampWork
@@ -91,5 +92,15 @@ class LocalResponsibilityWork extends LocalResponsibility
     public function getRegulationWork()
     {
         return $this->hasOne(RegulationWork::class, ['id' => 'regulation_id']);
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($this->creator_id == null) {
+            $this->creator_id = Yii::$app->user->identity->getId();
+        }
+        $this->last_edit_id = Yii::$app->user->identity->getId();
+
+        return parent::beforeSave($insert); 
     }
 }

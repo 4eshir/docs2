@@ -36,10 +36,6 @@ class InOutDocumentCreateEvent implements EventInterface
 
     public function execute()
     {
-        if ($this->repository->getByDocumentInId($this->documentInId)) {
-            return [];
-        }
-
         return [
             $this->repository->prepareCreate(
                 $this->documentInId,

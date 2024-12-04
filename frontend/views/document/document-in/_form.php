@@ -63,25 +63,27 @@ use yii\widgets\ActiveForm;
             "' . Url::toRoute('dependency-dropdown') . '", 
             {id: $(this).val()}, 
             function(res){
+                console.log(res);
                 var resArr = res.split("|split|");
                 var elem = document.getElementsByClassName("pos");
                 elem[0].innerHTML = resArr[0];
                 elem = document.getElementsByClassName("com");
                 elem[0].innerHTML = resArr[1];
+                $("#company").trigger("change");
+                $("#position").trigger("change");
             }
         );
     ',
     ];
 
-    /*echo $form->field($model, 'correspondent_id')->widget(SelectSearch::classname(), [
-        'data' => ArrayHelper::map($correspondentList, 'id', 'fullFio'),
-        'placeholder' => 'Начните вводить ФИО...',
-    ])->label('ФИО корреспондента');*/
-
-    echo $form->field($model, 'correspondent_id')->widget(SelectSearch::class, [
-        'data' => ArrayHelper::map($correspondentList, 'id', 'fullFio'), // Массив данных для выпадающего списка
-        'placeholder' => 'Выберите корреспондента...',
-    ]);
+    echo $form->field($model, 'correspondent_id')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map($mainCompanyWorkers,'id','fullFio'),
+        'size' => Select2::LARGE,
+        'options' => $params,
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ])->label('ФИО корреспондента');
 
     ?>
 
@@ -95,6 +97,7 @@ use yii\widgets\ActiveForm;
 
         echo $form->field($model, 'company_id')->widget(Select2::classname(), [
             'data' => ArrayHelper::map($availableCompanies, 'id', 'name'),
+            'size' => Select2::LARGE,
             'options' => $params,
             'pluginOptions' => [
                 'allowClear' => true
@@ -113,6 +116,7 @@ use yii\widgets\ActiveForm;
 
         echo $form->field($model, 'position_id')->widget(Select2::classname(), [
             'data' => ArrayHelper::map($availablePositions, 'id', 'name'),
+            'size' => Select2::LARGE,
             'options' => $params,
             'pluginOptions' => [
                 'allowClear' => true
@@ -149,13 +153,14 @@ use yii\widgets\ActiveForm;
             'prompt' => '---'
         ];
 
-        /*echo $form->field($model, 'company_id')->widget(Select2::classname(), [
+        echo $form->field($model, 'nameAnswer')->widget(Select2::classname(), [
             'data' => ArrayHelper::map($mainCompanyWorkers,'id','fullFio'),
+            'size' => Select2::LARGE,
             'options' => $params,
             'pluginOptions' => [
                 'allowClear' => true
             ],
-        ])->label('ФИО ответственного');*/
+        ])->label('ФИО ответственного');
         ?>
     </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>

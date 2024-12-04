@@ -39,6 +39,11 @@ class TrainingProgramRepository
         return TrainingProgramWork::find()->where(['id' => $id])->one();
     }
 
+    public function getAll()
+    {
+        return TrainingProgramWork::find()->all();
+    }
+
     public function getBranches($id)
     {
         return BranchProgramWork::find()->where(['training_program_id' => $id])->orderBy(['branch' => SORT_ASC])->all();

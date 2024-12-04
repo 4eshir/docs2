@@ -18,6 +18,7 @@ class ActParticipantCreateEvent implements EventInterface
     public $nomination;
     public $type;
     public $teamNameId;
+    public $form;
 
     private ActParticipantRepository $actParticipantRepository;
     public function __construct(
@@ -29,7 +30,8 @@ class ActParticipantCreateEvent implements EventInterface
         $focus,
         $type,
         $allowRemote,
-        $nomination
+        $nomination,
+        $form
     )
     {
         $this->teacherId = $teacherId;
@@ -41,6 +43,7 @@ class ActParticipantCreateEvent implements EventInterface
         $this->nomination = $nomination;
         $this->foreignEventId = $foreignEventId;
         $this->allowRemote = $allowRemote;
+        $this->form = $form;
         $this->actParticipantRepository = Yii::createObject(ActParticipantRepository::class);
     }
     public function isSingleton(): bool
@@ -58,7 +61,8 @@ class ActParticipantCreateEvent implements EventInterface
                 $this->focus,
                 $this->type,
                 $this->allowRemote,
-                $this->nomination
+                $this->nomination,
+                $this->form
             )
         ];
     }

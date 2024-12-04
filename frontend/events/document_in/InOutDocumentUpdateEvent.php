@@ -36,13 +36,10 @@ class InOutDocumentUpdateEvent implements EventInterface
 
     public function execute()
     {
-        if ($this->repository->getByDocumentOutId($this->documentOutId)) {
-            return [];
-        }
         return [
             $this->repository->prepareUpdate(
-                $this->documentOutId,
                 $this->documentInId,
+                $this->documentOutId,
                 $this->date,
                 $this->responsibleId
             )

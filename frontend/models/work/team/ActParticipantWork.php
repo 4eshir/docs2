@@ -2,11 +2,14 @@
 
 namespace app\models\work\team;
 
+use common\events\EventTrait;
 use common\models\scaffold\ActParticipant;
 use frontend\models\work\general\PeopleWork;
 
 class ActParticipantWork extends ActParticipant
 {
+    use EventTrait;
+    public $actFiles;
     public static function fill(
         $teacherId,
         $teacher2Id,
@@ -16,7 +19,8 @@ class ActParticipantWork extends ActParticipant
         $focus,
         $type,
         $allowRemote,
-        $nomination
+        $nomination,
+        $form
     ){
         $entity = new static();
         $entity->teacher_id = $teacherId;
@@ -28,6 +32,7 @@ class ActParticipantWork extends ActParticipant
         $entity->nomination = $nomination;
         $entity->foreign_event_id = $foreignEventId;
         $entity->allow_remote = $allowRemote;
+        $entity->form = $form;
         return $entity;
     }
     public function getParticipant()

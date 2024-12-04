@@ -55,41 +55,23 @@ use yii\widgets\ActiveForm;
                 elem[0].innerHTML = resArr[0];
                 elem = document.getElementsByClassName("com");
                 elem[0].innerHTML = resArr[1];
+                $("#company").trigger("change");
+                $("#position").trigger("change");
             }
         );
     ',
     ];
 
-    /*echo $form->field($model, 'correspondent_id')->widget(Select2::classname(), [
-        'data' => ArrayHelper::map($correspondentList, 'id', 'fullFio'),
+    echo $form->field($model, 'correspondent_id')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map($mainCompanyWorkers,'id','fullFio'),
+        'size' => Select2::LARGE,
         'options' => $params,
         'pluginOptions' => [
             'allowClear' => true
         ],
-    ])->label('ФИО корреспондента');*/
+    ])->label('ФИО корреспондента');
     ?>
 
-    <div id="corr_div1">
-        <?php
-        $params = [
-            'id' => 'position',
-            'class' => 'form-control pos',
-            'prompt' => '---',
-        ];
-        /*echo $form
-            ->field($model, 'position_id')
-            ->dropDownList(ArrayHelper::map($availablePositions, 'id', 'name'), $params)
-            ->label('Должность корреспондента (при наличии)');*/
-
-        /*echo $form->field($model, 'position_id')->widget(Select2::classname(), [
-            'data' => ArrayHelper::map($availablePositions, 'id', 'name'),
-            'options' => $params,
-            'pluginOptions' => [
-                'allowClear' => true
-            ],
-        ])->label('Должность корреспондента (при наличии)');*/
-        ?>
-    </div>
     <div id="corr_div2">
         <?php
         $params = [
@@ -97,12 +79,36 @@ use yii\widgets\ActiveForm;
             'class' => 'form-control com',
             'prompt' => '---',
         ];
-        echo $form
-            ->field($model, 'company_id')
-            ->dropDownList(ArrayHelper::map($availableCompanies, 'id', 'name'), $params)
-            ->label('Организация корреспондента');
+
+        echo $form->field($model, 'company_id')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($availableCompanies, 'id', 'name'),
+            'size' => Select2::LARGE,
+            'options' => $params,
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ])->label('Организация корреспондента');
         ?>
     </div>
+    <div id="corr_div1">
+        <?php
+        $params = [
+            'id' => 'position',
+            'class' => 'form-control pos',
+            'prompt' => '---',
+        ];
+
+        echo $form->field($model, 'position_id')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($availablePositions, 'id', 'name'),
+            'size' => Select2::LARGE,
+            'options' => $params,
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ])->label('Должность корреспондента (при наличии)');
+        ?>
+    </div>
+
     <div id="creator_div1">
         <?php
         $params = [
@@ -110,24 +116,34 @@ use yii\widgets\ActiveForm;
             'class' => 'form-control cre',
             'prompt' => '---',
         ];
-        echo $form
-            ->field($model, 'signed_id')
-            ->dropDownList(ArrayHelper::map($correspondentList, 'id','fullFio'), $params)
-            ->label('Кем подписан');
+
+        echo $form->field($model, 'signed_id')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($correspondentList, 'id','fullFio'),
+            'size' => Select2::LARGE,
+            'options' => $params,
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ])->label('Кем подписан');
         ?>
     </div>
 
     <div id="creator_div2">
         <?php
         $params = [
-            'id' => 'creator',
+            'id' => 'creator1',
             'class' => 'form-control cre',
             'prompt' => '---',
         ];
-        echo $form
-            ->field($model, 'executor_id')
-            ->dropDownList(ArrayHelper::map($correspondentList, 'id','fullFio'), $params)
-            ->label('Кто исполнил');
+
+        echo $form->field($model, 'executor_id')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($correspondentList, 'id','fullFio'),
+            'size' => Select2::LARGE,
+            'options' => $params,
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ])->label('Кто исполнил');
         ?>
     </div>
     <?= $form->field($model, 'send_method')->dropDownList(Yii::$app->sendMethods->getList())->label('Способ отправки') ?>

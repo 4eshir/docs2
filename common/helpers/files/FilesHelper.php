@@ -10,6 +10,7 @@ use yii\helpers\Url;
 
 class FilesHelper
 {
+    const _MAX_FILE_SIZE = 15728640; // максимальный размер файла для размещения на сервере
     const TYPE_LINK = 'link'; // особый тип, прямая ссылка на хранилище
 
     const TYPE_SCAN = 'scan';
@@ -21,6 +22,8 @@ class FilesHelper
     const TYPE_OTHER = 'other';
     const TYPE_MAIN = 'main';
     const TYPE_CONTRACT = 'contract';
+    const TYPE_PRESENTATION = 'presentation';
+    const TYPE_WORK = 'work';
 
     const FILE_SERVER = 'server';
     const FILE_YADI = 'yadi';

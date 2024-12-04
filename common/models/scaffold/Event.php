@@ -34,6 +34,7 @@ use Yii;
  * @property float|null $age_left_border
  * @property int|null $age_right_border
  * @property int|null $creator_id
+ * @property int|null $last_edit_id
  * @property string|null $created_at
  * @property string|null $updated_at
  *
@@ -67,7 +68,7 @@ class Event extends \yii\db\ActiveRecord
             [['responsible1_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['responsible1_id' => 'id']],
             [['responsible2_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['responsible2_id' => 'id']],
             [['regulation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Regulation::class, 'targetAttribute' => ['regulation_id' => 'id']],
-            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
+            [['creator_id', 'last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
         ];
     }
 
@@ -104,6 +105,7 @@ class Event extends \yii\db\ActiveRecord
             'age_left_border' => 'Age Left Border',
             'age_right_border' => 'Age Right Border',
             'creator_id' => 'Creator ID',
+            'last_edit_id' => 'Last Edit ID',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];

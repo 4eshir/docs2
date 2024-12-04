@@ -13,7 +13,8 @@ class OrderEventFormService
         $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
         $model->actFiles = UploadedFile::getInstances($model, 'actFiles');
     }
-    public function getTeamsWithParticipants($data){
+    public function getTeamsWithParticipants($data, $model){
+        $index = 0;
         $inputArray = $data;
         $array = [];
         $participants = [];
@@ -70,8 +71,10 @@ class OrderEventFormService
                         'teachers2' => $teachers2,
                         'formRealization' => $formRealization,
                         'nominations' => $nominations,
+                        'files' => UploadedFile::getInstances($model, 'part['. $index . ']')
                     ];
                     array_push($array, $item);
+
                 }
                 $participants = [];
                 $focuses = [];
@@ -80,12 +83,14 @@ class OrderEventFormService
                 $teachers2 = [];
                 $nominations = [];
                 $formRealization = [];
+                $index++;
             }
         }
         return $array;
     }
-    public function getPersonalParticipants($data)
+    public function getPersonalParticipants($data, $model)
     {
+        $index = 0;
         $inputArray = $data;
         $array = [];
         $participants = [];
@@ -135,8 +140,10 @@ class OrderEventFormService
                         'teachers2' => $teachers2,
                         'formRealization' => $formRealization,
                         'nominations' => $element['nominationList'],
+                        'files' => UploadedFile::getInstances($model, 'personal['. $index . ']')
                     ];
                     array_push($array, $item);
+
                 }
                 $participants = [];
                 $focuses = [];
@@ -144,6 +151,7 @@ class OrderEventFormService
                 $teachers = [];
                 $teachers2 = [];
                 $formRealization = [];
+                $index++;
             }
         }
         return $array;

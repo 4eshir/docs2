@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6baceb778317cee4940a0dfdb3117a4b",
+    "content-hash": "4cef72b579d5a17ec7f64b669246d7e0",
     "packages": [
         {
             "name": "arhitector/yandex",
@@ -571,16 +571,16 @@
         },
         {
             "name": "fortawesome/font-awesome",
-            "version": "6.6.0",
+            "version": "6.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FortAwesome/Font-Awesome.git",
-                "reference": "37eff7fa00de26db41183a3ad8ed0e9119fbc44b"
+                "reference": "3447c58c6b3ff327b35171d866ec70c25c72f4ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/37eff7fa00de26db41183a3ad8ed0e9119fbc44b",
-                "reference": "37eff7fa00de26db41183a3ad8ed0e9119fbc44b",
+                "url": "https://api.github.com/repos/FortAwesome/Font-Awesome/zipball/3447c58c6b3ff327b35171d866ec70c25c72f4ef",
+                "reference": "3447c58c6b3ff327b35171d866ec70c25c72f4ef",
                 "shasum": ""
             },
             "type": "library",
@@ -612,7 +612,7 @@
                 "issues": "https://github.com/FortAwesome/Font-Awesome/issues",
                 "source": "https://github.com/FortAwesome/Font-Awesome"
             },
-            "time": "2024-07-16T17:13:31+00:00"
+            "time": "2024-11-20T16:48:04+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
@@ -1343,22 +1343,23 @@
         },
         {
             "name": "kartik-v/yii2-widget-select2",
-            "version": "v2.2.5",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-select2.git",
-                "reference": "4b8ef7dd9780531fc997fa23a53a38a1f7674bec"
+                "reference": "958ba374af39fbc88f1fd11209b22efe1055d567"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-select2/zipball/4b8ef7dd9780531fc997fa23a53a38a1f7674bec",
-                "reference": "4b8ef7dd9780531fc997fa23a53a38a1f7674bec",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-select2/zipball/958ba374af39fbc88f1fd11209b22efe1055d567",
+                "reference": "958ba374af39fbc88f1fd11209b22efe1055d567",
                 "shasum": ""
             },
             "require": {
                 "kartik-v/yii2-krajee-base": ">=3.0.4",
                 "select2/select2": ">=4.0.0"
             },
+            "default-branch": true,
             "type": "yii2-extension",
             "extra": {
                 "branch-alias": {
@@ -1395,7 +1396,7 @@
             ],
             "support": {
                 "issues": "https://github.com/kartik-v/yii2-widget-select2/issues",
-                "source": "https://github.com/kartik-v/yii2-widget-select2/tree/v2.2.5"
+                "source": "https://github.com/kartik-v/yii2-widget-select2/tree/master"
             },
             "funding": [
                 {
@@ -1403,7 +1404,59 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2023-06-22T07:43:31+00:00"
+            "time": "2024-07-24T05:21:32+00:00"
+        },
+        {
+            "name": "kidzen/yii2-dynamicform",
+            "version": "2.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kidzen/yii2-dynamicform.git",
+                "reference": "16e928b3c1699eb7c2af6bc7dbce7d73a5cb38d2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kidzen/yii2-dynamicform/zipball/16e928b3c1699eb7c2af6bc7dbce7d73a5cb38d2",
+                "reference": "16e928b3c1699eb7c2af6bc7dbce7d73a5cb38d2",
+                "shasum": ""
+            },
+            "require": {
+                "symfony/css-selector": "~2.8|~3.0",
+                "symfony/dom-crawler": "~2.8|~3.0",
+                "yiisoft/yii2": "~2.0.5"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kidzen\\dynamicform\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "kidzen",
+                    "email": "kidzenfxc@gmail.com"
+                }
+            ],
+            "description": "It is widget to yii2 framework to clone form elements in a nested manner, maintaining accessibility.",
+            "keywords": [
+                "copy DOM element",
+                "extension",
+                "kidzen",
+                "widget",
+                "yii2",
+                "yii2 dynamic form",
+                "yii2-dynamicform"
+            ],
+            "support": {
+                "issues": "https://github.com/kidzen/yii2-dynamicform/issues",
+                "source": "https://github.com/kidzen/yii2-dynamicform",
+                "wiki": "https://github.com/kidzen/yii2-dynamicform/wiki/"
+            },
+            "time": "2019-04-07T19:43:18+00:00"
         },
         {
             "name": "laminas/laminas-diactoros",
@@ -1743,16 +1796,16 @@
         },
         {
             "name": "mpdf/mpdf",
-            "version": "v8.2.4",
+            "version": "v8.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpdf/mpdf.git",
-                "reference": "9e3ff91606fed11cd58a130eabaaf60e56fdda88"
+                "reference": "e175b05e3e00977b85feb96a8cccb174ac63621f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/9e3ff91606fed11cd58a130eabaaf60e56fdda88",
-                "reference": "9e3ff91606fed11cd58a130eabaaf60e56fdda88",
+                "url": "https://api.github.com/repos/mpdf/mpdf/zipball/e175b05e3e00977b85feb96a8cccb174ac63621f",
+                "reference": "e175b05e3e00977b85feb96a8cccb174ac63621f",
                 "shasum": ""
             },
             "require": {
@@ -1762,7 +1815,7 @@
                 "mpdf/psr-log-aware-trait": "^2.0 || ^3.0",
                 "myclabs/deep-copy": "^1.7",
                 "paragonie/random_compat": "^1.4|^2.0|^9.99.99",
-                "php": "^5.6 || ^7.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0",
+                "php": "^5.6 || ^7.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
                 "psr/http-message": "^1.0 || ^2.0",
                 "psr/log": "^1.0 || ^2.0 || ^3.0",
                 "setasign/fpdi": "^2.1"
@@ -1810,7 +1863,7 @@
                 "utf-8"
             ],
             "support": {
-                "docs": "http://mpdf.github.io",
+                "docs": "https://mpdf.github.io",
                 "issues": "https://github.com/mpdf/mpdf/issues",
                 "source": "https://github.com/mpdf/mpdf"
             },
@@ -1820,7 +1873,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2024-06-14T16:06:41+00:00"
+            "time": "2024-11-18T15:30:42+00:00"
         },
         {
             "name": "mpdf/psr-http-message-shim",
@@ -2168,16 +2221,16 @@
         },
         {
             "name": "php-amqplib/php-amqplib",
-            "version": "v3.7.1",
+            "version": "v3.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-amqplib/php-amqplib.git",
-                "reference": "5db9a68435fdde9ba4248a8fd2fae6d07b442b65"
+                "reference": "738a73eb0019b6c99d9bc25d7a0c0dd8f56a5199"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/5db9a68435fdde9ba4248a8fd2fae6d07b442b65",
-                "reference": "5db9a68435fdde9ba4248a8fd2fae6d07b442b65",
+                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/738a73eb0019b6c99d9bc25d7a0c0dd8f56a5199",
+                "reference": "738a73eb0019b6c99d9bc25d7a0c0dd8f56a5199",
                 "shasum": ""
             },
             "require": {
@@ -2243,9 +2296,9 @@
             ],
             "support": {
                 "issues": "https://github.com/php-amqplib/php-amqplib/issues",
-                "source": "https://github.com/php-amqplib/php-amqplib/tree/v3.7.1"
+                "source": "https://github.com/php-amqplib/php-amqplib/tree/v3.7.2"
             },
-            "time": "2024-09-03T19:18:03+00:00"
+            "time": "2024-11-21T09:21:41+00:00"
         },
         {
             "name": "php-http/client-common",
@@ -2695,16 +2748,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "1.29.4",
+            "version": "1.29.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "7ca7e325dca3adb6a598385aab81f527b8d6c75d"
+                "reference": "727cb704d5479fe4ddc291497ee471c4ec08f1b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/7ca7e325dca3adb6a598385aab81f527b8d6c75d",
-                "reference": "7ca7e325dca3adb6a598385aab81f527b8d6c75d",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/727cb704d5479fe4ddc291497ee471c4ec08f1b6",
+                "reference": "727cb704d5479fe4ddc291497ee471c4ec08f1b6",
                 "shasum": ""
             },
             "require": {
@@ -2794,9 +2847,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.4"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/1.29.5"
             },
-            "time": "2024-11-10T16:26:22+00:00"
+            "time": "2024-11-22T05:57:44+00:00"
         },
         {
             "name": "phpseclib/phpseclib",
@@ -2910,16 +2963,16 @@
         },
         {
             "name": "predis/predis",
-            "version": "v2.2.2",
+            "version": "v2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/predis/predis.git",
-                "reference": "b1d3255ed9ad4d7254f9f9bba386c99f4bb983d1"
+                "reference": "bac46bfdb78cd6e9c7926c697012aae740cb9ec9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/predis/predis/zipball/b1d3255ed9ad4d7254f9f9bba386c99f4bb983d1",
-                "reference": "b1d3255ed9ad4d7254f9f9bba386c99f4bb983d1",
+                "url": "https://api.github.com/repos/predis/predis/zipball/bac46bfdb78cd6e9c7926c697012aae740cb9ec9",
+                "reference": "bac46bfdb78cd6e9c7926c697012aae740cb9ec9",
                 "shasum": ""
             },
             "require": {
@@ -2928,7 +2981,7 @@
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.3",
                 "phpstan/phpstan": "^1.9",
-                "phpunit/phpunit": "^8.0 || ~9.4.4"
+                "phpunit/phpunit": "^8.0 || ^9.4"
             },
             "suggest": {
                 "ext-relay": "Faster connection with in-memory caching (>=0.6.2)"
@@ -2959,7 +3012,7 @@
             ],
             "support": {
                 "issues": "https://github.com/predis/predis/issues",
-                "source": "https://github.com/predis/predis/tree/v2.2.2"
+                "source": "https://github.com/predis/predis/tree/v2.3.0"
             },
             "funding": [
                 {
@@ -2967,7 +3020,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-09-13T16:42:03+00:00"
+            "time": "2024-11-21T20:00:02+00:00"
         },
         {
             "name": "psr/container",
@@ -3553,16 +3606,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v2.5.3",
+            "version": "v2.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "80d075412b557d41002320b96a096ca65aa2c98d"
+                "reference": "605389f2a7e5625f273b53960dc46aeaf9c62918"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/80d075412b557d41002320b96a096ca65aa2c98d",
-                "reference": "80d075412b557d41002320b96a096ca65aa2c98d",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/605389f2a7e5625f273b53960dc46aeaf9c62918",
+                "reference": "605389f2a7e5625f273b53960dc46aeaf9c62918",
                 "shasum": ""
             },
             "require": {
@@ -3600,7 +3653,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v2.5.3"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v2.5.4"
             },
             "funding": [
                 {
@@ -3616,7 +3669,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-24T14:02:46+00:00"
+            "time": "2024-09-25T14:11:13+00:00"
         },
         {
             "name": "symfony/dom-crawler",
@@ -3774,16 +3827,16 @@
         },
         {
             "name": "symfony/event-dispatcher-contracts",
-            "version": "v2.5.3",
+            "version": "v2.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher-contracts.git",
-                "reference": "540f4c73e87fd0c71ca44a6aa305d024ac68cb73"
+                "reference": "e0fe3d79b516eb75126ac6fa4cbf19b79b08c99f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher-contracts/zipball/540f4c73e87fd0c71ca44a6aa305d024ac68cb73",
-                "reference": "540f4c73e87fd0c71ca44a6aa305d024ac68cb73",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher-contracts/zipball/e0fe3d79b516eb75126ac6fa4cbf19b79b08c99f",
+                "reference": "e0fe3d79b516eb75126ac6fa4cbf19b79b08c99f",
                 "shasum": ""
             },
             "require": {
@@ -3833,7 +3886,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/event-dispatcher-contracts/tree/v2.5.3"
+                "source": "https://github.com/symfony/event-dispatcher-contracts/tree/v2.5.4"
             },
             "funding": [
                 {
@@ -3849,7 +3902,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-01-23T13:51:25+00:00"
+            "time": "2024-09-25T14:11:13+00:00"
         },
         {
             "name": "symfony/mailer",
@@ -4562,16 +4615,16 @@
         },
         {
             "name": "symfony/service-contracts",
-            "version": "v2.5.3",
+            "version": "v2.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "a2329596ddc8fd568900e3fc76cba42489ecc7f3"
+                "reference": "f37b419f7aea2e9abf10abd261832cace12e3300"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/a2329596ddc8fd568900e3fc76cba42489ecc7f3",
-                "reference": "a2329596ddc8fd568900e3fc76cba42489ecc7f3",
+                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/f37b419f7aea2e9abf10abd261832cace12e3300",
+                "reference": "f37b419f7aea2e9abf10abd261832cace12e3300",
                 "shasum": ""
             },
             "require": {
@@ -4625,7 +4678,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/service-contracts/tree/v2.5.3"
+                "source": "https://github.com/symfony/service-contracts/tree/v2.5.4"
             },
             "funding": [
                 {
@@ -4641,7 +4694,60 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-04-21T15:04:16+00:00"
+            "time": "2024-09-25T14:11:13+00:00"
+        },
+        {
+            "name": "unclead/yii2-multiple-input",
+            "version": "2.30.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/unclead/yii2-multiple-input.git",
+                "reference": "21d0138c1364903c5237c8a6d7a39e4b619ffac7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/unclead/yii2-multiple-input/zipball/21d0138c1364903c5237c8a6d7a39e4b619ffac7",
+                "reference": "21d0138c1364903c5237c8a6d7a39e4b619ffac7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "yiisoft/yii2": ">=2.0.38"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "5.7.*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "unclead\\multipleinput\\": "src/",
+                    "unclead\\multipleinput\\tests\\": "tests/",
+                    "unclead\\multipleinput\\examples\\": "examples/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Eugene Tupikov",
+                    "email": "unclead.nsk@gmail.com"
+                }
+            ],
+            "description": "Widget for handle multiple inputs for an attribute of Yii2 framework model",
+            "keywords": [
+                "yii2",
+                "yii2 array input",
+                "yii2 multiple field",
+                "yii2 multiple input",
+                "yii2 tabular input"
+            ],
+            "support": {
+                "issues": "https://github.com/unclead/yii2-multiple-input/issues?state=open",
+                "source": "https://github.com/unclead/yii2-multiple-input"
+            },
+            "time": "2024-04-21T10:54:03+00:00"
         },
         {
             "name": "wbraganca/yii2-dynamicform",
@@ -5981,16 +6087,16 @@
         },
         {
             "name": "fakerphp/faker",
-            "version": "v1.24.0",
+            "version": "v1.24.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FakerPHP/Faker.git",
-                "reference": "a136842a532bac9ecd8a1c723852b09915d7db50"
+                "reference": "e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/a136842a532bac9ecd8a1c723852b09915d7db50",
-                "reference": "a136842a532bac9ecd8a1c723852b09915d7db50",
+                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5",
+                "reference": "e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5",
                 "shasum": ""
             },
             "require": {
@@ -6038,9 +6144,9 @@
             ],
             "support": {
                 "issues": "https://github.com/FakerPHP/Faker/issues",
-                "source": "https://github.com/FakerPHP/Faker/tree/v1.24.0"
+                "source": "https://github.com/FakerPHP/Faker/tree/v1.24.1"
             },
-            "time": "2024-11-07T15:11:20+00:00"
+            "time": "2024-11-21T13:46:39+00:00"
         },
         {
             "name": "nikic/php-parser",
@@ -8268,19 +8374,19 @@
             },
             "type": "yii2-extension",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                },
-                "composer-exit-on-patch-failure": true,
                 "patches": {
-                    "phpunit/phpunit-mock-objects": {
-                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
-                    },
                     "phpunit/phpunit": {
                         "Fix PHP 7 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php7.patch",
                         "Fix PHP 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_php8.patch"
+                    },
+                    "phpunit/phpunit-mock-objects": {
+                        "Fix PHP 7 and 8 compatibility": "https://yiisoft.github.io/phpunit-patches/phpunit_mock_objects.patch"
                     }
-                }
+                },
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                },
+                "composer-exit-on-patch-failure": true
             },
             "autoload": {
                 "psr-4": {
@@ -8417,17 +8523,18 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "kartik-v/yii2-export": 20,
-        "yiisoft/yii2-bootstrap4": 20,
+        "arhitector/yandex": 20,
         "kartik-v/yii2-bootstrap4-dropdown": 20,
         "kartik-v/yii2-date-range": 20,
-        "arhitector/yandex": 20
+        "kartik-v/yii2-export": 20,
+        "kartik-v/yii2-widget-select2": 20,
+        "yiisoft/yii2-bootstrap4": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.4.0"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

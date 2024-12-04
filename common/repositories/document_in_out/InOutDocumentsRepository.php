@@ -61,13 +61,24 @@ class InOutDocumentsRepository
         return $command->getRawSql();
     }
 
-    public function prepareUpdate($docOutId, $docInId = null, $date = null, $responsibleId = null)
+    public function prepareUpdate($docInId, $docOutId = null, $date = null, $responsibleId = null)
     {
+        /** @var InOutDocumentsWork $model */
         $model = $this->getByDocumentInId($docInId);
+        if ($model === null) {
+            throw new DomainException("Не найдена запись в in_out_documents для document_in {$docInId}");
+        }
+
+        $model->document_in_id = $docInId;
+        $model->document_out_id = $docOutId;
+        $model->date = $date;
+        $model->responsible_id = $responsibleId;
+
         $command = Yii::$app->db->createCommand();
-        $command->update($model::tableName(), ['document_out_id' => $docOutId], ['id' => $model->id]);
+        $command->update($model::tableName(), $model->getAttributes(), ['document_in_id' => $docInId]);
         return $command->getRawSql();
     }
+
     public function prepareDelete($docInId)
     {
         $command = Yii::$app->db->createCommand();

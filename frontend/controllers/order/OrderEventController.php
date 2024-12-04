@@ -4,6 +4,7 @@ use app\components\DynamicWidget;
 use app\models\work\event\ForeignEventWork;
 use app\models\work\order\OrderEventWork;
 use app\models\work\order\OrderMainWork;
+use app\models\work\team\ActParticipantWork;
 use app\services\act_participant\ActParticipantService;
 use app\services\act_participant\SquadParticipantService;
 use app\services\event\OrderEventFormService;
@@ -22,12 +23,16 @@ use DomainException;
 use frontend\events\general\FileDeleteEvent;
 use frontend\forms\OrderEventForm;
 use frontend\helpers\HeaderWizard;
+use frontend\models\forms\ActParticipantForm;
 use frontend\models\search\SearchOrderEvent;
 use frontend\models\search\SearchOrderMain;
 use frontend\models\work\general\FilesWork;
+use frontend\models\work\general\PeopleWork;
 use frontend\services\event\ForeignEventService;
 use Yii;
 use yii\web\Controller;
+use yii\web\UploadedFile;
+
 class OrderEventController extends Controller
 {
     private PeopleRepository $peopleRepository;
@@ -86,14 +91,17 @@ class OrderEventController extends Controller
     }
     public function actionCreate() {
         /* @var OrderEventForm $model */
+        /* @var ActParticipantWork $act */
         $model = new OrderEventForm();
         $people = $this->peopleRepository->getOrderedList();
+        $modelActs = [new ActParticipantForm];
         $post = Yii::$app->request->post();
         if($model->load($post)) {
-            $teams = $this->orderEventFormService->getTeamsWithParticipants($post['OrderEventForm']['part']);
-            $persons = $this->orderEventFormService->getPersonalParticipants($post['OrderEventForm']['personal']);
-            $squads = ['teams' => $teams, 'persons' => $persons];
-            var_dump($squads);
+            var_dump($post);
+            /*$this->orderEventFormService->getFilesInstances($model);
+            $teams = $this->orderEventFormService->getTeamsWithParticipants($post['OrderEventForm']['part'], $model);
+            $persons = $this->orderEventFormService->getPersonalParticipants($post['OrderEventForm']['personal'], $model);
+            var_dump('OK!!!');
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -141,18 +149,22 @@ class OrderEventController extends Controller
             $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
             $this->teamService->addTeamNameEvent($teams, $model, $modelForeignEvent->id);
-            $this->actParticipantService->addActParticipantEvent($model, $post, $modelForeignEvent->id);
-            $this->squadParticipantService->addSquadParticipantEvent();
+            $model->releaseEvents();
+            $this->actParticipantService->addActParticipantEvent($model, $teams, $persons, $modelForeignEvent->id);
+            $model->releaseEvents();
+            $this->squadParticipantService->addSquadParticipantEvent($model, $teams,  $persons, $modelForeignEvent->id);
+            $model->releaseEvents();
             $this->foreignEventService->saveFilesFromModel($modelForeignEvent, $model->actFiles, $number);
             $modelOrderEvent->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $model->releaseEvents();
-
-            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
+            $this->actParticipantService->addActParticipantFile($teams, $persons, $modelOrderEvent->id);
+            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);*/
         }
         return $this->render('create', [
             'model' => $model,
-            'people' => $people
+            'people' => $people,
+            'modelActs' => $modelActs
         ]);
     }
     public function actionView($id)

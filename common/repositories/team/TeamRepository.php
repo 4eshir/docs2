@@ -12,6 +12,10 @@ class TeamRepository
     {
         return TeamWork::find()->where(['foreign_event_id' => $id])->all();
     }
+    public function getByNameAndForeignEventId($id, $name)
+    {
+        return TeamNameWork::find()->andWhere(['foreign_event_id' => $id])->andWhere(['name' => $name])->one();
+    }
     public function prepareTeamNameCreate($name, $foreignEventId){
         $model = TeamNameWork::fill($name, $foreignEventId);
         $command = Yii::$app->db->createCommand();
