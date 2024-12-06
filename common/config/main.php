@@ -37,6 +37,9 @@ return [
         'categorySmsp' => [
             'class' => 'common\\components\\dictionaries\\base\\CategorySmspDictionary',
         ],
+        'documentStatus' => [
+            'class' => 'common\\components\\dictionaries\\base\\DocumentStatusDictionary',
+        ],
         'ownershipType' => [
             'class' => 'common\\components\\dictionaries\\base\\OwnershipTypeDictionary',
         ],

@@ -405,7 +405,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $model->correspondentWork ? $model->correspondentWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
             }],
             ['label' => 'Последний редактор', 'attribute' => 'last_update_id', 'value' => function(DocumentInWork $model) {
-                return $model->lastUpdateWork ? $model->lastUpdateWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
+                //return $model->lastUpdateWork ? $model->lastUpdateWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
             }],
         ],
     ]) ?>

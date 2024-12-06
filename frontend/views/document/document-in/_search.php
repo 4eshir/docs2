@@ -96,7 +96,15 @@ use yii\widgets\ActiveForm;
                 ?>
             </div>
             <div class="filter-input">
-                <input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Статус документа" autocomplete="off">
+                <?= $form->field($searchModel, 'status')
+                    ->dropDownList(Yii::$app->documentStatus->getList(), [
+                        'prompt' => 'Статус документа',
+                        'options' => [
+                            $searchModel->status => ['selected' => true],
+                        ],
+                    ])
+                    ->label(false);
+                ?>
             </div>
         </div>
         <div class="form-group-button">

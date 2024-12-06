@@ -29,7 +29,7 @@ use yii\web\User;
  * @property CompanyWork $companyWork
  * @property InOutDocumentsWork $inOutDocumentWork
  * @property UserWork $creatorWork
- * @property User $lastUpdateWork
+ * @property UserWork $lastEditorWork
  */
 class DocumentInWork extends DocumentIn
 {
@@ -178,7 +178,7 @@ class DocumentInWork extends DocumentIn
 
     public function getLastEditorName()
     {
-        $editor = $this->lastUpdateWork;
+        $editor = $this->lastEditorWork;
         return $editor ? $editor->getFullName() : '---';
     }
 
@@ -350,9 +350,9 @@ class DocumentInWork extends DocumentIn
         return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
     }
 
-    public function getLastUpdateWork()
+    public function getLastEditorWork()
     {
-        return $this->hasOne(UserWork::class, ['id' => 'last_update_id']);
+        return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
     }
 
     public function getNeedAnswer()

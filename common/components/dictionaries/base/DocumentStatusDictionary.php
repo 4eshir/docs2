@@ -4,11 +4,11 @@ namespace common\components\dictionaries\base;
 
 class DocumentStatusDictionary extends BaseDictionary
 {
-    const ARCHIVE = 0;
-    const EXPIRED = 1;
-    const NEEDANSWER = 2;
-    const CURRENT = 3;
-    const RESERVED = 4;
+    const ARCHIVE = 1;
+    const EXPIRED = 2;
+    const NEEDANSWER = 3;
+    const CURRENT = 4;
+    const RESERVED = 5;
 
     public function __construct()
     {

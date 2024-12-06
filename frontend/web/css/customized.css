@@ -417,3 +417,7 @@ body {
     background: white;
     border: 0;
 }
+
+.table tbody td:last-child div:not(:last-child) {
+    margin-bottom: 0.1em;
+}

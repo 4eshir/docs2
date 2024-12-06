@@ -9,6 +9,7 @@ use common\components\dictionaries\base\CategorySmspDictionary;
 use common\components\dictionaries\base\CertificateTypeDictionary;
 use common\components\dictionaries\base\CompanyTypeDictionary;
 use common\components\dictionaries\base\ControlTypeDictionary;
+use common\components\dictionaries\base\DocumentStatusDictionary;
 use common\components\dictionaries\base\DocumentTypeDictionary;
 use common\components\dictionaries\base\EventFormDictionary;
 use common\components\dictionaries\base\EventLevelDictionary;
@@ -58,6 +59,7 @@ class Yii {
  * @property OwnershipTypeDictionary $ownershipType
  * @property RegulationTypeDictionary $regulationType
  * @property DocumentTypeDictionary $documentType
+ * @property DocumentStatusDictionary $documentStatus
  * @property TableDictionary $tables
  * @property PersonalDataDictionary $personalData
  * @property EventFormDictionary $eventForm
