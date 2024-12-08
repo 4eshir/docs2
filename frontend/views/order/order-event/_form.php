@@ -19,6 +19,411 @@ use yii\jui\DatePicker;
 /* @var $awardTable */
 /* @var $modelActs */
 ?>
+<?php $nominations = [];
+$teams = [];?>
+<style>
+    div[role=radiogroup] > label {
+        font-weight: normal;
+    }
+
+    .row {
+        margin: 0;
+    }
+
+    .main-div{
+        margin: 30px 0;
+        margin-bottom: 20px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    }
+
+    .nomination-div{
+        margin-bottom: 10px;
+        height: 100%;
+    }
+
+    .nomination-list-div, .team-list-div {
+        border: 1px solid #ccc;
+        border-radius: 7px;
+        padding: 10px;
+        overflow-y: scroll;
+        width: 47%;
+        margin: 10px;
+        height: 250px;
+        display: inline-block;
+    }
+
+    .nomination-heading {
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #f5f5f5;
+        border-color: #ddd;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .nomination-add-div{
+        border: 1px solid #ddd;
+        border-radius: 7px;
+        padding: 0.5% 10px;
+        margin: 10px;
+        background-color: #f5f5f5;
+        height: 80px;
+        display: flex;
+    }
+
+    .nomination-add-input-div, .team-add-input-div {
+        display: inline-block;
+        vertical-align: top;
+        height: 100%;
+        width: 35%;
+    }
+
+    .nomination-add-button-div, .team-add-button-div {
+        display: inline-block;
+        padding: 1%;
+        vertical-align: top;
+        height: 100%;
+        margin-left: -10px;
+    }
+
+    .nomination-add-button, .team-add-button{
+        display: block;
+        margin: 7px 10px;
+        word-break: keep-all;
+        line-height: 1.3rem;
+        width: 100px;
+    }
+
+    .nomination-add-input, .team-add-input {
+        display: block;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .nomination-label-input, .team-label-input {
+        padding-left: 15px;
+        margin-bottom: 0;
+        width: 100%;
+    }
+
+    .nomination-list-item, .team-list-item {
+        display: inline-block;
+    }
+
+    .nomination-list-row, .team-list-row {
+        display: block;
+    }
+
+    .nomination-list-item-delete,  .team-list-item-delete {
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+
+    .nomination-add-input, .team-add-input {
+        display: block;
+        width: 97%;
+        height: 30px;
+        padding: 0.375rem 0.75rem;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-right: 10px;
+        margin-left: 0;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 2;
+        color: #212529;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #9f9f9f;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .nomination-add-input::placeholder, .team-add-input::placeholder {
+        color: #212529;
+        opacity: 0.4;
+    }
+
+
+    .delete-nomination-button, .delete-team-button {
+        background-color: #b24848;
+        font-weight: 400;
+        color: white;
+        border: 1px solid #962c2c;
+        border-radius: 5px;
+    }
+
+    .team-list-div, .team-add-input-div {
+        margin-left: 30px;
+    }
+</style>
+<script>
+    function displayDetails()
+    {
+        var elem = document.getElementById('documentorderwork-supplement-compliance_document').getElementsByTagName('input');
+        var details = document.getElementById('details');
+
+        if (elem[0].checked)
+            details.style.display = "none";
+        else
+            details.style.display = "block";
+
+        let item = [1, 2, 3];
+        item.forEach((element) => {
+            if (elem[element].checked)
+                details.childNodes[2*element-1].hidden = false;
+            else
+                details.childNodes[2*element-1].hidden = true;
+        });
+    }
+
+    let listId = 'nomDdList'; //айди выпадающего списка, в который будут добавлены номинации
+    let listId2 = 'teamDdList'; //айди выпадающего списка, в который будут добавлены команды
+
+    let nominations = [];
+    let team = [];
+
+    window.onload = function(){
+        let noms = document.getElementById("prev-nom").innerHTML;
+
+        if (noms.length > 5)
+        {
+            nominations = noms.split("%boobs%");
+
+            nominations.pop();
+            //--Костыль, почему-то в первую строку приходит перенос строки и несколько пробелов--
+            //nominations[0] = nominations[0].substring(5);
+            //-----------------------------------------------------------------------------------
+            FinishNom();
+        }
+
+        let teams = document.getElementById("prev-team").innerHTML;
+        if (teams.length > 5)
+        {
+            team = teams.split("%boobs%");
+
+            team.pop();
+            //--Костыль, почему-то в первую строку приходит перенос строки и несколько пробелов--
+            //team[0] = team[0].substring(5);
+            //-----------------------------------------------------------------------------------
+            FinishTeam();
+        }
+
+        if (document.getElementById('documentorderwork-order_date').value === '')
+        {
+            document.getElementById('documentorderwork-supplement-foreign_event_goals_id').childNodes[0].childNodes[0].checked = true;
+            document.getElementById('documentorderwork-supplement-compliance_document').childNodes[0].childNodes[0].checked = true;
+        }
+        document.getElementsByClassName('form-group field-documentorderwork-foreign_event-is_minpros')[0].childNodes[4].style.color = 'white';
+        displayDetails();
+    }
+
+    function AddElem(list_row, list_item, arr, list_name)
+    {
+        let item = document.getElementsByClassName(list_row)[0];
+        let itemCopy = item.cloneNode(true)
+        itemCopy.getElementsByClassName(list_item)[0].innerHTML = '<p>' + arr[i] + '</p>'
+        itemCopy.style.display = 'block';
+
+        let list = document.getElementById(list_name);
+        list.append(itemCopy);
+    }
+
+    function AddNom()
+    {
+        let elem = document.getElementById('nom-name');
+        elem.value = elem.value.replace(/ +/g, ' ').trim();
+
+        if (elem.value !== '' && nominations.indexOf(elem.value) === -1)
+        {
+            nominations.push(elem.value);
+
+            let item = document.getElementsByClassName('nomination-list-row')[0];
+            let itemCopy = item.cloneNode(true)
+            itemCopy.getElementsByClassName('nomination-list-item')[0].innerHTML = '<p>' + elem.value + '</p>'
+            itemCopy.style.display = 'block';
+
+            let list = document.getElementById('list');
+            list.append(itemCopy);
+
+            elem.value = '';
+        }
+        else
+            alert('Вы ввели пустые или повторные данные!');
+        FinishNom();
+    }
+
+    function AddTeam()
+    {
+        let elem = document.getElementById('team-name');
+        elem.value = elem.value.replace(/ +/g, ' ').trim();
+
+        if (elem.value !== '' && team.indexOf(elem.value) === -1)
+        {
+            team.push(elem.value);
+
+            let item = document.getElementsByClassName('team-list-row')[0];
+            let itemCopy = item.cloneNode(true)
+            itemCopy.getElementsByClassName('team-list-item')[0].innerHTML = '<p>' + elem.value + '</p>'
+            itemCopy.style.display = 'block';
+
+            let list = document.getElementById('list2');
+            list.append(itemCopy);
+
+            elem.value = '';
+        }
+        else
+            alert('Вы ввели пустые или повторные данные!');
+
+        FinishTeam();
+    }
+
+    function DelNom(elem)
+    {
+        let orig = elem.parentNode.parentNode;
+
+        let name = elem.parentNode.parentNode.getElementsByClassName('nomination-list-item')[0].childNodes[0].textContent;
+        nominations.splice(nominations.indexOf(name), 1);
+        elem.parentNode.parentNode.parentNode.removeChild(orig);
+
+        FinishNom();
+    }
+
+    function DelTeam(elem)
+    {
+        let orig = elem.parentNode.parentNode;
+
+        let name = elem.parentNode.parentNode.getElementsByClassName('team-list-item')[0].childNodes[0].textContent;
+        team.splice(team.indexOf(name), 1);
+        elem.parentNode.parentNode.parentNode.removeChild(orig);
+
+        FinishTeam();
+    }
+
+    function FinishNom()
+    {
+        let elem = document.getElementsByClassName(listId);
+
+        for (let z = 0; z < elem.length; z++)
+        {
+            while (elem[z].options.length) {
+                elem[z].options[0] = null;
+            }
+
+            elem[z].appendChild(new Option("--", 'NULL'));
+
+            for (let i = 0; i < nominations.length; i++)
+            {
+                var option = document.createElement('option');
+                option.value = nominations[i];
+                option.innerHTML = nominations[i];
+                elem[z].appendChild(option);
+            }
+        }
+    }
+
+    function FinishTeam()
+    {
+        let elem = document.getElementsByClassName(listId2);
+
+        for (let z = 0; z < elem.length; z++)
+        {
+            while (elem[z].options.length) {
+                elem[z].options[0] = null;
+            }
+
+            elem[z].appendChild(new Option("--", 'NULL'));
+
+            for (let i = 0; i < team.length; i++)
+            {
+                var option = document.createElement('option');
+                option.value = team[i];
+                option.innerHTML = team[i];
+                elem[z].appendChild(option);
+            }
+        }
+    }
+
+    function NextStep()
+    {
+        let foreign = document.getElementById('foreign-block');
+        let nom = document.getElementById('nom-team-block');
+        let btn = document.getElementById('nextBtn');
+
+        foreign.disabled = !foreign.disabled;
+        nom.disabled = !nom.disabled;
+        if (foreign.disabled === false)
+        {
+            foreign.style.filter = 'blur(0px)';
+            nom.style.filter = 'blur(1px)';
+            btn.innerHTML = 'Вернуться к заполнению номинаций и команд';
+        }
+        else
+        {
+            nom.style.filter = 'blur(0px)';
+            foreign.style.filter = 'blur(1px)';
+            btn.innerHTML = 'Перейти к заполнению участников мероприятия';
+        }
+    }
+
+    function NewPart()
+    {
+        let nom = document.getElementsByClassName(listId);
+        let teams = document.getElementsByClassName(listId2);
+        let item = teams.length - 1;    // добавляем только новым участникам команды и номинации
+
+        while (teams[item].options.length) {
+            teams[item].options[0] = null;
+        }
+
+        while (nom[item].options.length) {
+            nom[item].options[0] = null;
+        }
+
+        teams[item].appendChild(new Option("--", 'NULL'));
+        nom[item].appendChild(new Option("--", 'NULL'));
+
+        for (let i = 0; i < team.length; i++)
+        {
+            var option = document.createElement('option');
+            option.value = team[i];
+            option.innerHTML = team[i];
+            teams[item].appendChild(option);
+        }
+
+        for (let i = 0; i < nominations.length; i++)
+        {
+            var option = document.createElement('option');
+            option.value = nominations[i];
+            option.innerHTML = nominations[i];
+            nom[item].appendChild(option);
+        }
+    }
+
+    function ClickBranch(elem, index)
+    {
+        if (index === 4)
+        {
+            let parent = elem.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+            let childs = parent.querySelectorAll('.col-xs-4');
+            let first_gen = childs[1].querySelectorAll('.form-group');
+            let second_gen = first_gen[3].querySelectorAll('.form-control');
+            if (second_gen[0].hasAttribute('disabled'))
+                second_gen[0].removeAttribute('disabled');
+            else
+            {
+                second_gen[0].value = 1;
+                second_gen[0].setAttribute('disabled', 'disabled');
+            }
+        }
+    }
+</script>
 <style>
     .bordered-div {
         border: 2px solid #000; /* Черная рамка */
@@ -259,37 +664,88 @@ use yii\jui\DatePicker;
             ?>
         </div>
     </div>
-    <div class="bordered-div" id = "commands">
-        <h4>Номинации и команды</h4>
-        <div>
-            <div class="container">
-                <?php
-                echo $form->field($model, 'team')->textInput(['id' => 'teamInput', 'class' => 'form-control pos', 'placeholder' => 'Название команды'])->label('Команды');
-                ?>
-                <button type="button" onclick="addToList('teamInput', 'teamList')">Добавить</button>
+    <div id = "commands">
+        <fieldset id="nom-team-block">
+        <div class="main-div">
+            <div class="nomination-div">
+                <div class="nomination-heading"><h4><i class="glyphicon glyphicon-tower"></i>Номинации и команды</h4></div>
+                <div class="nomination-add-div">
+                    <div class="nomination-add-input-div">
+                        <label class="nomination-label-input">Номинация
+                            <input class="nomination-add-input" id="nom-name" placeholder="Введите номинацию" type="text"/>
+                        </label>
+                    </div>
+                    <div class="nomination-add-button-div">
+                        <button type="button" onclick="AddNom()" class="nomination-add-button btn btn-success">Добавить<br>номинацию</button>
+                    </div>
+                    <div class="team-add-input-div">
+                        <label class="team-label-input">Команда
+                            <input class="team-add-input" id="team-name" placeholder="Введите название команды" type="text"/>
+                        </label>
+                    </div>
+                    <div class="team-add-button-div">
+                        <button type="button" onclick="AddTeam()" class="team-add-button btn btn-success">Добавить<br>команду</button>
+                    </div>
+                </div>
+
+                <div style="display: flex;">
+                    <div id="list" class="nomination-list-div">
+                        <?php
+                        $flag = count($nominations) > 0;
+                        $strDisplay = $flag ? 'block' : 'none';
+                        ?>
+                        <div class="nomination-list-row" style="display: none">
+                            <div class="nomination-list-item-delete">
+                                <button type="button" onclick="DelNom(this)" class="delete-nomination-button">X</button>
+                            </div>
+                            <div class="nomination-list-item">
+                                <p>DEFAULT_ITEM</p>
+                            </div>
+                        </div>
+
+                        <?php
+
+                        if ($flag)
+                            foreach ($nominations as $nomination)
+                                echo '<div class="nomination-list-row" style="display: block">
+                                <div class="nomination-list-item-delete">
+                                    <button type="button" onclick="DelNom(this)" class="delete-nomination-button">X</button>
+                                </div>
+                                <div class="nomination-list-item"><p>'.$nomination.'</p></div>
+                            </div>';?>
+                    </div>
+
+                    <div id="list2" class="team-list-div">
+                        <?php
+
+                        $flag2 = count($nominations) > 0;
+                        $strDisplay2 = $flag2 ? 'block' : 'none';
+
+                        ?>
+                        <div class="team-list-row" style="display: none">
+                            <div class="team-list-item-delete">
+                                <button type="button" onclick="DelTeam(this)" class="delete-team-button">X</button>
+                            </div>
+                            <div class="team-list-item">
+                                <p>DEFAULT_ITEM</p>
+                            </div>
+                        </div>
+
+                        <?php
+
+                        if ($flag2)
+                            foreach ($teams as $team)
+                                echo '<div class="team-list-row" style="display: block">
+                                <div class="team-list-item-delete">
+                                    <button type="button" onclick="DelTeam(this)" class="delete-team-button">X</button>
+                                </div>
+                                <div class="team-list-item"><p>'.$team.'</p></div>
+                            </div>';?>
+                    </div>
+                </div>
             </div>
-            <div id="teamListContainer"></div>
-            <?php if (strlen($teamTable) > 10): ?>
-                <?= $teamTable; ?>
-            <?php endif; ?>
-            <div class="container">
-                <?php
-                $params = [
-                    'id' => 'nominationInput',
-                    'class' => 'form-control pos',
-                    'prompt' => '---',
-                ];
-                echo $form->field($model, 'award')->textInput(['id' => 'nominationInput', 'class' => 'form-control pos', 'placeholder' => 'Номинация'])->label('Номинации');
-                ?>
-                <button type="button" onclick="addToList('nominationInput', 'nominationList')">Добавить</button>
-            </div>
-            <div id="nominationListContainer"></div>
-            <!-- Скрытые поля для отправки массивов -->
-            <div id="hiddenFieldsContainer"></div>
-            <?php if (strlen($awardTable) > 10): ?>
-                <?= $awardTable; ?>
-            <?php endif; ?>
         </div>
+    </fieldset>
     </div>
     <?= Html::button('Перейти к заполнению участников мероприятия', [
         'class' => 'btn btn-secondary',
@@ -392,7 +848,7 @@ use yii\jui\DatePicker;
                                         <?php
                                         $params = [
                                             'id' => 'nominationDropdown',
-                                            'class' => 'form-control pos nominationDropDownList',
+                                            'class' => 'form-control pos nominationDropDownList nomDdList',
                                             'prompt' => '--- Выберите номинацию ---',
                                         ];
                                         echo $form->field($modelAct, "[{$i}]nomination")->dropDownList([], $params)->label('Выберите номинацию');
@@ -403,7 +859,7 @@ use yii\jui\DatePicker;
                                         <?php
                                         $params = [
                                             'id' => 'teamDropdown',
-                                            'class' => 'form-control pos teamDropDownList',
+                                            'class' => 'form-control pos teamDropDownList teamDdList',
                                             'prompt' => '--- Выберите команду ---',
                                         ];
                                         echo $form->field($modelAct, "[{$i}]team")->dropDownList([], $params)->label('Выберите команду');
@@ -459,130 +915,6 @@ use yii\jui\DatePicker;
         personDiv.hidden = true;
        // teamDropdownList.hidden = false;
     }
-</script>
-<script>
-    function optionExists(dropdown, value) {
-        // Проверяем, существует ли уже опция с заданным значением
-        return Array.from(dropdown.options).some(option => option.value === value);
-    }
-
-    let teamList = []; // Temporary storage
-    let nominationList = []; // Temporary storage
-    // Функция для обновления списка
-    function updateList() {
-        const teamListContainer = document.getElementById('teamListContainer');
-        const nominationListContainer = document.getElementById('nominationListContainer');
-        teamListContainer.innerHTML = '';
-        nominationListContainer.innerHTML = '';
-        const teamDropdown = document.getElementsByClassName('teamDropDownList');
-        Array.from(teamDropdown).forEach(dropdown => {
-            while (dropdown.firstChild) {
-                dropdown.removeChild(dropdown.firstChild);
-            }
-
-        });
-        teamDropdown.innerHTML = '<option value="">--- Выберите команду ---</option>'; // Сброс
-        teamList.forEach((team, index) => {
-            const listContainer = createListItem(team, index, 'teamList');
-            teamListContainer.appendChild(listContainer);
-            // Добавление команды в выпадающий список
-            const dropdownOption = document.createElement('option');
-            dropdownOption.value = team;
-            dropdownOption.textContent = team;
-            Array.from(teamDropdown).forEach(dropdown => {
-                dropdown.appendChild(dropdownOption.cloneNode(true)); // Клонируем опцию для каждого dropdown
-            });
-            //teamDropdown.appendChild(dropdownOption);
-        });
-        // Обновляем список номинаций
-        const nominationDropdown = document.getElementsByClassName('nominationDropDownList');
-        Array.from(nominationDropdown).forEach(dropdown => {
-            while (dropdown.firstChild) {
-                dropdown.removeChild(dropdown.firstChild);
-            }
-        });
-        nominationDropdown.innerHTML = '<option value="">--- Выберите номинацию ---</option>'; // Сброс
-        nominationList.forEach((nomination, index) => {
-            const listContainer = createListItem(nomination, index, 'nominationList');
-            nominationListContainer.appendChild(listContainer);
-            const nominationOption = document.createElement('option');
-            nominationOption.value = nomination;
-            nominationOption.textContent = nomination;
-            Array.from(nominationDropdown).forEach(dropdown => {
-                dropdown.appendChild(nominationOption.cloneNode(true)); // Клонируем опцию для каждого dropdown
-            });
-        });
-    }
-    // Остальные функции (createListItem, addToList, deleteItem, prepareAndSubmit) остаются без изменений...
-    // Функция для создания элемента списка
-    function createListItem(item, index, type) {
-        const listContainer = document.createElement('div');
-        listContainer.classList.add('list-container');
-
-        const itemText = document.createElement('span');
-        itemText.textContent = item;
-        listContainer.appendChild(itemText);
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Удалить';
-        deleteButton.classList.add('delete-btn');
-        deleteButton.onclick = function() {
-            deleteItem(index, type);
-        };
-        listContainer.appendChild(deleteButton);
-
-        return listContainer;
-    }
-    // Функция добавления элемента в список
-    function addToList(inputId, listType) {
-        const inputField = document.getElementById(inputId);
-        const inputText = inputField.value.trim();
-
-        if (inputText !== "") {
-            if (listType === 'teamList') {
-                teamList.push(inputText);
-            } else if (listType === 'nominationList') {
-                nominationList.push(inputText);
-            }
-
-            updateList(); // Обновляем отображение
-            inputField.value = ""; // Очищаем текстовое поле
-        }
-    }
-    // Функция удаления элемента из списка
-    function deleteItem(index, listType) {
-        if (listType === 'teamList') {
-            teamList.splice(index, 1);
-        } else if (listType === 'nominationList') {
-            nominationList.splice(index, 1);
-        }
-        updateList(); // Обновляем отображение
-    }
-    // Функция подготовки и отправки формы
-    function prepareAndSubmit() {
-        const hiddenFieldsContainer = document.getElementById('hiddenFieldsContainer');
-        hiddenFieldsContainer.innerHTML = ''; // Удаляем старые скрытые поля
-
-        // Добавляем команды в скрытые поля
-        teamList.forEach(team => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'teams[]'; // Обратите внимание на использование 'teams[]'
-            input.value = team;
-            hiddenFieldsContainer.appendChild(input);
-        });
-
-        // Добавляем номинации в скрытые поля
-        nominationList.forEach(nomination => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'nominations[]'; // Аналогично для номинаций
-            input.value = nomination;
-            hiddenFieldsContainer.appendChild(input);
-        });
-    }
-    // Первоначальное обновление списка
-    updateList();
 </script>
 <script>
     document.getElementById('toggle-button').addEventListener('click', function() {
@@ -665,4 +997,10 @@ use yii\jui\DatePicker;
             }
         }
     }
+    function updateOptions() {
+        FinishNom();
+        FinishTeam();
+        requestAnimationFrame(updateOptions);
+    }
+    requestAnimationFrame(updateOptions);
 </script>
