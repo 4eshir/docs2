@@ -1,20 +1,5 @@
 <?php
 namespace frontend\models\forms;
-/**
- * This is the model class for table "act_participant".
- *
- * @property int $id
- * @property int|null $teacher_id
- * @property int|null $teacher2_id
- * @property int $branch
- * @property int $focus
- * @property int $type
- * @property string $nomination
- * @property int|null $team_name_id
- * @property int $foreign_event_id
- * @property int $allow_remote
- * @property int $form
- */
 class ActParticipantForm extends \yii\base\Model
 {
     public $participant;
@@ -27,12 +12,39 @@ class ActParticipantForm extends \yii\base\Model
     public $team;
     public $form;
     public $actFiles;
+
+
+    public $foreignEventId;
+    public $allowRemote;
     /**
      * {@inheritdoc}
      */
     /**
      * {@inheritdoc}
      */
+    public static function fill(
+        $teacherId,
+        $teacher2Id,
+        $branch,
+        $focus,
+        $type,
+        $allowRemote,
+        $nomination,
+        $form,
+        $team
+    ){
+        $entity = new static();
+        $entity->firstTeacher = $teacherId;
+        $entity->secondTeacher = $teacher2Id;
+        $entity->branch = $branch;
+        $entity->focus = $focus;
+        $entity->type = $type;
+        $entity->nomination = $nomination;
+        $entity->allowRemote = $allowRemote;
+        $entity->form = $form;
+        $entity->team = $team;
+        return $entity;
+    }
     public function rules()
     {
         return [

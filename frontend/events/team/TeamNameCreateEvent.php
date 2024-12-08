@@ -9,11 +9,13 @@ use Yii;
 
 class TeamNameCreateEvent implements EventInterface
 {
+    private $model;
     private $name;
     private $foreignEventId;
     private TeamRepository $teamRepository;
-    public function __construct($name, $foreignEventId)
+    public function __construct($model,  $name, $foreignEventId)
     {
+        $this->model = $model;
         $this->name = $name;
         $this->foreignEventId = $foreignEventId;
         $this->teamRepository = Yii::createObject(TeamRepository::class);
@@ -23,11 +25,12 @@ class TeamNameCreateEvent implements EventInterface
         return false;
     }
     public function execute() {
-        return [
+        return
            $this->teamRepository->prepareTeamNameCreate(
+               $this->model,
                $this->name,
                $this->foreignEventId
            )
-        ];
+        ;
     }
 }

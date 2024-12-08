@@ -59,20 +59,4 @@ class ActParticipantFileNameGenerator implements FileNameGeneratorInterface
                 throw new InvalidArgumentException('Неизвестный тип файла');
         }
     }
-    private function generateActFileName($object, $params = [])
-    {
-        $actFiles = $params['extensions'];
-        if (!array_key_exists('counter', $params)) {
-            throw new DomainException('Параметр \'counter\' обязателен');
-        }
-        /** @var ActParticipantWork $object */
-        $number = $object->id;
-        $filename =
-            'Акт'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_DOC) + $params['counter']).
-            '_Акт.'.$number;
-        $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
-        $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
-        $res = StringFormatter::CutFilename($res);
-        return $res . '.' . $actFiles->extension;
-    }
 }

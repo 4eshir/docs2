@@ -16,11 +16,11 @@ class TeamRepository
     {
         return TeamNameWork::find()->andWhere(['foreign_event_id' => $id])->andWhere(['name' => $name])->one();
     }
-    public function prepareTeamNameCreate($name, $foreignEventId){
-        $model = TeamNameWork::fill($name, $foreignEventId);
-        $command = Yii::$app->db->createCommand();
-        $command->insert($model::tableName(), $model->getAttributes());
-        return $command->getRawSql();
+    public function prepareTeamNameCreate($model ,$name, $foreignEventId){
+        $model->name = $name;
+        $model->foreign_event_id = $foreignEventId;
+        $model->save();
+        return $model->id;
     }
     public function prepareTeamCreate($actParticipant, $foreignEventId, $participantId, $teamNameId){
         $model = TeamWork::fill($actParticipant,$foreignEventId, $participantId,$teamNameId);
