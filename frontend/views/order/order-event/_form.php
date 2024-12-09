@@ -784,8 +784,8 @@ $teams = [];?>
                         <div class="panel-heading">
                             <h3 class="panel-title pull-left"></h3>
                             <div class="pull-right">
-                                <button type="button" class="add-item-act btn btn-success btn-xs"><i class="glyphicon glyphicon-plus">+</i></button>
-                                <button type="button" class="remove-item-act btn btn-danger btn-xs"><i class="glyphicon glyphicon-minus">-</i></button>
+                                <button type="button" class="add-item-act btn btn-success btn-xs" onclick="updateOptions()"><i class="glyphicon glyphicon-plus">+</i></button>
+                                <button type="button" class="remove-item-act btn btn-danger btn-xs" onclick="updateOptions()"><i class="glyphicon glyphicon-minus">-</i></button>
                             </div>
                             <div class="clearfix"></div>
                         </div>
@@ -998,9 +998,11 @@ $teams = [];?>
         }
     }
     function updateOptions() {
-        FinishNom();
-        FinishTeam();
-        requestAnimationFrame(updateOptions);
+        setTimeout(() => {
+            FinishNom();
+            FinishTeam();
+        }, 1000); // Пауза 1 секунда (1000 миллисекунд)
     }
-    requestAnimationFrame(updateOptions);
+    // Вызывает updateOptions каждые 2000 миллисекунд (2 секунды)
+   // setInterval(updateOptions, 2000);
 </script>

@@ -98,9 +98,8 @@ class OrderEventController extends Controller
         $post = Yii::$app->request->post();
         if($model->load($post)) {
             $acts = $post["ActParticipantForm"];
-            //$this->actParticipantService->getFilesInstance($modelActParticipant);
             if (!$model->validate()) {
-                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                  throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->orderEventFormService->getFilesInstances($model);
             $respPeopleId = DynamicWidget::getData(basename(OrderEventForm::class), "responsible_id", $post);

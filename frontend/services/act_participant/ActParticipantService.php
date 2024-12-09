@@ -5,10 +5,12 @@ use app\models\work\team\ActParticipantWork;
 use app\models\work\team\TeamWork;
 use app\services\team\TeamService;
 use common\helpers\files\filenames\ActParticipantFileNameGenerator;
+use common\helpers\files\FilesHelper;
 use common\models\scaffold\ActParticipant;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\team\TeamRepository;
 use common\services\general\files\FileService;
+use frontend\events\general\FileCreateEvent;
 use frontend\models\forms\ActParticipantForm;
 use PHPUnit\Util\Xml\ValidationResult;
 use yii\helpers\Html;
@@ -34,12 +36,36 @@ class ActParticipantService
         $this->actParticipantRepository = $actParticipantRepository;
         $this->fileService = $fileService;
     }
-    public function getFilesInstance(ActParticipantForm $modelActParticipant)
+    public function getFilesInstance(ActParticipantForm $modelActParticipant, $index)
     {
-        $modelActParticipant->actFiles = UploadedFile::getInstance($modelActParticipant, 'actFiles');
-        //var_dump($modelActParticipant->actFiles);
+        $modelActParticipant->actFiles = UploadedFile::getInstance($modelActParticipant,  "[{$index}]actFiles");
+    }
+    public function saveFilesFromModel(ActParticipantWork $model, $index)
+    {
+        if ($model->actFiles != null) {
+            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN, ['counter' => $index]);
+            $this->fileService->uploadFile(
+                $model->actFiles,
+                $filename,
+                [
+                    'tableName' => ActParticipantWork::tableName(),
+                    'fileType' => FilesHelper::TYPE_SCAN
+                ]
+            );
+            $model->recordEvent(
+                new FileCreateEvent(
+                    $model::tableName(),
+                    $model->id,
+                    FilesHelper::TYPE_SCAN,
+                    $filename,
+                    FilesHelper::LOAD_TYPE_SINGLE
+                ),
+                get_class($model)
+            );
+        }
     }
     public function addActParticipantEvent($acts, $foreignEventId){
+        $index = 0;
         foreach ($acts as $act){
            $modelActParticipantForm = ActParticipantForm::fill(
                $act["firstTeacher"],
@@ -53,6 +79,7 @@ class ActParticipantService
                $act["team"]
            );
            $modelActParticipantForm->foreignEventId = $foreignEventId;
+           $this->getFilesInstance($modelActParticipantForm, $index);
            $teamNameId = $this->teamService->teamNameCreateEvent($foreignEventId, $act["team"]);
            $modelAct = ActParticipantWork::fill(
                $modelActParticipantForm->firstTeacher,
@@ -66,9 +93,12 @@ class ActParticipantService
                $modelActParticipantForm->nomination,
                $modelActParticipantForm->form,
            );
+           $modelAct->actFiles = $modelActParticipantForm->actFiles;
            $modelAct->recordEvent(new ActParticipantCreateEvent($modelAct, $teamNameId, $foreignEventId), ActParticipantWork::class);
            $modelAct->releaseEvents();
-           var_dump($teamNameId);
+           $this->saveFilesFromModel($modelAct, $index);
+           $modelAct->releaseEvents();
+           $index++;
        }
     }
 }

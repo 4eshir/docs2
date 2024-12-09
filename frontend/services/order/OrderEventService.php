@@ -28,7 +28,7 @@ class OrderEventService
     }
     public function saveFilesFromModel(OrderEventWork $model)
     {
-        if ($model->scanFile !== null) {
+        if ($model->scanFile != null) {
             $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN);
             $this->fileService->uploadFile(
                 $model->scanFile,
