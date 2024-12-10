@@ -53,7 +53,7 @@ class ActParticipantFileNameGenerator implements FileNameGeneratorInterface
     public function generateFileName($object, $fileType, $params = []): string
     {
         switch ($fileType) {
-            case FilesHelper::TYPE_DOC:
+            case FilesHelper::TYPE_SCAN:
                 return $this->generateActFileName($object, $params);
             default:
                 throw new InvalidArgumentException('Неизвестный тип файла');
@@ -61,18 +61,18 @@ class ActParticipantFileNameGenerator implements FileNameGeneratorInterface
     }
     private function generateActFileName($object, $params = [])
     {
-        $actFiles = $params['extensions'];
         if (!array_key_exists('counter', $params)) {
             throw new DomainException('Параметр \'counter\' обязателен');
         }
         /** @var ActParticipantWork $object */
-        $number = $object->id;
+        $foreignEventId = $object->foreign_event_id;
+        $teamId = $object->team_name_id;
+        $nomination = $object->nomination;
         $filename =
-            'Акт'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_DOC) + $params['counter']).
-            '_Акт.'.$number;
+            'Акт'. $foreignEventId .'_'. $teamId .'_'. $nomination . '_'. $object->id. '_' . $params['counter'];
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
         $res = StringFormatter::CutFilename($res);
-        return $res . '.' . $actFiles->extension;
+        return $res . '.' . $object->actFiles->extension;
     }
 }

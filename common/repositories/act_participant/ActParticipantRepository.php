@@ -11,12 +11,10 @@ class ActParticipantRepository
     public function getByForeignEventId($foreignEventId){
         return ActParticipantWork::find()->where(['foreign_event_id' => $foreignEventId])->all();
     }
-    public function prepareCreate($teacherId, $teacher2Id, $teamNameId, $foreignEventId, $branch, $focus, $type, $allowRemote, $nomination, $form)
+    public function prepareCreate($modelAct, $teamNameId, $foreignEventId)
     {
-        $model = ActParticipantWork::fill($teacherId, $teacher2Id, $teamNameId, $foreignEventId, $branch, $focus, $type, $allowRemote, $nomination, $form);
-        $command = Yii::$app->db->createCommand();
-        $command->insert($model::tableName(), $model->getAttributes());
-        return $command->getRawSql();
+        $modelAct->save();
+        return $modelAct->id;
     }
     public function getOneByUniqueAttributes($teamNameId, $nomination, $foreignEventId)
     {

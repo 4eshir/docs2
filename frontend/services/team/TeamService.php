@@ -2,15 +2,12 @@
 
 namespace app\services\team;
 
-use app\events\team\TeamCreateEvent;
 use app\events\team\TeamNameCreateEvent;
 use app\models\work\event\ForeignEventWork;
 use app\models\work\team\TeamNameWork;
 use app\models\work\team\TeamWork;
 use common\helpers\html\HtmlBuilder;
-use common\models\scaffold\Team;
 use common\repositories\team\TeamRepository;
-use frontend\forms\OrderEventForm;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
@@ -23,20 +20,17 @@ class TeamService
     {
        $this->teamRepository = $teamRepository;
     }
+    public function teamNameCreateEvent($foreignEventId, $name){
 
-    public function addTeamNameEvent($teams, OrderEventForm $model, $foreignEventId)
-    {
-        if($teams != NULL) {
-            foreach ($teams as $team) {
-                if ($team != NULL && $foreignEventId != NULL) {
-                    $model->recordEvent(new TeamNameCreateEvent($team['team'][0], $foreignEventId), TeamNameWork::class);
-                }
-            }
+        if(!$this->teamRepository->getByNameAndForeignEventId($foreignEventId, $name)){
+            $model = new TeamNameWork();
+            $model->recordEvent(new TeamNameCreateEvent($model, $name, $foreignEventId), TeamNameWork::class);
+            $model->releaseEvents();
         }
-    }
-    public function addTeamEvent(OrderEventForm $model, $actParticipantid, $foreignEventId, $participantId, $teamNameId)
-    {
-        $model->recordEvent(new TeamCreateEvent($actParticipantid, $foreignEventId, $participantId, $teamNameId), TeamWork::class);
+        else {
+            $model = $this->teamRepository->getByNameAndForeignEventId($foreignEventId, $name);
+        }
+        return $model->id;
     }
     public function getTeamTable(ForeignEventWork $foreignEvent)
     {

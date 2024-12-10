@@ -29,7 +29,7 @@ use yii\web\User;
  * @property CompanyWork $companyWork
  * @property InOutDocumentsWork $inOutDocumentWork
  * @property UserWork $creatorWork
- * @property User $lastUpdateWork
+ * @property UserWork $lastEditorWork
  */
 class DocumentInWork extends DocumentIn
 {
@@ -170,6 +170,18 @@ class DocumentInWork extends DocumentIn
         return '---';
     }
 
+    public function getCreatorName()
+    {
+        $creator = $this->creatorWork;
+        return $creator ? $creator->getFullName() : '---';
+    }
+
+    public function getLastEditorName()
+    {
+        $editor = $this->lastEditorWork;
+        return $editor ? $editor->getFullName() : '---';
+    }
+
     /**
      * Возвращает массив
      * link => форматированная ссылка на документ
@@ -286,6 +298,13 @@ class DocumentInWork extends DocumentIn
         return HtmlBuilder::createFilterPanel($searchModel);
     }
 
+    public function createFilesButton()
+    {
+        $links = $this->getFileLinks(FilesHelper::TYPE_SCAN);
+
+        return HtmlBuilder::createGroupFilesInViewCard($links, 'ckan');
+    }
+
     public function beforeValidate()
     {
         $this->need_answer = $this->needAnswer;
@@ -331,9 +350,9 @@ class DocumentInWork extends DocumentIn
         return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
     }
 
-    public function getLastUpdateWork()
+    public function getLastEditorWork()
     {
-        return $this->hasOne(UserWork::class, ['id' => 'last_update_id']);
+        return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
     }
 
     public function getNeedAnswer()

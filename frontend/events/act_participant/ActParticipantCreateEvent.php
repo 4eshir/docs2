@@ -8,42 +8,20 @@ use Yii;
 
 class ActParticipantCreateEvent implements EventInterface
 {
-    public $participantId;
-    public $teacherId;
-    public $teacher2Id;
-    public $foreignEventId;
-    public $branch;
-    public $focus;
-    public $allowRemote;
-    public $nomination;
-    public $type;
+    public $data;
     public $teamNameId;
-    public $form;
+    public $foreignEventId;
 
     private ActParticipantRepository $actParticipantRepository;
     public function __construct(
-        $teacherId,
-        $teacher2Id,
+        $data,
         $teamNameId,
-        $foreignEventId,
-        $branch,
-        $focus,
-        $type,
-        $allowRemote,
-        $nomination,
-        $form
+        $foreignEventId
     )
     {
-        $this->teacherId = $teacherId;
-        $this->teacher2Id = $teacher2Id;
+        $this->data = $data;
         $this->teamNameId = $teamNameId;
-        $this->branch = $branch;
-        $this->focus = $focus;
-        $this->type = $type;
-        $this->nomination = $nomination;
         $this->foreignEventId = $foreignEventId;
-        $this->allowRemote = $allowRemote;
-        $this->form = $form;
         $this->actParticipantRepository = Yii::createObject(ActParticipantRepository::class);
     }
     public function isSingleton(): bool
@@ -51,19 +29,12 @@ class ActParticipantCreateEvent implements EventInterface
         return false;
     }
     public function execute() {
-        return [
+        return
             $this->actParticipantRepository->prepareCreate(
-                $this->teacherId,
-                $this->teacher2Id,
+                $this->data,
                 $this->teamNameId,
-                $this->foreignEventId,
-                $this->branch,
-                $this->focus,
-                $this->type,
-                $this->allowRemote,
-                $this->nomination,
-                $this->form
+                $this->foreignEventId
             )
-        ];
+        ;
     }
 }

@@ -65,11 +65,36 @@ table th {
     text-align: left;
 }
 
+.ui-datepicker-calendar th {
+    background-color: white!important;
+}
+
+.ui-datepicker-calendar thead, .ui-datepicker-calendar tbody {
+    box-shadow: none;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
+    border: 1px solid var(--primary-subtle-color);
+    border-radius: var(--border-radius);
+    background: var(--primary-subtle-color);
+    text-align: center;
+}
+
+.ui-datepicker td a:hover {
+    background: var(--primary-subtle-text);
+    color: var(--primary-light-subtle-color);
+}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus, .ui-button:hover, .ui-button:focus {
+    border: none;
+    background: white;
+}
+
 .table-bordered > :not(caption) > * {
     border-width: 0;
 }
 
-.grid-view .table-bordered th, .table-bordered td {
+.grid-view .table-bordered th, .table-bordered td{
     border: 0;
 }
 
@@ -371,9 +396,28 @@ a:hover {
     font-weight: 500;
 }
 
+.form-control:focus {
+    border-color: var(--primary-subtle-active);
+    box-shadow: 0 0 0 0.25rem rgba(137, 202, 192, 0.25);
+}
+
+.help-block {
+    color: var(--critical-subtle-text);
+}
+
 body {
-    background-image: url(../backgorund/1.jpg);
+    /*background-image: url(../backgorund/5.jpg);*/
+    background: url(../backgorund/7.svg), #fdfaf7;
     /*background-size: cover;*/
     background-position: center;
     /*background-repeat: no-repeat;*/
+}
+
+.ui-widget-header {
+    background: white;
+    border: 0;
+}
+
+.table tbody td:last-child div:not(:last-child) {
+    margin-bottom: 0.1em;
 }

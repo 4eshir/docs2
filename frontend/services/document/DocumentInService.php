@@ -164,8 +164,10 @@ class DocumentInService implements DatabaseService
 
     public function getPeopleStamps(DocumentInWork $model)
     {
-        $peopleStampId = $this->peopleStampService->createStampFromPeople($model->correspondent_id);
-        $model->correspondent_id = $peopleStampId;
+        if ($model->correspondent_id != "") {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->correspondent_id);
+            $model->correspondent_id = $peopleStampId;
+        }
 
         if ($model->nameAnswer !== '' && $model->nameAnswer !== NULL) {
             $peopleStampId = $this->peopleStampService->createStampFromPeople($model->nameAnswer);

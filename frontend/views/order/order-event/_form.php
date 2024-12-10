@@ -1,8 +1,7 @@
 <?php
 use app\components\DynamicWidget;
-use frontend\models\work\general\PeopleWork;
 use kartik\select2\Select2;
-use wbraganca\dynamicform\DynamicFormWidget;
+use kidzen\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -18,7 +17,413 @@ use yii\jui\DatePicker;
 /* @var $foreignEventTable */
 /* @var $teamTable */
 /* @var $awardTable */
+/* @var $modelActs */
 ?>
+<?php $nominations = [];
+$teams = [];?>
+<style>
+    div[role=radiogroup] > label {
+        font-weight: normal;
+    }
+
+    .row {
+        margin: 0;
+    }
+
+    .main-div{
+        margin: 30px 0;
+        margin-bottom: 20px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    }
+
+    .nomination-div{
+        margin-bottom: 10px;
+        height: 100%;
+    }
+
+    .nomination-list-div, .team-list-div {
+        border: 1px solid #ccc;
+        border-radius: 7px;
+        padding: 10px;
+        overflow-y: scroll;
+        width: 47%;
+        margin: 10px;
+        height: 250px;
+        display: inline-block;
+    }
+
+    .nomination-heading {
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #f5f5f5;
+        border-color: #ddd;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .nomination-add-div{
+        border: 1px solid #ddd;
+        border-radius: 7px;
+        padding: 0.5% 10px;
+        margin: 10px;
+        background-color: #f5f5f5;
+        height: 80px;
+        display: flex;
+    }
+
+    .nomination-add-input-div, .team-add-input-div {
+        display: inline-block;
+        vertical-align: top;
+        height: 100%;
+        width: 35%;
+    }
+
+    .nomination-add-button-div, .team-add-button-div {
+        display: inline-block;
+        padding: 1%;
+        vertical-align: top;
+        height: 100%;
+        margin-left: -10px;
+    }
+
+    .nomination-add-button, .team-add-button{
+        display: block;
+        margin: 7px 10px;
+        word-break: keep-all;
+        line-height: 1.3rem;
+        width: 100px;
+    }
+
+    .nomination-add-input, .team-add-input {
+        display: block;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .nomination-label-input, .team-label-input {
+        padding-left: 15px;
+        margin-bottom: 0;
+        width: 100%;
+    }
+
+    .nomination-list-item, .team-list-item {
+        display: inline-block;
+    }
+
+    .nomination-list-row, .team-list-row {
+        display: block;
+    }
+
+    .nomination-list-item-delete,  .team-list-item-delete {
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+
+    .nomination-add-input, .team-add-input {
+        display: block;
+        width: 97%;
+        height: 30px;
+        padding: 0.375rem 0.75rem;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-right: 10px;
+        margin-left: 0;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 2;
+        color: #212529;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #9f9f9f;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .nomination-add-input::placeholder, .team-add-input::placeholder {
+        color: #212529;
+        opacity: 0.4;
+    }
+
+
+    .delete-nomination-button, .delete-team-button {
+        background-color: #b24848;
+        font-weight: 400;
+        color: white;
+        border: 1px solid #962c2c;
+        border-radius: 5px;
+    }
+
+    .team-list-div, .team-add-input-div {
+        margin-left: 30px;
+    }
+</style>
+<script>
+    function displayDetails()
+    {
+        var elem = document.getElementById('documentorderwork-supplement-compliance_document').getElementsByTagName('input');
+        var details = document.getElementById('details');
+
+        if (elem[0].checked)
+            details.style.display = "none";
+        else
+            details.style.display = "block";
+
+        let item = [1, 2, 3];
+        item.forEach((element) => {
+            if (elem[element].checked)
+                details.childNodes[2*element-1].hidden = false;
+            else
+                details.childNodes[2*element-1].hidden = true;
+        });
+    }
+
+    let listId = 'nomDdList'; //айди выпадающего списка, в который будут добавлены номинации
+    let listId2 = 'teamDdList'; //айди выпадающего списка, в который будут добавлены команды
+
+    let nominations = [];
+    let team = [];
+
+    window.onload = function(){
+        let noms = document.getElementById("prev-nom").innerHTML;
+
+        if (noms.length > 5)
+        {
+            nominations = noms.split("%boobs%");
+
+            nominations.pop();
+            //--Костыль, почему-то в первую строку приходит перенос строки и несколько пробелов--
+            //nominations[0] = nominations[0].substring(5);
+            //-----------------------------------------------------------------------------------
+            FinishNom();
+        }
+
+        let teams = document.getElementById("prev-team").innerHTML;
+        if (teams.length > 5)
+        {
+            team = teams.split("%boobs%");
+
+            team.pop();
+            //--Костыль, почему-то в первую строку приходит перенос строки и несколько пробелов--
+            //team[0] = team[0].substring(5);
+            //-----------------------------------------------------------------------------------
+            FinishTeam();
+        }
+
+        if (document.getElementById('documentorderwork-order_date').value === '')
+        {
+            document.getElementById('documentorderwork-supplement-foreign_event_goals_id').childNodes[0].childNodes[0].checked = true;
+            document.getElementById('documentorderwork-supplement-compliance_document').childNodes[0].childNodes[0].checked = true;
+        }
+        document.getElementsByClassName('form-group field-documentorderwork-foreign_event-is_minpros')[0].childNodes[4].style.color = 'white';
+        displayDetails();
+    }
+
+    function AddElem(list_row, list_item, arr, list_name)
+    {
+        let item = document.getElementsByClassName(list_row)[0];
+        let itemCopy = item.cloneNode(true)
+        itemCopy.getElementsByClassName(list_item)[0].innerHTML = '<p>' + arr[i] + '</p>'
+        itemCopy.style.display = 'block';
+
+        let list = document.getElementById(list_name);
+        list.append(itemCopy);
+    }
+
+    function AddNom()
+    {
+        let elem = document.getElementById('nom-name');
+        elem.value = elem.value.replace(/ +/g, ' ').trim();
+
+        if (elem.value !== '' && nominations.indexOf(elem.value) === -1)
+        {
+            nominations.push(elem.value);
+
+            let item = document.getElementsByClassName('nomination-list-row')[0];
+            let itemCopy = item.cloneNode(true)
+            itemCopy.getElementsByClassName('nomination-list-item')[0].innerHTML = '<p>' + elem.value + '</p>'
+            itemCopy.style.display = 'block';
+
+            let list = document.getElementById('list');
+            list.append(itemCopy);
+
+            elem.value = '';
+        }
+        else
+            alert('Вы ввели пустые или повторные данные!');
+        FinishNom();
+    }
+
+    function AddTeam()
+    {
+        let elem = document.getElementById('team-name');
+        elem.value = elem.value.replace(/ +/g, ' ').trim();
+
+        if (elem.value !== '' && team.indexOf(elem.value) === -1)
+        {
+            team.push(elem.value);
+
+            let item = document.getElementsByClassName('team-list-row')[0];
+            let itemCopy = item.cloneNode(true)
+            itemCopy.getElementsByClassName('team-list-item')[0].innerHTML = '<p>' + elem.value + '</p>'
+            itemCopy.style.display = 'block';
+
+            let list = document.getElementById('list2');
+            list.append(itemCopy);
+
+            elem.value = '';
+        }
+        else
+            alert('Вы ввели пустые или повторные данные!');
+
+        FinishTeam();
+    }
+
+    function DelNom(elem)
+    {
+        let orig = elem.parentNode.parentNode;
+
+        let name = elem.parentNode.parentNode.getElementsByClassName('nomination-list-item')[0].childNodes[0].textContent;
+        nominations.splice(nominations.indexOf(name), 1);
+        elem.parentNode.parentNode.parentNode.removeChild(orig);
+
+        FinishNom();
+    }
+
+    function DelTeam(elem)
+    {
+        let orig = elem.parentNode.parentNode;
+
+        let name = elem.parentNode.parentNode.getElementsByClassName('team-list-item')[0].childNodes[0].textContent;
+        team.splice(team.indexOf(name), 1);
+        elem.parentNode.parentNode.parentNode.removeChild(orig);
+
+        FinishTeam();
+    }
+
+    function FinishNom()
+    {
+        let elem = document.getElementsByClassName(listId);
+
+        for (let z = 0; z < elem.length; z++)
+        {
+            while (elem[z].options.length) {
+                elem[z].options[0] = null;
+            }
+
+            elem[z].appendChild(new Option("--", 'NULL'));
+
+            for (let i = 0; i < nominations.length; i++)
+            {
+                var option = document.createElement('option');
+                option.value = nominations[i];
+                option.innerHTML = nominations[i];
+                elem[z].appendChild(option);
+            }
+        }
+    }
+
+    function FinishTeam()
+    {
+        let elem = document.getElementsByClassName(listId2);
+
+        for (let z = 0; z < elem.length; z++)
+        {
+            while (elem[z].options.length) {
+                elem[z].options[0] = null;
+            }
+
+            elem[z].appendChild(new Option("--", 'NULL'));
+
+            for (let i = 0; i < team.length; i++)
+            {
+                var option = document.createElement('option');
+                option.value = team[i];
+                option.innerHTML = team[i];
+                elem[z].appendChild(option);
+            }
+        }
+    }
+
+    function NextStep()
+    {
+        let foreign = document.getElementById('foreign-block');
+        let nom = document.getElementById('nom-team-block');
+        let btn = document.getElementById('nextBtn');
+
+        foreign.disabled = !foreign.disabled;
+        nom.disabled = !nom.disabled;
+        if (foreign.disabled === false)
+        {
+            foreign.style.filter = 'blur(0px)';
+            nom.style.filter = 'blur(1px)';
+            btn.innerHTML = 'Вернуться к заполнению номинаций и команд';
+        }
+        else
+        {
+            nom.style.filter = 'blur(0px)';
+            foreign.style.filter = 'blur(1px)';
+            btn.innerHTML = 'Перейти к заполнению участников мероприятия';
+        }
+    }
+
+    function NewPart()
+    {
+        let nom = document.getElementsByClassName(listId);
+        let teams = document.getElementsByClassName(listId2);
+        let item = teams.length - 1;    // добавляем только новым участникам команды и номинации
+
+        while (teams[item].options.length) {
+            teams[item].options[0] = null;
+        }
+
+        while (nom[item].options.length) {
+            nom[item].options[0] = null;
+        }
+
+        teams[item].appendChild(new Option("--", 'NULL'));
+        nom[item].appendChild(new Option("--", 'NULL'));
+
+        for (let i = 0; i < team.length; i++)
+        {
+            var option = document.createElement('option');
+            option.value = team[i];
+            option.innerHTML = team[i];
+            teams[item].appendChild(option);
+        }
+
+        for (let i = 0; i < nominations.length; i++)
+        {
+            var option = document.createElement('option');
+            option.value = nominations[i];
+            option.innerHTML = nominations[i];
+            nom[item].appendChild(option);
+        }
+    }
+
+    function ClickBranch(elem, index)
+    {
+        if (index === 4)
+        {
+            let parent = elem.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+            let childs = parent.querySelectorAll('.col-xs-4');
+            let first_gen = childs[1].querySelectorAll('.form-group');
+            let second_gen = first_gen[3].querySelectorAll('.form-control');
+            if (second_gen[0].hasAttribute('disabled'))
+                second_gen[0].removeAttribute('disabled');
+            else
+            {
+                second_gen[0].value = 1;
+                second_gen[0].setAttribute('disabled', 'disabled');
+            }
+        }
+    }
+</script>
 <style>
     .bordered-div {
         border: 2px solid #000; /* Черная рамка */
@@ -42,7 +447,7 @@ use yii\jui\DatePicker;
     };
 </script>
 <div class="order-main-form">
-    <?php $form = ActiveForm::begin(['id' => 'dynamic-form-new']); ?>
+    <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
         'dateFormat' => 'php:d.m.Y',
         'language' => 'ru',
@@ -259,245 +664,215 @@ use yii\jui\DatePicker;
             ?>
         </div>
     </div>
-    <div class="bordered-div" id = "commands">
-        <h4>Номинации и команды</h4>
-        <div>
-            <div class="container">
-                <?php
-                echo $form->field($model, 'team')->textInput(['id' => 'teamInput', 'class' => 'form-control pos', 'placeholder' => 'Название команды'])->label('Команды');
-                ?>
-                <button type="button" onclick="addToList('teamInput', 'teamList')">Добавить</button>
+    <div id = "commands">
+        <fieldset id="nom-team-block">
+        <div class="main-div">
+            <div class="nomination-div">
+                <div class="nomination-heading"><h4><i class="glyphicon glyphicon-tower"></i>Номинации и команды</h4></div>
+                <div class="nomination-add-div">
+                    <div class="nomination-add-input-div">
+                        <label class="nomination-label-input">Номинация
+                            <input class="nomination-add-input" id="nom-name" placeholder="Введите номинацию" type="text"/>
+                        </label>
+                    </div>
+                    <div class="nomination-add-button-div">
+                        <button type="button" onclick="AddNom()" class="nomination-add-button btn btn-success">Добавить<br>номинацию</button>
+                    </div>
+                    <div class="team-add-input-div">
+                        <label class="team-label-input">Команда
+                            <input class="team-add-input" id="team-name" placeholder="Введите название команды" type="text"/>
+                        </label>
+                    </div>
+                    <div class="team-add-button-div">
+                        <button type="button" onclick="AddTeam()" class="team-add-button btn btn-success">Добавить<br>команду</button>
+                    </div>
+                </div>
+
+                <div style="display: flex;">
+                    <div id="list" class="nomination-list-div">
+                        <?php
+                        $flag = count($nominations) > 0;
+                        $strDisplay = $flag ? 'block' : 'none';
+                        ?>
+                        <div class="nomination-list-row" style="display: none">
+                            <div class="nomination-list-item-delete">
+                                <button type="button" onclick="DelNom(this)" class="delete-nomination-button">X</button>
+                            </div>
+                            <div class="nomination-list-item">
+                                <p>DEFAULT_ITEM</p>
+                            </div>
+                        </div>
+
+                        <?php
+
+                        if ($flag)
+                            foreach ($nominations as $nomination)
+                                echo '<div class="nomination-list-row" style="display: block">
+                                <div class="nomination-list-item-delete">
+                                    <button type="button" onclick="DelNom(this)" class="delete-nomination-button">X</button>
+                                </div>
+                                <div class="nomination-list-item"><p>'.$nomination.'</p></div>
+                            </div>';?>
+                    </div>
+
+                    <div id="list2" class="team-list-div">
+                        <?php
+
+                        $flag2 = count($nominations) > 0;
+                        $strDisplay2 = $flag2 ? 'block' : 'none';
+
+                        ?>
+                        <div class="team-list-row" style="display: none">
+                            <div class="team-list-item-delete">
+                                <button type="button" onclick="DelTeam(this)" class="delete-team-button">X</button>
+                            </div>
+                            <div class="team-list-item">
+                                <p>DEFAULT_ITEM</p>
+                            </div>
+                        </div>
+
+                        <?php
+
+                        if ($flag2)
+                            foreach ($teams as $team)
+                                echo '<div class="team-list-row" style="display: block">
+                                <div class="team-list-item-delete">
+                                    <button type="button" onclick="DelTeam(this)" class="delete-team-button">X</button>
+                                </div>
+                                <div class="team-list-item"><p>'.$team.'</p></div>
+                            </div>';?>
+                    </div>
+                </div>
             </div>
-            <div id="teamListContainer"></div>
-            <?php if (strlen($teamTable) > 10): ?>
-                <?= $teamTable; ?>
-            <?php endif; ?>
-            <div class="container">
-                <?php
-                $params = [
-                    'id' => 'nominationInput',
-                    'class' => 'form-control pos',
-                    'prompt' => '---',
-                ];
-                echo $form->field($model, 'award')->textInput(['id' => 'nominationInput', 'class' => 'form-control pos', 'placeholder' => 'Номинация'])->label('Номинации');
-                ?>
-                <button type="button" onclick="addToList('nominationInput', 'nominationList')">Добавить</button>
-            </div>
-            <div id="nominationListContainer"></div>
-            <!-- Скрытые поля для отправки массивов -->
-            <div id="hiddenFieldsContainer"></div>
-            <?php if (strlen($awardTable) > 10): ?>
-                <?= $awardTable; ?>
-            <?php endif; ?>
         </div>
+    </fieldset>
     </div>
     <?= Html::button('Перейти к заполнению участников мероприятия', [
         'class' => 'btn btn-secondary',
         'type' => 'button',
         'id' => 'toggle-button',
     ]) ?>
-    <div class="bordered-div" id = "acts">
-        <h4>Акты участия</h4>
-        <?php
-        DynamicWidget::begin([
-            'widgetContainer' => 'dynamicform_wrapper',
-            'widgetBody' => '.container-items',
-            'widgetItem' => '.item',
-            'model' => $model,
-            'formId' => 'dynamic-form',
-            'formFields' => ['order_name'],
-        ]); ?>
-        <div class="container-items">
-            <h5 class="panel-title pull-left">
-            </h5><!-- widgetBody -->
-            <div class="pull-right">
-                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
-            </div>
-            <div class="item panel panel-default" id = "item-1" hidden><!-- widgetItem -->
-                <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
-                <div class="panel-heading">
-                    <div class="clearfix"></div>
-                </div>
-                <div class = "form-label"
-                <label>
-                    <input type="radio" class="type-participant" id="type-participant" onchange="checkType(this.name)"/>
-                    Личное участие
-                    <input type="radio" class="personal-type-participant" id="type-participant" onchange="checkSecondType(this.name)"/>
-                    Командное участие
-                </label>
-                <div class="panel-body">
-                    <div id="personal-participant" class="col-xs-4 act-personal-participant" hidden>
-                        <div class = "bordered-div">
-                            <h4>Личное участие</h4>
-                            <div id = "person-participant-people">
-                                <?php
-                                $params = [
-                                    'id' => 'participant',
-                                    'class' => 'form-control pos',
-                                    'prompt' => '---'
-                                ];
-                                echo $form
-                                    ->field($model, '[personal][]participant_id[]')
-                                    ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                    ->label('ФИО участника');
-                                ?>
+    <div class = "bordered-div" id = "acts">
+        <h3>Акты участия</h3>
+        <div class="panel-body">
+            <?php DynamicFormWidget::begin([
+                'widgetContainer' => 'dynamicform_wrapper_act', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
+                'widgetBody' => '.container-items-act', // required: css class selector
+                'widgetItem' => '.item-act', // required: css class
+                'limit' => 20, // the maximum times, an element can be cloned (default 999)
+                'min' => 1, // 0 or 1 (default 1)
+                'insertButton' => '.add-item-act', // css class
+                'deleteButton' => '.remove-item-act', // css class
+                'model' => $modelActs[0],
+                'formId' => 'dynamic-form',
+                'formFields' => [
+                    'full_name',
+                ],
+            ]); ?>
+            <div class="container-items-act"><!-- widgetContainer -->
+                <?php foreach ($modelActs as $i => $modelAct): ?>
+                    <div class="item-act panel panel-default"><!-- widgetBody -->
+                        <label>
+                            <?=
+                                $form->field($modelAct, "[{$i}]type")->radioList([
+                                    '0' => 'Личное участие',
+                                    '1' => 'Командное участие',
+                                ], ['itemOptions' => ['class' => 'radio-inline', 'onclick' => 'handleParticipationChange(this)']])
+                                    ->label('Выберите тип участия');
+                            ?>
+                        </label>
+                        <div class="panel-heading">
+                            <h3 class="panel-title pull-left"></h3>
+                            <div class="pull-right">
+                                <button type="button" class="add-item-act btn btn-success btn-xs" onclick="updateOptions()"><i class="glyphicon glyphicon-plus">+</i></button>
+                                <button type="button" class="remove-item-act btn btn-danger btn-xs" onclick="updateOptions()"><i class="glyphicon glyphicon-minus">-</i></button>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div>
+                                    <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::classname(), [
+                                            'data' => ArrayHelper::map($people,'id','fullFio'),
+                                            'size' => Select2::LARGE,
+                                            'options' => [
+                                                    'prompt' => 'Выберите участника' ,
+                                                'multiple' => true
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ])->label('ФИО участника'); ?>
+                                </div>
+                                    <?php
+                                    $params = [
+                                        'id' => 'branch',
+                                        'class' => 'form-control pos',
+                                        'prompt' => '---',
+                                    ];
+                                    echo $form
+                                        ->field($modelAct, "[{$i}]branch")
+                                        ->dropDownList(Yii::$app->branches->getList(), $params)
+                                        ->label('Отделы');
+                                    ?>
+                                    <?php
+                                    $params = [
+                                        'id' => 'teacher',
+                                        'class' => 'form-control pos',
+                                        'prompt' => '---',
+                                    ];
+                                    echo $form
+                                        ->field($modelAct, "[{$i}]firstTeacher")
+                                        ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                                        ->label('ФИО учителя');
+                                    echo $form
+                                        ->field($modelAct, "[{$i}]secondTeacher")
+                                        ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                                        ->label('ФИО учителя');
+                                    ?>
+                                    <?php
+                                    $params = [
+                                        'id' => 'focus',
+                                        'class' => 'form-control pos',
+                                        'prompt' => '---',
+                                    ];
+                                    echo $form
+                                        ->field($modelAct, "[{$i}]focus")
+                                        ->dropDownList(Yii::$app->focus->getList(), $params)
+                                        ->label('Направленность');
+                                    ?>
+                                    <?= $form->field($modelAct, "[{$i}]form")->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
+                                        ->label('Форма реализации') ?>
+                                    <?= $form->field($modelAct, "[{$i}]actFiles")->fileInput()->label('Представленные материалы') ?>
+                                    <div class="container nomination-dropdown-list">
+                                        <?php
+                                        $params = [
+                                            'id' => 'nominationDropdown',
+                                            'class' => 'form-control pos nominationDropDownList nomDdList',
+                                            'prompt' => '--- Выберите номинацию ---',
+                                        ];
+                                        echo $form->field($modelAct, "[{$i}]nomination")->dropDownList([], $params)->label('Выберите номинацию');
+                                        ?>
+                                    </div>
+                                    <div class="container team-dropdown-list">
+                                        В составе команды<br>
+                                        <?php
+                                        $params = [
+                                            'id' => 'teamDropdown',
+                                            'class' => 'form-control pos teamDropDownList teamDdList',
+                                            'prompt' => '--- Выберите команду ---',
+                                        ];
+                                        echo $form->field($modelAct, "[{$i}]team")->dropDownList([], $params)->label('Выберите команду');
+                                        ?>
+                                    </div>
                             </div>
                         </div>
-
-                        <?php
-                        $params = [
-                            'id' => 'branch',
-                            'class' => 'form-control pos',
-                            'prompt' => '---',
-                        ];
-                        echo $form
-                            ->field($model, '[personal][]branch[]')
-                            ->dropDownList(Yii::$app->branches->getList(), $params)
-                            ->label('Отделы');
-                        ?>
-                        <?php
-                        $params = [
-                            'id' => 'teacher',
-                            'class' => 'form-control pos',
-                            'prompt' => '---',
-                        ];
-                        echo $form
-                            ->field($model, '[personal][]teacher_id[]')
-                            ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                            ->label('ФИО учителя');
-                        echo $form
-                            ->field($model, '[personal][]teacher2_id[]')
-                            ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                            ->label('ФИО учителя');
-                        ?>
-                        <?php
-                        $params = [
-                            'id' => 'focus',
-                            'class' => 'form-control pos',
-                            'prompt' => '---',
-                        ];
-                        echo $form
-                            ->field($model, '[personal][]focus[]')
-                            ->dropDownList(Yii::$app->focus->getList(), $params)
-                            ->label('Направленность');
-                        ?>
-                        <?= $form->field($model, '[personal][]formRealization[]')->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
-                            ->label('Форма реализации') ?>
-
-                        Представленные материалы<br>
-                        <?= $form->field($model, '[personal][]actFiles[]')->fileInput()->label('Представленные материалы') ?>
-                        <div class="container nomination-dropdown-list">
-                            <?php
-                            $params = [
-                                'id' => 'nominationDropdown',
-                                'class' => 'form-control pos nominationDropDownList',
-                                'prompt' => '--- Выберите номинацию ---',
-                            ];
-                            echo $form->field($model, '[personal][]nominationList[]')->dropDownList([], $params)->label('Выберите номинацию');
-                            ?>
-                        </div>
-                        <!-- Выпадающий список для команд -->
-                        <div class="container team-dropdown-list" hidden>
-                            В составе команды<br>
-                            <?php
-                            $params = [
-                                'id' => 'teamDropdown',
-                                'class' => 'form-control pos teamDropDownList',
-                                'prompt' => '--- Выберите команду ---',
-                            ];
-                            echo $form->field($model, '[personal][]teamList[]')->dropDownList([], $params)->label('Выберите команду');
-                            ?>
-                        </div>
                     </div>
-                    <div id="team-participant" class="col-xs-4 bordered-div act-team-participant" hidden>
-                        <div>
-                            <h4>Командное участие</h4>
-                        </div>
-                        <div id = "team-participant-people">
-                            <?php
-                            $params = [
-                                'id' => 'participant-select-1',
-                                'class' => 'form-control pos participant-select',
-                                'prompt' => '---',
-                                'multiple' => true // Устанавливаем параметр multiple в true
-                            ];
-                            echo $form
-                                ->field($model, '[part][]participant_id[]')
-                                ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                ->label('ФИО участника');
-                            ?>
-                        </div>
-                        <?php
-                        $params = [
-                            'id' => 'branch',
-                            'class' => 'form-control pos',
-                            'prompt' => '---',
-                        ];
-                        echo $form
-                            ->field($model, '[part][]branch[]')
-                            ->dropDownList(Yii::$app->branches->getList(), $params)
-                            ->label('Отделы');
-                        ?>
-                        <?php
-                        $params = [
-                            'id' => 'teacher',
-                            'class' => 'form-control pos',
-                            'prompt' => '---',
-                        ];
-                        echo $form
-                            ->field($model, '[part][]teacher_id[]')
-                            ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                            ->label('ФИО учителя');
-                        echo $form
-                            ->field($model, '[part][]teacher2_id[]')
-                            ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                            ->label('ФИО учителя');
-                        ?>
-                        <?php
-                        $params = [
-                            'id' => 'focus',
-                            'class' => 'form-control pos',
-                            'prompt' => '---',
-                        ];
-                        echo $form
-                            ->field($model, '[part][]focus[]')
-                            ->dropDownList(Yii::$app->focus->getList(), $params)
-                            ->label('Направленность');
-                        ?>
-                        <?= $form->field($model, '[part][]formRealization[]')->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
-                            ->label('Форма реализации') ?>
-                        Представленные материалы<br>
-                        <?= $form->field($model, '[part][]actFiles[]')->fileInput()->label('Представленные материалы') ?>
-                        <div class="container nomination-dropdown-list">
-                            <?php
-                            $params = [
-                                'id' => 'nominationDropdown',
-                                'class' => 'form-control pos nominationDropDownList',
-                                'prompt' => '--- Выберите номинацию ---',
-                            ];
-                            echo $form->field($model, '[part][]nominationList[]')->dropDownList([], $params)->label('Выберите номинацию');
-                            ?>
-                        </div>
-                        <!-- Выпадающий список для команд -->
-                        <div class="container team-dropdown-list">
-                            <br>
-                            <?php
-                            $params = [
-                                'id' => 'teamDropdown',
-                                'class' => 'form-control pos teamDropDownList',
-                                'prompt' => '--- Выберите команду ---',
-                            ];
-                            echo $form->field($model, '[part][]teamList[]')->dropDownList([], $params)->label('Выберите команду');
-                            ?>
-                        </div>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
+            <?php DynamicFormWidget::end(); ?>
         </div>
     </div>
-    <?php
-    DynamicWidget::end()
-    ?>
 </div>
 <?php if (strlen($foreignEventTable) > 50): ?>
     <?= $foreignEventTable; ?>
@@ -542,130 +917,6 @@ use yii\jui\DatePicker;
     }
 </script>
 <script>
-    function optionExists(dropdown, value) {
-        // Проверяем, существует ли уже опция с заданным значением
-        return Array.from(dropdown.options).some(option => option.value === value);
-    }
-
-    let teamList = []; // Temporary storage
-    let nominationList = []; // Temporary storage
-    // Функция для обновления списка
-    function updateList() {
-        const teamListContainer = document.getElementById('teamListContainer');
-        const nominationListContainer = document.getElementById('nominationListContainer');
-        teamListContainer.innerHTML = '';
-        nominationListContainer.innerHTML = '';
-        const teamDropdown = document.getElementsByClassName('teamDropDownList');
-        Array.from(teamDropdown).forEach(dropdown => {
-            while (dropdown.firstChild) {
-                dropdown.removeChild(dropdown.firstChild);
-            }
-
-        });
-        teamDropdown.innerHTML = '<option value="">--- Выберите команду ---</option>'; // Сброс
-        teamList.forEach((team, index) => {
-            const listContainer = createListItem(team, index, 'teamList');
-            teamListContainer.appendChild(listContainer);
-            // Добавление команды в выпадающий список
-            const dropdownOption = document.createElement('option');
-            dropdownOption.value = team;
-            dropdownOption.textContent = team;
-            Array.from(teamDropdown).forEach(dropdown => {
-                dropdown.appendChild(dropdownOption.cloneNode(true)); // Клонируем опцию для каждого dropdown
-            });
-            //teamDropdown.appendChild(dropdownOption);
-        });
-        // Обновляем список номинаций
-        const nominationDropdown = document.getElementsByClassName('nominationDropDownList');
-        Array.from(nominationDropdown).forEach(dropdown => {
-            while (dropdown.firstChild) {
-                dropdown.removeChild(dropdown.firstChild);
-            }
-        });
-        nominationDropdown.innerHTML = '<option value="">--- Выберите номинацию ---</option>'; // Сброс
-        nominationList.forEach((nomination, index) => {
-            const listContainer = createListItem(nomination, index, 'nominationList');
-            nominationListContainer.appendChild(listContainer);
-            const nominationOption = document.createElement('option');
-            nominationOption.value = nomination;
-            nominationOption.textContent = nomination;
-            Array.from(nominationDropdown).forEach(dropdown => {
-                dropdown.appendChild(nominationOption.cloneNode(true)); // Клонируем опцию для каждого dropdown
-            });
-        });
-    }
-    // Остальные функции (createListItem, addToList, deleteItem, prepareAndSubmit) остаются без изменений...
-    // Функция для создания элемента списка
-    function createListItem(item, index, type) {
-        const listContainer = document.createElement('div');
-        listContainer.classList.add('list-container');
-
-        const itemText = document.createElement('span');
-        itemText.textContent = item;
-        listContainer.appendChild(itemText);
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Удалить';
-        deleteButton.classList.add('delete-btn');
-        deleteButton.onclick = function() {
-            deleteItem(index, type);
-        };
-        listContainer.appendChild(deleteButton);
-
-        return listContainer;
-    }
-    // Функция добавления элемента в список
-    function addToList(inputId, listType) {
-        const inputField = document.getElementById(inputId);
-        const inputText = inputField.value.trim();
-
-        if (inputText !== "") {
-            if (listType === 'teamList') {
-                teamList.push(inputText);
-            } else if (listType === 'nominationList') {
-                nominationList.push(inputText);
-            }
-
-            updateList(); // Обновляем отображение
-            inputField.value = ""; // Очищаем текстовое поле
-        }
-    }
-    // Функция удаления элемента из списка
-    function deleteItem(index, listType) {
-        if (listType === 'teamList') {
-            teamList.splice(index, 1);
-        } else if (listType === 'nominationList') {
-            nominationList.splice(index, 1);
-        }
-        updateList(); // Обновляем отображение
-    }
-    // Функция подготовки и отправки формы
-    function prepareAndSubmit() {
-        const hiddenFieldsContainer = document.getElementById('hiddenFieldsContainer');
-        hiddenFieldsContainer.innerHTML = ''; // Удаляем старые скрытые поля
-
-        // Добавляем команды в скрытые поля
-        teamList.forEach(team => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'teams[]'; // Обратите внимание на использование 'teams[]'
-            input.value = team;
-            hiddenFieldsContainer.appendChild(input);
-        });
-
-        // Добавляем номинации в скрытые поля
-        nominationList.forEach(nomination => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'nominations[]'; // Аналогично для номинаций
-            input.value = nomination;
-            hiddenFieldsContainer.appendChild(input);
-        });
-    }
-    // Первоначальное обновление списка
-    updateList();
-</script>
-<script>
     document.getElementById('toggle-button').addEventListener('click', function() {
         const actsDiv = document.getElementById('acts');
         const commandsDiv = document.getElementById('commands');
@@ -686,30 +937,6 @@ use yii\jui\DatePicker;
             commandsDiv.style.opacity = '1';  // Восстанавливаем непрозрачность
         }
     });
-</script>
-<script>
-    // Ждем загрузки DOM
-    function updateCheckboxNames() {
-        const checkboxes = document.querySelectorAll('input[type="radio"].type-participant');
-        checkboxes.forEach((checkbox, index) => {
-            checkbox.name = `participant-${index + 1}`;
-        });
-        requestAnimationFrame(updateCheckboxNames);
-    }
-    // Запускаем первую функцию вызова
-    requestAnimationFrame(updateCheckboxNames);
-</script>
-<script>
-    // Ждем загрузки DOM
-    function updatePersonalCheckboxNames() {
-        const checkboxes2 = document.querySelectorAll('input[type="radio"].personal-type-participant');
-        checkboxes2.forEach((checkbox2, index) => {
-            checkbox2.name = `participant-${index + 1}`;
-        });
-        requestAnimationFrame(updatePersonalCheckboxNames);
-    }
-    // Запускаем первую функцию вызова
-    requestAnimationFrame(updatePersonalCheckboxNames);
 </script>
 <script>
     function updateDivNames() {
@@ -754,4 +981,28 @@ use yii\jui\DatePicker;
     }
     // Запускаем первую функцию вызова
     requestAnimationFrame(updateDivPersonalNames);
+</script>
+<script>
+    function handleParticipationChange(radio) {
+        const name = radio.name;
+        const index = name.match(/\[(\d+)\]/);
+        if (index) {
+            let extractedIndex = index[1];
+            extractedIndex++;
+            var teamDropdownList = document.getElementById(`team-dropdown-list-${extractedIndex}`);
+            if (radio.value === '0') {
+                teamDropdownList.hidden = true;
+            } else if (radio.value === '1') {
+                teamDropdownList.hidden = false;
+            }
+        }
+    }
+    function updateOptions() {
+        setTimeout(() => {
+            FinishNom();
+            FinishTeam();
+        }, 1000); // Пауза 1 секунда (1000 миллисекунд)
+    }
+    // Вызывает updateOptions каждые 2000 миллисекунд (2 секунды)
+   // setInterval(updateOptions, 2000);
 </script>

@@ -2,7 +2,7 @@
 
 namespace frontend\models\search;
 
-use common\helpers\DateFormatter;
+use DateTime;
 use frontend\models\work\document_in_out\DocumentInWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -15,16 +15,14 @@ class SearchDocumentIn extends DocumentInWork
     public $fullNumber;
     public $companyName;
     public $sendMethodName;
-    public $localDate;
-    public $realDate;
-    public $realNumber;
     public $documentTheme;
 
-    public $archive;
-
     public $correspondentName;
-    public $start_date_search;
-    public $finish_date_search;
+    public $startDateSearch;
+    public $finishDateSearch;
+    public $number;
+    public $executorName;
+    public $status;
 
     public function attributeLabels()
     {
@@ -39,9 +37,10 @@ class SearchDocumentIn extends DocumentInWork
     public function rules()
     {
         return [
-            [['id', 'local_number', 'position_id', 'company_id', 'signed_id', 'get_id', 'creator_id', 'archive'], 'integer'],
+            [['id', 'local_number', 'position_id', 'company_id', 'signed_id', 'get_id', 'creator_id'], 'integer'],
             [['realNumber', 'fullNumber', 'key_words'], 'string'],
-            [['localDate', 'realDate', 'documentTheme', 'correspondentName', 'companyName', 'sendMethodName'], 'safe'],
+            [['startDateSearch', 'finishDateSearch'], 'date', 'format' => 'dd.MM.yyyy'],
+            [['localDate', 'realDate', 'documentTheme', 'correspondentName', 'companyName', 'sendMethodName', 'number', 'executorName', 'status'], 'safe'],
         ];
     }
 
@@ -65,25 +64,45 @@ class SearchDocumentIn extends DocumentInWork
     {
         $this->load($params);
         $query = DocumentInWork::find()
-            ->joinWith('company');
-
-        if ($this->localDate !== '' && $this->localDate !== null) {
-            $dates = DateFormatter::splitDates($this->localDate);
-            $query->andWhere(
-                ['BETWEEN', 'local_date',
-                    DateFormatter::format($dates[0], DateFormatter::dmy_dot, DateFormatter::Ymd_dash),
-                    DateFormatter::format($dates[1], DateFormatter::dmy_dot, DateFormatter::Ymd_dash)]);
-        }
-
-        if ($this->realDate !== '' && $this->realDate !== null) {
-            $dates = DateFormatter::splitDates($this->realDate);
-            $query->andWhere(['BETWEEN', 'real_date', $dates[0], $dates[1]]);
-        }
+            ->joinWith(['company','correspondent','correspondent.people', 'inOutDocument.responsible.people']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort'=> ['defaultOrder' => ['local_date' => SORT_DESC, 'local_number' => SORT_DESC, 'local_postfix' => SORT_DESC]]
         ]);
+
+        $this->sortAttributes($dataProvider);
+        $this->statusFilter($query);
+
+        if ($this->startDateSearch != '' && $this->finishDateSearch != '')
+        {
+            $dateFrom = date('Y-m-d', strtotime($this->startDateSearch));
+            $dateTo =  date('Y-m-d', strtotime($this->finishDateSearch));
+            $query->andWhere(['or',
+                ['between', 'local_date', $dateFrom, $dateTo],
+                ['between', 'real_date', $dateFrom, $dateTo],
+            ]);
+        }
+
+        // гибкие фильтры Like
+        $query->andFilterWhere(['or',
+                ['like', 'real_number', $this->number],
+                ['like', "CONCAT(local_number, '/', local_postfix)", $this->number],
+            ])
+            ->andFilterWhere(['like', 'document_theme', $this->documentTheme])
+            ->andFilterWhere(['like', 'LOWER(key_words)', mb_strtolower($this->key_words)])
+            ->andFilterWhere(['or',
+                ['like', 'LOWER(company.name)', mb_strtolower($this->correspondentName)],
+                ['like', 'LOWER(company.short_name)', mb_strtolower($this->correspondentName)],
+                ['like', 'LOWER(people.firstname)', mb_strtolower($this->correspondentName)],
+            ])
+            ->andFilterWhere(['like', 'LOWER(people.firstname)', mb_strtolower($this->executorName)])  // исполнитель
+            ->andFilterWhere(['like', 'send_method', $this->sendMethodName]);    // способ получения
+
+        return $dataProvider;
+    }
+
+    private function sortAttributes($dataProvider) {
 
         $dataProvider->sort->attributes['fullNumber'] = [
             'asc' => ['local_number' => SORT_ASC, 'local_postfix' => SORT_ASC],
@@ -124,24 +143,15 @@ class SearchDocumentIn extends DocumentInWork
             'asc' => ['need_answer' => SORT_DESC],
             'desc' => ['need_answer' => SORT_ASC],
         ];
+    }
 
-        //var_dump($this->realDate);
-
-        if (!$this->validate()) {
-            return $dataProvider;
-        }
-
-        // строгие фильтры
-        $query->andFilterWhere([
-            'send_method' => $this->sendMethodName,
-        ]);
-
-        // гибкие фильтры Like
-        $query->andFilterWhere(['like', "CONCAT(local_number, '/', local_postfix)", $this->fullNumber])
-            ->andFilterWhere(['like', 'real_number', $this->realNumber])
-            ->andFilterWhere(['like', 'company.name', $this->companyName])
-            ->andFilterWhere(['like', 'document_theme', $this->documentTheme])
-            ->andFilterWhere(['like', 'real_number', $this->realNumber]);
-        return $dataProvider;
+    private function statusFilter($query) {
+        $statusConditions = [
+            '1' => [],
+            '2' => ['<', 'date', date('Y-m-d')],
+            '3' => ['=', 'need_answer', 1],
+            '4' => ['>', 'local_date', date('Y') . '-01-01'],
+        ];
+        $query->andWhere($statusConditions[$this->status] ?? ['>', 'local_date', date('Y') . '-01-01']);
     }
 }
