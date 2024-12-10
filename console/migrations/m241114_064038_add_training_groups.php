@@ -14,7 +14,7 @@ class m241114_064038_add_training_groups extends Migration
     {
         $this->createTable('training_group', [
             'id' => $this->primaryKey(),
-            'number' => $this->string(32),
+            'number' => $this->string(64),
             'training_program_id' => $this->integer(),
             'teacher_id' => $this->integer(),
             'start_date' => $this->date(),

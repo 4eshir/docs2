@@ -44,6 +44,8 @@ class FilesHelper
             self::TYPE_OTHER => 'Другие файлы',
             self::TYPE_MAIN => 'Основные документы',
             self::TYPE_CONTRACT => 'Файлы договоров',
+            self::TYPE_PRESENTATION => 'Презентационные материалы',
+            self::TYPE_WORK => 'Рабочие материалы',
         ];
     }
 

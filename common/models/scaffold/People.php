@@ -48,8 +48,8 @@ class People extends \yii\db\ActiveRecord
     {
         return [
             [['firstname', 'surname'], 'required'],
-            [['company_id', 'position_id', 'branch', 'sex', 'created_id', 'last_edit_id'], 'integer'],
-            [['birthdate', 'created_at', 'updated_at'], 'safe'],
+            [['company_id', 'position_id', 'branch', 'sex', 'creator_id', 'last_edit_id'], 'integer'],
+            [['birthdate', 'created_at', 'updated_at', 'id'], 'safe'],
             [['firstname', 'surname', 'patronymic', 'genitive_surname'], 'string', 'max' => 256],
             [['short'], 'string', 'max' => 10],
             [['company_id'], 'exist', 'skipOnError' => true, 'targetClass' => Company::class, 'targetAttribute' => ['company_id' => 'id']],

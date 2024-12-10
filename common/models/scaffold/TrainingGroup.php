@@ -51,7 +51,7 @@ class TrainingGroup extends \yii\db\ActiveRecord
         return [
             [['training_program_id', 'teacher_id', 'open', 'budget', 'branch', 'order_stop', 'archive', 'protection_confirm', 'is_network', 'state', 'creator_id', 'last_edit_id'], 'integer'],
             [['start_date', 'finish_date', 'protection_date'], 'safe'],
-            [['number'], 'string', 'max' => 32],
+            [['number'], 'string', 'max' => 64],
             [['training_program_id'], 'exist', 'skipOnError' => true, 'targetClass' => TrainingProgram::class, 'targetAttribute' => ['training_program_id' => 'id']],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['teacher_id' => 'id']],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],

@@ -132,6 +132,11 @@ class ThematicDirectionDictionary extends BaseDictionary
         ];
     }
 
+    public function getAbbreviation($index)
+    {
+        return $this->getAbbreviations()[$index];
+    }
+
     public function getFullnameList()
     {
         $names = $this->getList();
