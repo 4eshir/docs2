@@ -14,4 +14,7 @@ class SquadParticipantRepository
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
+    public function getCountByActAndParticipantId($actId, $participantId){
+        return count(SquadParticipantWork::find()->andWhere(['act_participant_id ' => $actId, 'participant_id' => $participantId])->all());
+    }
 }

@@ -12,6 +12,7 @@ use common\repositories\team\TeamRepository;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\forms\ActParticipantForm;
+use frontend\models\work\general\FilesWork;
 use PHPUnit\Util\Xml\ValidationResult;
 use yii\helpers\Html;
 use yii\web\UploadedFile;
@@ -22,12 +23,14 @@ class ActParticipantService
     private ActParticipantFileNameGenerator $filenameGenerator;
     private ActParticipantRepository $actParticipantRepository;
     private FileService $fileService;
+    private SquadParticipantService $squadParticipantService;
     public function __construct(
         TeamRepository $teamRepository,
         TeamService $teamService,
         ActParticipantFileNameGenerator $filenameGenerator,
         ActParticipantRepository $actParticipantRepository,
-        FileService $fileService
+        FileService $fileService,
+        SquadParticipantService $squadParticipantService
     )
     {
         $this->teamRepository = $teamRepository;
@@ -35,6 +38,7 @@ class ActParticipantService
         $this->filenameGenerator = $filenameGenerator;
         $this->actParticipantRepository = $actParticipantRepository;
         $this->fileService = $fileService;
+        $this->squadParticipantService = $squadParticipantService;
     }
     public function getFilesInstance(ActParticipantForm $modelActParticipant, $index)
     {
@@ -68,6 +72,7 @@ class ActParticipantService
         $index = 0;
         foreach ($acts as $act){
            $modelActParticipantForm = ActParticipantForm::fill(
+               $act["participant"],
                $act["firstTeacher"],
                $act["secondTeacher"],
                $act["branch"],
@@ -94,10 +99,12 @@ class ActParticipantService
                $modelActParticipantForm->form,
            );
            $modelAct->actFiles = $modelActParticipantForm->actFiles;
-           $modelAct->recordEvent(new ActParticipantCreateEvent($modelAct, $teamNameId, $foreignEventId), ActParticipantWork::class);
-           $modelAct->releaseEvents();
+           $modelAct->save();
+           //$modelAct->recordEvent(new ActParticipantCreateEvent($modelAct, $teamNameId, $foreignEventId), ActParticipantWork::class);
+           //$modelAct->releaseEvents();
            $this->saveFilesFromModel($modelAct, $index);
            $modelAct->releaseEvents();
+           $this->squadParticipantService->addSquadParticipantEvent($modelAct, $act["participant"], $modelAct->id);
            $index++;
        }
     }

@@ -23,6 +23,7 @@ class ActParticipantForm extends \yii\base\Model
      * {@inheritdoc}
      */
     public static function fill(
+        $participant,
         $teacherId,
         $teacher2Id,
         $branch,
@@ -34,6 +35,7 @@ class ActParticipantForm extends \yii\base\Model
         $team
     ){
         $entity = new static();
+        $entity->participant = $participant;
         $entity->firstTeacher = $teacherId;
         $entity->secondTeacher = $teacher2Id;
         $entity->branch = $branch;
