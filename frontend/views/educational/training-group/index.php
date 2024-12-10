@@ -1,6 +1,7 @@
 <?php
 
 use frontend\models\search\SearchTrainingGroup;
+use yii\grid\ActionColumn;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
@@ -93,18 +94,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
         ?>
     </div>
-    
 
     <?php echo GridView::widget([
         'id'=>'grid',
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-            'rowOptions' => function($data) {
-                if ($data['archive'] === 1)
-                    return ['style' => 'background: #c0c0c0'];
-                else
-                    return ['class' => $data['colorErrors']];
-            },
 
         'columns' => [
             ['class' => 'yii\grid\CheckboxColumn', 'header' => 'Архив',
@@ -122,7 +116,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'finish_date',
             ['attribute' => 'budgetText', 'label' => 'Бюджет', 'filter' => [ 1 => "Бюджет", 0 => "Внебюджет"]],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'urlCreator' => function ($action, $model, $key, $index) {
+                    if ($action == 'update') {
+                        return Url::toRoute(['educational/training-group/' . 'base-form', 'id' => $model->id]);
+                    }
+                    return Url::toRoute(['educational/training-group/' . $action, 'id' => $model->id]);
+                }
+            ],
         ],
     ]); ?>
 

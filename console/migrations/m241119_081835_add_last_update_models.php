@@ -86,6 +86,16 @@ class m241119_081835_add_last_update_models extends Migration
                                                                                    2 - заполнены данные о защите, 
                                                                                    3 - выданы сертификаты, 
                                                                                    4 - группа отчислена и архивирована');
+
+        $this->dropForeignKey('fk-training_group_participant-1', 'training_group_participant');
+        $this->addForeignKey(
+            'fk-training_group_participant-1',
+            'training_group_participant',
+            'participant_id',
+            'foreign_event_participants',
+            'id',
+            'RESTRICT'
+        );
     }
 
     /**

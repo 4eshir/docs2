@@ -48,14 +48,14 @@ class TrainingProgram extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['thematic_direction', 'level', 'author_id', 'capacity', 'hour_capacity', 'student_right_age', 'focus', 'allow_remote', 'actual', 'certificate_type', 'is_network', 'creator_id', 'last_update_id'], 'integer'],
+            [['thematic_direction', 'level', 'author_id', 'capacity', 'hour_capacity', 'student_right_age', 'focus', 'allow_remote', 'actual', 'certificate_type', 'is_network', 'creator_id', 'last_edit_id'], 'integer'],
             [['ped_council_date', 'created_at', 'updated_at'], 'safe'],
             [['student_left_age'], 'number'],
             [['name', 'description', 'key_words'], 'string', 'max' => 1024],
             [['ped_council_number'], 'string', 'max' => 128],
             [['author_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['author_id' => 'id']],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
-            [['last_update_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['last_update_id' => 'id']],
+            [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['last_edit_id' => 'id']],
         ];
     }
 

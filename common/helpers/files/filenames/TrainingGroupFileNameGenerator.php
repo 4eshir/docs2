@@ -8,6 +8,7 @@ use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\repositories\general\FilesRepository;
 use DomainException;
+use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\models\work\general\FilesWork;
 use InvalidArgumentException;
 
@@ -21,7 +22,6 @@ class TrainingGroupFileNameGenerator implements FileNameGeneratorInterface
     }
     public function getOrdinalFileNumber($object, $fileType)
     {
-        // ВСЕ ЭТИ ФУНКЦИИ - В РАБОТУ, ТАМ ЗАГЛУШКИ ПОКА
         switch ($fileType) {
             case FilesHelper::TYPE_PHOTO:
                 return $this->getOrdinalFileNumberPhoto($object);
@@ -35,10 +35,10 @@ class TrainingGroupFileNameGenerator implements FileNameGeneratorInterface
     }
     private function getOrdinalFileNumberPhoto($object)
     {
-        $lastDocFile = $this->filesRepository->getLastFile($object::tableName(), $object->id, FilesHelper::TYPE_DOC);
+        $lastDocFile = $this->filesRepository->getLastFile($object::tableName(), $object->id, FilesHelper::TYPE_PHOTO);
         /** @var FilesWork $lastDocFile */
         if ($lastDocFile) {
-            preg_match('/Ред(\d+)_/', basename($lastDocFile->filepath), $matches);
+            preg_match('/Фото(\d+)_/', basename($lastDocFile->filepath), $matches);
             return (int)$matches[1];
         }
 
@@ -47,10 +47,10 @@ class TrainingGroupFileNameGenerator implements FileNameGeneratorInterface
 
     private function getOrdinalFileNumberPresentation($object)
     {
-        $lastAppFile = $this->filesRepository->getLastFile($object::tableName(), $object->id, FilesHelper::TYPE_APP);
+        $lastAppFile = $this->filesRepository->getLastFile($object::tableName(), $object->id, FilesHelper::TYPE_PRESENTATION);
         /** @var FilesWork $lastAppFile */
         if ($lastAppFile) {
-            preg_match('/Приложение(\d+)_/', basename($lastAppFile->filepath), $matches);
+            preg_match('/През(\d+)_/', basename($lastAppFile->filepath), $matches);
             return (int)$matches[1];
         }
 
@@ -59,10 +59,10 @@ class TrainingGroupFileNameGenerator implements FileNameGeneratorInterface
 
     private function getOrdinalFileNumberWork($object)
     {
-        $lastAppFile = $this->filesRepository->getLastFile($object::tableName(), $object->id, FilesHelper::TYPE_APP);
+        $lastAppFile = $this->filesRepository->getLastFile($object::tableName(), $object->id, FilesHelper::TYPE_WORK);
         /** @var FilesWork $lastAppFile */
         if ($lastAppFile) {
-            preg_match('/Приложение(\d+)_/', basename($lastAppFile->filepath), $matches);
+            preg_match('/Раб(\d+)_/', basename($lastAppFile->filepath), $matches);
             return (int)$matches[1];
         }
 
@@ -84,51 +84,47 @@ class TrainingGroupFileNameGenerator implements FileNameGeneratorInterface
     }
     private function generatePhotoFileName($object, $params = [])
     {
+        /** @var TrainingGroupBaseForm $object */
         if (!array_key_exists('counter', $params)) {
             throw new DomainException('Параметр \'counter\' обязателен');
         }
-        /** @var OrderMainWork $object */
-        $date = $object->order_date;
-        $new_date = DateFormatter::format($date, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
-        $filename =
-                'Ред'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_DOC) + $params['counter']).
-                '_Пр.'.$new_date.'_'.$object->order_number.'_'.'_'.$object->order_name;
-        $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
-        $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
-        $res = StringFormatter::CutFilename($res);
 
-        return $res . '.' . $object->docFiles[$params['counter'] - 1]->extension;
+        $new_date = DateFormatter::format($object->startDate, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
+        $filename = 'Фото'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_PHOTO) + $params['counter']).'_'.$new_date.'_'.$object->id;
+        $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
+        $res = mb_ereg_replace('[^а-яА-Я0-9a-zA-Z._]{1}', '', $res);
+        $res = StringFormatter::CutFilename($res);
+        return $res . '.' . $object->photos[$params['counter'] - 1]->extension;
     }
 
     private function generatePresentationFileName($object, $params = [])
     {
-        /** @var OrderMainWork $object */
-        $date = $object->order_date;
-        $new_date = DateFormatter::format($date, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
-        $filename = 'Пр.'.$new_date.'_'.$object->order_number.'_'.'_'.$object->order_name;
-        $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
-        $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
-        $res = StringFormatter::CutFilename($res);
-
-        return $res . '.' . $object->scanFile->extension;
-    }
-
-    private function generateWorkFileName($object, $params = [])
-    {
+        /** @var TrainingGroupBaseForm $object */
         if (!array_key_exists('counter', $params)) {
             throw new DomainException('Параметр \'counter\' обязателен');
         }
 
-        /** @var OrderMainWork $object */
-        $date = $object->order_date;
-        $new_date = DateFormatter::format($date, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
-        $filename = 'Приложение'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_APP) +
-                $params['counter']).'_Пр.'.$new_date.'_'.$object->order_number.'_'.'_'.$object->order_name;
+        $new_date = DateFormatter::format($object->startDate, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
+        $filename = 'През'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_PRESENTATION) + $params['counter']).'_'.$new_date.'_'.$object->id;
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
-        $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
+        $res = mb_ereg_replace('[^а-яА-Я0-9a-zA-Z._]{1}', '', $res);
         $res = StringFormatter::CutFilename($res);
+        return $res . '.' . $object->presentations[$params['counter'] - 1]->extension;
+    }
 
-        return $res . '.' . $object->appFiles[$params['counter'] - 1]->extension;
+    private function generateWorkFileName($object, $params = [])
+    {
+        /** @var TrainingGroupBaseForm $object */
+        if (!array_key_exists('counter', $params)) {
+            throw new DomainException('Параметр \'counter\' обязателен');
+        }
+
+        $new_date = DateFormatter::format($object->startDate, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
+        $filename = 'Раб'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_WORK) + $params['counter']).'_'.$new_date.'_'.$object->id;
+        $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
+        $res = mb_ereg_replace('[^а-яА-Я0-9a-zA-Z._]{1}', '', $res);
+        $res = StringFormatter::CutFilename($res);
+        return $res . '.' . $object->workMaterials[$params['counter'] - 1]->extension;
     }
 
 

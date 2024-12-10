@@ -3,6 +3,8 @@
 namespace common\components\traits;
 
 use Yii;
+use yii\db\ActiveRecord;
+use yii\db\Query;
 
 trait CommonDatabaseFunctions
 {
@@ -38,5 +40,35 @@ trait CommonDatabaseFunctions
         }
 
         return $errorStrings;
+    }
+
+
+    public function findDuplicates(ActiveRecord $model, array $fields)
+    {
+        if (!$model instanceof ActiveRecord || empty($fields)) {
+            return false;
+        }
+
+        $tableName = $model::tableName();
+        $primaryKey = $model->getPrimaryKey(true);
+
+        $query = (new Query())
+            ->select(['*'])
+            ->from($tableName);
+
+        // Формируем условие исключения текущей записи по первичному ключу
+        foreach ($primaryKey as $key => $keyField) {
+            if ($model->$key !== null) {
+                $query->andWhere(['!=', $key, $model->$key]);
+            }
+        }
+
+        // Добавляем условия для проверки полей на дублирование
+        foreach ($fields as $field) {
+            $query->andWhere([$field => $model->$field]);
+        }
+
+        $duplicates = $query->all(Yii::$app->db);
+        return !empty($duplicates) ? $duplicates : false;
     }
 }
