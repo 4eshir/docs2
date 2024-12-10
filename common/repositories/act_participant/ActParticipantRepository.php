@@ -36,4 +36,14 @@ class ActParticipantRepository
     {
         return ActParticipantWork::find()->andWhere(['foreign_event_id' => $foreignEventId])->andWhere(['type' => $type])->all();
     }
+    public function checkUniqueAct($foreignEventId, $teamNameId, $focus, $form, $nomination)
+    {
+        return count(ActParticipantWork::find()
+            ->andWhere(['foreign_event_id' => $foreignEventId])
+            ->andWhere(['team_name_id' => $teamNameId])
+            ->andWhere(['focus' => $focus])
+            ->andWhere(['form' => $form])
+            ->andWhere(['nomination' => $nomination])
+            ->all());
+    }
 }

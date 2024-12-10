@@ -99,7 +99,9 @@ class ActParticipantService
                $modelActParticipantForm->form,
            );
            $modelAct->actFiles = $modelActParticipantForm->actFiles;
-           $modelAct->save();
+           if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
+               $modelAct->save();
+           }
            //$modelAct->recordEvent(new ActParticipantCreateEvent($modelAct, $teamNameId, $foreignEventId), ActParticipantWork::class);
            //$modelAct->releaseEvents();
            $this->saveFilesFromModel($modelAct, $index);
