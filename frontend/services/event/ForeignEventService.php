@@ -59,7 +59,7 @@ class ForeignEventService
     }
     public function getForeignEventTable(ForeignEventWork $model)
     {
-        /* @var ActParticipantWork $actParticipan t*/
+        /* @var ActParticipantWork $actParticipan t */
         $actParticipant = $this->actParticipantRepository->getByForeignEventId($model->id);
         $foreignEvent = HtmlBuilder::createTableWithActionButtons(
             [
@@ -71,25 +71,6 @@ class ForeignEventService
                 HtmlBuilder::createButtonsArray(
                     'Удалить',
                     Url::to('delete-act-participant'),
-                    [
-                        'modelId' => array_fill(0, count($actParticipant), $actParticipant->id),
-                        'fileId' => ArrayHelper::getColumn($actParticipant, 'id')])
-            ]
-        );
-        return $foreignEvent;
-    }
-    public function getAwardTable(ForeignEventWork $model)
-    {
-        /* @var ActParticipantWork $actParticipan t*/
-        $actParticipant = $this->actParticipantRepository->getByForeignEventId($model->id);
-        $foreignEvent = HtmlBuilder::createTableWithActionButtons(
-            [
-                array_merge(['Номинация'], ArrayHelper::getColumn($actParticipant, 'nomination'))
-            ],
-            [
-                HtmlBuilder::createButtonsArray(
-                    'Удалить',
-                    Url::to('delete-award'),
                     [
                         'modelId' => array_fill(0, count($actParticipant), $actParticipant->id),
                         'fileId' => ArrayHelper::getColumn($actParticipant, 'id')])

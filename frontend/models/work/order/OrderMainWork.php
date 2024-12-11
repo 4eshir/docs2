@@ -194,7 +194,6 @@ class OrderMainWork extends OrderMain
     public function beforeValidate()
     {
         $this->order_copy_id = 1;
-        $this->type = 1;
         $this->order_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         return parent::beforeValidate(); 
     }

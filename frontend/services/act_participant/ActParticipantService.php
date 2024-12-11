@@ -110,4 +110,26 @@ class ActParticipantService
            $index++;
        }
     }
+    public function createForms($acts)
+    {
+        /* @var $act ActParticipantWork */
+        $forms = [];
+        foreach ($acts as $act){
+            $participants = NULL;
+            $form = ActParticipantForm::fill(
+                $participants,
+                $act->teacher_id,
+                $act->teacher2_id,
+                $act->branch,
+                $act->focus,
+                $act->type,
+                $act->allow_remote,
+                $act->nomination,
+                $act->form,
+                $act->team_name_id
+            );
+            $forms[] = $form;
+        }
+        return $forms;
+    }
 }

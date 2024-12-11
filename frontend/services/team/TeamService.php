@@ -32,23 +32,4 @@ class TeamService
         }
         return $model->id;
     }
-    public function getTeamTable(ForeignEventWork $foreignEvent)
-    {
-        /* @var TeamWork $teams */
-        $teams = $this->teamRepository->getByForeignEventId($foreignEvent->id);
-        $table = HtmlBuilder::createTableWithActionButtons(
-            [
-                array_merge(['Название команды'], ArrayHelper::getColumn($teams, 'name')),
-            ],
-            [
-                HtmlBuilder::createButtonsArray(
-                    'Удалить',
-                    Url::to('delete-team'),
-                    [
-                        'modelId' => array_fill(0, count($teams), $teams->id),
-                        'fileId' => ArrayHelper::getColumn($teams, 'id')])
-            ]
-        );
-        return $table;
-    }
 }

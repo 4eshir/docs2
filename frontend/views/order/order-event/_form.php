@@ -18,9 +18,9 @@ use yii\jui\DatePicker;
 /* @var $teamTable */
 /* @var $awardTable */
 /* @var $modelActs */
+var_dump($teams);
 ?>
-<?php $nominations = [];
-$teams = [];?>
+
 <style>
     div[role=radiogroup] > label {
         font-weight: normal;

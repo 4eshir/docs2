@@ -12,7 +12,9 @@ use yii\helpers\Html;
 /* @var $foreignEventTable */
 /* @var $teamTable */
 /* @var $awardTable */
-
+/* @var $nominations */
+/* @var $teams */
+/* @var $modelActs */
 $this->title = 'Приказ об участии' . $model->order_number;
 $this->params['breadcrumbs'][] = ['label' => 'Приказ об участии', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
@@ -30,6 +32,9 @@ $this->params['breadcrumbs'][] = 'Редактирование';
             'foreignEventTable' => $foreignEventTable,
             'teamTable' => $teamTable,
             'awardTable' => $awardTable,
+            'nominations' => $nominations,
+            'teams' => $teams,
+            'modelActs' => $modelActs,
         ]
     ) ?>
 </div>

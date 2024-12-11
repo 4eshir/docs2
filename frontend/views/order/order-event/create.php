@@ -5,6 +5,8 @@ use yii\helpers\Html;
 /* @var $model \app\models\work\order\OrderEventWork */
 /* @var $people */
 /* @var $modelActs */
+/* @var $nominations */
+/* @var $teams */
 $this->title = 'Добавить приказ об участии';
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об участии', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -17,6 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'people' => $people,
         'modelActs' => $modelActs,
+        'nominations' => $nominations,
+        'teams' => $teams,
     ]) ?>
 
 </div>
