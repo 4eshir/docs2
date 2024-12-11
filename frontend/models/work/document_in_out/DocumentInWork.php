@@ -227,7 +227,7 @@ class DocumentInWork extends DocumentIn
         $docOut = Yii::createObject(DocumentOutRepository::class)->get($inOutDoc->document_out_id);
         $answerName = "Исходящее № {$docOut->getFullNumber()} от {$docOut->getDate()} \"{$docOut->getDocumentTheme()}\"";
 
-        return StringFormatter::stringAsLink($answerName, Url::to(['document/document-out/view', 'id' => $inOutDoc->document_out_id]));
+        return StringFormatter::stringAsLink($answerName, Url::to([Yii::$app->frontUrls::DOC_IN_VIEW, 'id' => $inOutDoc->document_out_id]));
     }
 
     /**
@@ -243,7 +243,7 @@ class DocumentInWork extends DocumentIn
             if($links->document_out_id != null) {
                 $str = 'Исходящий документ "' . (Yii::createObject(DocumentOutRepository::class))->get($links->document_out_id)->document_theme . '"';
                 return $format == StringFormatter::FORMAT_LINK ?
-                    StringFormatter::stringAsLink($str, Url::to(['document/document-out/view', 'id' => $links->document_out_id])) : $str;
+                    StringFormatter::stringAsLink($str, Url::to([Yii::$app->frontUrls::DOC_IN_VIEW, 'id' => $links->document_out_id])) : $str;
             }
             else {
                 return 'Требуется указать ответ до '. DateFormatter::format($links->date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
@@ -283,26 +283,6 @@ class DocumentInWork extends DocumentIn
                 $this->local_postfix = $max_postfix + 1;
             }
         }
-    }
-    public function createGroupButton()
-    {
-        $links = [
-            'Добавить документ' => Url::to(['document/document-in/create']),
-            'Добавить резерв' => Url::to(['document/document-in/reserve']),
-        ];
-        return HtmlBuilder::createGroupButton($links);
-    }
-
-    public function createFilterPanel($searchModel)
-    {
-        return HtmlBuilder::createFilterPanel($searchModel);
-    }
-
-    public function createFilesButton()
-    {
-        $links = $this->getFileLinks(FilesHelper::TYPE_SCAN);
-
-        return HtmlBuilder::createGroupFilesInViewCard($links, 'ckan');
     }
 
     public function beforeValidate()

@@ -93,6 +93,9 @@ return [
         ],
         'nomenclature' => [
             'class' => 'common\\components\\dictionaries\\base\\NomenclatureDictionary',
+        ],
+        'frontUrls' => [
+            'class' => 'frontend\\components\\routes\\Urls',
         ]
     ],
 ];

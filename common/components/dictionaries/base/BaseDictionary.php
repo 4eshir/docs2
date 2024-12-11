@@ -20,7 +20,7 @@ abstract class BaseDictionary
 
     public function get($index)
     {
-        if (!$index) {
+        if (is_null($index)) {
             return null;
         }
 

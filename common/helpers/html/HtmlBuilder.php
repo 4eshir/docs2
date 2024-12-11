@@ -7,6 +7,8 @@ use DomainException;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
 
 class HtmlBuilder
@@ -72,51 +74,54 @@ class HtmlBuilder
         return $result;
     }
 
-    public static function createFilterPanel($searchModel)
+    public static function filterButton($resetUrl) {
+        return '<div class="form-group-button">
+                    <button type="submit" class="btn btn-primary">Поиск</button>
+                    <a href="'.Url::to([$resetUrl]).'" type="reset" class="btn btn-secondary" style="font-weight: 500;">Очистить</a>
+                </div>';
+    }
+
+    public static function createFilterPanel($searchModel, $searchFields, $form, $valueInRow, $resetUrl)
     {
-        /*echo '<div style="margin-bottom: 10px; margin-top: 20px">' . Html::a('Показать просроченные документы', \yii\helpers\Url::to(['document-in/index', 'sort' => '1'])) .
-            ' || ' . Html::a('Показать документы, требующие ответа', \yii\helpers\Url::to(['document-in/index', 'sort' => '2'])) .
-            ' || ' . Html::a('Показать все документы', \yii\helpers\Url::to(['document-in/index'])) . '</div>' */
+        $result = '<div class="filter-panel" id="filterPanel">
+                        '.HtmlCreator::filterHeaderForm().'
+                        <div class="filter-date">';
+        $counter = 0;
+        foreach ($searchFields as $attribute => $field) {
+            if ($counter % $valueInRow == 0) {
+                $result .= '<div class="flexx">';
+            }
+            $counter++;
 
-        //var_dump($searchModel);
-        $documentNumber = Html::activeTextInput($searchModel, 'realNumber', [
-            'class' => 'form-control',
-            'placeholder' => 'Номер документа',
-            'autocomplete' => 'off',
-        ]);
-
-        //var_dump($searchModel);
-        $output = '<div class="filter-panel" id="filterPanel">
-        <h3>
-            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                <path d="M9 12L4 4H15M20 4L15 12V21L9 18V16" stroke="#009580" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg> Фильтры поиска:
-        </h3>
-        <div class="filter-date">';
-        $output .= '<div class="flexx">
-                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Дата документа с" autocomplete="off"></div>
-                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Дата" autocomplete="off"></div>
-                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Номер документа" autocomplete="off"></div>
-                        </div><div class="flexx">
-                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Тема документа" autocomplete="off"></div>
-                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Ключевые слова" autocomplete="off"></div>
-                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Корреспондент" autocomplete="off"></div>
-                        </div><div class="flexx">
-                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Исполнитель" autocomplete="off"></div>
-                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Способ отправки" autocomplete="off"></div>
-                        <div class="filter-input"><input type="text" id="" class="form-control" name="DocumentInWork[local_date]" placeholder="Статус документа" autocomplete="off"></div>
-                    </div>';
-
-        //$form = ActiveForm::begin();
-        //$output .= $form->field($searchModel, 'fullNumber');
-
-        $output .= '<div class="form-group">';
-        $output .= Html::submitButton('Поиск', ['class' => 'btn btn-primary']);
-        $output .= Html::submitButton('Очистить', ['class' => 'btn btn-secondary', 'style' => 'font-weight: 500;']);
-        $output .= '</div>';
-
-        $output .= '</div></div>';
-        return $output;
+            $result .= '<div class="filter-input">';
+            $options = [
+                'placeholder' => $field['placeholder'] ?? '',
+                'class' => 'form-control',
+                'autocomplete' => 'off',
+            ];
+            if ($field['type'] === 'date') {
+                $widgetOptions = [
+                    'dateFormat' => $field['dateFormat'],
+                    'language' => 'ru',
+                    'options' => $options,
+                    'clientOptions' => $field['clientOptions'],
+                ];
+                $result .= $form->field($searchModel, $attribute)->widget(DatePicker::class, $widgetOptions)->label(false);
+            } elseif ($field['type'] === 'text') {
+                $result .= $form->field($searchModel, $attribute)->textInput($options)->label(false);
+            } elseif ($field['type'] === 'dropdown') {
+                $options['prompt'] = $field['prompt'];
+                $options['options'] = [$searchModel->$attribute => ['selected' => true]];
+                $result .= $form->field($searchModel, $attribute)->dropDownList($field['data'], $options)->label(false);
+            }
+            $result .= '</div>';
+            if ($counter % $valueInRow == 0) {
+                $result .= '</div>';
+            }
+        }
+        $result .= self::filterButton($resetUrl) . '</div>
+            </div>';
+        return $result;
     }
 
     /**

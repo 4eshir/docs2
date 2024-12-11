@@ -26,6 +26,7 @@ use common\components\dictionaries\base\SendMethodDictionary;
 use common\components\dictionaries\base\ThematicDirectionDictionary;
 use common\components\dictionaries\TableDictionary;
 use common\components\RedisComponent;
+use frontend\components\routes\Urls;
 use yii\caching\FileCache;
 
 /**
@@ -75,6 +76,7 @@ class Yii {
  * @property AuditoriumTypeDictionary $auditoriumType
  * @property ResponsibilityTypeDictionary $responsibilityType
  * @property RacComponent $rac
+ * @property Urls $frontUrls
  */
 class __Application {
 }

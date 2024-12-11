@@ -1,12 +1,15 @@
 <?php
 
+use app\components\VerticalActionColumn;
 use common\helpers\html\HtmlCreator;
 use common\helpers\StringFormatter;
+use frontend\helpers\document_in\DocumentInHelper;
 use frontend\models\work\document_in_out\DocumentInWork;
 use kartik\daterange\DateRangePicker;
 use kartik\export\ExportMenu;
 use yii\grid\GridView;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel \frontend\models\search\SearchDocumentIn */
@@ -17,7 +20,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $session = Yii::$app->session;
 $tempArchive = $session->get("archiveIn");
-$helper = new DocumentInWork();
 ?>
 <div class="document-in-index">
 
@@ -26,17 +28,7 @@ $helper = new DocumentInWork();
 
         <div class="flexx space">
             <div class="flexx">
-                <?= $helper->createGroupButton(); ?>
-
-                <p hidden>
-
-                    <?php
-                    if ($tempArchive === null)
-                        echo Html::a('Показать архивные документы', ['document-in/index', 'archive' => 1, 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
-                    else
-                        echo Html::a('Скрыть архивные документы', ['document-in/index', 'type' => 'button'], ['class' => 'btn btn-secondary', 'style' => 'display: inline-block;']);
-                    ?>
-                </p>
+                <?= DocumentInHelper::createGroupButton(); ?>
 
                 <div class="export-menu">
                     <?php
@@ -74,14 +66,12 @@ $helper = new DocumentInWork();
     </div>
 
     <?= $this->render('_search', ['searchModel' => $searchModel]) ?>
-    <?php /*$helper->createFilterPanel($searchModel)*/ ?>
 
     <div style="margin-bottom: 20px">
 
         <?=
         GridView::widget([
             'dataProvider' => $dataProvider,
-            //'filterModel' => $searchModel,
             'summary' => false,
 
             'columns' => [
@@ -137,16 +127,18 @@ $helper = new DocumentInWork();
                 [
                     'attribute' => 'sendMethodName',
                     'filter' => Yii::$app->sendMethods->getList(),
+                    'value' => function(DocumentInWork $model) {
+                        return Yii::$app->sendMethods->get($model->send_method);
+                    }
                 ],
                 ['attribute' => 'needAnswer', 'value' => function(DocumentInWork $model) {
                     return $model->getNeedAnswerString(StringFormatter::FORMAT_LINK);
                 }, 'format' => 'raw'],
 
-                //['class' => 'yii\grid\ActionColumn'],
-                ['class' => \app\components\VerticalActionColumn::class],
+                ['class' => VerticalActionColumn::class],
             ],
             'rowOptions' => function ($model) {
-                return ['data-href' => \yii\helpers\Url::to(['document/document-in/view', 'id' => $model->id])];
+                return ['data-href' => Url::to([Yii::$app->frontUrls::DOC_IN_VIEW, 'id' => $model->id])];
             },
         ]);
 
