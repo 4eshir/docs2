@@ -3,7 +3,6 @@
 namespace common\components\traits;
 
 use common\components\compare\AbstractCompare;
-use common\components\interfaces\Comparable;
 use InvalidArgumentException;
 use Yii;
 

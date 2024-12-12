@@ -4,13 +4,12 @@ namespace frontend\models\work\educational\training_group;
 
 use common\models\scaffold\TeacherGroup;
 use frontend\models\work\general\PeopleStampWork;
-use JsonSerializable;
 
 /**
  * @property PeopleStampWork $teacherWork
  */
 
-class TeacherGroupWork extends TeacherGroup implements JsonSerializable
+class TeacherGroupWork extends TeacherGroup
 {
     public function rules()
     {
@@ -46,16 +45,8 @@ class TeacherGroupWork extends TeacherGroup implements JsonSerializable
         return $this->peopleId = $peopleId;
     }
 
-    public function jsonSerialize()
+    public function __toString() : string
     {
-        return [
-            'teacher_id' => $this->teacher_id,
-            'training_group_id' => $this->training_group_id,
-        ];
-    }
-
-    public function __toString()
-    {
-        return json_encode($this->jsonSerialize());
+        return "[TeacherID: $this->teacher_id][GroupID: $this->training_group_id]";
     }
 }

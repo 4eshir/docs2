@@ -2,6 +2,8 @@
 
 namespace frontend\services\educational;
 
+use common\components\compare\LessonGroupCompare;
+use common\components\compare\ParticipantGroupCompare;
 use common\components\compare\TeacherGroupCompare;
 use common\components\traits\CommonDatabaseFunctions;
 use common\components\traits\Math;
@@ -15,10 +17,11 @@ use common\services\DatabaseService;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use DateTime;
+use frontend\events\educational\training_group\CreateLessonGroupEvent;
 use frontend\events\educational\training_group\CreateTeacherGroupEvent;
 use frontend\events\educational\training_group\CreateTrainingGroupLessonEvent;
 use frontend\events\educational\training_group\CreateTrainingGroupParticipantEvent;
-use frontend\events\educational\training_group\DeleteTeacherGroupEvent;
+use frontend\events\educational\training_group\DeleteLessonGroupEvent;
 use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
 use frontend\events\general\FileCreateEvent;
 use frontend\forms\training_group\TrainingGroupBaseForm;
@@ -232,6 +235,7 @@ class TrainingGroupService implements DatabaseService
             $teacherStamp = $this->peopleStampService->createStampFromPeople($teacher->peopleId);
             $newTeachers[] = TeacherGroupWork::fill($teacherStamp, $form->id);
         }
+        $newTeachers = array_unique($newTeachers);
 
         $addTeachers = $this->setDifference($newTeachers, $form->prevTeachers, TeacherGroupCompare::class);
         $delTeachers = $this->setDifference($form->prevTeachers, $newTeachers, TeacherGroupCompare::class);
@@ -241,7 +245,7 @@ class TrainingGroupService implements DatabaseService
         }
 
         foreach ($delTeachers as $teacher) {
-            $form->recordEvent(new DeleteTeacherGroupEvent($teacher->id), TrainingGroupWork::className());
+            $form->recordEvent(new DeleteLessonGroupEvent($teacher->id), TrainingGroupWork::className());
         }
     }
 
@@ -252,16 +256,10 @@ class TrainingGroupService implements DatabaseService
             /** @var TrainingGroupParticipantWork $participant */
             $newParticipants[] = TrainingGroupParticipantWork::fill($form->id, $participant->participant_id, $participant->send_method);
         }
+        $newParticipants = array_unique($newParticipants);
 
-        var_dump((string)(array_diff($newParticipants, $form->prevParticipants)[0]));
-        var_dump((string)(array_diff($newParticipants, $form->prevParticipants)[1]));
-        var_dump((string)(array_diff($newParticipants, $form->prevParticipants)[2]));
-        var_dump('<br>');
-        var_dump((string)($newParticipants[0]));
-        var_dump((string)($newParticipants[1]));
-        var_dump((string)($newParticipants[2]));
-        $addParticipants = $this->setDifference($newParticipants, $form->prevParticipants);
-        $delParticipants = $this->setDifference($form->prevParticipants, $newParticipants);
+        $addParticipants = $this->setDifference($newParticipants, $form->prevParticipants, ParticipantGroupCompare::class);
+        $delParticipants = $this->setDifference($form->prevParticipants, $newParticipants, ParticipantGroupCompare::class);
 
 
         foreach ($addParticipants as $participant) {
@@ -275,20 +273,42 @@ class TrainingGroupService implements DatabaseService
 
     public function attachLessons(TrainingGroupScheduleForm $form)
     {
+        $newLessons = [];
         foreach ($form->lessons as $lesson) {
             /** @var TrainingGroupLessonWork $lesson */
-            $form->recordEvent(
-                new CreateTrainingGroupLessonEvent(
-                    $form->id,
-                    $lesson->lesson_date,
-                    $lesson->lesson_start_time,
-                    $lesson->branch,
-                    $lesson->auditorium_id,
-                    $lesson->lesson_end_time,
-                    $lesson->duration
-                ),
-                TrainingGroupParticipantWork::className()
+            $lessonEntity = TrainingGroupLessonWork::fill(
+                $form->id,
+                $lesson->lesson_date,
+                $lesson->lesson_start_time,
+                $lesson->branch,
+                $lesson->auditorium_id,
+                $lesson->lesson_end_time,
+                $lesson->duration
             );
+            if ($lessonEntity->isEnoughData()) {
+                $newLessons[] = $lessonEntity;
+            }
+        }
+        $newLessons = array_unique($newLessons);
+        
+        $addLessons = $this->setDifference($newLessons, $form->prevLessons, LessonGroupCompare::class);
+        $delLessons = $this->setDifference($form->prevLessons, $newLessons, LessonGroupCompare::class);
+
+        foreach ($addLessons as $lesson) {
+            $form->recordEvent(new CreateLessonGroupEvent(
+                $lesson->lesson_date,
+                $lesson->lesson_start_time,
+                $lesson->lesson_end_time,
+                $lesson->duration,
+                $lesson->branch,
+                $lesson->auditorium_id,
+                $form->id
+            ),
+            TrainingGroupLessonWork::className());
+        }
+
+        foreach ($delLessons as $lesson) {
+            $form->recordEvent(new DeleteLessonGroupEvent($lesson->id), TrainingGroupLessonWork::className());
         }
     }
 
@@ -298,8 +318,11 @@ class TrainingGroupService implements DatabaseService
             /** @var TrainingGroupLessonWork $lesson */
             $lesson->duration = 1;
             $capacity = $formSchedule->trainingProgram->hour_capacity ?: 30;
-            $lesson->lesson_end_time = ((new DateTime($lesson->lesson_start_time))->modify("+{$capacity} minutes"))->format('Y-m-d H:i:s');
+            $lesson->lesson_end_time = ((new DateTime($lesson->lesson_start_time))->modify("+{$capacity} minutes"))->format('H:i:s');
+            $lesson->lesson_start_time = (new DateTime($lesson->lesson_start_time))->format('H:i:s');
         }
+
+
     }
 
 }

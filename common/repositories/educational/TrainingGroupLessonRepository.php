@@ -9,6 +9,7 @@ use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\educational\training_group\DeleteTeachersFromGroupEvent;
 use frontend\events\general\FileDeleteEvent;
+use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
@@ -26,6 +27,13 @@ class TrainingGroupLessonRepository
         $model = TrainingGroupLessonWork::fill($groupId, $lessonDate, $lessonStartTime, $branch, $auditoriumId, $lessonEndTime, $duration);
         $command = Yii::$app->db->createCommand();
         $command->insert($model::tableName(), $model->getAttributes());
+        return $command->getRawSql();
+    }
+
+    public function prepareDelete($id)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(TrainingGroupLessonWork::tableName(), ['id' => $id]);
         return $command->getRawSql();
     }
 }

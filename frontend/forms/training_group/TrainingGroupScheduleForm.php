@@ -22,12 +22,14 @@ class TrainingGroupScheduleForm extends Model
     public $number;
     public $type;
     public $lessons;
+    public $prevLessons;
 
     public function __construct($id = -1, $config = [])
     {
         parent::__construct($config);
         if ($id !== -1) {
             $this->lessons = (Yii::createObject(TrainingGroupRepository::class))->getLessons($id);
+            $this->prevLessons = (Yii::createObject(TrainingGroupRepository::class))->getLessons($id);
             $this->trainingGroup = (Yii::createObject(TrainingGroupRepository::class))->get($id);
             $this->number = $this->trainingGroup->number;
             $this->trainingProgram = (Yii::createObject(TrainingProgramRepository::class))->get($this->trainingGroup->training_program_id);
@@ -39,7 +41,7 @@ class TrainingGroupScheduleForm extends Model
     {
         return [
             [['type'], 'integer'],
-            [['lessons', 'id', 'number', 'trainingProgram'], 'safe']
+            [['lessons', 'prevLessons', 'id', 'number', 'trainingProgram'], 'safe']
         ];
     }
 
