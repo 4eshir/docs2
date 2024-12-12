@@ -3,9 +3,8 @@
 namespace frontend\models\work\educational\training_group;
 
 use common\models\scaffold\TrainingGroupParticipant;
-use JsonSerializable;
 
-class TrainingGroupParticipantWork extends TrainingGroupParticipant implements JsonSerializable
+class TrainingGroupParticipantWork extends TrainingGroupParticipant
 {
     public static function fill($groupId, $participantId, $sendMethod)
     {
@@ -17,16 +16,8 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant implements J
         return $entity;
     }
 
-    public function jsonSerialize()
-    {
-        return [
-            'participant_id' => $this->participant_id,
-            'training_group_id' => $this->training_group_id,
-        ];
-    }
-
     public function __toString()
     {
-        return json_encode($this->jsonSerialize());
+        return "[ParticipantID: $this->participant_id][GroupID: $this->training_group_id]";
     }
 }

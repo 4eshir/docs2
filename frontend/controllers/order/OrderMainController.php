@@ -72,6 +72,7 @@ class OrderMainController extends Controller
         $orders = OrderMainWork::find()->all();
         $regulations = RegulationWork::find()->all();
         if ($model->load($post)) {
+            $model->type = 1;
             $model->generateOrderNumber();
             $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
             $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
@@ -107,13 +108,13 @@ class OrderMainController extends Controller
         $modelChangedDocuments = $this->service->getChangedDocumentsTable($model->id);
         $tables = $this->service->getUploadedFilesTables($model);
         if($model->load($post)){
+            $model->type = 1;
             $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
             $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
             $regulation = DynamicWidget::getData(basename(OrderMainWork::class), "regulations", $post);
             $status = DynamicWidget::getData(basename(OrderMainWork::class), "status", $post);
             if(!$model->validate()){
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
-
             }
             $this->repository->save($model);
             $this->service->getFilesInstances($model);
