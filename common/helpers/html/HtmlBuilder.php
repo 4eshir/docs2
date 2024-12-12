@@ -81,7 +81,16 @@ class HtmlBuilder
                 </div>';
     }
 
-    public static function createFilterPanel($searchModel, $searchFields, $form, $valueInRow, $resetUrl)
+    /**
+     * Создает панель фильтров на _search страницах. Обязательно наличие HtmlCreator::filterToggle() на странице отображения (index)
+     * @param $searchModel
+     * @param $searchFields
+     * @param ActiveForm $form
+     * @param $valueInRow   // количество элементов поиска в строке
+     * @param $resetUrl // является кнопкой сброса фильтров
+     * @return string
+     */
+    public static function createFilterPanel($searchModel, $searchFields, ActiveForm $form, $valueInRow, $resetUrl)
     {
         $result = '<div class="filter-panel" id="filterPanel">
                         '.HtmlCreator::filterHeaderForm().'

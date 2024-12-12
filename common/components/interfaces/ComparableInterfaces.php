@@ -5,7 +5,7 @@ namespace common\components\interfaces;
 /**
  * @template T
  */
-interface Comparable
+interface ComparableInterfaces
 {
     /**
      * @param T $c1
