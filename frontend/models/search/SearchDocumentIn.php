@@ -12,25 +12,25 @@ use yii\data\ActiveDataProvider;
  */
 class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
 {
-    public $correspondentName;
-    public $number;
+    public $correspondentName;      // корреспондент (отправитель) фио или организация
+    public $number;                 // номер документа (регистрационный или присвоенный нами)
+    public $localDate;              // дата поступления документа (используется для сортировки)
+    public $realDate;               // регистрационная дата документа (используется для сортировки)
 
 
     public function rules()
     {
-        parent::rules();
-        return [
+        return array_merge(parent::rules(), [
             [['local_number'], 'integer'],
             [['realNumber'], 'string'],
             [['localDate', 'realDate', 'correspondentName', 'number'], 'safe'],
-        ];
+        ]);
     }
 
     /**
-     * Creates data provider instance with search query applied
+     * Создает экземпляр DataProvider с учетом поискового запроса (фильтров или сортировки)
      *
-     * @param array $params
-     *
+     * @param $params
      * @return ActiveDataProvider
      */
     public function search($params)
@@ -45,18 +45,17 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
         ]);
 
         $this->sortAttributes($dataProvider);
-        $this->filterStatus($query);
-        $this->filterDate($query);
-        $this->filterNumber($query);
-        $this->filterCorrespondentName($query);
-        $this->filterTheme($query);
-        $this->filterSendMethodName($query);
-        $this->filterExecutorName($query);
-        $this->filterKeyWords($query);
+        $this->filterQueryParams($query);
 
         return $dataProvider;
     }
 
+    /**
+     * Кастомизированная сортировка по полям таблицы, с учетом родительской сортировки
+     *
+     * @param $dataProvider
+     * @return void
+     */
     public function sortAttributes($dataProvider) {
         parent::sortAttributes($dataProvider);
 
@@ -81,7 +80,25 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
         ];
     }
 
+
     /**
+     * Вызов функций фильтров по параметрам запроса
+     *
+     * @param $query
+     * @return void
+     */
+    public function filterQueryParams($query) {
+        $this->filterStatus($query);
+        $this->filterDate($query);
+        $this->filterNumber($query);
+        $this->filterCorrespondentName($query);
+        $this->filterAbstractQueryParams($query, $this->documentTheme, $this->keyWords, $this->executorName, $this->sendMethodName);
+    }
+
+
+    /**
+     * Фильтрует по статусу документа
+     *
      * @param $query
      * @return void
      */
@@ -95,6 +112,12 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
         $query->andWhere($statusConditions[$this->status] ?? ['>', 'local_date', date('Y') . '-01-01']);
     }
 
+    /**
+     * Фильтрация документов любому из полей "Ф И О" корреспондента
+     *
+     * @param $query
+     * @return void
+     */
     private function filterCorrespondentName($query) {
         $query->andFilterWhere(['or',
                 ['like', 'LOWER(company.name)', mb_strtolower($this->correspondentName)],
@@ -103,11 +126,18 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
             ]);
     }
 
+    /**
+     * Фильтрация документов по диапазону дат
+     *
+     * @param $query
+     * @return void
+     */
     private function filterDate($query) {
-        if ($this->startDateSearch != '' && $this->finishDateSearch != '')
+        if ($this->startDateSearch != '' || $this->finishDateSearch != '')
         {
-            $dateFrom = date('Y-m-d', strtotime($this->startDateSearch));
-            $dateTo =  date('Y-m-d', strtotime($this->finishDateSearch));
+            $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : '2018-01-01';
+            $dateTo =  $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
+
             $query->andWhere(['or',
                 ['between', 'local_date', $dateFrom, $dateTo],
                 ['between', 'real_date', $dateFrom, $dateTo],
@@ -115,6 +145,12 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
         }
     }
 
+    /**
+     * Фильтрация документа по заданному номеру (реальному или локальному)
+     *
+     * @param $query
+     * @return void
+     */
     private function filterNumber($query) {
         $query->andFilterWhere(['or',
             ['like', 'real_number', $this->number],

@@ -15,6 +15,7 @@ class DateFormatter
     const dmy_dot = 6;
     const mdY_slash = 7;
     const Ymd_without_separator = 10;
+    const DEFAULT_YEAR_RANGE = '2018:2030';     // заданная по умолчанию ограничения по дате
 
     public static function getFormats()
     {
