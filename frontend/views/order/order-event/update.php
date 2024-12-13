@@ -15,6 +15,7 @@ use yii\helpers\Html;
 /* @var $nominations */
 /* @var $teams */
 /* @var $modelActs */
+/* @var $actTable */
 $this->title = 'Приказ об участии' . $model->order_number;
 $this->params['breadcrumbs'][] = ['label' => 'Приказ об участии', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
@@ -35,6 +36,7 @@ $this->params['breadcrumbs'][] = 'Редактирование';
             'nominations' => $nominations,
             'teams' => $teams,
             'modelActs' => $modelActs,
+            'actTable' => $actTable,
         ]
     ) ?>
 </div>
