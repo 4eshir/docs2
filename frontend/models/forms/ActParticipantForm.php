@@ -2,6 +2,7 @@
 namespace frontend\models\forms;
 class ActParticipantForm extends \yii\base\Model
 {
+    public $actId;
     public $participant;
     public $firstTeacher;
     public $secondTeacher;

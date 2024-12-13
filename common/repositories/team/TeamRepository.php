@@ -16,6 +16,10 @@ class TeamRepository
     {
         return TeamNameWork::find()->andWhere(['foreign_event_id' => $id])->andWhere(['name' => $name])->one();
     }
+    public function getNamesByForeignEventId($id)
+    {
+        return TeamNameWork::find()->where(['foreign_event_id' => $id])->all();
+    }
     public function prepareTeamNameCreate($model ,$name, $foreignEventId){
         $model->name = $name;
         $model->foreign_event_id = $foreignEventId;

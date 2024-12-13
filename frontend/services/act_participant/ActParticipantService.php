@@ -6,15 +6,19 @@ use app\models\work\team\TeamWork;
 use app\services\team\TeamService;
 use common\helpers\files\filenames\ActParticipantFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\ActParticipant;
 use common\repositories\act_participant\ActParticipantRepository;
+use common\repositories\act_participant\SquadParticipantRepository;
 use common\repositories\team\TeamRepository;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\forms\ActParticipantForm;
 use frontend\models\work\general\FilesWork;
 use PHPUnit\Util\Xml\ValidationResult;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\UploadedFile;
 class ActParticipantService
 {
@@ -24,13 +28,15 @@ class ActParticipantService
     private ActParticipantRepository $actParticipantRepository;
     private FileService $fileService;
     private SquadParticipantService $squadParticipantService;
+    private SquadParticipantRepository $squadParticipantRepository;
     public function __construct(
         TeamRepository $teamRepository,
         TeamService $teamService,
         ActParticipantFileNameGenerator $filenameGenerator,
         ActParticipantRepository $actParticipantRepository,
         FileService $fileService,
-        SquadParticipantService $squadParticipantService
+        SquadParticipantService $squadParticipantService,
+        SquadParticipantRepository $squadParticipantRepository
     )
     {
         $this->teamRepository = $teamRepository;
@@ -39,6 +45,7 @@ class ActParticipantService
         $this->actParticipantRepository = $actParticipantRepository;
         $this->fileService = $fileService;
         $this->squadParticipantService = $squadParticipantService;
+        $this->squadParticipantRepository = $squadParticipantRepository;
     }
     public function getFilesInstance(ActParticipantForm $modelActParticipant, $index)
     {
@@ -71,51 +78,60 @@ class ActParticipantService
     public function addActParticipantEvent($acts, $foreignEventId){
         $index = 0;
         foreach ($acts as $act){
-           $modelActParticipantForm = ActParticipantForm::fill(
-               $act["participant"],
-               $act["firstTeacher"],
-               $act["secondTeacher"],
-               $act["branch"],
-               $act["focus"],
-               $act["type"],
-               NULL,
-               $act["nomination"],
-               $act["form"],
-               $act["team"]
-           );
-           $modelActParticipantForm->foreignEventId = $foreignEventId;
-           $this->getFilesInstance($modelActParticipantForm, $index);
-           $teamNameId = $this->teamService->teamNameCreateEvent($foreignEventId, $act["team"]);
-           $modelAct = ActParticipantWork::fill(
-               $modelActParticipantForm->firstTeacher,
-               $modelActParticipantForm->secondTeacher,
-               $teamNameId,
-               $foreignEventId,
-               $modelActParticipantForm->branch,
-               $modelActParticipantForm->focus,
-               $modelActParticipantForm->type,
-               $modelActParticipantForm->allowRemote,
-               $modelActParticipantForm->nomination,
-               $modelActParticipantForm->form,
-           );
-           $modelAct->actFiles = $modelActParticipantForm->actFiles;
-           if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
-               $modelAct->save();
-           }
-           //$modelAct->recordEvent(new ActParticipantCreateEvent($modelAct, $teamNameId, $foreignEventId), ActParticipantWork::class);
-           //$modelAct->releaseEvents();
-           $this->saveFilesFromModel($modelAct, $index);
-           $modelAct->releaseEvents();
-           $this->squadParticipantService->addSquadParticipantEvent($modelAct, $act["participant"], $modelAct->id);
-           $index++;
-       }
+            if(
+                $act["participant"] != NULL &&
+                $act["nomination"] != NULL &&
+                $act["focus"] != NULL &&
+                $act["form"] != NULL &&
+                ($act["firstTeacher"] != NULL || $act["secondTeacher"] != NULL) &&
+                $act["type"] != NULL
+            ) {
+                $modelActParticipantForm = ActParticipantForm::fill(
+                    $act["participant"],
+                    $act["firstTeacher"],
+                    $act["secondTeacher"],
+                    $act["branch"],
+                    $act["focus"],
+                    $act["type"],
+                    NULL,
+                    $act["nomination"],
+                    $act["form"],
+                    $act["team"]
+                );
+                $modelActParticipantForm->foreignEventId = $foreignEventId;
+                $this->getFilesInstance($modelActParticipantForm, $index);
+                $teamNameId = $this->teamService->teamNameCreateEvent($foreignEventId, $act["team"]);
+                $modelAct = ActParticipantWork::fill(
+                    $modelActParticipantForm->firstTeacher,
+                    $modelActParticipantForm->secondTeacher,
+                    $teamNameId,
+                    $foreignEventId,
+                    $modelActParticipantForm->branch,
+                    $modelActParticipantForm->focus,
+                    $modelActParticipantForm->type,
+                    $modelActParticipantForm->allowRemote,
+                    $modelActParticipantForm->nomination,
+                    $modelActParticipantForm->form,
+                );
+                $modelAct->actFiles = $modelActParticipantForm->actFiles;
+                if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
+                    $modelAct->save();
+                }
+                //$modelAct->recordEvent(new ActParticipantCreateEvent($modelAct, $teamNameId, $foreignEventId), ActParticipantWork::class);
+                //$modelAct->releaseEvents();
+                $this->saveFilesFromModel($modelAct, $index);
+                $modelAct->releaseEvents();
+                $this->squadParticipantService->addSquadParticipantEvent($modelAct, $act["participant"], $modelAct->id);
+                $index++;
+            }
+        }
     }
     public function createForms($acts)
     {
         /* @var $act ActParticipantWork */
         $forms = [];
         foreach ($acts as $act){
-            $participants = NULL;
+            $participants = $this->getAllPacticipants($act->id);
             $form = ActParticipantForm::fill(
                 $participants,
                 $act->teacher_id,
@@ -124,12 +140,42 @@ class ActParticipantService
                 $act->focus,
                 $act->type,
                 $act->allow_remote,
-                $act->nomination,
+                $act->nomination, // ?
                 $act->form,
-                $act->team_name_id
+                $act->team_name_id // ?
             );
+            $form->actId = $act->id;
             $forms[] = $form;
         }
         return $forms;
+    }
+    public function getAllPacticipants($actId){
+        $participants = [];
+        $squadParticipants = $this->squadParticipantRepository->getAllByActId($actId);
+        foreach($squadParticipants as $squadParticipant){
+            $participants[] = $squadParticipant->participant_id;
+        }
+        return $participants;
+    }
+    public function createActTable($id)
+    {
+        $model = $this->actParticipantRepository->getByForeignEventId($id) ;
+        return HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['#'], ArrayHelper::getColumn($model, 'id')),
+                array_merge(['Тип участия'], ArrayHelper::getColumn($model, 'typeParticipant')),
+                array_merge(['Учителя'], ArrayHelper::getColumn($model, 'teachers')),
+                array_merge(['Направленность'], ArrayHelper::getColumn($model, 'focusName')),
+                array_merge(['Отдел'], ArrayHelper::getColumn($model, 'branchName')),
+                array_merge(['Номинация'], ArrayHelper::getColumn($model, 'nomination')),
+                array_merge(['Команда'], ArrayHelper::getColumn($model, 'team')),
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Редактировать',
+                    Url::to('act'),
+                    ['id' => ArrayHelper::getColumn($model, 'id')])
+            ]
+        );
     }
 }

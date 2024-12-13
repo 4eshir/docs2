@@ -46,4 +46,8 @@ class ActParticipantRepository
             ->andWhere(['nomination' => $nomination])
             ->all());
     }
+    public function getById($id)
+    {
+        return ActParticipantWork::findOne($id);
+    }
 }

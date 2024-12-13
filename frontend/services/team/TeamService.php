@@ -24,12 +24,18 @@ class TeamService
 
         if(!$this->teamRepository->getByNameAndForeignEventId($foreignEventId, $name)){
             $model = new TeamNameWork();
-            $model->recordEvent(new TeamNameCreateEvent($model, $name, $foreignEventId), TeamNameWork::class);
-            $model->releaseEvents();
+            if($name != NULL) {
+                $model->recordEvent(new TeamNameCreateEvent($model, $name, $foreignEventId), TeamNameWork::class);
+                $model->releaseEvents();
+            }
         }
         else {
             $model = $this->teamRepository->getByNameAndForeignEventId($foreignEventId, $name);
         }
         return $model->id;
+    }
+    public function getNamesByForeignEventId($foreignEventId){
+        $teams = $this->teamRepository->getNamesByForeignEventId($foreignEventId);
+        return ArrayHelper::getColumn($teams, 'name');
     }
 }

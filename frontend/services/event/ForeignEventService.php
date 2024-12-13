@@ -57,25 +57,4 @@ class ForeignEventService
         }
 
     }
-    public function getForeignEventTable(ForeignEventWork $model)
-    {
-        /* @var ActParticipantWork $actParticipan t */
-        $actParticipant = $this->actParticipantRepository->getByForeignEventId($model->id);
-        $foreignEvent = HtmlBuilder::createTableWithActionButtons(
-            [
-                array_merge(['Id'], ArrayHelper::getColumn($actParticipant, 'id')),
-                array_merge(['Участник'], ArrayHelper::getColumn($actParticipant, 'participant')),
-                array_merge(['Название команды'], ArrayHelper::getColumn($actParticipant, 'team'))
-            ],
-            [
-                HtmlBuilder::createButtonsArray(
-                    'Удалить',
-                    Url::to('delete-act-participant'),
-                    [
-                        'modelId' => array_fill(0, count($actParticipant), $actParticipant->id),
-                        'fileId' => ArrayHelper::getColumn($actParticipant, 'id')])
-            ]
-        );
-        return $foreignEvent;
-    }
 }

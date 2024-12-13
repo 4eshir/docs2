@@ -18,7 +18,9 @@ use yii\jui\DatePicker;
 /* @var $teamTable */
 /* @var $awardTable */
 /* @var $modelActs */
-var_dump($teams);
+/* @var $teams */
+/* @var $nominations */
+/* @var $actTable */
 ?>
 
 <style>
@@ -186,35 +188,23 @@ var_dump($teams);
     let listId = 'nomDdList'; //айди выпадающего списка, в который будут добавлены номинации
     let listId2 = 'teamDdList'; //айди выпадающего списка, в который будут добавлены команды
 
-    let nominations = [];
-    let team = [];
-
+    //let nominations = [];
+    //let team = [];
+    let team = <?php echo json_encode($teams); ?>;
+    let nominations = <?php echo json_encode($nominations); ?>;
     window.onload = function(){
-        let noms = document.getElementById("prev-nom").innerHTML;
-
-        if (noms.length > 5)
-        {
-            nominations = noms.split("%boobs%");
-
-            nominations.pop();
-            //--Костыль, почему-то в первую строку приходит перенос строки и несколько пробелов--
-            //nominations[0] = nominations[0].substring(5);
-            //-----------------------------------------------------------------------------------
+        var actsDiv = document.getElementById('acts');
+        var commandsDiv = document.getElementById('commands');
+        actsDiv.style.pointerEvents = 'none'; // Блокируем ввод
+        actsDiv.style.opacity = '0.5'; // Уменьшаем непрозрачность
+        commandsDiv.style.pointerEvents = 'auto'; // Разблокируем ввод
+        commandsDiv.style.opacity = '1'; // Восстанавливаем непрозрачность
+        if (nominations != null) {
             FinishNom();
         }
-
-        let teams = document.getElementById("prev-team").innerHTML;
-        if (teams.length > 5)
-        {
-            team = teams.split("%boobs%");
-
-            team.pop();
-            //--Костыль, почему-то в первую строку приходит перенос строки и несколько пробелов--
-            //team[0] = team[0].substring(5);
-            //-----------------------------------------------------------------------------------
+        if (team != null) {
             FinishTeam();
         }
-
         if (document.getElementById('documentorderwork-order_date').value === '')
         {
             document.getElementById('documentorderwork-supplement-foreign_event_goals_id').childNodes[0].childNodes[0].checked = true;
@@ -437,14 +427,14 @@ var_dump($teams);
     }
 </style>
 <script>
-    window.onload = function() {
+    /*window.onload = function() {
         var actsDiv = document.getElementById('acts');
-        var commandsDiv = document.getElementById('commandsDiv');
+        var commandsDiv = document.getElementById('commands');
         actsDiv.style.pointerEvents = 'none'; // Блокируем ввод
         actsDiv.style.opacity = '0.5'; // Уменьшаем непрозрачность
         commandsDiv.style.pointerEvents = 'auto'; // Разблокируем ввод
         commandsDiv.style.opacity = '1'; // Восстанавливаем непрозрачность
-    };
+    };*/
 </script>
 <div class="order-main-form">
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
@@ -874,9 +864,10 @@ var_dump($teams);
         </div>
     </div>
 </div>
-<?php if (strlen($foreignEventTable) > 50): ?>
-    <?= $foreignEventTable; ?>
+<?php if ($actTable != NULL): ?>
+    <?= $actTable; ?>
 <?php endif; ?>
+
 <?= $form->field($model, 'key_words')->textInput()->label('Ключевые слова') ?>
 <?= $form->field($model, 'scanFile')->fileInput()->label('Скан документа') ?>
 <?php if (strlen($scanFile) > 10): ?>

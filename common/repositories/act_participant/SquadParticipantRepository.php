@@ -17,4 +17,7 @@ class SquadParticipantRepository
     public function getCountByActAndParticipantId($actId, $participantId){
         return count(SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId, 'participant_id' => $participantId])->all());
     }
+    public function getAllByActId($actId){
+        return SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId])->all();
+    }
 }

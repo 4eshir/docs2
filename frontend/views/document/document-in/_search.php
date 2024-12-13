@@ -63,7 +63,7 @@ use yii\widgets\ActiveForm;
             'label' => 'Тема документа',
             'placeholder' => 'Тема документа',
         ],
-        'key_words' => [
+        'keyWords' => [
             'type' => 'text',
             'label' => 'Ключевые слова',
             'placeholder' => 'Ключевые слова',
