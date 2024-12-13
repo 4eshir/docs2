@@ -37,7 +37,6 @@ $this->params['breadcrumbs'][] = $this->title;
             ),
             [
                 'value' => TrainingGroupScheduleForm::MANUAL,
-                //'name' => 'type',
                 'onchange' => 'changeScheduleType()'
             ]
         )->label('') ?>
@@ -84,13 +83,13 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div id="auto-fields" style="display: none">
                                     <?= $form->field($modelLesson, "[{$i}]autoDate")->checkboxList(
                                         [
-                                            '0' => 'Каждый понедельник',
-                                            '1' => 'Каждый вторник',
-                                            '2' => 'Каждую среду',
-                                            '3' => 'Каждый четверг',
-                                            '4' => 'Каждую пятницу',
-                                            '5' => 'Каждую субботу',
-                                            '6' => 'Каждое воскресенье'
+                                            1 => 'Каждый понедельник',
+                                            2 => 'Каждый вторник',
+                                            3 => 'Каждую среду',
+                                            4 => 'Каждый четверг',
+                                            5 => 'Каждую пятницу',
+                                            6 => 'Каждую субботу',
+                                            7 => 'Каждое воскресенье'
                                         ],
                                         [
                                             'item' => function ($index, $label, $name, $checked, $value){

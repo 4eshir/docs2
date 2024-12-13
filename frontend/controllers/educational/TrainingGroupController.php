@@ -196,6 +196,10 @@ class TrainingGroupController extends DocumentController
                 $formSchedule->lessons = $modelLessons;
             }
 
+            if (!$formSchedule->isManual()) {
+                $formSchedule->convertPeriodToLessons();
+            }
+
             $this->service->preprocessingLessons($formSchedule);
             $this->service->attachLessons($formSchedule);
             $formSchedule->releaseEvents();
