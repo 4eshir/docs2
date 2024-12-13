@@ -6,15 +6,15 @@ use yii\base\Model;
 
 class DocumentSearch extends Model
 {
-    public $fullNumber;
-    public $companyName;
-    public $sendMethodName;
-    public $documentTheme;
-    public $startDateSearch;
-    public $finishDateSearch;
-    public $executorName;
-    public $status;
-    public $keyWords;
+    public $fullNumber;         // составной номер документа (может содержать символ '/' )
+    public $companyName;        // организация - отправитель или получатель письма
+    public $sendMethodName;     // способ отправки или получения письма
+    public $documentTheme;      // тема документа
+    public $startDateSearch;    // стартовая дата поиска документов
+    public $finishDateSearch;   // конечная дата поиска документов
+    public $executorName;       // исполнитель письма
+    public $status;             // статус документа (архивное, требуется ответ, отвеченное, и т.д.)
+    public $keyWords;           // ключевые слова
 
     public function rules()
     {
@@ -27,15 +27,15 @@ class DocumentSearch extends Model
     }
 
     public function __construct(
-        string $fullNumber,
-        string $companyName,
-        int $sendMethodName,
-        string $documentTheme,
-        string $startDateSearch,
-        string $finishDateSearch,
-        string $executorName,
-        int $status,
-        string $keyWords
+        string $fullNumber = null,
+        string $companyName = null,
+        int $sendMethodName = null,
+        string $documentTheme = null,
+        string $startDateSearch = null,
+        string $finishDateSearch = null,
+        string $executorName = null,
+        int $status = null,
+        string $keyWords = null
     ) {
         parent::__construct();
         $this->fullNumber = $fullNumber;
@@ -55,6 +55,12 @@ class DocumentSearch extends Model
         return Model::scenarios();
     }
 
+    /**
+     * Сортировка атрибутов запроса
+     *
+     * @param $dataProvider
+     * @return void
+     */
     public function sortAttributes($dataProvider) {
         $dataProvider->sort->attributes['fullNumber'] = [
             'asc' => ['local_number' => SORT_ASC, 'local_postfix' => SORT_ASC],
@@ -77,19 +83,64 @@ class DocumentSearch extends Model
         ];
     }
 
-    public function filterTheme($query) {
-        $query->andFilterWhere(['like', 'document_theme', $this->documentTheme]);
+    /**
+     * Вызов функций фильтров по параметрам запроса
+     *
+     * @param $query
+     * @param $documentTheme
+     * @param $keyWords
+     * @param $executorName
+     * @param $sendMethodName
+     * @return void
+     */
+    public function filterAbstractQueryParams($query, $documentTheme, $keyWords, $executorName, $sendMethodName) {
+        $this->filterTheme($query, $documentTheme);
+        $this->filterKeyWords($query, $keyWords);
+        $this->filterExecutorName($query, $executorName);
+        $this->filterSendMethodName($query, $sendMethodName);
     }
 
-    public function filterKeyWords($query) {
-        $query->andFilterWhere(['like', 'LOWER(key_words)', mb_strtolower($this->keyWords)]);
+    /**
+     * Фильтрует по теме документа
+     *
+     * @param $query
+     * @param $documentTheme
+     * @return void
+     */
+    private function filterTheme($query, $documentTheme) {
+        $query->andFilterWhere(['like', 'document_theme', $documentTheme]);
     }
 
-    public function filterExecutorName($query) {
-        $query->andFilterWhere(['like', 'LOWER(people.firstname)', mb_strtolower($this->executorName)]);  // исполнитель
+    /**
+     * Фильтрует по ключевым словам
+     *
+     * @param $query
+     * @param $keyWords
+     * @return void
+     */
+    private function filterKeyWords($query, $keyWords) {
+        $query->andFilterWhere(['like', 'LOWER(key_words)', mb_strtolower($keyWords)]);
     }
 
-    public function filterSendMethodName($query) {
-        $query->andFilterWhere(['like', 'send_method', $this->sendMethodName]);
+    /**
+     * Фильтрует по исполнителю документа
+     *
+     * @param $query
+     * @param $executorName
+     * @return void
+     */
+    private function filterExecutorName($query, $executorName) {
+        $query->andFilterWhere(['like', 'LOWER(people.firstname)', mb_strtolower($executorName)]);
+    }
+
+    /**
+     * Фильтрует по методу получения письма
+     *
+     * @param $query
+     * @param $sendMethodName
+     * @return void
+     */
+    private function filterSendMethodName($query, $sendMethodName) {
+        $query->andFilterWhere(['like', 'send_method', $sendMethodName]);
     }
 }

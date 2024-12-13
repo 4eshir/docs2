@@ -9,4 +9,5 @@ interface SearchInterfaces {
 
     public function search($params);
 
+    public function filterQueryParams($query);
 }
