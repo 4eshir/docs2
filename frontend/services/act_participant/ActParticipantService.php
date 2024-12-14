@@ -100,7 +100,12 @@ class ActParticipantService
                 );
                 $modelActParticipantForm->foreignEventId = $foreignEventId;
                 $this->getFilesInstance($modelActParticipantForm, $index);
-                $teamNameId = $this->teamService->teamNameCreateEvent($foreignEventId, $act["team"]);
+                if ($modelActParticipantForm->type == 1) {
+                    $teamNameId = $this->teamService->teamNameCreateEvent($foreignEventId, $act["team"]);
+                }
+                else {
+                    $teamNameId = NULL;
+                }
                 $modelAct = ActParticipantWork::fill(
                     $modelActParticipantForm->firstTeacher,
                     $modelActParticipantForm->secondTeacher,
@@ -117,8 +122,6 @@ class ActParticipantService
                 if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
                     $modelAct->save();
                 }
-                //$modelAct->recordEvent(new ActParticipantCreateEvent($modelAct, $teamNameId, $foreignEventId), ActParticipantWork::class);
-                //$modelAct->releaseEvents();
                 $this->saveFilesFromModel($modelAct, $index);
                 $modelAct->releaseEvents();
                 $this->squadParticipantService->addSquadParticipantEvent($modelAct, $act["participant"], $modelAct->id);

@@ -21,10 +21,9 @@ class TeamService
        $this->teamRepository = $teamRepository;
     }
     public function teamNameCreateEvent($foreignEventId, $name){
-
         if(!$this->teamRepository->getByNameAndForeignEventId($foreignEventId, $name)){
             $model = new TeamNameWork();
-            if($name != NULL) {
+            if($name != NULL && $name != "NULL") {
                 $model->recordEvent(new TeamNameCreateEvent($model, $name, $foreignEventId), TeamNameWork::class);
                 $model->releaseEvents();
             }

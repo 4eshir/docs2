@@ -284,10 +284,18 @@ class OrderEventController extends Controller
         $act = [$this->actParticipantRepository->getById($id)];
         $modelAct = $this->actParticipantService->createForms($act);
         $people = $this->peopleRepository->getOrderedList();
+        $nominations = ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($act[0]->foreign_event_id), 'nomination'); //номинации
+        $teams = $this->teamService->getNamesByForeignEventId($act[0]->foreign_event_id);
+        $post = Yii::$app->request->post();
+        if ($post != NULL){
+            var_dump($act);
+        }
         return $this->render('act-update', [
             'act' => $act,
             'modelActs' => $modelAct,
             'people' => $people,
+            'nominations' => $nominations,
+            'teams' => $teams,
         ]);
     }
     public function actionDeletePeople($id, $modelId)
