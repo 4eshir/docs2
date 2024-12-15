@@ -7,6 +7,7 @@
 /* @var $nominations */
 /* @var $defaultTeam */
 /* @var $act */
+/* @var $tables */
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
@@ -212,6 +213,7 @@ use yii\widgets\ActiveForm;
                                 <?= $form->field($modelAct, "[{$i}]form")->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
                                     ->label('Форма реализации') ?>
                                 <?= $form->field($modelAct, "[{$i}]actFiles")->fileInput()->label('Представленные материалы') ?>
+                                <?= $tables ?>
                                 <div class="container nomination-dropdown-list">
                                     <?php
                                     $params = [

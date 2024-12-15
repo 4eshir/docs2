@@ -3,6 +3,7 @@
 namespace app\services\act_participant;
 
 use app\events\act_participant\SquadParticipantCreateEvent;
+use app\events\act_participant\SquadParticipantDeleteEvent;
 use app\models\work\team\ActParticipantWork;
 use app\models\work\team\SquadParticipantWork;
 use app\models\work\team\TeamNameWork;
@@ -12,6 +13,7 @@ use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\act_participant\SquadParticipantRepository;
 use common\repositories\team\TeamRepository;
 use frontend\forms\OrderEventForm;
+use yii\helpers\ArrayHelper;
 
 class SquadParticipantService
 {
@@ -37,5 +39,38 @@ class SquadParticipantService
             }
             $model->releaseEvents();
         }
+    }
+    public function updateSquadParticipantEvent(ActParticipantWork $model, $participants){
+        $existParticipant = ArrayHelper::getColumn($this->squadParticipantRepository->getAllByActId($model->id), 'participant_id');
+        if($existParticipant != NULL && $participants != NULL) {
+            $deleteSquadParticipant = array_diff($existParticipant, $participants);
+            $addSquadParticipant = array_diff($participants, $existParticipant);
+        }
+        else if($participants == NULL) {
+            $deleteSquadParticipant = $existParticipant;
+
+        }
+        else if($existParticipant == NULL) {
+            $addSquadParticipant = $participants;
+        }
+        else {
+            $deleteSquadParticipant = NULL;
+            $addSquadParticipant = NULL;
+        }
+        if($deleteSquadParticipant != NULL) {
+            foreach ($deleteSquadParticipant as $participant) {
+                if($this->squadParticipantRepository->getCountByActAndParticipantId($model->id, $participant) != 0) {
+                    $model->recordEvent(new SquadParticipantDeleteEvent($model->id, $participant),SquadParticipantWork::class);
+                }
+            }
+        }
+        if($addSquadParticipant != NULL) {
+            foreach ($addSquadParticipant as $participant) {
+                if($this->squadParticipantRepository->getCountByActAndParticipantId($model->id, $participant) == 0) {
+                    $model->recordEvent(new SquadParticipantCreateEvent($model->id, $participant), SquadParticipantWork::class);
+                }
+            }
+        }
+        $model->releaseEvents();
     }
 }

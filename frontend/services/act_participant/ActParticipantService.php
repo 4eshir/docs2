@@ -75,7 +75,7 @@ class ActParticipantService
             );
         }
     }
-    public function addActParticipantEvent($acts, $foreignEventId){
+    public function addActParticipant($acts, $foreignEventId){
         $index = 0;
         foreach ($acts as $act){
             if(
@@ -129,6 +129,10 @@ class ActParticipantService
             }
         }
     }
+    public function updateSquadParticipant(ActParticipantWork $model, $participant)
+    {
+        $this->squadParticipantService->updateSquadParticipantEvent($model, $participant);
+    }
     public function createForms($acts)
     {
         /* @var $act ActParticipantWork */
@@ -180,5 +184,20 @@ class ActParticipantService
                     ['id' => ArrayHelper::getColumn($model, 'id')])
             ]
         );
+    }
+    public function createActFileTable(ActParticipantWork $model){
+        $links = $model->getFileLinks(FilesHelper::TYPE_SCAN);
+        $file = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Название файла'], ArrayHelper::getColumn($links, 'link'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-act-file'),
+                    ['modelId' => array_fill(0, count($links), $model->id), 'fileId' => ArrayHelper::getColumn($links, 'id')])
+            ]
+        );
+        return $file;
     }
 }

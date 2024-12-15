@@ -3,9 +3,11 @@
 namespace app\models\work\team;
 
 use common\events\EventTrait;
+use common\helpers\files\FilesHelper;
 use common\models\scaffold\ActParticipant;
 use common\models\scaffold\SquadParticipant;
 use frontend\models\work\general\PeopleWork;
+use InvalidArgumentException;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -101,5 +103,24 @@ class ActParticipantWork extends ActParticipant
     }
     public function getFormName(){
         return Yii::$app->eventWay->get($this->form);
+    }
+    public function getFileLinks($filetype)
+    {
+        if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
+            throw new InvalidArgumentException('Неизвестный тип файла');
+        }
+        $addPath = '';
+        switch ($filetype) {
+            case FilesHelper::TYPE_SCAN:
+                $addPath = FilesHelper::createAdditionalPath($this::tableName(), FilesHelper::TYPE_SCAN);
+                break;
+            case FilesHelper::TYPE_DOC:
+                $addPath = FilesHelper::createAdditionalPath($this::tableName(), FilesHelper::TYPE_DOC);
+                break;
+            case FilesHelper::TYPE_APP:
+                $addPath = FilesHelper::createAdditionalPath($this::tableName(), FilesHelper::TYPE_APP);
+                break;
+        }
+        return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
 }

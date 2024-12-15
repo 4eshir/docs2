@@ -150,7 +150,7 @@ class OrderEventController extends Controller
             $model->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $modelOrderEvent->releaseEvents();
-            $this->actParticipantService->addActParticipantEvent($acts, $modelForeignEvent->id);
+            $this->actParticipantService->addActParticipant($acts, $modelForeignEvent->id);
             var_dump('OK!');
             return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
         }
@@ -189,8 +189,6 @@ class OrderEventController extends Controller
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         $foreignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
-        $modelActs = $this->actParticipantRepository->getByForeignEventId($foreignEvent->id);
-        //$modelActForms = $this->actParticipantService->createForms($modelActs);
         $modelActForms = [new ActParticipantForm];
         $model = OrderEventForm::fill($modelOrderEvent, $foreignEvent);
         $tables = $this->orderMainService->getUploadedFilesTables($modelOrderEvent);
@@ -199,7 +197,7 @@ class OrderEventController extends Controller
         $nominations = ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($foreignEvent->id), 'nomination'); //номинации
         $teams = $this->teamService->getNamesByForeignEventId($foreignEvent->id);
         if($model->load($post)){
-            /*$respPeopleId = DynamicWidget::getData(basename(OrderEventForm::class), "responsible_id", $post);
+            $respPeopleId = DynamicWidget::getData(basename(OrderEventForm::class), "responsible_id", $post);
             $modelOrderEvent->fillUpdate(
                 $model->order_copy_id,
                 $model->order_number,
@@ -237,7 +235,7 @@ class OrderEventController extends Controller
                 $model->actFiles
             );
             $foreignEvent->save();
-            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);*/
+            return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
         }
         return $this->render('update', [
             'model' => $model,
@@ -289,6 +287,7 @@ class OrderEventController extends Controller
         $nominations = ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($act[0]->foreign_event_id), 'nomination'); //номинации
         $teams = $this->teamService->getNamesByForeignEventId($act[0]->foreign_event_id);
         $defaultTeam = $this->teamRepository->getById($act[0]->team_name_id);
+        $tables = $this->actParticipantService->createActFileTable($act[0]);
         $post = Yii::$app->request->post();
         if($post != NULL){
             $post = $post["ActParticipantForm"];
@@ -307,6 +306,8 @@ class OrderEventController extends Controller
                 $post[0]["form"],
             );
             $act[0]->save();
+            $this->actParticipantService->updateSquadParticipant($act[0], $post[0]["participant"]);
+            return $this->redirect(['act', 'id' => $id]);
         }
         return $this->render('act-update', [
             'act' => $act[0],
@@ -315,13 +316,8 @@ class OrderEventController extends Controller
             'nominations' => $nominations,
             'teams' => $teams,
             'defaultTeam' => $defaultTeam['name'],
+            'tables' => $tables,
         ]);
-    }
-    public function actionActUpdate($model, $id) {
-        $act = $this->actParticipantRepository->getById($id);
-        $foreignEvent = $this->foreignEventRepository->get($act->id);
-        $post = Yii::$app->request->post();
-        return $this->redirect(['update', 'id' => $foreignEvent->order_participant_id]);
     }
     public function actionDeletePeople($id, $modelId)
     {
