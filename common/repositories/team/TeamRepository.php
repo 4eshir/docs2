@@ -4,10 +4,15 @@ namespace common\repositories\team;
 
 use app\models\work\team\TeamNameWork;
 use app\models\work\team\TeamWork;
+use common\models\scaffold\Team;
 use Yii;
 
 class TeamRepository
 {
+    public function getById($id)
+    {
+        return TeamNameWork::findOne($id);
+    }
     public function getByForeignEventId($id)
     {
         return TeamWork::find()->where(['foreign_event_id' => $id])->all();

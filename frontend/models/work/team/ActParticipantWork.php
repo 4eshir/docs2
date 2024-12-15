@@ -38,6 +38,31 @@ class ActParticipantWork extends ActParticipant
         $entity->form = $form;
         return $entity;
     }
+    public function fillUpdate(
+        $teacherId,
+        $teacher2Id,
+        $teamNameId,
+        $foreignEventId,
+        $branch,
+        $focus,
+        $type,
+        $allowRemote,
+        $nomination,
+        $form
+    )
+    {
+        $this->teacher_id = $teacherId;
+        $this->teacher2_id = $teacher2Id;
+        $this->team_name_id = $teamNameId;
+        $this->branch = $branch;
+        $this->focus = $focus;
+        $this->type = $type;
+        $this->nomination = $nomination;
+        $this->foreign_event_id = $foreignEventId;
+        $this->allow_remote = $allowRemote;
+        $this->form = $form;
+        return $this;
+    }
     public function getTeachers()
     {
         $firstTeacher = PeopleWork::findOne($this->teacher_id);

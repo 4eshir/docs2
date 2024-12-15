@@ -5,10 +5,13 @@
 /* @var $people */
 /* @var $teams */
 /* @var $nominations */
+/* @var $defaultTeam */
+/* @var $act */
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 ?>
@@ -40,13 +43,19 @@ use yii\widgets\ActiveForm;
     //let team = [];
     let team = <?php echo json_encode($teams); ?>;
     let nominations = <?php echo json_encode($nominations); ?>;
+    let defaultNomination = <?php echo json_encode($modelActs[0]->nomination); ?>;
+    let defaultTeam = <?php echo json_encode($defaultTeam); ?>;
     window.onload = function(){
         if (nominations != null) {
             FinishNom();
+            document.getElementById('nominationDropdown').value = defaultNomination;
         }
         if (team != null) {
             FinishTeam();
+            document.getElementById('teamDropdown').value = defaultTeam; // Установите значение по умолчанию
         }
+
+
         if (document.getElementById('documentorderwork-order_date').value === '')
         {
             document.getElementById('documentorderwork-supplement-foreign_event_goals_id').childNodes[0].childNodes[0].checked = true;
@@ -231,10 +240,10 @@ use yii\widgets\ActiveForm;
             </div>
             <?php DynamicFormWidget::end(); ?>
         </div>
-    </div>
-    <?= Html::submitButton('Сохранить', [
-        'class' => 'btn btn-success',
-    ]) ?>
+        <?= Html::submitButton('Сохранить', [
+            'class' => 'btn btn-success',
+            'onclick' => 'prepareAndSubmit();' // Подготовка скрытых полей перед отправкой
+        ]) ?>
     <?php $form = ActiveForm::end(); ?>
 </div>
 <script>

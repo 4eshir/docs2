@@ -3,6 +3,7 @@ namespace frontend\controllers\order;
 use app\components\DynamicWidget;
 use app\models\work\event\ForeignEventWork;
 use app\models\work\order\OrderEventWork;
+use app\models\work\team\ActParticipantWork;
 use app\services\act_participant\ActParticipantService;
 use app\services\act_participant\SquadParticipantService;
 use app\services\event\OrderEventFormService;
@@ -281,22 +282,46 @@ class OrderEventController extends Controller
     }
     public function actionAct($id)
     {
+        /* @var $act ActParticipantWork */
         $act = [$this->actParticipantRepository->getById($id)];
         $modelAct = $this->actParticipantService->createForms($act);
         $people = $this->peopleRepository->getOrderedList();
         $nominations = ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($act[0]->foreign_event_id), 'nomination'); //номинации
         $teams = $this->teamService->getNamesByForeignEventId($act[0]->foreign_event_id);
+        $defaultTeam = $this->teamRepository->getById($act[0]->team_name_id);
         $post = Yii::$app->request->post();
-        if ($post != NULL){
-            var_dump($act);
+        if($post != NULL){
+            $post = $post["ActParticipantForm"];
+            $foreignEventId = $act[0]->foreign_event_id;
+            $team = $this->teamRepository->getByNameAndForeignEventId($foreignEventId, $post[0]["team"]);
+            $act[0]->fillUpdate(
+                $post[0]["firstTeacher"],
+                $post[0]["secondTeacher"],
+                $team->id,
+                $foreignEventId,
+                $post[0]["branch"],
+                $post[0]["focus"],
+                $post[0]["type"],
+                NULL,
+                $post[0]["nomination"],
+                $post[0]["form"],
+            );
+            $act[0]->save();
         }
         return $this->render('act-update', [
-            'act' => $act,
+            'act' => $act[0],
             'modelActs' => $modelAct,
             'people' => $people,
             'nominations' => $nominations,
             'teams' => $teams,
+            'defaultTeam' => $defaultTeam['name'],
         ]);
+    }
+    public function actionActUpdate($model, $id) {
+        $act = $this->actParticipantRepository->getById($id);
+        $foreignEvent = $this->foreignEventRepository->get($act->id);
+        $post = Yii::$app->request->post();
+        return $this->redirect(['update', 'id' => $foreignEvent->order_participant_id]);
     }
     public function actionDeletePeople($id, $modelId)
     {
