@@ -2,6 +2,7 @@
 namespace app\services\order;
 use app\models\work\general\OrderPeopleWork;
 use app\models\work\order\ExpireWork;
+use app\models\work\order\OrderEventWork;
 use app\models\work\order\OrderMainWork;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;
@@ -16,6 +17,7 @@ use common\services\general\files\FileService;
 use frontend\events\expire\ExpireCreateEvent;
 use frontend\events\general\FileCreateEvent;
 use frontend\events\general\OrderPeopleCreateEvent;
+use frontend\events\general\OrderPeopleDeleteEvent;
 use frontend\models\work\document_in_out\DocumentInWork;
 use frontend\models\work\regulation\RegulationWork;
 use Yii;
@@ -196,16 +198,57 @@ class OrderMainService {
     }
     public function addOrderPeopleEvent($respPeople, $model)
     {
-        if ($respPeople[0] != NULL) {
+        if (is_array($respPeople) && $respPeople[0] != NULL) {
             $respPeople = array_unique($respPeople);
             for ($i = 0; $i < count($respPeople); $i++) {
                 if ($respPeople[$i] != NULL) {
                     if ($this->orderPeopleRepository->checkUnique($respPeople[$i], $model->id)) {
-                        $model->recordEvent(new OrderPeopleCreateEvent($respPeople[$i], $model->id), OrderPeopleWork::class);
+                            $model->recordEvent(new OrderPeopleCreateEvent($respPeople[$i], $model->id), OrderPeopleWork::class);
                     }
                 }
             }
         }
+    }
+    public function deleteOrderPeopleEvent($respPeople, $model){
+
+        if (is_array($respPeople)) {
+            $respPeople = array_unique($respPeople);
+            for ($i = 0; $i < count($respPeople); $i++) {
+                if ($respPeople[$i] != NULL) {
+                    if (!$this->orderPeopleRepository->checkUnique($respPeople[$i], $model->id)) {
+                        $model->recordEvent(new OrderPeopleDeleteEvent($respPeople[$i], $model->id), OrderPeopleWork::class);
+                    }
+                }
+            }
+        }
+    }
+    public function updateOrderPeopleEvent($respPeople, $formRespPeople , OrderEventWork $model)
+    {
+        if($respPeople != NULL && $formRespPeople != NULL) {
+            $addSquadParticipant = array_diff($formRespPeople, $respPeople);
+            $deleteSquadParticipant = array_diff($respPeople, $formRespPeople);
+        }
+        else if($formRespPeople == NULL && $respPeople != NULL) {
+            $deleteSquadParticipant = $respPeople;
+            $addSquadParticipant = NULL;
+        }
+        else if($respPeople == NULL && $formRespPeople != NULL) {
+            $addSquadParticipant = $formRespPeople;
+            $deleteSquadParticipant = NULL;
+        }
+        else {
+            $deleteSquadParticipant = NULL;
+            $addSquadParticipant = NULL;
+        }
+        if($deleteSquadParticipant != NULL) {
+            //var_dump('delete', $deleteSquadParticipant);
+            $this->deleteOrderPeopleEvent($deleteSquadParticipant, $model);
+        }
+        if($addSquadParticipant != NULL) {
+            //var_dump('add', $addSquadParticipant);
+            $this->addOrderPeopleEvent($addSquadParticipant, $model);
+        }
+        $model->releaseEvents();
     }
     public function saveFilesFromModel(OrderMainWork $model)
     {

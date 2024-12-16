@@ -72,10 +72,12 @@ class OrderMainFileNameGenerator implements FileNameGeneratorInterface
         }
         /** @var OrderMainWork $object */
         $date = $object->order_date;
+        $currentDateTime = date('Y-m-d H:i:s');
+        $timestamp = strtotime($currentDateTime);
         $new_date = DateFormatter::format($date, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
         $filename =
                 'Ред'.($this->getOrdinalFileNumber($object, FilesHelper::TYPE_DOC) + $params['counter']).
-                '_Пр.'.$new_date.'_'.$object->order_number.'_'.'_'.$object->order_name;
+                '_Пр.'.$new_date.'_'.$object->order_number.'_'.'_'.$object->order_name. ' ' . $timestamp;;
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
         $res = StringFormatter::CutFilename($res);
@@ -87,8 +89,10 @@ class OrderMainFileNameGenerator implements FileNameGeneratorInterface
     {
         /** @var OrderMainWork $object */
         $date = $object->order_date;
+        $currentDateTime = date('Y-m-d H:i:s');
+        $timestamp = strtotime($currentDateTime);
         $new_date = DateFormatter::format($date, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
-        $filename = 'Пр.'.$new_date.'_'.$object->order_number.'_'.'_'.$object->order_name;
+        $filename = 'Пр.'.$new_date.'_'.$object->order_number.'_'.'_'.$object->order_name. ' ' . $timestamp;
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
         $res = StringFormatter::CutFilename($res);

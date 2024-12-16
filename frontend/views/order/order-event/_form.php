@@ -421,21 +421,7 @@ use yii\jui\DatePicker;
         border-radius: 5px;    /* Скругленные углы (по желанию) */
         margin: 10px 0;        /* Отступы сверху и снизу */
     }
-    .act-team-participant {
-    }
-    .act-personal-participant {
-    }
 </style>
-<script>
-    /*window.onload = function() {
-        var actsDiv = document.getElementById('acts');
-        var commandsDiv = document.getElementById('commands');
-        actsDiv.style.pointerEvents = 'none'; // Блокируем ввод
-        actsDiv.style.opacity = '0.5'; // Уменьшаем непрозрачность
-        commandsDiv.style.pointerEvents = 'auto'; // Разблокируем ввод
-        commandsDiv.style.opacity = '1'; // Восстанавливаем непрозрачность
-    };*/
-</script>
 <div class="order-main-form">
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
@@ -533,49 +519,17 @@ use yii\jui\DatePicker;
             ->label('Кто исполняет');
         ?>
     </div>
-    <div class="bordered-div">
-        <?php DynamicWidget::begin([
-            'widgetContainer' => 'dynamicform_wrapper',
-            'widgetBody' => '.container-items',
-            'widgetItem' => '.item',
-            'model' => $model,
-            'formId' => 'dynamic-form',
-            'formFields' => ['order_name'],
-        ]); ?>
-        <div class="container-items">
-            <h5 class="panel-title pull-left">Ответственные</h5><!-- widgetBody -->
-            <div class="pull-right">
-                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus">+</span></button>
-            </div>
-            <div class="item panel panel-default" id = "item"><!-- widgetItem -->
-                <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus">-</span></button>
-                <div class="panel-heading">
-                    <div class="clearfix"></div>
-                </div>
-                <div class = "form-label">
-                    <div class="panel-body">
-                        <?php
-                        $params = [
-                            'id' => 'responsible',
-                            'class' => 'form-control pos',
-                            'prompt' => '---',
-                        ];
-                        echo $form
-                            ->field($model, 'responsible_id[]')
-                            ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                            ->label('Ответственные');
-                        ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <?php
-        DynamicWidget::end()
-        ?>
-    </div>
-    <?php if (strlen($modelResponsiblePeople) > 10): ?>
-        <?= $modelResponsiblePeople; ?>
-    <?php endif; ?>
+    <?= $form->field($model, "responsible_id")->widget(Select2::classname(), [
+        'data' => ArrayHelper::map($people,'id','fullFio'),
+        'size' => Select2::LARGE,
+        'options' => [
+            'prompt' => 'Выберите ответственного' ,
+            'multiple' => true
+        ],
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ])->label('ФИО ответственного'); ?>
     <div class="bordered-div">
         <h4>Дополнительная информация для генерации приказа</h4>
         <?= $form->field($model, 'purpose')->radioList([

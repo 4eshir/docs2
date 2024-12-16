@@ -34,4 +34,10 @@ class OrderPeopleRepository
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
+    public function prepareDelete($people_id, $order_id){
+        $model = OrderPeopleWork::find()->andWhere(['people_id' => $people_id, 'order_id' => $order_id])->one();
+        $command = Yii::$app->db->createCommand();
+        $command->delete($model::tableName(), $model->getAttributes());
+        return $command->getRawSql();
+    }
 }

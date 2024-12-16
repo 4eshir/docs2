@@ -10,6 +10,7 @@ use app\services\event\OrderEventFormService;
 use app\services\order\OrderEventService;
 use app\services\order\OrderMainService;
 use app\services\team\TeamService;
+use common\controllers\DocumentController;
 use common\helpers\files\FilesHelper;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\dictionaries\PeopleRepository;
@@ -30,7 +31,7 @@ use frontend\services\event\ForeignEventService;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
-class OrderEventController extends Controller
+class OrderEventController extends DocumentController
 {
     private PeopleRepository $peopleRepository;
     private FileService $fileService;
@@ -56,7 +57,6 @@ class OrderEventController extends Controller
         OrderEventFormService $orderEventFormService,
         ForeignEventService $foreignEventService,
         OrderEventService $orderEventService,
-        SquadParticipantService $squadParticipantService,
         ActParticipantService $actParticipantService,
         ActParticipantRepository $actParticipantRepository,
         FileService $fileService,
@@ -80,7 +80,7 @@ class OrderEventController extends Controller
         $this->fileRepository = $fileRepository;
         $this->teamRepository = $teamRepository;
         $this->teamService = $teamService;
-        parent::__construct($id, $module, $config);
+        parent::__construct($id, $module, $fileService, $fileRepository, $config);
     }
     public function actionIndex() {
         $searchModel = new SearchOrderEvent();
@@ -118,7 +118,7 @@ class OrderEventController extends Controller
                 $model->creator_id,
                 $model->last_edit_id,
                 $model->target,
-                2, //$model->type,
+                OrderEventWork::ORDER_EVENT, //$model->type,
                 $model->state,
                 $model->nomenclature_id,
                 $model->study_type,
@@ -128,6 +128,7 @@ class OrderEventController extends Controller
             $modelOrderEvent->generateOrderNumber();
             $number = $modelOrderEvent->getNumberPostfix();
             $this->orderEventRepository->save($modelOrderEvent);
+            $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $modelForeignEvent = ForeignEventWork::fill(
                 $model->eventName,
                 $model->organizer_id,
@@ -144,14 +145,12 @@ class OrderEventController extends Controller
                 $model->actFiles
             );
             $this->foreignEventRepository->save($modelForeignEvent);
-            $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
             $this->foreignEventService->saveFilesFromModel($modelForeignEvent, $model->actFiles, $number);
             $model->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $modelOrderEvent->releaseEvents();
             $this->actParticipantService->addActParticipant($acts, $modelForeignEvent->id);
-            var_dump('OK!');
             return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
         }
         return $this->render('create', [
@@ -183,24 +182,30 @@ class OrderEventController extends Controller
     }
     public function actionUpdate($id) {
         /* @var OrderEventWork $modelOrderEvent */
-        /* @var ForeignEventWork $foreignEvent */
+        /* @var ForeignEventWork $modelForeignEvent */
         /* @var OrderEventForm $model */
         $modelOrderEvent = $this->orderEventRepository->get($id);
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
-        $foreignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
+        $modelForeignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
         $modelActForms = [new ActParticipantForm];
-        $model = OrderEventForm::fill($modelOrderEvent, $foreignEvent);
+        $model = OrderEventForm::fill($modelOrderEvent, $modelForeignEvent);
         $tables = $this->orderMainService->getUploadedFilesTables($modelOrderEvent);
         $modelResponsiblePeople = $this->orderMainService->getResponsiblePeopleTable($modelOrderEvent->id);
-        $actTable = $this->actParticipantService->createActTable($foreignEvent->id);
-        $nominations = ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($foreignEvent->id), 'nomination'); //номинации
-        $teams = $this->teamService->getNamesByForeignEventId($foreignEvent->id);
+        $actTable = $this->actParticipantService->createActTable($modelForeignEvent->id);
+        $nominations = array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($modelForeignEvent->id), 'nomination'));
+        $teams = $this->teamService->getNamesByForeignEventId($modelForeignEvent->id);
+        $orderNumber = $model->order_number;
+        $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
         if($model->load($post)){
+            $this->orderMainService->updateOrderPeopleEvent(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $post["OrderEventForm"]["responsible_id"], $modelOrderEvent);
+
+            $acts = $post["ActParticipantForm"];
             $respPeopleId = DynamicWidget::getData(basename(OrderEventForm::class), "responsible_id", $post);
+            $this->orderEventFormService->getFilesInstances($model);
             $modelOrderEvent->fillUpdate(
                 $model->order_copy_id,
-                $model->order_number,
+                $orderNumber,
                 $model->order_postfix,
                 $model->order_date,
                 $model->order_name,
@@ -211,7 +216,7 @@ class OrderEventController extends Controller
                 $model->creator_id,
                 $model->last_edit_id,
                 $model->target,
-                2 , //$model->type,
+                OrderEventWork::ORDER_EVENT , //$model->type,
                 $model->state,
                 $model->nomenclature_id,
                 $model->study_type,
@@ -219,7 +224,11 @@ class OrderEventController extends Controller
                 $model->docFiles,
             );
             $this->orderEventRepository->save($modelOrderEvent);
-            $foreignEvent->fillUpdate(
+            $this->orderEventService->saveFilesFromModel($modelOrderEvent);
+            $this->orderMainService->updateOrderPeopleEvent(
+                ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
+                $post["OrderEventForm"]["responsible_id"], $modelOrderEvent);
+            $modelForeignEvent->fillUpdate(
                 $model->eventName,
                 $model->organizer_id,
                 $model->dateBegin,
@@ -234,7 +243,9 @@ class OrderEventController extends Controller
                 $modelOrderEvent->id,
                 $model->actFiles
             );
-            $foreignEvent->save();
+            $this->foreignEventRepository->save($modelForeignEvent);
+            $this->actParticipantService->addActParticipant($acts, $modelForeignEvent->id);
+            $modelOrderEvent->releaseEvents();
             return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
         }
         return $this->render('update', [
@@ -249,42 +260,16 @@ class OrderEventController extends Controller
             'actTable' => $actTable,
         ]);
     }
-    public function actionGetFile($filepath)
-    {
-        $data = $this->fileService->downloadFile($filepath);
-        if ($data['type'] == FilesHelper::FILE_SERVER) {
-            Yii::$app->response->sendFile($data['obj']->file);
-        }
-        else {
-            $fp = fopen('php://output', 'r');
-            HeaderWizard::setFileHeaders(FilesHelper::getFilenameFromPath($data['obj']->filepath), $data['obj']->file->size);
-            $data['obj']->file->download($fp);
-            fseek($fp, 0);
-        }
-    }
-    public function actionDeleteFile($modelId, $fileId)
-    {
-        try {
-            $file = $this->fileRepository->getById($fileId);
-            /** @var FilesWork $file */
-            $filepath = $file ? basename($file->filepath) : '';
-            $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
-            $file->recordEvent(new FileDeleteEvent($file->id), get_class($file));
-            $file->releaseEvents();
-            Yii::$app->session->setFlash('success', "Файл $filepath успешно удален");
-            return $this->redirect(['update', 'id' => $modelId]);
-        }
-        catch (DomainException $e) {
-            return 'Oops! Something wrong';
-        }
-    }
     public function actionAct($id)
     {
         /* @var $act ActParticipantWork */
         $act = [$this->actParticipantRepository->getById($id)];
+        if($act[0] == NULL){
+            return $this->redirect(['index']);
+        }
         $modelAct = $this->actParticipantService->createForms($act);
         $people = $this->peopleRepository->getOrderedList();
-        $nominations = ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($act[0]->foreign_event_id), 'nomination'); //номинации
+        $nominations = array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($act[0]->foreign_event_id), 'nomination'));
         $teams = $this->teamService->getNamesByForeignEventId($act[0]->foreign_event_id);
         $defaultTeam = $this->teamRepository->getById($act[0]->team_name_id);
         $tables = $this->actParticipantService->createActFileTable($act[0]);
@@ -306,6 +291,9 @@ class OrderEventController extends Controller
                 $post[0]["form"],
             );
             $act[0]->save();
+            $this->actParticipantService->getFilesInstance($modelAct[0], 0);
+            $act[0]->actFiles = $modelAct[0]->actFiles;
+            $this->actParticipantService->saveFilesFromModel($act[0], 0);
             $this->actParticipantService->updateSquadParticipant($act[0], $post[0]["participant"]);
             return $this->redirect(['act', 'id' => $id]);
         }
@@ -323,17 +311,5 @@ class OrderEventController extends Controller
     {
         $this->orderPeopleRepository->deleteByPeopleId($id);
         return $this->redirect(['update', 'id' => $modelId]);
-    }
-    public function actionDeleteActParticipant($id)
-    {
-        return $this->redirect(['update', 'id' => $id]);
-    }
-    public function actionDeleteTeam($id)
-    {
-        return $this->redirect(['update', 'id' => $id]);
-    }
-    public function actionDeleteAward($id)
-    {
-        return $this->redirect(['update', 'id' => $id]);
     }
 }

@@ -64,12 +64,15 @@ class ActParticipantFileNameGenerator implements FileNameGeneratorInterface
         if (!array_key_exists('counter', $params)) {
             throw new DomainException('Параметр \'counter\' обязателен');
         }
+        $currentDateTime = date('Y-m-d H:i:s');
+        $timestamp = strtotime($currentDateTime);
+
         /** @var ActParticipantWork $object */
         $foreignEventId = $object->foreign_event_id;
         $teamId = $object->team_name_id;
         $nomination = $object->nomination;
         $filename =
-            'Акт'. $foreignEventId .'_'. $teamId .'_'. $nomination . '_'. $object->id. '_' . $params['counter'];
+            'Акт'. $timestamp . '_' . $foreignEventId .'_'. $teamId .'_'. $nomination . '_'. $object->id. '_' . $params['counter'];
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
         $res = StringFormatter::CutFilename($res);

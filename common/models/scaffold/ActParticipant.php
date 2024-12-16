@@ -10,10 +10,10 @@ use Yii;
  * @property int $id
  * @property int|null $teacher_id
  * @property int|null $teacher2_id
- * @property int $branch
- * @property int $focus
- * @property int $type
- * @property string $nomination
+ * @property int|null $branch
+ * @property int|null $focus
+ * @property int|null $type
+ * @property string|null $nomination
  * @property int|null $team_name_id
  * @property int $foreign_event_id
  * @property int $allow_remote
@@ -36,7 +36,7 @@ class  ActParticipant extends \yii\db\ActiveRecord
     {
         return [
             [['teacher_id', 'teacher2_id', 'branch', 'focus', 'type', 'team_name_id', 'foreign_event_id', 'allow_remote', 'form'], 'integer'],
-            [['branch', 'focus', 'type', 'nomination', 'foreign_event_id'], 'required'],
+            //[['branch', 'focus', 'type', 'nomination', 'foreign_event_id'], 'required'],
             [['nomination'], 'string', 'max' => 1000],
         ];
     }

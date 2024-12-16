@@ -7,6 +7,7 @@ use app\services\order\OrderMainService;
 use common\controllers\DocumentController;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
+use common\models\scaffold\OrderMain;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\expire\ExpireRepository;
 use common\repositories\general\FilesRepository;
@@ -72,7 +73,7 @@ class OrderMainController extends Controller
         $orders = OrderMainWork::find()->all();
         $regulations = RegulationWork::find()->all();
         if ($model->load($post)) {
-            $model->type = 1;
+            $model->type = OrderMainWork::ORDER_MAIN;
             $model->generateOrderNumber();
             $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
             $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
@@ -108,7 +109,7 @@ class OrderMainController extends Controller
         $modelChangedDocuments = $this->service->getChangedDocumentsTable($model->id);
         $tables = $this->service->getUploadedFilesTables($model);
         if($model->load($post)){
-            $model->type = 1;
+            $model->type = OrderMainWork::ORDER_MAIN;
             $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
             $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
             $regulation = DynamicWidget::getData(basename(OrderMainWork::class), "regulations", $post);

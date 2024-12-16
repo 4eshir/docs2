@@ -52,7 +52,7 @@ class ActParticipantForm extends \yii\base\Model
     {
         return [
             [['teacher_id', 'teacher2_id', 'branch', 'focus', 'type', 'team_name_id', 'foreign_event_id', 'allow_remote', 'form'], 'integer'],
-            [['branch', 'focus', 'type', 'nomination', 'foreign_event_id'], 'required'],
+            //[['branch', 'focus', 'type', 'nomination', 'foreign_event_id'], 'required'],
             [['nomination'], 'string', 'max' => 1000],
         ];
     }

@@ -120,7 +120,7 @@ class ActParticipantService
                 );
                 $modelAct->actFiles = $modelActParticipantForm->actFiles;
                 if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
-                    $modelAct->save();
+                    $this->actParticipantRepository->save($modelAct);
                 }
                 $this->saveFilesFromModel($modelAct, $index);
                 $modelAct->releaseEvents();
@@ -194,7 +194,7 @@ class ActParticipantService
             [
                 HtmlBuilder::createButtonsArray(
                     'Удалить',
-                    Url::to('delete-act-file'),
+                    Url::to('delete-file'),
                     ['modelId' => array_fill(0, count($links), $model->id), 'fileId' => ArrayHelper::getColumn($links, 'id')])
             ]
         );
