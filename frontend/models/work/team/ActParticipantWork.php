@@ -74,8 +74,13 @@ class ActParticipantWork extends ActParticipant
     }
     public function getTeam()
     {
-        $team = TeamNameWork::findOne($this->team_name_id);
-        return $team->name;
+        if ($this->team_name_id && $this->type == 1) {
+            $team = TeamNameWork::findOne($this->team_name_id);
+            return $team->name;
+        }
+        else {
+            return "Участие в командах не предусмотрено";
+        }
     }
     public function getParticipants(){
         $participants = [];

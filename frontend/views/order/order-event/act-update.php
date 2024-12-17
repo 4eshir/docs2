@@ -8,15 +8,29 @@
 /* @var $defaultTeam */
 /* @var $act */
 /* @var $tables */
+
+use app\models\work\team\ActParticipantWork;
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
+use yii\widgets\DetailView;
 
 ?>
 <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
+<h1><?= Html::encode($this->title) ?></h1>
+<p>
+    <?= Html::a('Удалить', ['act-delete', 'id' => $act->id], [
+        'class' => 'btn btn-danger',
+        'data' => [
+            'confirm' => 'Are you sure you want to delete this item?',
+            'method' => 'post',
+        ],
+    ]) ?>
+</p>
+
 <script>
     function displayDetails()
     {
@@ -78,7 +92,8 @@ use yii\widgets\ActiveForm;
                 teamDropdownList.hidden = false;
             }
         }
-    }  function FinishNom()
+    }
+    function FinishNom()
     {
         let elem = document.getElementsByClassName(listId);
 
@@ -143,15 +158,6 @@ use yii\widgets\ActiveForm;
             <div class="container-items-act"><!-- widgetContainer -->
                 <?php foreach ($modelActs as $i => $modelAct): ?>
                     <div class="item-act panel panel-default"><!-- widgetBody -->
-                        <label>
-                            <?=
-                            $form->field($modelAct, "[{$i}]type")->radioList([
-                                '0' => 'Личное участие',
-                                '1' => 'Командное участие',
-                            ], ['itemOptions' => ['class' => 'radio-inline', 'onclick' => 'handleParticipationChange(this)']])
-                                ->label('Выберите тип участия');
-                            ?>
-                        </label>
                         <div class="panel-heading">
                             <h3 class="panel-title pull-left"></h3>
                             <div class="pull-right">
@@ -160,6 +166,31 @@ use yii\widgets\ActiveForm;
                         </div>
                         <div class="panel-body">
                             <div class="row">
+                                <?=
+                                DetailView::widget([
+                                    'model' => $act,
+                                    'attributes' => [
+                                        ['label' => 'Тип участия', 'value' => function (ActParticipantWork $model) {
+                                            return $model->getTypeParticipant();
+                                        }],
+                                        ['label' => 'Отдел', 'value' => function (ActParticipantWork $model) {
+                                            return $model->getBranchName();
+                                        }],
+                                        ['label' => 'Напраленность', 'value' => function (ActParticipantWork $model) {
+                                            return $model->getFocusName();
+                                        }],
+
+                                        ['label' => 'Форма реализации', 'value' => function (ActParticipantWork $model) {
+                                            return $model->getFormName();
+                                        }],
+                                        ['label' => 'Номинация', 'value' => function (ActParticipantWork $model) {
+                                            return $model->nomination;
+                                        }],
+                                        ['label' => 'Команда', 'value' => function (ActParticipantWork $model) {
+                                            return $model->getTeam();
+                                        }],
+                                    ],
+                                ]) ?>
                                 <div>
                                     <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::classname(), [
                                         'data' => ArrayHelper::map($people,'id','fullFio'),
@@ -171,19 +202,8 @@ use yii\widgets\ActiveForm;
                                         'pluginOptions' => [
                                             'allowClear' => true
                                         ],
-                                    ])->label('ФИО участника'); ?>
+                                    ])->label('ФИО участников'); ?>
                                 </div>
-                                <?php
-                                $params = [
-                                    'id' => 'branch',
-                                    'class' => 'form-control pos',
-                                    'prompt' => '---',
-                                ];
-                                echo $form
-                                    ->field($modelAct, "[{$i}]branch")
-                                    ->dropDownList(Yii::$app->branches->getList(), $params)
-                                    ->label('Отделы');
-                                ?>
                                 <?php
                                 $params = [
                                     'id' => 'teacher',
@@ -193,48 +213,14 @@ use yii\widgets\ActiveForm;
                                 echo $form
                                     ->field($modelAct, "[{$i}]firstTeacher")
                                     ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                    ->label('ФИО учителя');
+                                    ->label('ФИО первого учителя');
                                 echo $form
                                     ->field($modelAct, "[{$i}]secondTeacher")
                                     ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                    ->label('ФИО учителя');
+                                    ->label('ФИО второго учителя (при необходимости)');
                                 ?>
-                                <?php
-                                $params = [
-                                    'id' => 'focus',
-                                    'class' => 'form-control pos',
-                                    'prompt' => '---',
-                                ];
-                                echo $form
-                                    ->field($modelAct, "[{$i}]focus")
-                                    ->dropDownList(Yii::$app->focus->getList(), $params)
-                                    ->label('Направленность');
-                                ?>
-                                <?= $form->field($modelAct, "[{$i}]form")->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])
-                                    ->label('Форма реализации') ?>
                                 <?= $form->field($modelAct, "[{$i}]actFiles")->fileInput()->label('Представленные материалы') ?>
                                 <?= $tables ?>
-                                <div class="container nomination-dropdown-list">
-                                    <?php
-                                    $params = [
-                                        'id' => 'nominationDropdown',
-                                        'class' => 'form-control pos nominationDropDownList nomDdList',
-                                        'prompt' => '--- Выберите номинацию ---',
-                                    ];
-                                    echo $form->field($modelAct, "[{$i}]nomination")->dropDownList([], $params)->label('Выберите номинацию');
-                                    ?>
-                                </div>
-                                <div class="container team-dropdown-list">
-                                    В составе команды<br>
-                                    <?php
-                                    $params = [
-                                        'id' => 'teamDropdown',
-                                        'class' => 'form-control pos teamDropDownList teamDdList',
-                                        'prompt' => '--- Выберите команду ---',
-                                    ];
-                                    echo $form->field($modelAct, "[{$i}]team")->dropDownList([], $params)->label('Выберите команду');
-                                    ?>
-                                </div>
                             </div>
                         </div>
                     </div>

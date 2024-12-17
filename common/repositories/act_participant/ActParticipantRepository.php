@@ -2,12 +2,29 @@
 
 namespace common\repositories\act_participant;
 
+use app\models\work\event\ForeignEventWork;
 use app\models\work\team\ActParticipantWork;
+use app\models\work\team\SquadParticipantWork;
 use common\models\scaffold\ActParticipant;
+use common\repositories\event\ForeignEventRepository;
+use common\repositories\order\OrderEventRepository;
+use DomainException;
 use Yii;
 
 class ActParticipantRepository
 {
+    public SquadParticipantRepository $squadParticipantRepository;
+    public OrderEventRepository $orderEventRepository;
+    public ForeignEventRepository $foreignEventRepository;
+    public function __construct(
+        SquadParticipantRepository $squadParticipantRepository,
+        OrderEventRepository $orderEventRepository,
+        ForeignEventRepository $foreignEventRepository
+    ){
+        $this->squadParticipantRepository = $squadParticipantRepository;
+        $this->orderEventRepository = $orderEventRepository;
+        $this->foreignEventRepository = $foreignEventRepository;
+    }
     public function getByForeignEventId($foreignEventId){
         return ActParticipantWork::find()->where(['foreign_event_id' => $foreignEventId])->all();
     }
@@ -56,5 +73,17 @@ class ActParticipantRepository
             throw new DomainException('Ошибка сохранения. Проблемы: '.json_encode($model->getErrors()));
         }
         return $model->id;
+    }
+    public function delete(ActParticipantWork $model)
+    {
+        $squadParticipants = $this->squadParticipantRepository->getAllByActId($model->id);
+        foreach ($squadParticipants as $squadParticipant) {
+            if (!$squadParticipant->delete()) {
+                throw new DomainException('Ошибка удаления. Проблемы: '.json_encode($model->getErrors()));
+            }
+        }
+        if (!$model->delete()) {
+            throw new DomainException('Ошибка удаления. Проблемы: '.json_encode($model->getErrors()));
+        }
     }
 }

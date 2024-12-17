@@ -716,15 +716,6 @@ use yii\jui\DatePicker;
             <div class="container-items-act"><!-- widgetContainer -->
                 <?php foreach ($modelActs as $i => $modelAct): ?>
                     <div class="item-act panel panel-default"><!-- widgetBody -->
-                        <label>
-                            <?=
-                                $form->field($modelAct, "[{$i}]type")->radioList([
-                                    '0' => 'Личное участие',
-                                    '1' => 'Командное участие',
-                                ], ['itemOptions' => ['class' => 'radio-inline', 'onclick' => 'handleParticipationChange(this)']])
-                                    ->label('Выберите тип участия');
-                            ?>
-                        </label>
                         <div class="panel-heading">
                             <h3 class="panel-title pull-left"></h3>
                             <div class="pull-right">
@@ -733,21 +724,42 @@ use yii\jui\DatePicker;
                             </div>
                             <div class="clearfix"></div>
                         </div>
+                        <label>
+                            <?=
+                            $form->field($modelAct, "[{$i}]type")->radioList([
+                                '0' => 'Личное участие',
+                                '1' => 'Командное участие',
+                            ], ['itemOptions' => ['class' => 'radio-inline', 'onclick' => 'handleParticipationChange(this)']])
+                                ->label('Выберите тип участия');
+                            ?>
+                        </label>
                         <div class="panel-body">
                             <div class="row">
-                                <div>
-                                    <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::classname(), [
-                                            'data' => ArrayHelper::map($people,'id','fullFio'),
-                                            'size' => Select2::LARGE,
-                                            'options' => [
-                                                    'prompt' => 'Выберите участника' ,
-                                                'multiple' => true
-                                            ],
-                                            'pluginOptions' => [
-                                                'allowClear' => true
-                                            ],
-                                        ])->label('ФИО участника'); ?>
-                                </div>
+                                <div id = "form-<?=$i?>" hidden>
+                                    <div>
+                                        <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::classname(), [
+                                                'data' => ArrayHelper::map($people,'id','fullFio'),
+                                                'size' => Select2::LARGE,
+                                                'options' => [
+                                                        'prompt' => 'Выберите участника' ,
+                                                    'multiple' => true
+                                                ],
+                                                'pluginOptions' => [
+                                                    'allowClear' => true
+                                                ],
+                                            ])->label('ФИО участника'); ?>
+                                    </div>
+                                    <div class="container team-dropdown-list">
+                                        В составе команды<br>
+                                        <?php
+                                        $params = [
+                                            'id' => 'teamDropdown',
+                                            'class' => 'form-control pos teamDropDownList teamDdList',
+                                            'prompt' => '--- Выберите команду ---',
+                                        ];
+                                        echo $form->field($modelAct, "[{$i}]team")->dropDownList([], $params)->label('Выберите команду');
+                                        ?>
+                                    </div>
                                     <?php
                                     $params = [
                                         'id' => 'branch',
@@ -768,11 +780,11 @@ use yii\jui\DatePicker;
                                     echo $form
                                         ->field($modelAct, "[{$i}]firstTeacher")
                                         ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                        ->label('ФИО учителя');
+                                        ->label('ФИО первого учителя');
                                     echo $form
                                         ->field($modelAct, "[{$i}]secondTeacher")
                                         ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
-                                        ->label('ФИО учителя');
+                                        ->label('ФИО второго учителя (при необходмиости)');
                                     ?>
                                     <?php
                                     $params = [
@@ -798,17 +810,7 @@ use yii\jui\DatePicker;
                                         echo $form->field($modelAct, "[{$i}]nomination")->dropDownList([], $params)->label('Выберите номинацию');
                                         ?>
                                     </div>
-                                    <div class="container team-dropdown-list">
-                                        В составе команды<br>
-                                        <?php
-                                        $params = [
-                                            'id' => 'teamDropdown',
-                                            'class' => 'form-control pos teamDropDownList teamDdList',
-                                            'prompt' => '--- Выберите команду ---',
-                                        ];
-                                        echo $form->field($modelAct, "[{$i}]team")->dropDownList([], $params)->label('Выберите команду');
-                                        ?>
-                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -935,10 +937,26 @@ use yii\jui\DatePicker;
             let extractedIndex = index[1];
             extractedIndex++;
             var teamDropdownList = document.getElementById(`team-dropdown-list-${extractedIndex}`);
-            if (radio.value === '0') {
-                teamDropdownList.hidden = true;
-            } else if (radio.value === '1') {
-                teamDropdownList.hidden = false;
+            var formList = document.getElementById(`form-${extractedIndex - 1}--0`);
+            if(formList != null) {
+                if (radio.value === '0') {
+                    teamDropdownList.hidden = true;
+
+                    formList.hidden = false;
+                } else if (radio.value === '1') {
+                    formList.hidden = false;
+                    teamDropdownList.hidden = false;
+                }
+            }
+            var firstList = document.getElementById(`form-${extractedIndex - 1}`);
+            if(firstList != null) {
+                if (radio.value === '0') {
+                    teamDropdownList.hidden = true;
+                    firstList.hidden = false;
+                } else if (radio.value === '1') {
+                    teamDropdownList.hidden = false;
+                    firstList.hidden = false;
+                }
             }
         }
     }

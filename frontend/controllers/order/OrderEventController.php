@@ -199,9 +199,7 @@ class OrderEventController extends DocumentController
         $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
         if($model->load($post)){
             $this->orderMainService->updateOrderPeopleEvent(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $post["OrderEventForm"]["responsible_id"], $modelOrderEvent);
-
             $acts = $post["ActParticipantForm"];
-            $respPeopleId = DynamicWidget::getData(basename(OrderEventForm::class), "responsible_id", $post);
             $this->orderEventFormService->getFilesInstances($model);
             $modelOrderEvent->fillUpdate(
                 $model->order_copy_id,
@@ -276,19 +274,17 @@ class OrderEventController extends DocumentController
         $post = Yii::$app->request->post();
         if($post != NULL){
             $post = $post["ActParticipantForm"];
-            $foreignEventId = $act[0]->foreign_event_id;
-            $team = $this->teamRepository->getByNameAndForeignEventId($foreignEventId, $post[0]["team"]);
             $act[0]->fillUpdate(
                 $post[0]["firstTeacher"],
                 $post[0]["secondTeacher"],
-                $team->id,
-                $foreignEventId,
-                $post[0]["branch"],
-                $post[0]["focus"],
-                $post[0]["type"],
+                $act[0]->team_name_id,
+                $act[0]->foreign_event_id,
+                $act[0]->branch,
+                $act[0]->focus,
+                $act[0]->type,
                 NULL,
-                $post[0]["nomination"],
-                $post[0]["form"],
+                $act[0]->nomination,
+                $act[0]->form
             );
             $act[0]->save();
             $this->actParticipantService->getFilesInstance($modelAct[0], 0);
@@ -311,5 +307,13 @@ class OrderEventController extends DocumentController
     {
         $this->orderPeopleRepository->deleteByPeopleId($id);
         return $this->redirect(['update', 'id' => $modelId]);
+    }
+    public function actionActDelete($id)
+    {
+        $model = $this->actParticipantRepository->getById($id);
+        $foreignEvent = $this->foreignEventRepository->get($model->foreign_event_id);
+        $order = $this->orderEventRepository->get($foreignEvent->order_participant_id);
+        $this->actParticipantRepository->delete($model);
+        return $this->redirect(['update', 'id' => $order->id]);
     }
 }

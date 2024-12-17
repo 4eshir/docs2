@@ -181,7 +181,11 @@ class ActParticipantService
                 HtmlBuilder::createButtonsArray(
                     'Редактировать',
                     Url::to('act'),
-                    ['id' => ArrayHelper::getColumn($model, 'id')])
+                    ['id' => ArrayHelper::getColumn($model, 'id')]),
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('act-delete'),
+                    ['id' => ArrayHelper::getColumn($model, 'id')]),
             ]
         );
     }
