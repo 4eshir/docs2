@@ -20,6 +20,7 @@ use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\dictionaries\base\OwnershipTypeDictionary;
 use common\components\dictionaries\base\ParticipationScopeDictionary;
 use common\components\dictionaries\base\PersonalDataDictionary;
+use common\components\dictionaries\base\ProjectTypeDictionary;
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\components\dictionaries\base\ResponsibilityTypeDictionary;
 use common\components\dictionaries\base\SendMethodDictionary;
@@ -75,6 +76,7 @@ class Yii {
  * @property ControlTypeDictionary $controlType
  * @property AuditoriumTypeDictionary $auditoriumType
  * @property ResponsibilityTypeDictionary $responsibilityType
+ * @property ProjectTypeDictionary $projectType
  * @property RacComponent $rac
  * @property Urls $frontUrls
  */

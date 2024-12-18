@@ -9,9 +9,13 @@ use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\educational\training_group\DeleteTeachersFromGroupEvent;
 use frontend\events\general\FileDeleteEvent;
+use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
+use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
+use frontend\models\work\ProjectThemeWork;
+use yii\helpers\ArrayHelper;
 
 class TrainingGroupRepository
 {
@@ -41,7 +45,18 @@ class TrainingGroupRepository
 
     public function getLessons($id)
     {
-        return TrainingGroupLessonWork::find()->where(['training_group_id' => $id])->all();
+        return TrainingGroupLessonWork::find()->where(['training_group_id' => $id])->orderBy(['lesson_date' => SORT_ASC, 'lesson_start_time' => SORT_ASC])->all();
+    }
+
+    public function getExperts($id)
+    {
+        return TrainingGroupExpertWork::find()->where(['training_group_id' => $id])->all();
+    }
+
+    public function getThemes($id)
+    {
+        $groupProjects = GroupProjectsThemesWork::find()->where(['training_group_id' => $id])->all();
+        return ProjectThemeWork::find()->where(['IN', 'id', ArrayHelper::getColumn($groupProjects, 'project_theme_id')])->all();
     }
 
     public function save(TrainingGroupWork $group)

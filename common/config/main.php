@@ -94,6 +94,9 @@ return [
         'nomenclature' => [
             'class' => 'common\\components\\dictionaries\\base\\NomenclatureDictionary',
         ],
+        'projectType' => [
+            'class' => 'common\\components\\dictionaries\\base\\ProjectTypeDictionary',
+        ],
         'frontUrls' => [
             'class' => 'frontend\\components\\routes\\Urls',
         ]

@@ -12,6 +12,7 @@ use common\helpers\files\filenames\TrainingGroupFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\PeopleStamp;
+use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
@@ -31,7 +32,9 @@ use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
+use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
@@ -321,8 +324,52 @@ class TrainingGroupService implements DatabaseService
             $lesson->lesson_end_time = ((new DateTime($lesson->lesson_start_time))->modify("+{$capacity} minutes"))->format('H:i:s');
             $lesson->lesson_start_time = (new DateTime($lesson->lesson_start_time))->format('H:i:s');
         }
-
-
     }
 
+    public function prepareFormScheduleData($id)
+    {
+        $formSchedule = new TrainingGroupScheduleForm($id);
+        $auditoriums = (Yii::createObject(AuditoriumRepository::class))->getAll();
+        $scheduleTable = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Дата занятия'], ArrayHelper::getColumn($formSchedule->prevLessons, 'lesson_date')),
+                array_merge(['Время начала'], ArrayHelper::getColumn($formSchedule->prevLessons, 'lesson_start_time')),
+                array_merge(['Время окончания'], ArrayHelper::getColumn($formSchedule->prevLessons, 'lesson_end_time')),
+                array_merge(['Помещение'], ArrayHelper::getColumn($formSchedule->prevLessons, 'auditoriumName'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Редактировать',
+                    Url::to('update-lesson'),
+                    [
+                        'groupId' => array_fill(0, count($formSchedule->prevLessons), $formSchedule->id),
+                        'entityId' => ArrayHelper::getColumn($formSchedule->prevLessons, 'id')
+                    ]
+                ),
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-lesson'),
+                    [
+                        'groupId' => array_fill(0, count($formSchedule->prevLessons), $formSchedule->id),
+                        'entityId' => ArrayHelper::getColumn($formSchedule->prevLessons, 'id')
+                    ]
+                )
+            ]
+        );
+
+        $scheduleTable = HtmlBuilder::wrapTableInCheckboxesColumn(
+            Url::to(['group-deletion', 'id' => $formSchedule->id]),
+            'Удалить выбранные',
+            'check[]',
+            ArrayHelper::getColumn($formSchedule->prevLessons, 'id'),
+            $scheduleTable
+        );
+
+        return [
+            'formSchedule' => $formSchedule,
+            'modelLessons' => [new TrainingGroupLessonWork],
+            'auditoriums' => $auditoriums,
+            'scheduleTable' => $scheduleTable
+        ];
+    }
 }

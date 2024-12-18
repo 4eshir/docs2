@@ -3,11 +3,14 @@
 namespace frontend\controllers\educational;
 
 use common\controllers\DocumentController;
+use common\helpers\common\RequestHelper;
+use common\helpers\html\HtmlBuilder;
 use common\Model;
 use common\models\scaffold\TrainingGroup;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\event\ForeignEventRepository;
@@ -15,6 +18,7 @@ use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\educational\training_group\AddTeachersToGroupEvent;
+use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
@@ -25,15 +29,18 @@ use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\models\work\ProjectThemeWork;
 use frontend\services\educational\TrainingGroupService;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 class TrainingGroupController extends DocumentController
 {
     private TrainingGroupService $service;
     private TrainingProgramRepository $trainingProgramRepository;
     private TrainingGroupRepository $trainingGroupRepository;
+    private TrainingGroupLessonRepository $groupLessonRepository;
     private ForeignEventParticipantsRepository $participantsRepository;
     private PeopleRepository $peopleRepository;
     private AuditoriumRepository $auditoriumRepository;
@@ -46,6 +53,7 @@ class TrainingGroupController extends DocumentController
         TrainingGroupService $service,
         TrainingProgramRepository $trainingProgramRepository,
         TrainingGroupRepository $trainingGroupRepository,
+        TrainingGroupLessonRepository $groupLessonRepository,
         ForeignEventParticipantsRepository $participantsRepository,
         PeopleRepository $peopleRepository,
         AuditoriumRepository $auditoriumRepository,
@@ -55,6 +63,7 @@ class TrainingGroupController extends DocumentController
         $this->service = $service;
         $this->trainingProgramRepository = $trainingProgramRepository;
         $this->trainingGroupRepository = $trainingGroupRepository;
+        $this->groupLessonRepository = $groupLessonRepository;
         $this->participantsRepository = $participantsRepository;
         $this->peopleRepository = $peopleRepository;
         $this->auditoriumRepository = $auditoriumRepository;
@@ -185,9 +194,11 @@ class TrainingGroupController extends DocumentController
 
     public function actionScheduleForm($id)
     {
-        $formSchedule = new TrainingGroupScheduleForm($id);
-        $modelLessons = [new TrainingGroupLessonWork];
-        $auditoriums = $this->auditoriumRepository->getAll();
+        $formData = $this->service->prepareFormScheduleData($id);
+        $formSchedule = $formData['formSchedule'];
+        $modelLessons = $formData['modelLessons'];
+        $auditoriums = $formData['auditoriums'];
+        $scheduleTable = $formData['scheduleTable'];
 
         if ($formSchedule->load(Yii::$app->request->post())) {
             $modelLessons = Model::createMultiple(TrainingGroupLessonWork::classname());
@@ -210,8 +221,52 @@ class TrainingGroupController extends DocumentController
         return $this->render('_form-schedule', [
             'model' => $formSchedule,
             'modelLessons' => count($modelLessons) > 0 ? $modelLessons : [new TrainingGroupParticipantWork],
-            'auditoriums' => $auditoriums
+            'auditoriums' => $auditoriums,
+            'scheduleTable' => $scheduleTable
         ]);
+    }
+
+    public function actionPitchForm($id)
+    {
+        $formPitch = new PitchGroupForm($id);
+        $peoples = $this->peopleRepository->getPeopleFromMainCompany();
+
+        if ($formPitch->load(Yii::$app->request->post())) {
+            if (!$formPitch->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($formPitch->getErrors()));
+            }
+
+            $modelThemes = Model::createMultiple(ProjectThemeWork::classname());
+            Model::loadMultiple($modelThemes, Yii::$app->request->post());
+            if (Model::validateMultiple($modelTeachers, ['peopleId'])) {
+                $formBase->teachers = $modelTeachers;
+                $groupModel->generateNumber($this->peopleRepository->get($formBase->teachers[0]->peopleId));
+            }
+            else {
+                $groupModel->generateNumber('');
+            }
+        }
+
+        return $this->render('_form-pitch', [
+            'model' => $formPitch,
+            'peoples' => $peoples
+        ]);
+    }
+
+    public function actionDeleteLesson($groupId, $entityId)
+    {
+        /** @var TrainingGroupLessonWork $model */
+        $model = $this->groupLessonRepository->get($entityId);
+        $result = $this->groupLessonRepository->delete($model);
+
+        if ($result) {
+            Yii::$app->session->setFlash('success', 'Занятие успешно удалено');
+        }
+        else {
+            Yii::$app->session->setFlash('danger', 'Ошибка удаления занятия');
+        }
+
+        return $this->redirect(['schedule-form', 'id' => $groupId]);
     }
 
     public function actionView($id)
@@ -238,5 +293,28 @@ class TrainingGroupController extends DocumentController
         }
 
         return $this->redirect(['index']);
+    }
+
+    public function actionGroupDeletion($id)
+    {
+        $data = RequestHelper::getDataFromPost(Yii::$app->request->post(), 'check', RequestHelper::CHECKBOX);
+        foreach ($data as $item) {
+            /** @var TrainingGroupLessonWork $entity */
+            $entity = $this->groupLessonRepository->get($item);
+            $this->groupLessonRepository->delete($entity);
+        }
+
+        $formData = $this->service->prepareFormScheduleData($id);
+        $formSchedule = $formData['formSchedule'];
+        $modelLessons = $formData['modelLessons'];
+        $auditoriums = $formData['auditoriums'];
+        $scheduleTable = $formData['scheduleTable'];
+
+        return $this->render('_form-schedule', [
+            'model' => $formSchedule,
+            'modelLessons' => count($modelLessons) > 0 ? $modelLessons : [new TrainingGroupParticipantWork],
+            'auditoriums' => $auditoriums,
+            'scheduleTable' => $scheduleTable
+        ]);
     }
 }

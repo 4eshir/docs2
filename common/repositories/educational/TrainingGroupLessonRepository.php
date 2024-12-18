@@ -19,7 +19,7 @@ class TrainingGroupLessonRepository
 {
     public function get($id)
     {
-        return TrainingGroupParticipantWork::find()->where(['id' => $id])->one();
+        return TrainingGroupLessonWork::find()->where(['id' => $id])->one();
     }
 
     public function prepareCreate($groupId, $lessonDate, $lessonStartTime, $branch, $auditoriumId, $lessonEndTime, $duration)
@@ -35,5 +35,10 @@ class TrainingGroupLessonRepository
         $command = Yii::$app->db->createCommand();
         $command->delete(TrainingGroupLessonWork::tableName(), ['id' => $id]);
         return $command->getRawSql();
+    }
+
+    public function delete(TrainingGroupLessonWork $model)
+    {
+        return $model->delete();
     }
 }

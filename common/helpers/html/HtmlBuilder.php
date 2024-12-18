@@ -4,6 +4,7 @@ namespace common\helpers\html;
 
 use common\helpers\common\BaseFunctions;
 use DomainException;
+use DOMDocument;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -203,6 +204,103 @@ class HtmlBuilder
                 $result[] = Html::a($text, array_merge([$url], $combined));
             }
         }
+
+        return $result;
+    }
+
+    /**
+     * Добавляет столбец чекбоксов к таблице
+     * @param string $formAction экшн для формы
+     * @param string $submitContent текст кнопки сабмита
+     * @param string $checkName имя для полей формы (чекбоксов)
+     * @param array $checkValues массив значений для чекбоксов
+     * @param string $table исходная таблица
+     * @param array $classes массив классов для стилизации формата ['submit' => 'classname']
+     * @return string
+     */
+    public static function wrapTableInCheckboxesColumn(
+        string $formAction,
+        string $submitContent,
+        string $checkName,
+        array $checkValues,
+        string $table,
+        array $classes = ['submit' => 'btn btn-success']
+    ) {
+        // Находим все строки таблицы
+        preg_match_all('/<tr[^>]*>(.*?)<\/tr>/s', $table, $matches);
+        $rows = $matches[0];
+
+        // Создаем массив чекбоксов
+        $checkboxes = [];
+        foreach ($checkValues as $key => $value) {
+            $checkboxes[$key] = "<input type='hidden' name='$checkName' value='0'>".
+                "<input type='checkbox' id='traininggroupwork-delarr$key' class='check' name='$checkName' value='$value'>";
+
+            // Добавляем чекбокс в начало каждой строки
+            $rows[$key] = preg_replace('/<tr[^>]*>/', "<tr><td>$checkboxes[$key]</td>", $rows[$key]);
+        }
+
+        $newHtmlTable = str_replace($matches[0], $rows, $table);
+
+        preg_match_all('/<thead[^>]*>(.*?)<\/thead>/s', $newHtmlTable, $matches);
+        $thead = $matches[0][0];
+        $newTh = '<th class=""><input type="checkbox" class="checkbox-group"></th>';
+        $newHtmlString = str_replace('<thead>', '<thead>' . $newTh, $thead);
+        $newHtmlTable = preg_replace('/(<thead>.*?<\/thead>)/s', $newHtmlString, $newHtmlTable);
+
+        $newClass = 'table-checkbox';
+        $newHtmlString = preg_replace_callback(
+            '/<table([^>]*)>/i',
+            function ($matches) use ($newClass) {
+                $attributes = $matches[1]; // Содержимое между <table и >
+
+                // Если атрибут class уже существует
+                if (preg_match('/class\s*=\s*"([^"]*)"/i', $attributes, $classMatch)) {
+                    $classes = explode(' ', trim($classMatch[1]));
+
+                    // Добавляем новый класс, если его еще нет
+                    if (!in_array($newClass, $classes)) {
+                        $classes[] = $newClass;
+                    }
+
+                    // Обновляем атрибут class
+                    $updatedAttributes = preg_replace('/class\s*=\s*"[^"]*"/i', 'class="' . implode(' ', $classes) . '"', $attributes);
+
+                    return '<table' . $updatedAttributes . '>';
+                } else {
+                    // Если атрибута class нет, добавляем его
+                    return '<table' . $attributes . ' class="' . $newClass . '">';
+                }
+            },
+            $newHtmlTable
+        );
+
+        $newHtmlTable = $newHtmlString;
+
+        return self::wrapInForm($formAction, $submitContent, $newHtmlTable, $classes);
+    }
+
+    /**
+     * Оборачивает в форму какой-либо контент
+     * @param string $formAction экшн формы
+     * @param string $submitContent текст кнопки сабмита
+     * @param string $content контент, который необходимо обернуть в форму
+     * @param array $classes массив классов для стилизации формата ['submit' => 'classname']
+     * @return string
+     */
+    public static function wrapInForm(
+        string $formAction,
+        string $submitContent,
+        string $content,
+        array $classes = ['submit' => 'btn btn-success']
+    )
+    {
+        $csrfToken = Yii::$app->request->getCsrfToken();
+        $result = "<form action='$formAction' method='post'>";
+        $result .=  Html::hiddenInput('_csrf-frontend', $csrfToken);
+        $result .= $content;
+        $result .= Html::submitButton($submitContent, ['class' => $classes['submit']]);
+        $result .= "</form>";
 
         return $result;
     }

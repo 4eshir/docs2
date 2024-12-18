@@ -3,10 +3,14 @@
 namespace frontend\models\work\educational\training_group;
 
 use common\models\scaffold\TrainingGroupLesson;
+use common\repositories\dictionaries\AuditoriumRepository;
+use frontend\models\work\dictionaries\AuditoriumWork;
+use Yii;
 
 class TrainingGroupLessonWork extends TrainingGroupLesson
 {
     public $autoDate;
+    public $auditoriumName;
 
     public static function fill($groupId, $lessonDate, $lessonStartTime, $branch, $auditoriumId, $lessonEndTime, $duration)
     {
@@ -18,6 +22,12 @@ class TrainingGroupLessonWork extends TrainingGroupLesson
         $entity->auditorium_id = $auditoriumId;
         $entity->lesson_end_time = $lessonEndTime;
         $entity->duration = $duration;
+
+        if ($auditoriumId !== null) {
+            /** @var AuditoriumWork $auditorium */
+            $auditorium = (Yii::createObject(AuditoriumRepository::class))->get($auditoriumId);
+            $entity->auditoriumName = $auditorium->name . ' (' . Yii::$app->branches->get($auditorium->branch) . ')';
+        }
 
         return $entity;
     }
@@ -53,5 +63,14 @@ class TrainingGroupLessonWork extends TrainingGroupLesson
                 [Branch: $this->branch]
                 [AudID: $this->auditorium_id]
                 [Duration: $this->duration]";
+    }
+
+    public function setAuditoriumName()
+    {
+        if ($this->auditorium_id !== null) {
+            /** @var AuditoriumWork $auditorium */
+            $auditorium = (Yii::createObject(AuditoriumRepository::class))->get($this->auditorium_id);
+            $this->auditoriumName = $auditorium->name . ' (' . Yii::$app->branches->get($auditorium->branch) . ')';
+        }
     }
 }
