@@ -198,25 +198,24 @@ class OrderMainService {
     }
     public function addOrderPeopleEvent($respPeople, $model)
     {
-        if (is_array($respPeople) && $respPeople[0] != NULL) {
+        if (is_array($respPeople)) {
             $respPeople = array_unique($respPeople);
-            for ($i = 0; $i < count($respPeople); $i++) {
-                if ($respPeople[$i] != NULL) {
-                    if ($this->orderPeopleRepository->checkUnique($respPeople[$i], $model->id)) {
-                            $model->recordEvent(new OrderPeopleCreateEvent($respPeople[$i], $model->id), OrderPeopleWork::class);
+            foreach ($respPeople as $person) {
+                if ($person != NULL) {
+                    if ($this->orderPeopleRepository->checkUnique($person, $model->id)) {
+                        $model->recordEvent(new OrderPeopleCreateEvent($person, $model->id), OrderPeopleWork::class);
                     }
                 }
             }
         }
     }
     public function deleteOrderPeopleEvent($respPeople, $model){
-
         if (is_array($respPeople)) {
             $respPeople = array_unique($respPeople);
-            for ($i = 0; $i < count($respPeople); $i++) {
-                if ($respPeople[$i] != NULL) {
-                    if (!$this->orderPeopleRepository->checkUnique($respPeople[$i], $model->id)) {
-                        $model->recordEvent(new OrderPeopleDeleteEvent($respPeople[$i], $model->id), OrderPeopleWork::class);
+            foreach ($respPeople as $person) {
+                if ($person != NULL) {
+                    if (!$this->orderPeopleRepository->checkUnique($person, $model->id)) {
+                        $model->recordEvent(new OrderPeopleDeleteEvent($person, $model->id), OrderPeopleWork::class);
                     }
                 }
             }
