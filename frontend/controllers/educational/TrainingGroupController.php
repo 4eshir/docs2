@@ -25,6 +25,7 @@ use frontend\forms\training_group\TrainingGroupParticipantForm;
 use frontend\forms\training_group\TrainingGroupScheduleForm;
 use frontend\models\search\SearchTrainingGroup;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
+use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
@@ -43,7 +44,6 @@ class TrainingGroupController extends DocumentController
     private TrainingGroupLessonRepository $groupLessonRepository;
     private ForeignEventParticipantsRepository $participantsRepository;
     private PeopleRepository $peopleRepository;
-    private AuditoriumRepository $auditoriumRepository;
 
     public function __construct(
         $id,
@@ -56,7 +56,6 @@ class TrainingGroupController extends DocumentController
         TrainingGroupLessonRepository $groupLessonRepository,
         ForeignEventParticipantsRepository $participantsRepository,
         PeopleRepository $peopleRepository,
-        AuditoriumRepository $auditoriumRepository,
         $config = [])
     {
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
@@ -66,7 +65,6 @@ class TrainingGroupController extends DocumentController
         $this->groupLessonRepository = $groupLessonRepository;
         $this->participantsRepository = $participantsRepository;
         $this->peopleRepository = $peopleRepository;
-        $this->auditoriumRepository = $auditoriumRepository;
     }
 
 
@@ -238,13 +236,22 @@ class TrainingGroupController extends DocumentController
 
             $modelThemes = Model::createMultiple(ProjectThemeWork::classname());
             Model::loadMultiple($modelThemes, Yii::$app->request->post());
-            if (Model::validateMultiple($modelTeachers, ['peopleId'])) {
-                $formBase->teachers = $modelTeachers;
-                $groupModel->generateNumber($this->peopleRepository->get($formBase->teachers[0]->peopleId));
+            if (Model::validateMultiple($modelThemes, ['name', 'project_type', 'description'])) {
+                $formPitch->themes = $modelThemes;
             }
-            else {
-                $groupModel->generateNumber('');
+
+            $modelExperts = Model::createMultiple(TrainingGroupExpertWork::classname());
+            Model::loadMultiple($modelExperts, Yii::$app->request->post());
+            if (Model::validateMultiple($modelExperts, ['expert_id', 'expert_type'])) {
+                $formPitch->experts = $modelExperts;
             }
+
+            $this->service->createNewThemes($formPitch);
+            $this->service->attachThemes($formPitch);
+            $this->service->attachExperts($formPitch);
+            $formPitch->releaseEvents();
+
+            return $this->redirect(['view', 'id' => $formPitch->id]);
         }
 
         return $this->render('_form-pitch', [

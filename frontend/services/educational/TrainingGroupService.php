@@ -13,11 +13,14 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\PeopleStamp;
 use common\repositories\dictionaries\AuditoriumRepository;
+use common\repositories\educational\ProjectThemeRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use DateTime;
+use frontend\events\educational\training_group\AddGroupExpertEvent;
+use frontend\events\educational\training_group\AddGroupThemeEvent;
 use frontend\events\educational\training_group\CreateLessonGroupEvent;
 use frontend\events\educational\training_group\CreateTeacherGroupEvent;
 use frontend\events\educational\training_group\CreateTrainingGroupLessonEvent;
@@ -25,13 +28,17 @@ use frontend\events\educational\training_group\CreateTrainingGroupParticipantEve
 use frontend\events\educational\training_group\DeleteLessonGroupEvent;
 use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
 use frontend\events\general\FileCreateEvent;
+use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
 use frontend\forms\training_group\TrainingGroupScheduleForm;
+use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
+use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
+use frontend\models\work\ProjectThemeWork;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -43,18 +50,21 @@ class TrainingGroupService implements DatabaseService
     use CommonDatabaseFunctions, Math;
 
     private TrainingGroupRepository $trainingGroupRepository;
+    private ProjectThemeRepository $themeRepository;
     private FileService $fileService;
     private TrainingGroupFileNameGenerator $filenameGenerator;
     private PeopleStampService $peopleStampService;
 
     public function __construct(
         TrainingGroupRepository $trainingGroupRepository,
+        ProjectThemeRepository $themeRepository,
         FileService $fileService,
         TrainingGroupFileNameGenerator $filenameGenerator,
         PeopleStampService $peopleStampService
     )
     {
         $this->trainingGroupRepository = $trainingGroupRepository;
+        $this->themeRepository = $themeRepository;
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
         $this->peopleStampService = $peopleStampService;
@@ -312,6 +322,37 @@ class TrainingGroupService implements DatabaseService
 
         foreach ($delLessons as $lesson) {
             $form->recordEvent(new DeleteLessonGroupEvent($lesson->id), TrainingGroupLessonWork::className());
+        }
+    }
+
+    public function createNewThemes(PitchGroupForm $form)
+    {
+        $themeIds = [];
+        foreach ($form->themes as $theme) {
+            $themeIds[] = $this->themeRepository->save(
+                ProjectThemeWork::fill(
+                    $theme->name,
+                    $theme->project_type,
+                    $theme->description
+                )
+            );
+        }
+
+        $form->themeIds = $themeIds;
+    }
+
+    public function attachThemes(PitchGroupForm $form)
+    {
+        foreach ($form->themeIds as $themeId) {
+            $form->recordEvent(new AddGroupThemeEvent($form->id, $themeId, 0), GroupProjectsThemesWork::class);
+        }
+    }
+
+    public function attachExperts(PitchGroupForm $form)
+    {
+        foreach ($form->experts as $expert) {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($expert->expert_id);
+            $form->recordEvent(new AddGroupExpertEvent($form->id, $peopleStampId, $expert->expert_type), TrainingGroupExpertWork::class);
         }
     }
 

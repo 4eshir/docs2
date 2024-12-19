@@ -2,6 +2,7 @@
 
 namespace frontend\forms\training_group;
 
+use common\events\EventTrait;
 use common\Model;
 use common\repositories\educational\TrainingGroupRepository;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
@@ -10,12 +11,15 @@ use Yii;
 
 class PitchGroupForm extends Model
 {
+    use EventTrait;
+
     public $id;
     public $number;
     public $experts;
 
     public $themes;
     public $protectionDate;
+    public $themeIds;
 
     public function __construct($id = -1, $config = [])
     {
