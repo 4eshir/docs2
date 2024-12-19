@@ -12,11 +12,27 @@ use yii\widgets\ActiveForm;
 /* @var $model TrainingGroupScheduleForm */
 /* @var $modelLessons */
 /* @var $auditoriums */
+/* @var $scheduleTable */
 
 $this->title = "Редактировать учебную группу {$model->number}";
 $this->params['breadcrumbs'][] = ['label' => 'Учебные группы', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<script>
+    function changeScheduleType() {
+        const firstDiv = document.getElementById('manual-fields');
+        const secondDiv = document.getElementById('auto-fields');
+
+        if (firstDiv.style.display === 'none') {
+            firstDiv.style.display = 'block';
+            secondDiv.style.display = 'none';
+        } else {
+            firstDiv.style.display = 'none';
+            secondDiv.style.display = 'block';
+        }
+    }
+</script>
 
 <div class="group-create">
 
@@ -26,6 +42,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= Html::a('Список учеников', Url::to(['educational/training-group/participant-form', 'id' => $model->id]), ['class' => 'btn btn-primary']) ?>
     <?= Html::a('Расписание', Url::to(['educational/training-group/schedule-form', 'id' => $model->id]), ['class' => 'btn btn-success']) ?>
     <?= Html::a('Сведения о защите работ', Url::to(['educational/training-group/pitch-form', 'id' => $model->id]), ['class' => 'btn btn-primary']) ?>
+
+    <?php if (strlen($scheduleTable) > 10): ?>
+        <?= $scheduleTable; ?>
+    <?php endif; ?>
 
     <div class="training-group-schedule-form">
         <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
@@ -139,18 +159,3 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php ActiveForm::end(); ?>
 </div>
-
-<script>
-    function changeScheduleType() {
-        const firstDiv = document.getElementById('manual-fields');
-        const secondDiv = document.getElementById('auto-fields');
-
-        if (firstDiv.style.display === 'none') {
-            firstDiv.style.display = 'block';
-            secondDiv.style.display = 'none';
-        } else {
-            firstDiv.style.display = 'none';
-            secondDiv.style.display = 'block';
-        }
-    }
-</script>

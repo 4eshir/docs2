@@ -8,7 +8,6 @@ namespace common\models\scaffold;
  * @property int $id
  * @property int|null $training_group_id
  * @property int|null $project_theme_id
- * @property int|null $project_type
  * @property int|null $confirm
  *
  * @property ProjectTheme $projectTheme
@@ -31,7 +30,7 @@ class GroupProjectThemes extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['training_group_id', 'project_theme_id', 'project_type', 'confirm'], 'integer'],
+            [['training_group_id', 'project_theme_id', 'confirm'], 'integer'],
             [['training_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => TrainingGroup::class, 'targetAttribute' => ['training_group_id' => 'id']],
             [['project_theme_id'], 'exist', 'skipOnError' => true, 'targetClass' => ProjectTheme::class, 'targetAttribute' => ['project_theme_id' => 'id']],
         ];
@@ -46,7 +45,6 @@ class GroupProjectThemes extends \yii\db\ActiveRecord
             'id' => 'ID',
             'training_group_id' => 'Training Group ID',
             'project_theme_id' => 'Project Theme ID',
-            'project_type' => 'Project Type',
             'confirm' => 'Confirm',
         ];
     }

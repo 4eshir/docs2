@@ -12,11 +12,15 @@ use common\helpers\files\filenames\TrainingGroupFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\PeopleStamp;
+use common\repositories\dictionaries\AuditoriumRepository;
+use common\repositories\educational\ProjectThemeRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use DateTime;
+use frontend\events\educational\training_group\AddGroupExpertEvent;
+use frontend\events\educational\training_group\AddGroupThemeEvent;
 use frontend\events\educational\training_group\CreateLessonGroupEvent;
 use frontend\events\educational\training_group\CreateTeacherGroupEvent;
 use frontend\events\educational\training_group\CreateTrainingGroupLessonEvent;
@@ -24,14 +28,20 @@ use frontend\events\educational\training_group\CreateTrainingGroupParticipantEve
 use frontend\events\educational\training_group\DeleteLessonGroupEvent;
 use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
 use frontend\events\general\FileCreateEvent;
+use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
 use frontend\forms\training_group\TrainingGroupScheduleForm;
+use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
+use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
+use frontend\models\work\ProjectThemeWork;
+use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
@@ -40,18 +50,21 @@ class TrainingGroupService implements DatabaseService
     use CommonDatabaseFunctions, Math;
 
     private TrainingGroupRepository $trainingGroupRepository;
+    private ProjectThemeRepository $themeRepository;
     private FileService $fileService;
     private TrainingGroupFileNameGenerator $filenameGenerator;
     private PeopleStampService $peopleStampService;
 
     public function __construct(
         TrainingGroupRepository $trainingGroupRepository,
+        ProjectThemeRepository $themeRepository,
         FileService $fileService,
         TrainingGroupFileNameGenerator $filenameGenerator,
         PeopleStampService $peopleStampService
     )
     {
         $this->trainingGroupRepository = $trainingGroupRepository;
+        $this->themeRepository = $themeRepository;
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
         $this->peopleStampService = $peopleStampService;
@@ -312,6 +325,37 @@ class TrainingGroupService implements DatabaseService
         }
     }
 
+    public function createNewThemes(PitchGroupForm $form)
+    {
+        $themeIds = [];
+        foreach ($form->themes as $theme) {
+            $themeIds[] = $this->themeRepository->save(
+                ProjectThemeWork::fill(
+                    $theme->name,
+                    $theme->project_type,
+                    $theme->description
+                )
+            );
+        }
+
+        $form->themeIds = $themeIds;
+    }
+
+    public function attachThemes(PitchGroupForm $form)
+    {
+        foreach ($form->themeIds as $themeId) {
+            $form->recordEvent(new AddGroupThemeEvent($form->id, $themeId, 0), GroupProjectsThemesWork::class);
+        }
+    }
+
+    public function attachExperts(PitchGroupForm $form)
+    {
+        foreach ($form->experts as $expert) {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($expert->expert_id);
+            $form->recordEvent(new AddGroupExpertEvent($form->id, $peopleStampId, $expert->expert_type), TrainingGroupExpertWork::class);
+        }
+    }
+
     public function preprocessingLessons(TrainingGroupScheduleForm $formSchedule)
     {
         foreach ($formSchedule->lessons as $lesson) {
@@ -321,8 +365,52 @@ class TrainingGroupService implements DatabaseService
             $lesson->lesson_end_time = ((new DateTime($lesson->lesson_start_time))->modify("+{$capacity} minutes"))->format('H:i:s');
             $lesson->lesson_start_time = (new DateTime($lesson->lesson_start_time))->format('H:i:s');
         }
-
-
     }
 
+    public function prepareFormScheduleData($id)
+    {
+        $formSchedule = new TrainingGroupScheduleForm($id);
+        $auditoriums = (Yii::createObject(AuditoriumRepository::class))->getAll();
+        $scheduleTable = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Дата занятия'], ArrayHelper::getColumn($formSchedule->prevLessons, 'lesson_date')),
+                array_merge(['Время начала'], ArrayHelper::getColumn($formSchedule->prevLessons, 'lesson_start_time')),
+                array_merge(['Время окончания'], ArrayHelper::getColumn($formSchedule->prevLessons, 'lesson_end_time')),
+                array_merge(['Помещение'], ArrayHelper::getColumn($formSchedule->prevLessons, 'auditoriumName'))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Редактировать',
+                    Url::to('update-lesson'),
+                    [
+                        'groupId' => array_fill(0, count($formSchedule->prevLessons), $formSchedule->id),
+                        'entityId' => ArrayHelper::getColumn($formSchedule->prevLessons, 'id')
+                    ]
+                ),
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-lesson'),
+                    [
+                        'groupId' => array_fill(0, count($formSchedule->prevLessons), $formSchedule->id),
+                        'entityId' => ArrayHelper::getColumn($formSchedule->prevLessons, 'id')
+                    ]
+                )
+            ]
+        );
+
+        $scheduleTable = HtmlBuilder::wrapTableInCheckboxesColumn(
+            Url::to(['group-deletion', 'id' => $formSchedule->id]),
+            'Удалить выбранные',
+            'check[]',
+            ArrayHelper::getColumn($formSchedule->prevLessons, 'id'),
+            $scheduleTable
+        );
+
+        return [
+            'formSchedule' => $formSchedule,
+            'modelLessons' => [new TrainingGroupLessonWork],
+            'auditoriums' => $auditoriums,
+            'scheduleTable' => $scheduleTable
+        ];
+    }
 }

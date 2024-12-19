@@ -10,6 +10,7 @@ use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\ActParticipant;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\act_participant\SquadParticipantRepository;
+use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\team\TeamRepository;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
@@ -29,6 +30,8 @@ class ActParticipantService
     private FileService $fileService;
     private SquadParticipantService $squadParticipantService;
     private SquadParticipantRepository $squadParticipantRepository;
+    private PeopleRepository $peopleRepository;
+
     public function __construct(
         TeamRepository $teamRepository,
         TeamService $teamService,
@@ -36,7 +39,8 @@ class ActParticipantService
         ActParticipantRepository $actParticipantRepository,
         FileService $fileService,
         SquadParticipantService $squadParticipantService,
-        SquadParticipantRepository $squadParticipantRepository
+        SquadParticipantRepository $squadParticipantRepository,
+        PeopleRepository $peopleRepository
     )
     {
         $this->teamRepository = $teamRepository;
@@ -46,6 +50,7 @@ class ActParticipantService
         $this->fileService = $fileService;
         $this->squadParticipantService = $squadParticipantService;
         $this->squadParticipantRepository = $squadParticipantRepository;
+        $this->peopleRepository = $peopleRepository;
     }
     public function getFilesInstance(ActParticipantForm $modelActParticipant, $index)
     {
@@ -122,9 +127,11 @@ class ActParticipantService
                 if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
                     $this->actParticipantRepository->save($modelAct);
                 }
-                $this->saveFilesFromModel($modelAct, $index);
-                $modelAct->releaseEvents();
-                $this->squadParticipantService->addSquadParticipantEvent($modelAct, $act["participant"], $modelAct->id);
+                if ($modelAct->id != NULL) {
+                    $this->saveFilesFromModel($modelAct, $index);
+                    $modelAct->releaseEvents();
+                    $this->squadParticipantService->addSquadParticipantEvent($modelAct, $act["participant"], $modelAct->id);
+                }
                 $index++;
             }
         }
@@ -189,7 +196,8 @@ class ActParticipantService
             ]
         );
     }
-    public function createActFileTable(ActParticipantWork $model){
+    public function createActFileTable(ActParticipantWork $model)
+    {
         $links = $model->getFileLinks(FilesHelper::TYPE_SCAN);
         $file = HtmlBuilder::createTableWithActionButtons(
             [

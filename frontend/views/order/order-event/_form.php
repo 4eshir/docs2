@@ -299,9 +299,12 @@ use yii\jui\DatePicker;
     function FinishNom()
     {
         let elem = document.getElementsByClassName(listId);
-
         for (let z = 0; z < elem.length; z++)
         {
+            let value = null;
+            if(elem[z].options.selectedIndex !== 0){
+                value = elem[z].options[elem[z].selectedIndex].value;
+            }
             while (elem[z].options.length) {
                 elem[z].options[0] = null;
             }
@@ -315,6 +318,9 @@ use yii\jui\DatePicker;
                 option.innerHTML = nominations[i];
                 elem[z].appendChild(option);
             }
+            if (nominations.includes(value)){
+                elem[z].value = value;
+            }
         }
     }
 
@@ -324,6 +330,10 @@ use yii\jui\DatePicker;
 
         for (let z = 0; z < elem.length; z++)
         {
+            let value = null;
+            if(elem[z].options.selectedIndex !== 0){
+                value = elem[z].options[elem[z].selectedIndex].value;
+            }
             while (elem[z].options.length) {
                 elem[z].options[0] = null;
             }
@@ -336,6 +346,9 @@ use yii\jui\DatePicker;
                 option.value = team[i];
                 option.innerHTML = team[i];
                 elem[z].appendChild(option);
+            }
+            if (team.includes(value)){
+                elem[z].value = value;
             }
         }
     }

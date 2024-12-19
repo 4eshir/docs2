@@ -7,6 +7,7 @@ namespace common\models\scaffold;
  *
  * @property int $id
  * @property string|null $name
+ * @property int|null $project_type
  * @property string|null $description
  */
 class ProjectTheme extends \yii\db\ActiveRecord
@@ -25,6 +26,7 @@ class ProjectTheme extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['project_type'], 'integer'],
             [['name'], 'string', 'max' => 128],
             [['description'], 'string', 'max' => 256],
         ];

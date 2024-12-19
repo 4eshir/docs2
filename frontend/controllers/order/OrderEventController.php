@@ -5,13 +5,11 @@ use app\models\work\event\ForeignEventWork;
 use app\models\work\order\OrderEventWork;
 use app\models\work\team\ActParticipantWork;
 use app\services\act_participant\ActParticipantService;
-use app\services\act_participant\SquadParticipantService;
 use app\services\event\OrderEventFormService;
 use app\services\order\OrderEventService;
 use app\services\order\OrderMainService;
 use app\services\team\TeamService;
 use common\controllers\DocumentController;
-use common\helpers\files\FilesHelper;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\event\ForeignEventRepository;
@@ -21,16 +19,14 @@ use common\repositories\order\OrderEventRepository;
 use common\repositories\team\TeamRepository;
 use common\services\general\files\FileService;
 use DomainException;
-use frontend\events\general\FileDeleteEvent;
+use frontend\facades\ActParticipantFacade;
+use frontend\facades\OrderEventFacade;
 use frontend\forms\OrderEventForm;
-use frontend\helpers\HeaderWizard;
 use frontend\models\forms\ActParticipantForm;
 use frontend\models\search\SearchOrderEvent;
-use frontend\models\work\general\FilesWork;
 use frontend\services\event\ForeignEventService;
 use Yii;
 use yii\helpers\ArrayHelper;
-use yii\web\Controller;
 class OrderEventController extends DocumentController
 {
     private PeopleRepository $peopleRepository;
@@ -44,7 +40,9 @@ class OrderEventController extends DocumentController
     private ForeignEventService $foreignEventService;
     private OrderEventService $orderEventService;
     private ActParticipantService $actParticipantService;
-    public ActParticipantRepository $actParticipantRepository;
+    private ActParticipantRepository $actParticipantRepository;
+    private ActParticipantFacade $actParticipantFacade;
+    private OrderEventFacade $orderEventFacade;
     private TeamRepository $teamRepository;
     private TeamService $teamService;
     public function __construct(
@@ -61,6 +59,8 @@ class OrderEventController extends DocumentController
         ActParticipantRepository $actParticipantRepository,
         FileService $fileService,
         FilesRepository $fileRepository,
+        ActParticipantFacade $actParticipantFacade,
+        OrderEventFacade $orderEventFacade,
         TeamRepository $teamRepository,
         TeamService $teamService,
         $config = []
@@ -78,6 +78,8 @@ class OrderEventController extends DocumentController
         $this->actParticipantRepository = $actParticipantRepository;
         $this->fileService = $fileService;
         $this->fileRepository = $fileRepository;
+        $this->actParticipantFacade = $actParticipantFacade;
+        $this->orderEventFacade = $orderEventFacade;
         $this->teamRepository = $teamRepository;
         $this->teamService = $teamService;
         parent::__construct($id, $module, $fileService, $fileRepository, $config);
@@ -181,24 +183,25 @@ class OrderEventController extends DocumentController
         );
     }
     public function actionUpdate($id) {
-        /* @var OrderEventWork $modelOrderEvent */
-        /* @var ForeignEventWork $modelForeignEvent */
-        /* @var OrderEventForm $model */
-        $modelOrderEvent = $this->orderEventRepository->get($id);
-        $people = $this->peopleRepository->getOrderedList();
+        $data = $this->orderEventFacade->prepareOrderEventUpdateFacade($id);
+        $people = $data['people'];
+        $modelResponsiblePeople = $data['modelResponsiblePeople'];
+        $tables = $data['tables'];
+        $nominations = $data['nominations'];
+        $teams = $data['teams'];
+        $modelActForms = $data['modelActForms'];
+        $actTable = $data['actTable'];
+        $model = $data['model'];
+        $modelForeignEvent = $data['modelForeignEvent'];
+        $modelOrderEvent = $data['modelOrderEvent'];
+        $modelData =  $this->orderEventFacade->modelOrderEventFormFacade($model, $id);
+        $orderNumber = $modelData['orderNumber'];
+        $model->responsible_id = $modelData['responsiblePeople'];
         $post = Yii::$app->request->post();
-        $modelForeignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
-        $modelActForms = [new ActParticipantForm];
-        $model = OrderEventForm::fill($modelOrderEvent, $modelForeignEvent);
-        $tables = $this->orderMainService->getUploadedFilesTables($modelOrderEvent);
-        $modelResponsiblePeople = $this->orderMainService->getResponsiblePeopleTable($modelOrderEvent->id);
-        $actTable = $this->actParticipantService->createActTable($modelForeignEvent->id);
-        $nominations = array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($modelForeignEvent->id), 'nomination'));
-        $teams = $this->teamService->getNamesByForeignEventId($modelForeignEvent->id);
-        $orderNumber = $model->order_number;
-        $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
         if($model->load($post)){
-            $this->orderMainService->updateOrderPeopleEvent(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $post["OrderEventForm"]["responsible_id"], $modelOrderEvent);
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
             $acts = $post["ActParticipantForm"];
             $this->orderEventFormService->getFilesInstances($model);
             $modelOrderEvent->fillUpdate(
@@ -265,12 +268,13 @@ class OrderEventController extends DocumentController
         if($act[0] == NULL){
             return $this->redirect(['index']);
         }
-        $modelAct = $this->actParticipantService->createForms($act);
-        $people = $this->peopleRepository->getOrderedList();
-        $nominations = array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($act[0]->foreign_event_id), 'nomination'));
-        $teams = $this->teamService->getNamesByForeignEventId($act[0]->foreign_event_id);
-        $defaultTeam = $this->teamRepository->getById($act[0]->team_name_id);
-        $tables = $this->actParticipantService->createActFileTable($act[0]);
+        $data = $this->actParticipantFacade->prepareActFacade($act);
+        $modelAct = $data['modelAct'];
+        $people = $data['people'];
+        $nominations = $data['nominations'];
+        $teams = $data['teams'];
+        $defaultTeam = $data['defaultTeam'];
+        $tables = $data['tables'];
         $post = Yii::$app->request->post();
         if($post != NULL){
             $post = $post["ActParticipantForm"];
