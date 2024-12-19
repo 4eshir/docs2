@@ -344,7 +344,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-head">Свойства</div>
                 <div class="flexx">
                 <div class="card-field flexx">
-                    <div class="field-title">
+                    <div class="field-title field-option">
                         Создатель карточки
                     </div>
                     <div class="field-date">
@@ -352,7 +352,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                 </div>
                 <div class="card-field flexx">
-                    <div class="field-title">
+                    <div class="field-title field-option">
                         Последний редактор
                     </div>
                     <div class="field-date">

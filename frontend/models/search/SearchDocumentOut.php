@@ -2,130 +2,182 @@
 
 namespace frontend\models\search;
 
+use common\components\dictionaries\base\DocumentStatusDictionary;
+use common\components\interfaces\SearchInterfaces;
 use common\helpers\DateFormatter;
+use frontend\models\search\abstractBase\DocumentSearch;
 use frontend\models\work\document_in_out\DocumentOutWork;
-use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 
-class SearchDocumentOut extends DocumentOutWork
+class SearchDocumentOut extends DocumentSearch implements SearchInterfaces
 {
-    public $fullNumber;
-    public $companyName;
-    public $sendMethodName;
-    public $documentDate;
-    public $sentDate;
-    public $documentNumber;
-    public $documentTheme;
+    public $documentDate;       // дата документа
+    public $sentDate;           // дата отправки документа
 
-    public $archive;
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
-        return [
-            [['id', 'document_number', 'position_id', 'company_id', 'signed_id', 'creator_id', 'archive', 'documentNumber'], 'integer'],
-            [['fullNumber', 'documentNumber'], 'string'],
-            [['documentDate', 'sentDate', 'documentTheme', 'correspondentName', 'companyName', 'sendMethodName'], 'safe'],
-        ];
+        return array_merge(parent::rules(), [
+            [['documentDate', 'number'], 'safe'],
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function scenarios()
-    {
-        // bypass scenarios() implementation in the parent class
-        return Model::scenarios();
-    }
 
     /**
-     * Creates data provider instance with search query applied
+     * Создает экземпляр DataProvider с учетом поискового запроса (фильтров или сортировки)
      *
-     * @param array $params
-     *
+     * @param $params
      * @return ActiveDataProvider
      */
     public function search($params)
     {
         $this->load($params);
-
         $query = DocumentOutWork::find()
-            ->joinWith('company');
-
-        if ($this->documentDate !== '' && $this->documentDate !== null) {
-            $dates = DateFormatter::splitDates($this->documentDate);
-            $query->andWhere(
-                ['BETWEEN', 'document_date',
-                    DateFormatter::format($dates[0], DateFormatter::dmy_dot, DateFormatter::Ymd_dash),
-                    DateFormatter::format($dates[1], DateFormatter::dmy_dot, DateFormatter::Ymd_dash)]);
-        }
-
-        if ($this->sentDate !== '' && $this->sentDate !== null) {
-            $dates = DateFormatter::splitDates($this->sentDate);
-            $query->andWhere(['BETWEEN', 'sent_date', $dates[0], $dates[1]]);
-        }
+            ->joinWith([
+                'company',
+                'correspondent',
+                'correspondent.people' => function ($query) {
+                    $query->alias('correspondentPeople');
+                },
+                'inOutDocument.responsible' => function ($query) {
+                    $query->alias('responsible');
+                },
+                'inOutDocument.responsible.people' => function ($query) {
+                    $query->alias('responsiblePeople');
+                },
+                'executor' => function ($query) {
+                    $query->alias('executor');
+                },
+                'executor.people' => function ($query) {
+                    $query->alias('executorPeople');
+                },
+                'signed' => function ($query) {
+                    $query->alias('signed');
+                },
+                'signed.people' => function ($query) {
+                    $query->alias('signedPeople');
+                }
+            ]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort'=> ['defaultOrder' => ['document_date' => SORT_DESC, 'document_number' => SORT_DESC, 'document_postfix' => SORT_DESC]]
         ]);
-        $dataProvider->sort->attributes['fullNumber'] = [
-            'asc' => ['document_number' => SORT_ASC, 'document_postfix' => SORT_ASC],
-            'desc' => ['document_number' => SORT_DESC, 'document_postfix' => SORT_DESC],
-        ];
+
+        $this->sortAttributes($dataProvider);
+        $this->filterQueryParams($query);
+
+        return $dataProvider;
+    }
+
+    /**
+     * Кастомизированная сортировка по полям таблицы, с учетом родительской сортировки
+     *
+     * @param ActiveDataProvider $dataProvider
+     * @return void
+     */
+    public function sortAttributes(ActiveDataProvider $dataProvider) {
+        parent::sortAttributes($dataProvider);
+
         $dataProvider->sort->attributes['documentDate'] = [
             'asc' => ['document_date' => SORT_ASC],
             'desc' => ['document_date' => SORT_DESC],
         ];
 
+        $dataProvider->sort->attributes['executorName'] = [
+            'asc' => ['people.firstname' => SORT_ASC],
+            'desc' => ['people.firstname' => SORT_DESC],
+        ];
+
         $dataProvider->sort->attributes['sentDate'] = [
-            'asc' => ['sent_date' => SORT_ASC],
-            'desc' => ['sent_date' => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['documentNumber'] = [
-            'asc' => ['document_number' => SORT_ASC],
-            'desc' => ['document_number' => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['companyName'] = [
-            'asc' => ['company.name' => SORT_ASC],
-            'desc' => ['company.name' => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['documentTheme'] = [
-            'asc' => ['document_theme' => SORT_ASC],
-            'desc' => ['document_theme' => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['sendMethodName'] = [
-            'asc' => ['send_method' => SORT_ASC],
-            'desc' => ['send_method' => SORT_DESC],
+            'asc' => ['send_date' => SORT_ASC],
+            'desc' => ['send_date' => SORT_DESC],
         ];
 
         $dataProvider->sort->attributes['isAnswer'] = [
             'asc' => ['is_answer' => SORT_DESC],
             'desc' => ['is_answer' => SORT_ASC],
         ];
+    }
 
 
-        if (!$this->validate()) {
-            return $dataProvider;
+    /**
+     * Вызов функций фильтров по параметрам запроса
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterQueryParams(ActiveQuery $query) {
+        $this->filterDate($query);
+        $this->filterNumber($query);
+        $this->filterStatus($query);
+        $this->filterExecutorName($query);
+        $this->filterAbstractQueryParams($query, $this->documentTheme, $this->keyWords, $this->sendMethodName, $this->correspondentName);
+    }
+
+    /**
+     * Фильтрация документов по диапазону дат
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterDate(ActiveQuery $query) {
+        if ($this->startDateSearch != '' || $this->finishDateSearch != '')
+        {
+            $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
+            $dateTo =  $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
+
+            $query->andWhere([
+                'or',
+                ['between', 'document_date', $dateFrom, $dateTo],
+                ['between', 'sent_date', $dateFrom, $dateTo],
+            ]);
         }
+    }
 
-        // строгие фильтры
+    /**
+     * Фильтрация документа по заданному номеру
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterNumber(ActiveQuery $query) {
+        $query->andFilterWhere(['like', "CONCAT(document_number, '/', document_postfix)", $this->number]);
+    }
+
+    /**
+     * Фильтрует по статусу документа
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterStatus(ActiveQuery $query) {
+        $statusConditions = [
+            DocumentStatusDictionary::CURRENT => ['>=', 'document_date', date('Y') . '-01-01'],
+            DocumentStatusDictionary::ARCHIVE => ['<=', 'document_date', date('Y-m-d')],
+            DocumentStatusDictionary::RESERVED => ['like', 'LOWER(document_theme)', 'РЕЗЕРВ'],
+            DocumentStatusDictionary::ANSWER => ['IS NOT', 'document_out_id', null],
+        ];
+        $query->andWhere($statusConditions[$this->status]);
+    }
+
+    /**
+     * Фильтрует по исполнителю документа
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterExecutorName(ActiveQuery $query) {
         $query->andFilterWhere([
-            'send_method' => $this->sendMethodName,
+            'OR',
+            ['like', 'LOWER(executorPeople.firstname)', mb_strtolower($this->executorName)],
+            ['like', 'LOWER(signedPeople.firstname)', mb_strtolower($this->executorName)],
         ]);
 
-        // гибкие фильтры Like
-        $query->andFilterWhere(['like', "CONCAT(document_number, '/', document_postfix)", $this->fullNumber])
-            ->andFilterWhere(['like', 'document_number', $this->documentNumber])
-            ->andFilterWhere(['like', 'company.name', $this->companyName])
-            ->andFilterWhere(['like', 'document_theme', $this->documentTheme])
-            ->andFilterWhere(['like', 'document_number', $this->documentNumber]);
-
-        return $dataProvider;
+       // $query->andFilterWhere(['like', 'LOWER(executorPeople.firstname)', mb_strtolower($this->executorName)]);
     }
 }

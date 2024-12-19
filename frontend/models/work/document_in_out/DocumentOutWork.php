@@ -23,9 +23,10 @@ use yii\helpers\Url;
  * @property PeopleStampWork $correspondentWork
  * @property PositionWork $positionWork
  * @property CompanyWork $companyWork
- * @property InOutDocumentsWork $inOutDocumentsWork
+ * @property InOutDocumentsWork $inOutDocumentWork
  * @property PeopleWork $creatorWork
  * @property PeopleWork $lastUpdateWork
+ * @property PeopleStampWork $executorWork
  */
 class DocumentOutWork extends DocumentOut
 {
@@ -48,16 +49,17 @@ class DocumentOutWork extends DocumentOut
     public $dateAnswer;
     public $nameAnswer;
 
+
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
             'fullNumber' => '№ п/п',
-            'documentDate' => 'Дата исходящего<br>документа',
-            'sentDate' => 'Дата отправка<br>документа',
-            'documentNumber' => 'Рег. номер<br>исходящего док.',
-            'companyName' => 'Наименование<br>корреспондента',
+            'documentDate' => 'Дата<br>документа',
             'documentTheme' => 'Тема документа',
+            'companyName' => 'Наименование<br>корреспондента',
+            'executorName' => 'Исполнитель',
             'sendMethodName' => 'Способ получения',
+            'sentDate' => 'Дата<br>отправления',
             'isAnswer' => 'Ответ',
         ]);
     }
@@ -129,10 +131,6 @@ class DocumentOutWork extends DocumentOut
         return $this->document_date;
     }
 
-    public function getDocumentNumber()
-    {
-        return $this->document_number;
-    }
     public function getDocumentTheme()
     {
         return $this->document_theme;
@@ -146,9 +144,9 @@ class DocumentOutWork extends DocumentOut
         return $this->hasOne(PositionWork::class, ['id' => 'position_id']);
     }
 
-    public function getInOutDocumentsWork()
+    public function getInOutDocumentWork()
     {
-        return $this->hasMany(InOutDocumentsWork::class, ['document_in_id' => 'id']);
+        return $this->hasMany(InOutDocumentsWork::class, ['document_out_id' => 'id']);
     }
 
     public function getCorrespondentWork()
@@ -194,7 +192,19 @@ class DocumentOutWork extends DocumentOut
     {
         return $this->hasOne(CompanyWork::class, ['id' => 'company_id']);
     }
-    public function generateDocumentNumber(){
+
+    public function getExecutorName()
+    {
+        $executorName = $this->executorWork;
+        return $executorName ? $executorName->getFIO(PeopleWork::FIO_SURNAME_INITIALS_WITH_POSITION) : '---';
+    }
+    public function getExecutorWork()
+    {
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'executor_id']);
+    }
+
+    public function generateDocumentNumber()
+    {
         $year = substr(DateFormatter::format($this->document_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
         $document_date = DateFormatter::format($this->document_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $docs = DocumentOutWork::find()->all();

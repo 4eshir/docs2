@@ -1,9 +1,10 @@
 <?php
 
 use app\components\VerticalActionColumn;
+use common\helpers\DateFormatter;
 use common\helpers\html\HtmlCreator;
 use common\helpers\StringFormatter;
-use frontend\helpers\document_in\DocumentInHelper;
+use frontend\helpers\document\DocumentInHelper;
 use frontend\models\work\document_in_out\DocumentInWork;
 use kartik\daterange\DateRangePicker;
 use kartik\export\ExportMenu;
@@ -18,11 +19,8 @@ use yii\helpers\Url;
 $this->title = 'Входящая документация';
 $this->params['breadcrumbs'][] = $this->title;
 
-$session = Yii::$app->session;
-$tempArchive = $session->get("archiveIn");
 ?>
 <div class="document-in-index">
-
     <div class="substrate">
         <h1><?= Html::encode($this->title) ?></h1>
 
@@ -76,64 +74,33 @@ $tempArchive = $session->get("archiveIn");
 
             'columns' => [
                 ['attribute' => 'fullNumber'],
-                [
-                    'attribute' => 'localDate',
-                    'filter' => DateRangePicker::widget([
-                        'language' => 'ru',
-                        'model' => $searchModel,
-                        'attribute' => 'localDate',
-                        'convertFormat' => true,
-                        'pluginOptions' => [
-                            'timePicker' => false,
-                            'timePickerIncrement' => 365,
-                            'locale' => [
-                                'format' => 'd.m.y',
-                                'cancelLabel' => 'Закрыть',
-                                'applyLabel' => 'Найти',
-                            ]
-                        ]
-                    ]),
+                ['attribute' => 'localDate',
                     'value' => function(DocumentInWork $model){
-                        return date('d.m.y', strtotime($model->local_date));
+                        return DateFormatter::format($model->local_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
                     },
                     'encodeLabel' => false,
                 ],
-                [
-                    'attribute' => 'realDate',
-                    'filter' => DateRangePicker::widget([
-                        'language' => 'ru',
-                        'model' => $searchModel,
-                        'attribute' => 'realDate',
-                        'convertFormat' => true,
-                        'pluginOptions' => [
-                            'timePicker' => false,
-                            'timePickerIncrement' => 365,
-                            'locale' => [
-                                'format' => 'd.m.y',
-                                'cancelLabel' => 'Закрыть',
-                                'applyLabel' => 'Найти',
-                            ]
-                        ]
-                    ]),
+                ['attribute' => 'realDate',
                     'encodeLabel' => false,
                     'value' => function(DocumentInWork $model) {
-                        return date('d.m.y', strtotime($model->real_date));
+                        return DateFormatter::format($model->real_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
                     },
                 ],
                 ['attribute' => 'realNumber', 'encodeLabel' => false],
 
                 ['attribute' => 'companyName', 'encodeLabel' => false],
                 ['attribute' => 'documentTheme', 'encodeLabel' => false],
-                [
-                    'attribute' => 'sendMethodName',
-                    'filter' => Yii::$app->sendMethods->getList(),
+                ['attribute' => 'sendMethodName',
                     'value' => function(DocumentInWork $model) {
                         return Yii::$app->sendMethods->get($model->send_method);
                     }
                 ],
-                ['attribute' => 'needAnswer', 'value' => function(DocumentInWork $model) {
-                    return $model->getNeedAnswerString(StringFormatter::FORMAT_LINK);
-                }, 'format' => 'raw'],
+                ['attribute' => 'needAnswer',
+                    'value' => function(DocumentInWork $model) {
+                        return $model->getNeedAnswerString(StringFormatter::FORMAT_LINK);
+                    },
+                    'format' => 'raw'
+                ],
 
                 ['class' => VerticalActionColumn::class],
             ],

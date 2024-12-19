@@ -57,7 +57,7 @@ class DocumentInWork extends DocumentIn
     {
         return array_merge(parent::attributeLabels(), [
             'fullNumber' => '№ п/п',
-            'localDate' => 'Дата поступления<br>документа',
+            'localDate' => 'Дата<br>документа',
             'realDate' => 'Дата входящего<br>документа',
             'realNumber' => 'Рег. номер<br>входящего док.',
             'companyName' => 'Наименование<br>корреспондента',
@@ -246,7 +246,7 @@ class DocumentInWork extends DocumentIn
                     StringFormatter::stringAsLink($str, Url::to([Yii::$app->frontUrls::DOC_IN_VIEW, 'id' => $links->document_out_id])) : $str;
             }
             else {
-                return 'Требуется указать ответ до '. DateFormatter::format($links->date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
+                return $links->date ? 'Требуется указать ответ до ' . DateFormatter::format($links->date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot) : 'Требуется указать ответ';
             }
         }
         return '';

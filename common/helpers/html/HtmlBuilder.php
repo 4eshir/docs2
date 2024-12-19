@@ -120,7 +120,8 @@ class HtmlBuilder
                 $result .= $form->field($searchModel, $attribute)->textInput($options)->label(false);
             } elseif ($field['type'] === 'dropdown') {
                 $options['prompt'] = $field['prompt'];
-                $options['options'] = [$searchModel->$attribute => ['selected' => true]];
+                $options['options'] = $field['options'];
+                //$options['options'] = [$searchModel->$attribute => ['Selected' => true]];
                 $result .= $form->field($searchModel, $attribute)->dropDownList($field['data'], $options)->label(false);
             }
             $result .= '</div>';

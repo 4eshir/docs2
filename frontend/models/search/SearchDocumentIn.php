@@ -2,18 +2,19 @@
 
 namespace frontend\models\search;
 
+use common\components\dictionaries\base\DocumentStatusDictionary;
 use common\components\interfaces\SearchInterfaces;
+use common\helpers\DateFormatter;
 use frontend\models\search\abstractBase\DocumentSearch;
 use frontend\models\work\document_in_out\DocumentInWork;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 
 /**
  * SearchDocumentIn represents the model behind the search form of `app\models\common\DocumentIn`.
  */
 class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
 {
-    public $correspondentName;      // корреспондент (отправитель) фио или организация
-    public $number;                 // номер документа (регистрационный или присвоенный нами)
     public $localDate;              // дата поступления документа (используется для сортировки)
     public $realDate;               // регистрационная дата документа (используется для сортировки)
 
@@ -23,7 +24,7 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
         return array_merge(parent::rules(), [
             [['local_number'], 'integer'],
             [['realNumber'], 'string'],
-            [['localDate', 'realDate', 'correspondentName', 'number'], 'safe'],
+            [['localDate', 'realDate'], 'safe'],
         ]);
     }
 
@@ -37,7 +38,19 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
     {
         $this->load($params);
         $query = DocumentInWork::find()
-            ->joinWith(['company','correspondent','correspondent.people', 'inOutDocument.responsible.people']);
+            ->joinWith([
+                'company',
+                'correspondent',
+                'correspondent.people' => function ($query) {
+                    $query->alias('correspondentPeople');
+                },
+                'inOutDocument.responsible' => function ($query) {
+                    $query->alias('responsible');
+                },
+                'inOutDocument.responsible.people' => function ($query) {
+                    $query->alias('responsiblePeople');
+                }
+            ]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -53,10 +66,10 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
     /**
      * Кастомизированная сортировка по полям таблицы, с учетом родительской сортировки
      *
-     * @param $dataProvider
+     * @param ActiveDataProvider $dataProvider
      * @return void
      */
-    public function sortAttributes($dataProvider) {
+    public function sortAttributes(ActiveDataProvider $dataProvider) {
         parent::sortAttributes($dataProvider);
 
         $dataProvider->sort->attributes['localDate'] = [
@@ -84,58 +97,49 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
     /**
      * Вызов функций фильтров по параметрам запроса
      *
-     * @param $query
+     * @param ActiveQuery $query
      * @return void
      */
-    public function filterQueryParams($query) {
+    public function filterQueryParams(ActiveQuery $query) {
         $this->filterStatus($query);
         $this->filterDate($query);
         $this->filterNumber($query);
-        $this->filterCorrespondentName($query);
-        $this->filterAbstractQueryParams($query, $this->documentTheme, $this->keyWords, $this->executorName, $this->sendMethodName);
+        $this->filterExecutorName($query);
+        $this->filterAbstractQueryParams($query, $this->documentTheme, $this->keyWords, $this->sendMethodName, $this->correspondentName);
     }
 
 
     /**
      * Фильтрует по статусу документа
      *
-     * @param $query
+     * @param ActiveQuery $query
      * @return void
      */
-    private function filterStatus($query) {
+    private function filterStatus(ActiveQuery $query) {
         $statusConditions = [
-            '1' => [],
-            '2' => ['<', 'date', date('Y-m-d')],
-            '3' => ['=', 'need_answer', 1],
-            '4' => ['>', 'local_date', date('Y') . '-01-01'],
+            DocumentStatusDictionary::CURRENT => ['>=', 'local_date', date('Y') . '-01-01'],
+            DocumentStatusDictionary::ARCHIVE => ['<=', 'local_date', date('Y-m-d')],
+            DocumentStatusDictionary::EXPIRED => [
+                'AND',
+                ['<', 'date', date('Y-m-d')],
+                ['IS', 'document_out_id', null]
+            ],
+            DocumentStatusDictionary::NEEDANSWER => ['=', 'need_answer', 1],
+            DocumentStatusDictionary::RESERVED => ['like', 'LOWER(document_theme)', 'РЕЗЕРВ'],
         ];
-        $query->andWhere($statusConditions[$this->status] ?? ['>', 'local_date', date('Y') . '-01-01']);
-    }
-
-    /**
-     * Фильтрация документов любому из полей "Ф И О" корреспондента
-     *
-     * @param $query
-     * @return void
-     */
-    private function filterCorrespondentName($query) {
-        $query->andFilterWhere(['or',
-                ['like', 'LOWER(company.name)', mb_strtolower($this->correspondentName)],
-                ['like', 'LOWER(company.short_name)', mb_strtolower($this->correspondentName)],
-                ['like', 'LOWER(people.firstname)', mb_strtolower($this->correspondentName)],
-            ]);
+        $query->andWhere($statusConditions[$this->status]);
     }
 
     /**
      * Фильтрация документов по диапазону дат
      *
-     * @param $query
+     * @param ActiveQuery $query
      * @return void
      */
-    private function filterDate($query) {
+    private function filterDate(ActiveQuery $query) {
         if ($this->startDateSearch != '' || $this->finishDateSearch != '')
         {
-            $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : '2018-01-01';
+            $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
             $dateTo =  $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
 
             $query->andWhere(['or',
@@ -148,13 +152,23 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
     /**
      * Фильтрация документа по заданному номеру (реальному или локальному)
      *
-     * @param $query
+     * @param ActiveQuery $query
      * @return void
      */
-    private function filterNumber($query) {
+    private function filterNumber(ActiveQuery $query) {
         $query->andFilterWhere(['or',
             ['like', 'real_number', $this->number],
             ['like', "CONCAT(local_number, '/', local_postfix)", $this->number],
         ]);
+    }
+
+    /**
+     * Фильтрует по исполнителю документа
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterExecutorName(ActiveQuery $query) {
+        $query->andFilterWhere(['like', 'LOWER(responsiblePeople.firstname)', mb_strtolower($this->executorName)]);
     }
 }
