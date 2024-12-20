@@ -158,4 +158,12 @@ class DocumentOut extends \yii\db\ActiveRecord
     {
         return $this->hasOne(PeopleStamp::class, ['id' => 'signed_id']);
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getInOutDocument()
+    {
+        return $this->hasMany(InOutDocuments::class, ['document_out_id' => 'id']);
+    }
 }

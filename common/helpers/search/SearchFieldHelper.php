@@ -56,18 +56,28 @@ class SearchFieldHelper
      *
      * @param string $fieldName
      * @param string $label
-     * @param string $prompt
      * @param array $data
-     * @return array[]
+     * @param string|null $prompt
+     * @param string|null $defaultValue
+     * @return array|array[]
      */
-    public static function dropdownField(string $fieldName, string $label, string $prompt, array $data) {
-        return [
+    public static function dropdownField(string $fieldName, string $label, array $data, ?string $prompt = null, ?string $defaultValue = null) {
+        $result = [
             $fieldName => [
                 'type' => 'dropdown',
                 'label' => $label,
                 'data' => $data,
-                'prompt' => $prompt,
             ],
         ];
+
+        if ($prompt !== null) {
+            $result[$fieldName]['prompt'] = $prompt;
+        }
+
+        if ($defaultValue !== null) {
+            $result[$fieldName]['options'] = [$defaultValue => ['Selected' => true]];
+        }
+
+        return $result;
     }
 }

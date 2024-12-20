@@ -2,7 +2,10 @@
 
 namespace frontend\models\search\abstractBase;
 
+use common\components\dictionaries\base\DocumentStatusDictionary;
 use yii\base\Model;
+use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 
 class DocumentSearch extends Model
 {
@@ -15,6 +18,8 @@ class DocumentSearch extends Model
     public $executorName;       // исполнитель письма
     public $status;             // статус документа (архивное, требуется ответ, отвеченное, и т.д.)
     public $keyWords;           // ключевые слова
+    public $correspondentName;  // корреспондент (отправитель) фио или организация
+    public $number;             // номер документа (регистрационный или присвоенный нами)
 
     public function rules()
     {
@@ -22,7 +27,7 @@ class DocumentSearch extends Model
             [['id', 'positionId', 'companyId', 'signedId', 'getId', 'creatorId'], 'integer'],
             [['fullNumber', 'keyWords'], 'string'],
             [['startDateSearch', 'finishDateSearch'], 'date', 'format' => 'dd.MM.yyyy'],
-            [['documentTheme', 'companyName', 'sendMethodName', 'executorName', 'status'], 'safe'],
+            [['documentTheme', 'companyName', 'sendMethodName', 'executorName', 'status', 'correspondentName', 'number'], 'safe'],
         ];
     }
 
@@ -35,7 +40,9 @@ class DocumentSearch extends Model
         string $finishDateSearch = null,
         string $executorName = null,
         int $status = null,
-        string $keyWords = null
+        string $keyWords = null,
+        string $correspondentName = null,
+        string $number = null
     ) {
         parent::__construct();
         $this->fullNumber = $fullNumber;
@@ -45,8 +52,10 @@ class DocumentSearch extends Model
         $this->startDateSearch = $startDateSearch;
         $this->finishDateSearch = $finishDateSearch;
         $this->executorName = $executorName;
-        $this->status = $status;
+        $this->status = $status == null ? DocumentStatusDictionary::CURRENT : $status;
         $this->keyWords = $keyWords;
+        $this->correspondentName = $correspondentName;
+        $this->number = $number;
     }
 
     public function scenarios()
@@ -61,7 +70,7 @@ class DocumentSearch extends Model
      * @param $dataProvider
      * @return void
      */
-    public function sortAttributes($dataProvider) {
+    public function sortAttributes(ActiveDataProvider $dataProvider) {
         $dataProvider->sort->attributes['fullNumber'] = [
             'asc' => ['local_number' => SORT_ASC, 'local_postfix' => SORT_ASC],
             'desc' => ['local_number' => SORT_DESC, 'local_postfix' => SORT_DESC],
@@ -86,61 +95,65 @@ class DocumentSearch extends Model
     /**
      * Вызов функций фильтров по параметрам запроса
      *
-     * @param $query
+     * @param ActiveQuery $query
      * @param $documentTheme
      * @param $keyWords
-     * @param $executorName
      * @param $sendMethodName
      * @return void
      */
-    public function filterAbstractQueryParams($query, $documentTheme, $keyWords, $executorName, $sendMethodName) {
+    public function filterAbstractQueryParams(ActiveQuery $query, $documentTheme, $keyWords, $sendMethodName, $correspondentName) {
         $this->filterTheme($query, $documentTheme);
         $this->filterKeyWords($query, $keyWords);
-        $this->filterExecutorName($query, $executorName);
         $this->filterSendMethodName($query, $sendMethodName);
+        $this->filterCorrespondentName($query, $correspondentName);
     }
 
     /**
      * Фильтрует по теме документа
      *
-     * @param $query
+     * @param ActiveQuery $query
      * @param $documentTheme
      * @return void
      */
-    private function filterTheme($query, $documentTheme) {
-        $query->andFilterWhere(['like', 'document_theme', $documentTheme]);
+    private function filterTheme(ActiveQuery $query, $documentTheme) {
+        $query->andFilterWhere(['like', 'LOWER(document_theme)', mb_strtolower($documentTheme)]);
     }
 
     /**
      * Фильтрует по ключевым словам
      *
-     * @param $query
+     * @param ActiveQuery $query
      * @param $keyWords
      * @return void
      */
-    private function filterKeyWords($query, $keyWords) {
+    private function filterKeyWords(ActiveQuery $query, $keyWords) {
         $query->andFilterWhere(['like', 'LOWER(key_words)', mb_strtolower($keyWords)]);
-    }
-
-    /**
-     * Фильтрует по исполнителю документа
-     *
-     * @param $query
-     * @param $executorName
-     * @return void
-     */
-    private function filterExecutorName($query, $executorName) {
-        $query->andFilterWhere(['like', 'LOWER(people.firstname)', mb_strtolower($executorName)]);
     }
 
     /**
      * Фильтрует по методу получения письма
      *
-     * @param $query
+     * @param ActiveQuery $query
      * @param $sendMethodName
      * @return void
      */
-    private function filterSendMethodName($query, $sendMethodName) {
+    private function filterSendMethodName(ActiveQuery $query, $sendMethodName) {
         $query->andFilterWhere(['like', 'send_method', $sendMethodName]);
+    }
+
+    /**
+     * Фильтрация документов любому из полей "Ф И О" корреспондента
+     *
+     * @param ActiveQuery $query
+     * @param $correspondentName
+     * @return void
+     */
+    private function filterCorrespondentName(ActiveQuery $query, $correspondentName) {
+        $lowerCorrespondentName = mb_strtolower($correspondentName);
+        $query->andFilterWhere(['or',
+            ['like', 'LOWER(company.name)', $lowerCorrespondentName],
+            ['like', 'LOWER(company.short_name)', $lowerCorrespondentName],
+            ['like', 'LOWER(correspondentPeople.firstname)', $lowerCorrespondentName],
+        ]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\helpers\document_in;
+namespace frontend\helpers\document;
 
 use common\helpers\html\HtmlBuilder;
 use Yii;

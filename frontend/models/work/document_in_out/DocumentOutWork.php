@@ -15,6 +15,7 @@ use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\models\work\general\UserWork;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\Url;
@@ -23,9 +24,10 @@ use yii\helpers\Url;
  * @property PeopleStampWork $correspondentWork
  * @property PositionWork $positionWork
  * @property CompanyWork $companyWork
- * @property InOutDocumentsWork $inOutDocumentsWork
- * @property PeopleWork $creatorWork
- * @property PeopleWork $lastUpdateWork
+ * @property InOutDocumentsWork $inOutDocumentWork
+ * @property UserWork $creatorWork
+ * @property UserWork $lastEditorWork
+ * @property PeopleStampWork $executorWork
  */
 class DocumentOutWork extends DocumentOut
 {
@@ -48,16 +50,17 @@ class DocumentOutWork extends DocumentOut
     public $dateAnswer;
     public $nameAnswer;
 
+
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
             'fullNumber' => '№ п/п',
-            'documentDate' => 'Дата исходящего<br>документа',
-            'sentDate' => 'Дата отправка<br>документа',
-            'documentNumber' => 'Рег. номер<br>исходящего док.',
-            'companyName' => 'Наименование<br>корреспондента',
+            'documentDate' => 'Дата<br>документа',
             'documentTheme' => 'Тема документа',
+            'companyName' => 'Наименование<br>корреспондента',
+            'executorName' => 'Исполнитель',
             'sendMethodName' => 'Способ получения',
+            'sentDate' => 'Дата<br>отправления',
             'isAnswer' => 'Ответ',
         ]);
     }
@@ -82,6 +85,11 @@ class DocumentOutWork extends DocumentOut
         $this->setIsAnswer();
     }
 
+    public function getFullName()
+    {
+        return "Исходящее № {$this->getFullNumber()} от {$this->getDate()} \"{$this->getDocumentTheme()}\" в {$this->getCompanyShortName()}";
+    }
+
     public function getFullNumber()
     {
         if ($this->document_postfix == null) {
@@ -91,6 +99,12 @@ class DocumentOutWork extends DocumentOut
             return $this->document_number . '/' . $this->document_postfix;
         }
     }
+
+    public function getKeyWords()
+    {
+        return $this->key_words ? $this->key_words : '---';
+    }
+
     public function getAnswer(){
         return $this->is_answer;
     }
@@ -129,10 +143,11 @@ class DocumentOutWork extends DocumentOut
         return $this->document_date;
     }
 
-    public function getDocumentNumber()
+    public function getSentDate()
     {
-        return $this->document_number;
+        return $this->sent_date;
     }
+
     public function getDocumentTheme()
     {
         return $this->document_theme;
@@ -141,14 +156,27 @@ class DocumentOutWork extends DocumentOut
     {
         return $this->companyWork->name;
     }
+
+    public function getCompanyShortName()
+    {
+        $company = $this->companyWork;
+        return $company ? $company->getShortName() : '---';
+    }
+
+    public function getCorrespondentName()
+    {
+        $correspondent = $this->correspondentWork;
+        return $correspondent ? $correspondent->getFIO(PeopleWork::FIO_SURNAME_INITIALS_WITH_POSITION) : '---';
+    }
+
     public function getPositionWork()
     {
         return $this->hasOne(PositionWork::class, ['id' => 'position_id']);
     }
 
-    public function getInOutDocumentsWork()
+    public function getInOutDocumentWork()
     {
-        return $this->hasMany(InOutDocumentsWork::class, ['document_in_id' => 'id']);
+        return $this->hasMany(InOutDocumentsWork::class, ['document_out_id' => 'id']);
     }
 
     public function getCorrespondentWork()
@@ -156,15 +184,6 @@ class DocumentOutWork extends DocumentOut
         return $this->hasOne(PeopleStampWork::class, ['id' => 'correspondent_id']);
     }
 
-    public function getCreatorWork()
-    {
-        return $this->hasOne(PeopleWork::class, ['id' => 'creator_id']);
-    }
-
-    public function getLastUpdateWork()
-    {
-        return $this->hasOne(PeopleWork::class, ['id' => 'last_update_id']);
-    }
     public function setIsAnswer()
     {
         $this->isAnswer = (Yii::createObject(InOutDocumentsRepository::class))->getByDocumentInId($this->id) ? 1 : 0;
@@ -180,7 +199,8 @@ class DocumentOutWork extends DocumentOut
             $links = (Yii::createObject(InOutDocumentsRepository::class))->getByDocumentOutId($this->id);
 
             if($links != null) {
-                $str = 'Входящий документ "' . (Yii::createObject(DocumentInRepository::class))->get($links->document_in_id)->document_theme . '"';
+                $str = (Yii::createObject(DocumentInRepository::class))->get($links->document_in_id)->getFullName();
+                    //'Входящий документ "' . (Yii::createObject(DocumentInRepository::class))->get($links->document_in_id)->document_theme . '"';
                 return $format == StringFormatter::FORMAT_LINK ?
                     StringFormatter::stringAsLink($str, Url::to(['document/document-in/view', 'id' => $links->document_in_id])) : $str;
             }
@@ -194,7 +214,29 @@ class DocumentOutWork extends DocumentOut
     {
         return $this->hasOne(CompanyWork::class, ['id' => 'company_id']);
     }
-    public function generateDocumentNumber(){
+
+    public function getExecutorName()
+    {
+        $executorName = $this->executorWork;
+        return $executorName ? $executorName->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '---';
+    }
+    public function getExecutorWork()
+    {
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'executor_id']);
+    }
+
+    public function getSignedName()
+    {
+        $signedName = $this->signedWork;
+        return $signedName ? $signedName->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '---';
+    }
+    public function getSignedWork()
+    {
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'signed_id']);
+    }
+
+    public function generateDocumentNumber()
+    {
         $year = substr(DateFormatter::format($this->document_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
         $document_date = DateFormatter::format($this->document_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $docs = DocumentOutWork::find()->all();
@@ -224,6 +266,28 @@ class DocumentOutWork extends DocumentOut
                 $this->document_postfix = $max_postfix + 1;
             }
         }
+    }
+
+    public function getCreatorName()
+    {
+        $creator = $this->creatorWork;
+        return $creator ? $creator->getFullName() : '---';
+    }
+
+    public function getLastEditorName()
+    {
+        $editor = $this->lastEditorWork;
+        return $editor ? $editor->getFullName() : '---';
+    }
+
+    public function getCreatorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
+    }
+
+    public function getLastEditorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
     }
 
     public function beforeValidate()
