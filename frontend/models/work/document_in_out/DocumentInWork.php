@@ -63,7 +63,7 @@ class DocumentInWork extends DocumentIn
             'companyName' => 'Наименование<br>корреспондента',
             'documentTheme' => 'Тема документа',
             'sendMethodName' => 'Способ получения',
-            'needAnswer' => 'Требуется ответ',
+            'needAnswer' => 'Ответ',
         ]);
     }
 

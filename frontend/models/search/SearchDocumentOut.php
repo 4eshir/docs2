@@ -178,6 +178,5 @@ class SearchDocumentOut extends DocumentSearch implements SearchInterfaces
             ['like', 'LOWER(signedPeople.firstname)', mb_strtolower($this->executorName)],
         ]);
 
-       // $query->andFilterWhere(['like', 'LOWER(executorPeople.firstname)', mb_strtolower($this->executorName)]);
     }
 }

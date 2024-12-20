@@ -2,6 +2,7 @@
 
 namespace frontend\models\search\abstractBase;
 
+use common\components\dictionaries\base\DocumentStatusDictionary;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
@@ -51,7 +52,7 @@ class DocumentSearch extends Model
         $this->startDateSearch = $startDateSearch;
         $this->finishDateSearch = $finishDateSearch;
         $this->executorName = $executorName;
-        $this->status = $status;
+        $this->status = $status == null ? DocumentStatusDictionary::CURRENT : $status;
         $this->keyWords = $keyWords;
         $this->correspondentName = $correspondentName;
         $this->number = $number;

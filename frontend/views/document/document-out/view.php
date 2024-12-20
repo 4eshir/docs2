@@ -34,48 +34,165 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            ['label' => '№ п/п', 'attribute' => 'fullNumber'],
-            ['label' => 'Дата поступления документа', 'attribute' => 'document_date', 'value' => function (DocumentOutWork $model) {
-                return DateFormatter::format($model->document_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
-            }],
-            ['label' => 'Дата входящего документа', 'attribute' => 'sent_date', 'value' => function (DocumentOutWork $model) {
-                return DateFormatter::format($model->sent_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
-            }],
-            ['label' => 'Регистрационный номер входящего документа', 'attribute' => 'document_number'],
-            ['label' => 'ФИО корреспондента', 'attribute' => 'correspondent_id', 'value' => function (DocumentOutWork $model) {
-                return $model->correspondentWork ? $model->correspondentWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
-            }],
-            ['label' => 'Должность корреспондента', 'attribute' => 'position_id', 'value' => function (DocumentOutWork $model) {
-                return $model->positionWork ? $model->positionWork->name : '';
-            }],
-            ['label' => 'Организация корреспондента', 'attribute' => 'company_id', 'value' => function (DocumentOutWork $model) {
-                return $model->companyWork ? $model->companyWork->name : '';
-            }],
-            ['label' => 'Тема документа', 'attribute' => 'document_theme'],
-            ['label' => 'Способ получения', 'attribute' => 'send_method', 'value' => Yii::$app->sendMethods->get($model->send_method)],
-            ['label' => 'Скан документа', 'attribute' => 'scan', 'value' => function (DocumentOutWork $model) {
-                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
-            }, 'format' => 'raw'],
-            ['label' => 'Редактируемые документы', 'attribute' => 'docFiles', 'value' => function ($model) {
-                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_DOC), 'link'));
-            }, 'format' => 'raw'],
-            ['label' => 'Приложения', 'attribute' => 'applications', 'value' => function ($model) {
-                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_APP), 'link'));
-            }, 'format' => 'raw'],
-            ['label' => 'Ключевые слова', 'attribute' => 'key_words'],
-            ['attribute' => 'isAnswer', 'label' => 'Ответ', 'value' => function (DocumentOutWork $model) {
-                return $model->getIsAnswer(StringFormatter::FORMAT_LINK);
-            }, 'format' => 'raw'],
-            ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => function (DocumentOutWork $model) {
-                return $model->correspondentWork ? $model->correspondentWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
-            }],
-            ['label' => 'Последний редактор', 'attribute' => 'last_update_id', 'value' => function (DocumentOutWork $model) {
-                return $model->lastUpdateWork ? $model->lastUpdateWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
-            }],
-        ],
-    ]) ?>
-
+    <div class="card">
+        <div class="card-block-1">
+            <div class="card-set">
+                <div class="card-head">Основное</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Имя
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getFullName() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Тип
+                    </div>
+                    <div class="field-date">
+                        Исходящая документация
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Тема
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getDocumentTheme() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Способ отправки
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getSendMethodName() ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Адресат</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Корреспондент
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getCompanyName() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Должность и ФИО
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getCorrespondentName() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Дата отправки
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getSentDate()?>
+                    </div>
+                </div>
+            </div>
+            <?php if ($model->getAnswer()) : ?>
+                <div class="card-set">
+                    <div class="card-head">Является ответом</div>
+                        <div class="card-field flexx">
+                            <div class="field-title">
+                                Документ
+                            </div>
+                            <div class="field-date">
+                                <?= $model->getIsAnswer(StringFormatter::FORMAT_LINK) ?>
+                            </div>
+                        </div>
+                </div>
+            <?php endif; ?>
+            <div class="card-set">
+                <div class="card-head">Адресант</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Исполнитель
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getExecutorName() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Кто подписал
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getSignedName() ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-2">
+            <div class="card-set">
+                <div class="card-head">Дата и номер</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        № п/п
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getFullNumber() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Дата
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getDate() ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Ключевые слова</div>
+                <div class="card-field">
+                    <div class="field-date">
+                        <?= $model->getKeyWords() ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Файлы</div>
+                <div class="flexx" style="justify-content: space-evenly;">
+                    <div style="width: 50px;"></div>
+                    <div style="width: 50px;"></div>
+                    <div style="width: 50px;"></div>
+                </div>
+                <div class="flexx" style="justify-content: space-evenly;">
+                    <div>Сканы</div>
+                    <div>Редактируемые</div>
+                    <div>Приложения</div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Свойства</div>
+                <div class="flexx">
+                    <div class="card-field flexx">
+                        <div class="field-title field-option">
+                            Создатель карточки
+                        </div>
+                        <div class="field-date">
+                            <?= $model->getCreatorName() ?>
+                        </div>
+                    </div>
+                    <div class="card-field flexx">
+                        <div class="field-title field-option">
+                            Последний редактор
+                        </div>
+                        <div class="field-date">
+                            <?= $model->getLastEditorName() ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
