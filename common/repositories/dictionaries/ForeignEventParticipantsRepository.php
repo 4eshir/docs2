@@ -20,6 +20,11 @@ class ForeignEventParticipantsRepository
         return ForeignEventParticipantsWork::find()->where(['id' => $id])->one();
     }
 
+    public function getParticipants(array $ids)
+    {
+        return ForeignEventParticipantsWork::find()->where(['IN', 'id', $ids])->all();
+    }
+
     public function getSortedList($sort = self::SORT_ID)
     {
         $participants = ForeignEventParticipantsWork::find();

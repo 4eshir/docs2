@@ -7,7 +7,12 @@ use common\models\scaffold\TrainingGroupExpert;
 use common\models\scaffold\TrainingGroupLesson;
 use common\repositories\dictionaries\AuditoriumRepository;
 use frontend\models\work\dictionaries\AuditoriumWork;
+use frontend\models\work\ProjectThemeWork;
 use Yii;
+
+/**
+ * @property ProjectThemeWork $projectThemeWork
+ */
 
 class GroupProjectsThemesWork extends GroupProjectThemes
 {
@@ -20,5 +25,16 @@ class GroupProjectsThemesWork extends GroupProjectThemes
         $entity->confirm = $confirm;
 
         return $entity;
+    }
+
+    public function __toString()
+    {
+        return "[GroupID: $this->training_group_id]
+                [ThemeID: $this->project_theme_id]";
+    }
+
+    public function getProjectThemeWork()
+    {
+        return $this->hasOne(ProjectThemeWork::class, ['id' => 'project_theme_id']);
     }
 }

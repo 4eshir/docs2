@@ -242,7 +242,7 @@ class TrainingGroupController extends DocumentController
 
             $modelExperts = Model::createMultiple(TrainingGroupExpertWork::classname());
             Model::loadMultiple($modelExperts, Yii::$app->request->post());
-            if (Model::validateMultiple($modelExperts, ['expert_id', 'expert_type'])) {
+            if (Model::validateMultiple($modelExperts, ['expertId', 'expert_type'])) {
                 $formPitch->experts = $modelExperts;
             }
 

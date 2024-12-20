@@ -22,6 +22,11 @@ class TrainingGroupLessonRepository
         return TrainingGroupLessonWork::find()->where(['id' => $id])->one();
     }
 
+    public function getLessonsFromGroup($id)
+    {
+        return TrainingGroupLessonWork::find()->where(['training_group_id' => $id])->all();
+    }
+
     public function prepareCreate($groupId, $lessonDate, $lessonStartTime, $branch, $auditoriumId, $lessonEndTime, $duration)
     {
         $model = TrainingGroupLessonWork::fill($groupId, $lessonDate, $lessonStartTime, $branch, $auditoriumId, $lessonEndTime, $duration);

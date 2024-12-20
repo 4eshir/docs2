@@ -51,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'widgetBody' => '.container-items', // required: css class selector
                 'widgetItem' => '.item', // required: css class
                 'limit' => 10, // the maximum times, an element can be cloned (default 999)
-                'min' => 1, // 0 or 1 (default 1)
+                'min' => 0, // 0 or 1 (default 1)
                 'insertButton' => '.add-item', // css class
                 'deleteButton' => '.remove-item', // css class
                 'model' => $model->themes[0],
@@ -101,13 +101,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'widgetBody' => '.container-items1', // required: css class selector
                 'widgetItem' => '.item1', // required: css class
                 'limit' => 10, // the maximum times, an element can be cloned (default 999)
-                'min' => 1, // 0 or 1 (default 1)
+                'min' => 0, // 0 or 1 (default 1)
                 'insertButton' => '.add-item', // css class
                 'deleteButton' => '.remove-item', // css class
                 'model' => $model->experts[0],
                 'formId' => 'dynamic-form',
                 'formFields' => [
-                    'expert_id',
+                    'expertId',
                     'expert_type'
                 ],
             ]); ?>
@@ -125,7 +125,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="panel-body">
                             <div class="row">
-                                <?= $form->field($expert, "[{$i}]expert_id")->widget(Select2::classname(), [
+                                <?= $form->field($expert, "[{$i}]expertId")->widget(Select2::classname(), [
                                     'data' => ArrayHelper::map($peoples, 'id', 'fullFio'),
                                     'size' => Select2::LARGE,
                                     'options' => ['prompt' => 'Выберите эксперта'],

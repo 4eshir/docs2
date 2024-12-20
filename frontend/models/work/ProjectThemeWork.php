@@ -15,4 +15,11 @@ class ProjectThemeWork extends ProjectTheme
 
         return $entity;
     }
+
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            [['name', 'project_type'], 'required']
+        ]);
+    }
 }

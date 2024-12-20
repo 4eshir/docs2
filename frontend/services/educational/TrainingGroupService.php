@@ -2,6 +2,8 @@
 
 namespace frontend\services\educational;
 
+use common\components\compare\GroupExpertCompare;
+use common\components\compare\GroupThemeCompare;
 use common\components\compare\LessonGroupCompare;
 use common\components\compare\ParticipantGroupCompare;
 use common\components\compare\TeacherGroupCompare;
@@ -25,6 +27,8 @@ use frontend\events\educational\training_group\CreateLessonGroupEvent;
 use frontend\events\educational\training_group\CreateTeacherGroupEvent;
 use frontend\events\educational\training_group\CreateTrainingGroupLessonEvent;
 use frontend\events\educational\training_group\CreateTrainingGroupParticipantEvent;
+use frontend\events\educational\training_group\DeleteGroupExpertEvent;
+use frontend\events\educational\training_group\DeleteGroupThemeEvent;
 use frontend\events\educational\training_group\DeleteLessonGroupEvent;
 use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
 use frontend\events\general\FileCreateEvent;
@@ -343,16 +347,56 @@ class TrainingGroupService implements DatabaseService
 
     public function attachThemes(PitchGroupForm $form)
     {
+        $newThemes = [];
         foreach ($form->themeIds as $themeId) {
-            $form->recordEvent(new AddGroupThemeEvent($form->id, $themeId, 0), GroupProjectsThemesWork::class);
+            $groupThemeEntity = GroupProjectsThemesWork::fill(
+                $form->id,
+                $themeId,
+                0
+            );
+            $newThemes[] = $groupThemeEntity;
+        }
+        $newThemes = array_unique($newThemes);
+
+        $addThemes = $this->setDifference($newThemes, $form->prevThemes, GroupThemeCompare::class);
+        $delThemes = $this->setDifference($form->prevThemes, $newThemes, GroupThemeCompare::class);
+
+        foreach ($addThemes as $theme) {
+            /** @var GroupProjectsThemesWork $theme */
+            $form->recordEvent(new AddGroupThemeEvent($form->id, $theme->project_theme_id, $theme->confirm), GroupProjectsThemesWork::class);
+        }
+
+        foreach ($delThemes as $theme) {
+            /** @var GroupProjectsThemesWork $theme */
+            $form->recordEvent(new DeleteGroupThemeEvent($theme->id), GroupProjectsThemesWork::class);
         }
     }
 
     public function attachExperts(PitchGroupForm $form)
     {
+        $newExperts = [];
         foreach ($form->experts as $expert) {
-            $peopleStampId = $this->peopleStampService->createStampFromPeople($expert->expert_id);
-            $form->recordEvent(new AddGroupExpertEvent($form->id, $peopleStampId, $expert->expert_type), TrainingGroupExpertWork::class);
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($expert->expertId);
+            $groupExpertEntity = TrainingGroupExpertWork::fill(
+                $form->id,
+                $peopleStampId,
+                $expert->expert_type
+            );
+            $newExperts[] = $groupExpertEntity;
+        }
+        $newExperts = array_unique($newExperts);
+
+        $addExperts = $this->setDifference($newExperts, $form->prevExperts, GroupExpertCompare::class);
+        $delExperts = $this->setDifference($form->prevExperts, $newExperts, GroupExpertCompare::class);
+
+        foreach ($addExperts as $expert) {
+            /** @var TrainingGroupExpertWork $expert */
+            $form->recordEvent(new AddGroupExpertEvent($form->id, $expert->expertId, $expert->expert_type), TrainingGroupExpertWork::class);
+        }
+
+        foreach ($delExperts as $expert) {
+            /** @var GroupProjectsThemesWork $expert */
+            $form->recordEvent(new DeleteGroupExpertEvent($expert->id), TrainingGroupExpertWork::class);
         }
     }
 
@@ -361,7 +405,7 @@ class TrainingGroupService implements DatabaseService
         foreach ($formSchedule->lessons as $lesson) {
             /** @var TrainingGroupLessonWork $lesson */
             $lesson->duration = 1;
-            $capacity = $formSchedule->trainingProgram->hour_capacity ?: 30;
+            $capacity = $formSchedule->trainingProgram->hour_capacity ?: 40;
             $lesson->lesson_end_time = ((new DateTime($lesson->lesson_start_time))->modify("+{$capacity} minutes"))->format('H:i:s');
             $lesson->lesson_start_time = (new DateTime($lesson->lesson_start_time))->format('H:i:s');
         }

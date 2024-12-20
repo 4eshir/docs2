@@ -7,6 +7,10 @@ use common\repositories\dictionaries\AuditoriumRepository;
 use frontend\models\work\dictionaries\AuditoriumWork;
 use Yii;
 
+/**
+ * @property AuditoriumWork $auditoriumWork
+ */
+
 class TrainingGroupLessonWork extends TrainingGroupLesson
 {
     public $autoDate;
@@ -73,4 +77,9 @@ class TrainingGroupLessonWork extends TrainingGroupLesson
             $this->auditoriumName = $auditorium->name . ' (' . Yii::$app->branches->get($auditorium->branch) . ')';
         }
     }
+    public function getAuditoriumWork()
+    {
+        return $this->hasOne(AuditoriumWork::class, ['id' => 'auditorium_id']);
+    }
+
 }

@@ -114,15 +114,37 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
         ],
     ]) ?>
 
+    <h4><u>Ученики</u></h4>
+    <?= DetailView::widget([
+        'model' => $model,
+        'attributes' => [
+            ['attribute' => 'participants', 'format' => 'raw', 'value' => function (TrainingGroupCombinedForm $model) {
+                return implode('<br>', $model->getPrettyParticipants());
+            }],
+        ],
+    ]) ?>
+
+    <h4><u>Занятия</u></h4>
+    <?= DetailView::widget([
+        'model' => $model,
+        'attributes' => [
+            ['attribute' => 'lessons', 'format' => 'raw', 'value' => function (TrainingGroupCombinedForm $model) {
+                return implode('<br>', $model->getPrettyLessons());
+            }],
+        ],
+    ]) ?>
+
     <h4><u>Сведения о защите работ</u></h4>
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            /*
             ['attribute' => 'protection_date'],
-            ['attribute' => 'projectThemes', 'format' => 'html'],
-            ['attribute' => 'expertsString', 'format' => 'raw'],
-            */
+            ['attribute' => 'themes', 'format' => 'raw', 'value' => function (TrainingGroupCombinedForm $model) {
+                return implode('<br>', $model->getPrettyThemes());
+            }],
+            ['attribute' => 'experts', 'format' => 'raw', 'value' => function (TrainingGroupCombinedForm $model) {
+                return implode('<br>', $model->getPrettyExperts());
+            }],
         ],
     ]) ?>
 

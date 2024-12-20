@@ -14,11 +14,23 @@ class TrainingGroupExpertRepository
         return TrainingGroupExpertWork::find()->where(['id' => $id])->one();
     }
 
+    public function getExpertsFromGroup($groupId)
+    {
+        return TrainingGroupExpertWork::find()->where(['training_group_id' => $groupId])->all();
+    }
+
     public function prepareCreate($groupId, $expertId, $expertType)
     {
         $model = TrainingGroupExpertWork::fill($groupId, $expertId, $expertType);
         $command = Yii::$app->db->createCommand();
         $command->insert($model::tableName(), $model->getAttributes());
+        return $command->getRawSql();
+    }
+
+    public function prepareDelete($id)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(TrainingGroupExpertWork::tableName(), ['id' => $id]);
         return $command->getRawSql();
     }
 
