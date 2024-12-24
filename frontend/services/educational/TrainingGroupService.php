@@ -31,6 +31,7 @@ use frontend\events\educational\training_group\DeleteGroupExpertEvent;
 use frontend\events\educational\training_group\DeleteGroupThemeEvent;
 use frontend\events\educational\training_group\DeleteLessonGroupEvent;
 use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
+use frontend\events\educational\training_group\UpdateGroupExpertEvent;
 use frontend\events\general\FileCreateEvent;
 use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
@@ -347,6 +348,8 @@ class TrainingGroupService implements DatabaseService
 
     public function attachThemes(PitchGroupForm $form)
     {
+        // ТУТ НАДО ИСПРАВИТЬ БЛОК ТЕМ
+
         $newThemes = [];
         foreach ($form->themeIds as $themeId) {
             $groupThemeEntity = GroupProjectsThemesWork::fill(
@@ -370,6 +373,11 @@ class TrainingGroupService implements DatabaseService
             /** @var GroupProjectsThemesWork $theme */
             $form->recordEvent(new DeleteGroupThemeEvent($theme->id), GroupProjectsThemesWork::class);
         }
+
+        foreach ($newThemes as $theme) {
+            /** @var GroupProjectsThemesWork $theme */
+            $form->recordEvent(new DeleteGroupThemeEvent($theme->id), GroupProjectsThemesWork::class);
+        }
     }
 
     public function attachExperts(PitchGroupForm $form)
@@ -380,7 +388,8 @@ class TrainingGroupService implements DatabaseService
             $groupExpertEntity = TrainingGroupExpertWork::fill(
                 $form->id,
                 $peopleStampId,
-                $expert->expert_type
+                $expert->expert_type,
+                $expert->id,
             );
             $newExperts[] = $groupExpertEntity;
         }
@@ -391,12 +400,16 @@ class TrainingGroupService implements DatabaseService
 
         foreach ($addExperts as $expert) {
             /** @var TrainingGroupExpertWork $expert */
-            $form->recordEvent(new AddGroupExpertEvent($form->id, $expert->expertId, $expert->expert_type), TrainingGroupExpertWork::class);
+            $form->recordEvent(new AddGroupExpertEvent($form->id, $expert->expert_id, $expert->expert_type), TrainingGroupExpertWork::class);
         }
 
         foreach ($delExperts as $expert) {
-            /** @var GroupProjectsThemesWork $expert */
+            /** @var TrainingGroupExpertWork $expert */
             $form->recordEvent(new DeleteGroupExpertEvent($expert->id), TrainingGroupExpertWork::class);
+        }
+
+        foreach ($newExperts as $expert) {
+            $form->recordEvent(new UpdateGroupExpertEvent($expert->id, $expert->expert_id, $expert->expert_type), TrainingGroupExpertWork::class);
         }
     }
 

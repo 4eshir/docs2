@@ -57,6 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'model' => $model->themes[0],
                 'formId' => 'dynamic-form',
                 'formFields' => [
+                    'id',
                     'name',
                     'project_type',
                     'description'
@@ -76,6 +77,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="panel-body">
                             <div class="row">
+                                <?= $form->field($theme, "[{$i}]id")->hiddenInput()->label(false) ?>
+
                                 <?= $form->field($theme, "[{$i}]name")->textInput()
                                     ->label('Тема проекта') ?>
 
@@ -107,6 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'model' => $model->experts[0],
                 'formId' => 'dynamic-form',
                 'formFields' => [
+                    'id',
                     'expertId',
                     'expert_type'
                 ],
@@ -125,6 +129,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="panel-body">
                             <div class="row">
+                                <?= $form->field($expert, "[{$i}]id")->hiddenInput()->label(false) ?>
+
                                 <?= $form->field($expert, "[{$i}]expertId")->widget(Select2::classname(), [
                                     'data' => ArrayHelper::map($peoples, 'id', 'fullFio'),
                                     'size' => Select2::LARGE,

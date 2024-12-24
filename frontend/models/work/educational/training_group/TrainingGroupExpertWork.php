@@ -22,9 +22,10 @@ class TrainingGroupExpertWork extends TrainingGroupExpert
         return $this->expert_type == self::TYPE_EXTERNAL ? "Внешний" : "Внутренний";
     }
 
-    public static function fill($groupId, $expertId, $expertType)
+    public static function fill(int $groupId, int $expertId, int $expertType, int $id = null)
     {
         $entity = new static();
+        $entity->id = $id;
         $entity->training_group_id = $groupId;
         $entity->expert_id = $expertId;
         $entity->expert_type = $expertType;
@@ -42,6 +43,7 @@ class TrainingGroupExpertWork extends TrainingGroupExpert
     public function rules()
     {
         return array_merge(parent::rules(), [
+            ['id', 'integer'],
             [['expert_id', 'expert_type'], 'required'],
             ['expertId', 'safe']
         ]);

@@ -236,13 +236,13 @@ class TrainingGroupController extends DocumentController
 
             $modelThemes = Model::createMultiple(ProjectThemeWork::classname());
             Model::loadMultiple($modelThemes, Yii::$app->request->post());
-            if (Model::validateMultiple($modelThemes, ['name', 'project_type', 'description'])) {
+            if (Model::validateMultiple($modelThemes, ['id', 'name', 'project_type', 'description'])) {
                 $formPitch->themes = $modelThemes;
             }
 
             $modelExperts = Model::createMultiple(TrainingGroupExpertWork::classname());
             Model::loadMultiple($modelExperts, Yii::$app->request->post());
-            if (Model::validateMultiple($modelExperts, ['expertId', 'expert_type'])) {
+            if (Model::validateMultiple($modelExperts, ['id', 'expertId', 'expert_type'])) {
                 $formPitch->experts = $modelExperts;
             }
 

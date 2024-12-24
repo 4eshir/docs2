@@ -17,9 +17,10 @@ use Yii;
 class GroupProjectsThemesWork extends GroupProjectThemes
 {
 
-    public static function fill(int $groupId, int $themeId, int $confirm)
+    public static function fill(int $groupId, int $themeId, int $confirm, int $id = null)
     {
         $entity = new static();
+        $entity->id = $id;
         $entity->training_group_id = $groupId;
         $entity->project_theme_id = $themeId;
         $entity->confirm = $confirm;

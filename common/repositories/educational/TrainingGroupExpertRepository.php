@@ -34,6 +34,13 @@ class TrainingGroupExpertRepository
         return $command->getRawSql();
     }
 
+    public function prepareUpdate($id, $expertId, $expertType)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->update('training_group_expert', ['expert_id' => $expertId, 'expert_type' => $expertType], "id = $id");
+        return $command->getRawSql();
+    }
+
     public function save(TrainingGroupExpertWork $expert)
     {
         if (!$expert->save()) {
