@@ -4,6 +4,7 @@ namespace common\repositories\educational;
 
 use DomainException;
 use frontend\models\work\ProjectThemeWork;
+use Yii;
 
 class ProjectThemeRepository
 {
@@ -20,6 +21,13 @@ class ProjectThemeRepository
     public function getThemes(array $ids)
     {
         return ProjectThemeWork::find()->where(['IN', 'id', $ids])->all();
+    }
+
+    public function prepareUpdate($id, $projectType, $description)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->update('project_theme', ['project_type' => $projectType, 'description' => $description], "id = $id");
+        return $command->getRawSql();
     }
 
     public function save(ProjectThemeWork $theme)

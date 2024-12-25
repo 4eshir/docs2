@@ -30,8 +30,11 @@ use frontend\events\educational\training_group\CreateTrainingGroupParticipantEve
 use frontend\events\educational\training_group\DeleteGroupExpertEvent;
 use frontend\events\educational\training_group\DeleteGroupThemeEvent;
 use frontend\events\educational\training_group\DeleteLessonGroupEvent;
+use frontend\events\educational\training_group\DeleteTeacherGroupEvent;
 use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
 use frontend\events\educational\training_group\UpdateGroupExpertEvent;
+use frontend\events\educational\training_group\UpdateProjectThemeEvent;
+use frontend\events\educational\training_group\UpdateTrainingGroupParticipantEvent;
 use frontend\events\general\FileCreateEvent;
 use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
@@ -263,7 +266,7 @@ class TrainingGroupService implements DatabaseService
         }
 
         foreach ($delTeachers as $teacher) {
-            $form->recordEvent(new DeleteLessonGroupEvent($teacher->id), TrainingGroupWork::className());
+            $form->recordEvent(new DeleteTeacherGroupEvent($teacher->id), TrainingGroupWork::className());
         }
     }
 
@@ -272,7 +275,12 @@ class TrainingGroupService implements DatabaseService
         $newParticipants = [];
         foreach ($form->participants as $participant) {
             /** @var TrainingGroupParticipantWork $participant */
-            $newParticipants[] = TrainingGroupParticipantWork::fill($form->id, $participant->participant_id, $participant->send_method);
+            $newParticipants[] = TrainingGroupParticipantWork::fill(
+                $form->id,
+                $participant->participant_id,
+                $participant->send_method,
+                $participant->id ? : null
+            );
         }
         $newParticipants = array_unique($newParticipants);
 
@@ -286,6 +294,12 @@ class TrainingGroupService implements DatabaseService
 
         foreach ($delParticipants as $participant) {
             $form->recordEvent(new DeleteTrainingGroupParticipantEvent($participant->id), TrainingGroupParticipantWork::className());
+        }
+
+        foreach ($newParticipants as $participant) {
+            if ($participant->id !== null) {
+                $form->recordEvent(new UpdateTrainingGroupParticipantEvent($participant->id, $participant->participant_id, $participant->send_method), TrainingGroupParticipantWork::className());
+            }
         }
     }
 
@@ -348,8 +362,6 @@ class TrainingGroupService implements DatabaseService
 
     public function attachThemes(PitchGroupForm $form)
     {
-        // ТУТ НАДО ИСПРАВИТЬ БЛОК ТЕМ
-
         $newThemes = [];
         foreach ($form->themeIds as $themeId) {
             $groupThemeEntity = GroupProjectsThemesWork::fill(
@@ -376,7 +388,14 @@ class TrainingGroupService implements DatabaseService
 
         foreach ($newThemes as $theme) {
             /** @var GroupProjectsThemesWork $theme */
-            $form->recordEvent(new DeleteGroupThemeEvent($theme->id), GroupProjectsThemesWork::class);
+            $form->recordEvent(
+                new UpdateProjectThemeEvent(
+                    $theme->project_theme_id,
+                    $theme->projectThemeWork->project_type,
+                    $theme->projectThemeWork->description
+                ),
+                GroupProjectsThemesWork::class
+            );
         }
     }
 
@@ -389,7 +408,7 @@ class TrainingGroupService implements DatabaseService
                 $form->id,
                 $peopleStampId,
                 $expert->expert_type,
-                $expert->id,
+                $expert->id !== '' ? : null,
             );
             $newExperts[] = $groupExpertEntity;
         }
@@ -409,7 +428,9 @@ class TrainingGroupService implements DatabaseService
         }
 
         foreach ($newExperts as $expert) {
-            $form->recordEvent(new UpdateGroupExpertEvent($expert->id, $expert->expert_id, $expert->expert_type), TrainingGroupExpertWork::class);
+            if ($expert->id !== null) {
+                $form->recordEvent(new UpdateGroupExpertEvent($expert->id, $expert->expert_id, $expert->expert_type), TrainingGroupExpertWork::class);
+            }
         }
     }
 

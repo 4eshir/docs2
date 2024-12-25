@@ -173,7 +173,7 @@ class TrainingGroupController extends DocumentController
         if (count(Yii::$app->request->post()) > 0) {
             $modelChilds = Model::createMultiple(TrainingGroupParticipantWork::classname());
             Model::loadMultiple($modelChilds, Yii::$app->request->post());
-            if (Model::validateMultiple($modelChilds, ['participant_id', 'send_method'])) {
+            if (Model::validateMultiple($modelChilds, ['id', 'participant_id', 'send_method'])) {
                 $formParticipant->participants = $modelChilds;
             }
 

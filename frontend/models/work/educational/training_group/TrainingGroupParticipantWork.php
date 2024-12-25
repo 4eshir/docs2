@@ -11,14 +11,22 @@ use frontend\models\work\general\PeopleStampWork;
 
 class TrainingGroupParticipantWork extends TrainingGroupParticipant
 {
-    public static function fill($groupId, $participantId, $sendMethod)
+    public static function fill($groupId, $participantId, $sendMethod, $id = null)
     {
         $entity = new static();
+        $entity->id = $id;
         $entity->training_group_id = $groupId;
         $entity->participant_id = $participantId;
         $entity->send_method = $sendMethod;
 
         return $entity;
+    }
+
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            ['id', 'integer']
+        ]);
     }
 
     public function __toString()

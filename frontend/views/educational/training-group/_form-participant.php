@@ -42,6 +42,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'formId' => 'dynamic-form',
             'formFields' => [
                 'id',
+                'participant_id',
+                'send_method'
             ],
         ]); ?>
 
@@ -58,6 +60,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                     <div class="panel-body">
                         <div class="row">
+                            <?= $form->field($modelChild, "[{$i}]id")->hiddenInput()->label(false) ?>
+
                             <?= $form->field($modelChild, "[{$i}]participant_id")->widget(Select2::classname(), [
                                 'data' => ArrayHelper::map($childs, 'id', 'fullFio'),
                                 'size' => Select2::LARGE,

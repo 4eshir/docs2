@@ -32,4 +32,11 @@ class TrainingGroupParticipantRepository
         $command->delete(TrainingGroupParticipantWork::tableName(), ['id' => $id]);
         return $command->getRawSql();
     }
+
+    public function prepareUpdate($id, $participantId, $sendMethod)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->update('training_group_participant', ['participant_id' => $participantId, 'send_method' => $sendMethod], "id = $id");
+        return $command->getRawSql();
+    }
 }

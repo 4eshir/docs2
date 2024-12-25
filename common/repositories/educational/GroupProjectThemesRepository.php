@@ -26,13 +26,6 @@ class GroupProjectThemesRepository
         return $command->getRawSql();
     }
 
-    public function prepareUpdate($id, $groupId, $projectThemesId, $confirm)
-    {
-        $command = Yii::$app->db->createCommand();
-        $command->update('group_project_themes', ['training_group_id' => $groupId, 'project_theme_id' => $projectThemesId, 'confirm' => $confirm], "id = $id");
-        return $command->getRawSql();
-    }
-
     public function prepareDelete($id)
     {
         $command = Yii::$app->db->createCommand();
