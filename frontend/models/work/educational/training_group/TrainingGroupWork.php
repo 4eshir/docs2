@@ -23,6 +23,40 @@ class TrainingGroupWork extends TrainingGroup
 {
     use EventTrait;
 
+    public static function fill(
+        $startDate,
+        $endDate,
+        $open,
+        $budget,
+        $branch,
+        $orderStop,
+        $archive,
+        $protectionDate,
+        $protectionConfirm,
+        $isNetwork,
+        $state,
+        $creatorId,
+        $lastEditId
+    )
+    {
+        $entity = new static();
+        $entity->start_date = $startDate;
+        $entity->finish_date = $endDate;
+        $entity->open = $open;
+        $entity->budget = $budget;
+        $entity->branch = $branch;
+        $entity->order_stop = $orderStop;
+        $entity->archive = $archive;
+        $entity->protection_date = $protectionDate;
+        $entity->protection_confirm = $protectionConfirm;
+        $entity->is_network = $isNetwork;
+        $entity->state = $state;
+        $entity->creator_id = $creatorId;
+        $entity->last_edit_id = $lastEditId;
+
+        return $entity;
+    }
+
     public function generateNumber($teacherId)
     {
         $level = $this->trainingProgramWork->level;

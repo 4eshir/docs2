@@ -8,8 +8,8 @@ return yii\helpers\ArrayHelper::merge(
     [
         'components' => [
             'request' => [
-                // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation eRpaEGiDfrKaqUAOP7--0TWlskPcH79m
-                'cookieValidationKey' => 'jfsbkjsbfdskjgfdskjbgfsdhjgfajds',
+                // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
+                'cookieValidationKey' => 'gJpYi3ajPLOOcVQVLUsts3thuRSCOv_a',
             ],
         ],
     ]
