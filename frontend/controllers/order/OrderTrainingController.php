@@ -15,6 +15,7 @@ use common\repositories\order\OrderTrainingRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class OrderTrainingController extends DocumentController
 {
@@ -89,9 +90,22 @@ class OrderTrainingController extends DocumentController
     public function actionUpdate($id)
     {
         $model = $this->orderTrainingRepository->get($id);
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        $people = $this->peopleRepository->getOrderedList();
+        $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
+        $post = Yii::$app->request->post();
+        if ($model->load($post) && $model->validate()) {
+            $this->orderTrainingService->getFilesInstances($model);
+            $model->save();
+            $this->orderTrainingService->saveFilesFromModel($model);
+            $this->orderTrainingService->updateOrderPeopleEvent(
+                ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
+                $post["OrderTrainingWork"]["responsible_id"], $model);
+            $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
-        return $this->render('update', []);
+        return $this->render('update', [
+            'model' => $model,
+            'people' => $people
+        ]);
     }
 }

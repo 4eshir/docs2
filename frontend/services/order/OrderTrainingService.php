@@ -6,21 +6,27 @@ use app\models\work\general\OrderPeopleWork;
 use app\models\work\order\OrderTrainingWork;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\repositories\general\OrderPeopleRepository;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
+use frontend\events\general\OrderPeopleCreateEvent;
+use frontend\events\general\OrderPeopleDeleteEvent;
 use yii\web\UploadedFile;
 
 class OrderTrainingService
 {
     private FileService $fileService;
     private OrderMainFileNameGenerator $filenameGenerator;
+    private OrderMainService $orderMainService;
     public function __construct(
         FileService $fileService,
-        OrderMainFileNameGenerator $filenameGenerator
+        OrderMainFileNameGenerator $filenameGenerator,
+        OrderMainService $orderMainService
     )
     {
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
+        $this->orderMainService = $orderMainService;
     }
     public function createOrderPeopleArray(array $data)
     {
@@ -85,5 +91,31 @@ class OrderTrainingService
                 );
             }
         }
+    }
+    public function updateOrderPeopleEvent($respPeople, $formRespPeople , OrderTrainingWork $model)
+    {
+        if($respPeople != NULL && $formRespPeople != NULL) {
+            $addSquadParticipant = array_diff($formRespPeople, $respPeople);
+            $deleteSquadParticipant = array_diff($respPeople, $formRespPeople);
+        }
+        else if($formRespPeople == NULL && $respPeople != NULL) {
+            $deleteSquadParticipant = $respPeople;
+            $addSquadParticipant = NULL;
+        }
+        else if($respPeople == NULL && $formRespPeople != NULL) {
+            $addSquadParticipant = $formRespPeople;
+            $deleteSquadParticipant = NULL;
+        }
+        else {
+            $deleteSquadParticipant = NULL;
+            $addSquadParticipant = NULL;
+        }
+        if($deleteSquadParticipant != NULL) {
+            $this->orderMainService->deleteOrderPeopleEvent($deleteSquadParticipant, $model);
+        }
+        if($addSquadParticipant != NULL) {
+            $this->orderMainService->addOrderPeopleEvent($addSquadParticipant, $model);
+        }
+        $model->releaseEvents();
     }
 }
