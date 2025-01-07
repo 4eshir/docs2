@@ -1,8 +1,14 @@
 <?php
+
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use kartik\select2\Select2;
+use yii\data\ActiveDataProvider;
+use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\jui\DatePicker;
+use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -10,6 +16,8 @@ use yii\widgets\ActiveForm;
 /* @var $people */
 /* @var $scanFile */
 /* @var $docFiles */
+/* @var $groups */
+/* @var $groupParticipant */
 ?>
 <style>
     .bordered-div {
@@ -34,8 +42,69 @@ use yii\widgets\ActiveForm;
             'changeYear' => true,
             'yearRange' => '2000:2100',
         ]])->label('Дата приказа'); ?>
-    <?= $form->field($model, 'order_number')->dropDownList(Yii::$app->branches->getList(), ['prompt' => '---'])->label('Отдел') ?>
+    <?= $form->field($model, 'branch')->dropDownList(Yii::$app->branches->getList(), ['prompt' => '---'])->label('Отдел') ?>
     <?= $form->field($model, 'order_number')->dropDownList(Yii::$app->nomenclature->getList(), ['prompt' => '---'])->label('Код и описание номенклатуры') ?>
+    <div class="training-group">
+        <?php
+        echo GridView::widget([
+            'dataProvider' => $groups,
+            'columns' => [
+                [
+                    'class' => 'yii\grid\CheckboxColumn',
+                    'name' => 'group-selection',
+                    'checkboxOptions' => function (\frontend\models\work\educational\training_group\TrainingGroupWork $model) {
+                        return [
+                            'class' => 'group-checkbox',
+                            'data-id' => $model->id, // Добавляем ID группы для передачи в JS
+                            'checked' => $model->open == 1,
+                        ];
+                    },
+                ],
+                'number',
+                'start_date',
+                'finish_date',
+            ],
+            'summaryOptions' => [
+                'style' => 'display: none;', // Скрыть блок через CSS
+            ],
+        ]);
+        ?>
+    </div>
+    <div class="training-group-participant">
+        <?php
+        echo GridView::widget([
+            'dataProvider' => $groupParticipant,
+            'columns' => [
+                [
+                    'class' => 'yii\grid\CheckboxColumn',
+                    'name' => 'group-participant-selection',
+                    'checkboxOptions' => function (\frontend\models\work\educational\training_group\TrainingGroupParticipantWork $model) {
+                        return [
+                            'class' => 'group-participant-checkbox' ,
+                            'training-group-id' => $model->training_group_id,
+                            'data-id' => $model->id, // Добавляем ID группы для передачи в JS
+                        ];
+                    },
+                ],
+                'training_group_id',
+                'id'
+            ],
+            'rowOptions' => function ($model, $key, $index) {
+                return ['id' => 'row-' . $model->id, 'class' => 'row-class-' . $index, 'name' => 'row-' . $model->training_group_id, 'style' => 'display: none;'];
+            },
+            'tableOptions' => [
+                'class' => 'table table-striped table-bordered',
+                'style' => 'position: relative;', // Необязательно, для кастомизации таблицы
+            ],
+            'headerRowOptions' => [
+                'style' => 'display: none;', // Скрываем <thead>
+            ],
+            'summaryOptions' => [
+                'style' => 'display: none;', // Скрыть блок через CSS
+            ],
+        ]);
+        ?>
+    </div>
     <?= $form->field($model, 'order_name')->textInput()->label('Наименование приказа') ;?>
     <div id="bring_id">
         <?php
@@ -95,3 +164,40 @@ use yii\widgets\ActiveForm;
 
         <?php ActiveForm::end(); ?>
 </div>
+<?php
+
+$this->registerJs("
+    $(document).on('change', '.group-checkbox', function () {
+        const groupId = $(this).data('id');
+        const isChecked = $(this).is(':checked');
+        if (isChecked) {
+            var elements = document.getElementsByName('row-' + groupId);
+            Array.from(elements).forEach(element => {
+                element.style.display = 'block'; // Скрываем элемент
+                console.log(element);
+            });
+        }
+        else {
+            var elements = document.getElementsByName('row-' + groupId);
+            Array.from(elements).forEach(element => {
+                element.style.display = 'none'; // Скрываем элемент
+                console.log(element);
+            });
+        }
+    });
+");
+?>
+<script>
+    window.onload = function () {
+        var checkboxes = document.getElementsByClassName('group-checkbox');
+        Array.from(checkboxes).forEach(function(checkbox) {
+            if (checkbox.checked) {
+                var elements = document.getElementsByName('row-' + checkbox.getAttribute('data-id'));
+                Array.from(elements).forEach(element => {
+                    element.style.display = 'block'; // Скрываем элемент
+                    console.log(element);
+                });
+            }
+        });
+    };
+</script>

@@ -9,12 +9,16 @@ use app\services\order\OrderMainService;
 use app\services\order\OrderTrainingService;
 use common\controllers\DocumentController;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\general\OrderPeopleRepository;
 use common\repositories\order\OrderTrainingRepository;
 use common\services\general\files\FileService;
 use DomainException;
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 
 class OrderTrainingController extends DocumentController
@@ -24,6 +28,7 @@ class OrderTrainingController extends DocumentController
     private OrderTrainingService $orderTrainingService;
     private OrderPeopleRepository $orderPeopleRepository;
     private OrderTrainingRepository $orderTrainingRepository;
+    private TrainingGroupRepository $trainingGroupRepository;
 
     public function __construct(
         $id,
@@ -33,6 +38,7 @@ class OrderTrainingController extends DocumentController
         OrderTrainingService $orderTrainingService,
         OrderPeopleRepository $orderPeopleRepository,
         OrderTrainingRepository $orderTrainingRepository,
+        TrainingGroupRepository $trainingGroupRepository,
         FileService $fileService,
         FilesRepository $filesRepository,
         $config = []
@@ -43,6 +49,7 @@ class OrderTrainingController extends DocumentController
         $this->orderTrainingService = $orderTrainingService;
         $this->orderPeopleRepository = $orderPeopleRepository;
         $this->orderTrainingRepository = $orderTrainingRepository;
+        $this->trainingGroupRepository = $trainingGroupRepository;
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
     }
     public function actionIndex(){
@@ -65,10 +72,21 @@ class OrderTrainingController extends DocumentController
         ]);
     }
     public function actionCreate(){
-
         $model = new OrderTrainingWork();
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
+        $groups = new ActiveDataProvider([
+            'query' => TrainingGroupWork::find(),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+        $groupParticipant = new ActiveDataProvider([
+            'query' => TrainingGroupParticipantWork::find(),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
         if ($model->load($post)) {
             if (!$model->validate()) {
                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
@@ -85,6 +103,8 @@ class OrderTrainingController extends DocumentController
         return $this->render('create', [
             'model' => $model,
             'people' => $people,
+            'groups' => $groups,
+            'groupParticipant' => $groupParticipant,
         ]);
     }
     public function actionUpdate($id)
@@ -93,6 +113,18 @@ class OrderTrainingController extends DocumentController
         $people = $this->peopleRepository->getOrderedList();
         $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
         $post = Yii::$app->request->post();
+        $groups = new ActiveDataProvider([
+            'query' => TrainingGroupWork::find(),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+        $groupParticipant = new ActiveDataProvider([
+            'query' => TrainingGroupParticipantWork::find(),
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
         if ($model->load($post) && $model->validate()) {
             $this->orderTrainingService->getFilesInstances($model);
             $model->save();
@@ -105,7 +137,25 @@ class OrderTrainingController extends DocumentController
         }
         return $this->render('update', [
             'model' => $model,
-            'people' => $people
+            'people' => $people,
+            'groups' => $groups,
+            'groupParticipant' => $groupParticipant,
         ]);
+    }
+    public function actionGetParticipants($groupIds)
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $groupIds = explode(',', $groupIds); // Преобразуем строки в массив
+        $participants = TrainingGroupParticipantWork::find()
+            ->where(['training_group_id' => $groupIds])
+            ->all();
+
+        return array_map(function (TrainingGroupParticipantWork $participant) {
+            return [
+                'id' => $participant->id,
+                'group_id' => $participant->training_group_id,
+            ];
+        }, $participants);
     }
 }
