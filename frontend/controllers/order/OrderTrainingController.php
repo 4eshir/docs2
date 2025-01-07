@@ -142,20 +142,4 @@ class OrderTrainingController extends DocumentController
             'groupParticipant' => $groupParticipant,
         ]);
     }
-    public function actionGetParticipants($groupIds)
-    {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-        $groupIds = explode(',', $groupIds); // Преобразуем строки в массив
-        $participants = TrainingGroupParticipantWork::find()
-            ->where(['training_group_id' => $groupIds])
-            ->all();
-
-        return array_map(function (TrainingGroupParticipantWork $participant) {
-            return [
-                'id' => $participant->id,
-                'group_id' => $participant->training_group_id,
-            ];
-        }, $participants);
-    }
 }
