@@ -61,6 +61,9 @@ class TrainingGroupBaseForm extends Model
             $this->presentationsStr = implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_PRESENTATION), 'link'));
             $this->workMaterialsStr = implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_WORK), 'link'));
         }
+        else {
+            $this->prevTeachers = [];
+        }
     }
 
     public function rules()

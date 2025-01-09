@@ -44,7 +44,7 @@ class AccessModelController extends Controller
         }
         catch (Exception $e) {
             $hasException = true;
-            echo "Возникла ошибка во время назначения прав пользователю";
+            echo "Возникла ошибка во время назначения прав пользователю {$e->getMessage()}";
         }
 
         if (!$hasException) {

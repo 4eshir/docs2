@@ -82,4 +82,20 @@ class TrainingGroupLessonWork extends TrainingGroupLesson
         return $this->hasOne(AuditoriumWork::class, ['id' => 'auditorium_id']);
     }
 
+    /**
+     * @param TrainingGroupLessonWork[] $lessons
+     * @return false|string
+     */
+    public static function convertLessonsToJson(array $lessons)
+    {
+        $lessonsArray = array_map(function ($lesson) {
+            return [
+                'lesson_id' => $lesson->lessonId,
+                'status' => $lesson->status,
+            ];
+        }, $lessons);
+
+        return json_encode($lessonsArray);
+    }
+
 }

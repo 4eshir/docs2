@@ -1,6 +1,5 @@
 <?php
 
-use app\components\DropDownPosition;
 use app\components\DynamicWidget;
 use common\components\dictionaries\base\BranchDictionary;
 use frontend\models\work\dictionaries\CompanyWork;
@@ -84,7 +83,7 @@ use yii\widgets\ActiveForm;
                         ];
                         echo $form
                             ->field($model, 'positions[]')
-                            ->dropDownList(ArrayHelper::map($positions, 'id', 'pos'), $params)
+                            ->dropDownList(ArrayHelper::map($positions, 'id', 'name'), $params)
                             ->label('Должность');
                         ?>
                     </div>

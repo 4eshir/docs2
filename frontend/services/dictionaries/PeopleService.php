@@ -61,7 +61,7 @@ class PeopleService implements DatabaseService
             throw new DomainException('Размеры массивов $positions, $companies и $branches не совпадают');
         }
 
-        for ($i = 0; $i < count($positions); $i++) {
+        for ($i = 0; $i < count($companies); $i++) {
             if ($positions[$i] !== "" && $companies[$i] !== "") {
                 $model->recordEvent(new PeoplePositionCompanyBranchEventCreate($model->id, (int)$positions[$i],
                     (int)$companies[$i], (int)$branches[$i]),

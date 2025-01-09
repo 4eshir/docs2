@@ -32,6 +32,7 @@ use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\ProjectThemeWork;
 use frontend\services\educational\TrainingGroupService;
+use frontend\services\educational\VisitService;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
@@ -39,6 +40,7 @@ use yii\helpers\Url;
 class TrainingGroupController extends DocumentController
 {
     private TrainingGroupService $service;
+    private VisitService $visitService;
     private TrainingProgramRepository $trainingProgramRepository;
     private TrainingGroupRepository $trainingGroupRepository;
     private TrainingGroupLessonRepository $groupLessonRepository;
@@ -51,6 +53,7 @@ class TrainingGroupController extends DocumentController
         FileService $fileService,
         FilesRepository $filesRepository,
         TrainingGroupService $service,
+        VisitService $visitService,
         TrainingProgramRepository $trainingProgramRepository,
         TrainingGroupRepository $trainingGroupRepository,
         TrainingGroupLessonRepository $groupLessonRepository,
@@ -60,6 +63,7 @@ class TrainingGroupController extends DocumentController
     {
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
         $this->service = $service;
+        $this->visitService = $visitService;
         $this->trainingProgramRepository = $trainingProgramRepository;
         $this->trainingGroupRepository = $trainingGroupRepository;
         $this->groupLessonRepository = $groupLessonRepository;
@@ -283,6 +287,11 @@ class TrainingGroupController extends DocumentController
         return $this->render('view', [
             'model' => $form,
         ]);
+    }
+
+    public function actionGenerateJournal($groupId)
+    {
+        $result = $this->visitService->generateJournal($groupId);
     }
 
     public function actionDelete($id)

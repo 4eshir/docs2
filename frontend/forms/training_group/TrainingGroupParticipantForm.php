@@ -25,6 +25,9 @@ class TrainingGroupParticipantForm extends Model
             $this->number = (Yii::createObject(TrainingGroupRepository::class))->get($id)->number;
             $this->id = $id;
         }
+        else {
+            $this->prevParticipants = [];
+        }
     }
 
     public function rules()

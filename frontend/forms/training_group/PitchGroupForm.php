@@ -37,6 +37,10 @@ class PitchGroupForm extends Model
             $this->themes = (Yii::createObject(TrainingGroupRepository::class))->getThemes($id) ?: [new ProjectThemeWork];
             $this->prevThemes = (Yii::createObject(GroupProjectThemesRepository::class))->getProjectThemesFromGroup($id) ?: [new GroupProjectsThemesWork];
         }
+        else {
+            $this->prevExperts = [];
+            $this->prevThemes = [];
+        }
     }
 
     public function rules()

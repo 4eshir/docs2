@@ -48,6 +48,9 @@ class TrainingGroupScheduleForm extends Model
             $this->trainingProgram = (Yii::createObject(TrainingProgramRepository::class))->get($this->trainingGroup->training_program_id);
             $this->id = $id;
         }
+        else {
+            $this->prevLessons = [];
+        }
     }
 
     public function rules()
