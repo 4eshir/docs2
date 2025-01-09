@@ -105,7 +105,6 @@ class OrderMainFileNameGenerator implements FileNameGeneratorInterface
         if (!array_key_exists('counter', $params)) {
             throw new DomainException('Параметр \'counter\' обязателен');
         }
-
         /** @var OrderMainWork $object */
         $date = $object->order_date;
         $new_date = DateFormatter::format($date, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
@@ -117,11 +116,4 @@ class OrderMainFileNameGenerator implements FileNameGeneratorInterface
 
         return $res . '.' . $object->appFiles[$params['counter'] - 1]->extension;
     }
-
-
-
-
-
-
-
 }
