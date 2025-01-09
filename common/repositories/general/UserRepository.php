@@ -17,7 +17,7 @@ class UserRepository
     public function __construct(UserProviderInterface $userProvider = null)
     {
         if (!$userProvider) {
-            $userProvider = new UserProvider();
+            $userProvider = Yii::createObject(UserProvider::class);
         }
 
         $this->userProvider = $userProvider;

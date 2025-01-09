@@ -3,6 +3,7 @@
 namespace frontend\tests\unit\models\training_group;
 
 use common\repositories\educational\TrainingGroupRepository;
+use common\repositories\providers\training_group\TrainingGroupMockProvider;
 use Exception;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use Yii;
@@ -20,20 +21,27 @@ class TrainingGroupCreateTest extends \Codeception\Test\Unit
     
     protected function _before()
     {
-        $this->groupRepository = Yii::createObject(TrainingGroupRepository::class);
+        $this->groupRepository = Yii::createObject(
+            TrainingGroupRepository::class,
+            ['groupProvider' => Yii::createObject(TrainingGroupMockProvider::class)]
+        );
     }
 
     protected function _after()
     {
     }
 
+    // Тестируем создание базовых учебных групп
+
     /**
-     * @dataProvider getData
+     * @dataProvider getCreateGroupData
      */
-    public function testCreateGroup($data)
+    public function testCreateGroup(TrainingGroupCreateData $data)
     {
-        if (is_array($data)) {
-            foreach ($data as $item) {
+        $groups = $data->groups;
+
+        if (is_array($groups)) {
+            foreach ($groups as $item) {
                 try {
                     $group = TrainingGroupWork::fill(
                         $item['start_date'],
@@ -64,9 +72,30 @@ class TrainingGroupCreateTest extends \Codeception\Test\Unit
         }
     }
 
-    public function getData()
+    public function getCreateGroupData()
     {
         $data = new TrainingGroupCreateData();
+
+        return [
+            [
+                $data
+            ],
+        ];
+    }
+
+    // Тестируем создание одной учебной группы вместе со всеми связанными данными
+
+    /**
+     * @dataProvider getFullGroupData
+     */
+    public function testFullGroup(TrainingGroupCreateData $data)
+    {
+
+    }
+
+    public function getFullGroupData()
+    {
+        $data = new TrainingGroupFullData();
 
         return [
             [
