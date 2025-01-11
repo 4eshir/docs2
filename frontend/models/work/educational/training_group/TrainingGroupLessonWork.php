@@ -5,6 +5,8 @@ namespace frontend\models\work\educational\training_group;
 use common\models\scaffold\TrainingGroupLesson;
 use common\repositories\dictionaries\AuditoriumRepository;
 use frontend\models\work\dictionaries\AuditoriumWork;
+use frontend\models\work\educational\journal\VisitLesson;
+use frontend\models\work\educational\journal\VisitWork;
 use Yii;
 
 /**
@@ -83,7 +85,7 @@ class TrainingGroupLessonWork extends TrainingGroupLesson
     }
 
     /**
-     * @param TrainingGroupLessonWork[] $lessons
+     * @param VisitLesson[] $lessons
      * @return false|string
      */
     public static function convertLessonsToJson(array $lessons)

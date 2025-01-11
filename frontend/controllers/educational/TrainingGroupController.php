@@ -31,6 +31,7 @@ use frontend\models\work\educational\training_group\TrainingGroupParticipantWork
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\ProjectThemeWork;
+use frontend\services\educational\JournalService;
 use frontend\services\educational\TrainingGroupService;
 use frontend\services\educational\VisitService;
 use Yii;
@@ -40,7 +41,7 @@ use yii\helpers\Url;
 class TrainingGroupController extends DocumentController
 {
     private TrainingGroupService $service;
-    private VisitService $visitService;
+    private JournalService $journalService;
     private TrainingProgramRepository $trainingProgramRepository;
     private TrainingGroupRepository $trainingGroupRepository;
     private TrainingGroupLessonRepository $groupLessonRepository;
@@ -53,7 +54,7 @@ class TrainingGroupController extends DocumentController
         FileService $fileService,
         FilesRepository $filesRepository,
         TrainingGroupService $service,
-        VisitService $visitService,
+        JournalService $journalService,
         TrainingProgramRepository $trainingProgramRepository,
         TrainingGroupRepository $trainingGroupRepository,
         TrainingGroupLessonRepository $groupLessonRepository,
@@ -63,7 +64,7 @@ class TrainingGroupController extends DocumentController
     {
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
         $this->service = $service;
-        $this->visitService = $visitService;
+        $this->journalService = $journalService;
         $this->trainingProgramRepository = $trainingProgramRepository;
         $this->trainingGroupRepository = $trainingGroupRepository;
         $this->groupLessonRepository = $groupLessonRepository;
@@ -289,9 +290,9 @@ class TrainingGroupController extends DocumentController
         ]);
     }
 
-    public function actionGenerateJournal($groupId)
+    public function actionGenerateJournal($id)
     {
-        $result = $this->visitService->generateJournal($groupId);
+        $result = $this->journalService->generateJournal($id);
     }
 
     public function actionDelete($id)

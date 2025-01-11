@@ -20,30 +20,6 @@ class VisitRepository
         return VisitWork::find()->where(['training_group_id' => $groupId])->all();
     }
 
-    /**
-     * @param $groupId
-     * @param TrainingGroupLessonWork[] $lessons
-     * @param TrainingGroupParticipantWork[] $participants
-     */
-    public function createJournal($groupId, array $lessons, array $participants)
-    {
-        // Удаляем существующий журнал
-        $visits = $this->getByTrainingGroup($groupId);
-        foreach ($visits as $visit) {
-            $this->delete($visit);
-        }
-
-        // Создаем новый журнал
-        foreach ($participants as $participant) {
-            $visit = VisitWork::fill(
-                $groupId,
-                $participant->id,
-                TrainingGroupLessonWork::convertLessonsToJson($lessons) ? : ''
-            );
-            $this->save($visit);
-        }
-    }
-
     public function delete(VisitWork $visit)
     {
         return $visit->delete();

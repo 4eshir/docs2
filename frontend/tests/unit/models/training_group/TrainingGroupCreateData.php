@@ -14,11 +14,6 @@ class TrainingGroupCreateData
     protected UserRepository $userRepository;
 
     public $groups;
-    public $teachers;
-    public $participants;
-    public $lessons;
-    public $experts;
-    public $themes;
 
     public function __construct($params = [])
     {
