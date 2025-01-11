@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\educational\training_group;
 
+use app\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -56,7 +57,18 @@ class TrainingGroupWork extends TrainingGroup
 
         return $entity;
     }
-
+    public function getOrderGroupRelation($orderId)
+    {
+        if($orderId != NULL) {
+            $participants = TrainingGroupParticipantWork::find()->where(['training_group_id' => $this->id])->all();
+            foreach ($participants as $participant) {
+                if (OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId, 'training_group_participant_id' => $participant->id])->all()) {
+                    return 1;
+                }
+            }
+        }
+        return 0;
+    }
     public function generateNumber($teacherId)
     {
         $level = $this->trainingProgramWork->level;

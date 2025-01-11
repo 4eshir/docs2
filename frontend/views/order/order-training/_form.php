@@ -1,14 +1,12 @@
 <?php
 
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
 use kartik\select2\Select2;
-use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\jui\DatePicker;
-use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -52,11 +50,11 @@ use yii\widgets\ActiveForm;
                 [
                     'class' => 'yii\grid\CheckboxColumn',
                     'name' => 'group-selection',
-                    'checkboxOptions' => function (\frontend\models\work\educational\training_group\TrainingGroupWork $model) {
+                    'checkboxOptions' => function (TrainingGroupWork $group) use ($model) {
                         return [
                             'class' => 'group-checkbox',
-                            'data-id' => $model->id, // Добавляем ID группы для передачи в JS
-                            'checked' => $model->open == 1,
+                            'data-id' => $group->id, // Добавляем ID группы для передачи в JS
+                            'checked' => $group->getOrderGroupRelation($model->id) == 1,
                         ];
                     },
                 ],
@@ -78,11 +76,12 @@ use yii\widgets\ActiveForm;
                 [
                     'class' => 'yii\grid\CheckboxColumn',
                     'name' => 'group-participant-selection',
-                    'checkboxOptions' => function (\frontend\models\work\educational\training_group\TrainingGroupParticipantWork $model) {
+                    'checkboxOptions' => function (TrainingGroupParticipantWork $participant) use ($model) {
                         return [
                             'class' => 'group-participant-checkbox' ,
-                            'training-group-id' => $model->training_group_id,
-                            'data-id' => $model->id, // Добавляем ID группы для передачи в JS
+                            'training-group-id' => $participant->training_group_id,
+                            'data-id' => $participant->id, // Добавляем ID группы для передачи в JS
+                            'checked' => $participant->getOrderTrainingGroupParticipantRelation($model->id) == 1,
                         ];
                     },
                 ],

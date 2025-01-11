@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\educational\training_group;
 
+use app\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use common\models\scaffold\TrainingGroupParticipant;
 use frontend\models\work\general\PeopleStampWork;
 
@@ -21,7 +22,18 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
 
         return $entity;
     }
-
+    public function getOrderTrainingGroupParticipantRelation($orderId)
+    {
+        if ($orderId != null) {
+            if(OrderTrainingGroupParticipantWork::find()
+                ->andWhere(['training_group_participant_id' => $this->id])
+                ->andWhere(['order_id' => $orderId])
+                ->count()){
+                return 1;
+            }
+        }
+        return 0;
+    }
     public function rules()
     {
         return array_merge(parent::rules(), [
