@@ -6,6 +6,7 @@ use kartik\select2\Select2;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
 
@@ -40,8 +41,47 @@ use yii\widgets\ActiveForm;
             'changeYear' => true,
             'yearRange' => '2000:2100',
         ]])->label('Дата приказа'); ?>
-    <?= $form->field($model, 'branch')->dropDownList(Yii::$app->branches->getList(), ['prompt' => '---'])->label('Отдел') ?>
-    <?= $form->field($model, 'order_number')->dropDownList(Yii::$app->nomenclature->getList(), ['prompt' => '---'])->label('Код и описание номенклатуры') ?>
+    <?=  $form->field($model, 'branch')->dropDownList(
+        Yii::$app->branches->getList(),
+        [
+            'prompt' => '---',
+            'id' => 'branch-dropdown' // Добавляем id для доступа в JavaScript
+        ]
+    )->label('Отдел');
+    ?>
+
+    <?=
+    // Выпадающий список для выбора кода и описания номенклатуры
+    $form->field($model, 'order_number')->dropDownList(
+        [], // Сначала оставляем его пустым
+        [
+            'prompt' => '---',
+            'id' => 'order-number-dropdown' // Добавляем id для доступа в JavaScript
+        ]
+    )->label('Код и описание номенклатуры');
+    ?>
+    <?php $this->registerJs("
+        $('#branch-dropdown').on('change', function() {
+            var branchId = $(this).val();
+            
+            $.ajax({
+                url: '" . Url::to(['order/order-training/get-list-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
+                type: 'GET',
+                data: { branch_id: branchId },
+                success: function(data) {
+                    var options;
+                    $.each(data, function(index, value) {
+                        options += '<option value=\"' + index + '\">' + value + '</option>';
+                    });
+                    $('#order-number-dropdown').html(options); // Обновляем второй выпадающий список
+                }
+            });
+        });
+");
+    ?>
+
+
+
     <div class="training-group">
         <?php
         echo GridView::widget([
@@ -86,6 +126,7 @@ use yii\widgets\ActiveForm;
                     },
                 ],
                 'training_group_id',
+                'fullFio',
                 'id'
             ],
             'rowOptions' => function ($model, $key, $index) {
@@ -173,14 +214,12 @@ $this->registerJs("
             var elements = document.getElementsByName('row-' + groupId);
             Array.from(elements).forEach(element => {
                 element.style.display = 'block'; // Скрываем элемент
-                console.log(element);
             });
         }
         else {
             var elements = document.getElementsByName('row-' + groupId);
             Array.from(elements).forEach(element => {
                 element.style.display = 'none'; // Скрываем элемент
-                console.log(element);
             });
         }
     });

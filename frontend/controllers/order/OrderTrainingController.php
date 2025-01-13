@@ -103,8 +103,10 @@ class OrderTrainingController extends DocumentController
         $people = $this->peopleRepository->getOrderedList();
         $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
         $post = Yii::$app->request->post();
+        $number = $model->order_number;
         if ($model->load($post) && $model->validate()) {
             $this->orderTrainingService->getFilesInstances($model);
+            $model->order_number = $number;
             $model->save();
             $this->orderTrainingService->saveFilesFromModel($model);
             $this->orderTrainingService->updateOrderPeopleEvent(
@@ -122,5 +124,11 @@ class OrderTrainingController extends DocumentController
             'groups' => $this->orderTrainingRepository->getOrderTrainingGroupData(),
             'groupParticipant' => $this->orderTrainingRepository->getOrderTrainingGroupParticipantData()
         ]);
+    }
+    public function actionGetListByBranch()
+    {
+        $branchId = Yii::$app->request->get('branch_id');
+        $nomenclatureList = Yii::$app->nomenclature->getListByBranch($branchId); // Получаем список по номеру отдела
+        return $this->asJson($nomenclatureList); // Возвращаем список в формате JSON
     }
 }

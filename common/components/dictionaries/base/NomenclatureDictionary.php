@@ -3,19 +3,113 @@
 namespace common\components\dictionaries\base;
 class NomenclatureDictionary extends BaseDictionary
 {
-    public const ORDER = '02-02';
+    public const ADMIN_ORDER = '02-02';
+    public const COD_ADD = '13-01';
+    public const COD_DEL = '13-02';
+    public const TECHNOPARK_ADD = '09-01';
+    public const TECHNOPARK_DEL = '09-02';
+    public const TECHNOPARK_ADD_BUDGET = '09-22';
+    public const TECHNOPARK_DEL_BUDGET = '09-23';
+    public const QUANTORIUM_ADD = '10-01';
+    public const QUANTORIUM_DEL = '10-02';
+    public const QUANTORIUM_ADD_BUDGET = '10-26';
+    public const QUANTORIUM_DEL_BUDGET = '10-27';
+    public const CDNTT_ADD = '11-01';
+    public const CDNTT_DEL = '11-02';
+    public const CDNTT_ADD_BUDGET = '11-26';
+    public const CDNTT_DEL_BUDGET = '11-27';
+    public const CDNTT_TRANSFER = '11-31';
+    public const MOB_QUANT_ADD = '12-01';
+    public const MOB_QUANT_DEL = '12-02';
     public function __construct()
     {
         parent::__construct();
         $this->list = [
-            self::ORDER => '02-02'
-
+            self::ADMIN_ORDER => '02-02 Приказы директора по основной деятельности',
+            self::COD_ADD => '13-01 Приказы о зачислении обучающихся',
+            self::COD_DEL => '13-02 Приказы об отчислении обучающихся',
+            self::TECHNOPARK_ADD => '09-01 Приказы о зачислении обучающихся',
+            self::TECHNOPARK_DEL => '09-02 Приказы об отчислении обучающихся',
+            self::TECHNOPARK_ADD_BUDGET => '09-22 Приказы о зачислении обучающихся (по внебюджетной деятельности)',
+            self::TECHNOPARK_DEL_BUDGET => '09-23 Приказы об отчислении обучающихся (по внебюджетной деятельности)',
+            self::QUANTORIUM_ADD => '10-01 Приказы о зачислении обучающихся',
+            self::QUANTORIUM_DEL => '10-02 Приказы об отчислении обучающихся',
+            self::QUANTORIUM_ADD_BUDGET => '10-26 Приказы об отчислении обучающихся',
+            self::QUANTORIUM_DEL_BUDGET => '10-27 Приказы об отчислении обучающихся',
+            self::CDNTT_ADD => '11-01 Приказы о зачислении обучающихся',
+            self::CDNTT_DEL => '11-02 Приказы об отчислении обучающихся',
+            self::CDNTT_ADD_BUDGET => '11-26 Приказы о зачислении обучающихся (по внебюджетной деятельности)',
+            self::CDNTT_DEL_BUDGET => '11-27 Приказы об отчислении обучающихся (по внебюджетной деятельности)',
+            self::CDNTT_TRANSFER => '11-31 Приказы о переводе',
+            self::MOB_QUANT_ADD => '12-01 Приказы о зачислении обучающихся',
+            self::MOB_QUANT_DEL => '12-02 Приказы об отчислении обучающихся',
         ];
     }
     public function customSort()
     {
         return [
-            $this->list[self::ORDER],
+            $this->list[self::ADMIN_ORDER],
+            $this->list[self::COD_ADD],
+            $this->list[self::COD_DEL],
+            $this->list[self::TECHNOPARK_ADD],
+            $this->list[self::TECHNOPARK_DEL],
+            $this->list[self::TECHNOPARK_ADD_BUDGET],
+            $this->list[self::TECHNOPARK_DEL_BUDGET],
+            $this->list[self::QUANTORIUM_ADD],
+            $this->list[self::QUANTORIUM_DEL],
+            $this->list[self::QUANTORIUM_ADD_BUDGET],
+            $this->list[self::QUANTORIUM_DEL_BUDGET],
+            $this->list[self::CDNTT_ADD],
+            $this->list[self::CDNTT_DEL],
+            $this->list[self::CDNTT_ADD_BUDGET],
+            $this->list[self::CDNTT_DEL_BUDGET],
+            $this->list[self::CDNTT_TRANSFER],
+            $this->list[self::MOB_QUANT_ADD],
+            $this->list[self::MOB_QUANT_DEL],
         ];
+    }
+    public function getListByBranch($branch){
+        switch ($branch){
+            case BranchDictionary::TECHNOPARK:
+                return $this->list = [
+                    self::TECHNOPARK_ADD => '09-01 Приказы о зачислении обучающихся',
+                    self::TECHNOPARK_DEL => '09-02 Приказы об отчислении обучающихся',
+                    self::TECHNOPARK_ADD_BUDGET => '09-22 Приказы о зачислении обучающихся (по внебюджетной деятельности)',
+                    self::TECHNOPARK_DEL_BUDGET => '09-23 Приказы об отчислении обучающихся (по внебюджетной деятельности)',
+                ];
+            case BranchDictionary::QUANTORIUM:
+                return $this->list = [
+                    self::QUANTORIUM_ADD => '10-01 Приказы о зачислении обучающихся',
+                    self::QUANTORIUM_DEL => '10-02 Приказы об отчислении обучающихся',
+                    self::QUANTORIUM_ADD_BUDGET => '10-26 Приказы об отчислении обучающихся',
+                    self::QUANTORIUM_DEL_BUDGET => '10-27 Приказы об отчислении обучающихся',
+                ];
+            case BranchDictionary::CDNTT:
+                return $this->list = [
+                    self::CDNTT_ADD => '11-01 Приказы о зачислении обучающихся',
+                    self::CDNTT_DEL => '11-02 Приказы об отчислении обучающихся',
+                    self::CDNTT_ADD_BUDGET => '11-26 Приказы о зачислении обучающихся (по внебюджетной деятельности)',
+                    self::CDNTT_DEL_BUDGET => '11-27 Приказы об отчислении обучающихся (по внебюджетной деятельности)',
+                    self::CDNTT_TRANSFER => '11-31 Приказы о переводе',
+                ];
+            case BranchDictionary::COD:
+                return $this->list = [
+                    self::COD_ADD => '13-01 Приказы о зачислении обучающихся',
+                    self::COD_DEL => '13-02 Приказы об отчислении обучающихся',
+                ];
+            case BranchDictionary::MOBILE_QUANTUM:
+                return $this->list = [
+                    self::MOB_QUANT_ADD => '10-01 Приказы о зачислении обучающихся',
+                    self::MOB_QUANT_DEL => '10-02 Приказы об отчислении обучающихся',
+                ];
+            case BranchDictionary::PLANETARIUM:
+                return $this->list = [];
+            case BranchDictionary::ADMINISTRATION:
+                return $this->list = [
+                    self::ADMIN_ORDER => '02-02 Приказы директора по основной деятельности',
+                ];
+            default:
+                return $this->list = [];
+        }
     }
 }
