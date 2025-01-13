@@ -4,8 +4,8 @@ namespace frontend\models\work\educational\training_group;
 
 use app\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use common\models\scaffold\TrainingGroupParticipant;
+use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\general\PeopleStampWork;
-
 /**
  * @property PeopleStampWork participantWork
  */
@@ -49,5 +49,10 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
     public function getParticipantWork()
     {
         return $this->hasOne(PeopleStampWork::class, ['id' => 'participant_id']);
+    }
+    public function getFullFio()
+    {
+        $model = ForeignEventParticipantsWork::findOne($this->participant_id);
+        return $model->getFullFio();
     }
 }
