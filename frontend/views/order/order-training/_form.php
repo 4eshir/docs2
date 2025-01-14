@@ -1,14 +1,13 @@
 <?php
 
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
 use kartik\select2\Select2;
-use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\jui\DatePicker;
-use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -42,8 +41,47 @@ use yii\widgets\ActiveForm;
             'changeYear' => true,
             'yearRange' => '2000:2100',
         ]])->label('Дата приказа'); ?>
-    <?= $form->field($model, 'branch')->dropDownList(Yii::$app->branches->getList(), ['prompt' => '---'])->label('Отдел') ?>
-    <?= $form->field($model, 'order_number')->dropDownList(Yii::$app->nomenclature->getList(), ['prompt' => '---'])->label('Код и описание номенклатуры') ?>
+    <?=  $form->field($model, 'branch')->dropDownList(
+        Yii::$app->branches->getList(),
+        [
+            'prompt' => '---',
+            'id' => 'branch-dropdown' // Добавляем id для доступа в JavaScript
+        ]
+    )->label('Отдел');
+    ?>
+
+    <?=
+    // Выпадающий список для выбора кода и описания номенклатуры
+    $form->field($model, 'order_number')->dropDownList(
+        [], // Сначала оставляем его пустым
+        [
+            'prompt' => '---',
+            'id' => 'order-number-dropdown' // Добавляем id для доступа в JavaScript
+        ]
+    )->label('Код и описание номенклатуры');
+    ?>
+    <?php $this->registerJs("
+        $('#branch-dropdown').on('change', function() {
+            var branchId = $(this).val();
+            
+            $.ajax({
+                url: '" . Url::to(['order/order-training/get-list-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
+                type: 'GET',
+                data: { branch_id: branchId },
+                success: function(data) {
+                    var options;
+                    $.each(data, function(index, value) {
+                        options += '<option value=\"' + index + '\">' + value + '</option>';
+                    });
+                    $('#order-number-dropdown').html(options); // Обновляем второй выпадающий список
+                }
+            });
+        });
+");
+    ?>
+
+
+
     <div class="training-group">
         <?php
         echo GridView::widget([
@@ -52,11 +90,11 @@ use yii\widgets\ActiveForm;
                 [
                     'class' => 'yii\grid\CheckboxColumn',
                     'name' => 'group-selection',
-                    'checkboxOptions' => function (\frontend\models\work\educational\training_group\TrainingGroupWork $model) {
+                    'checkboxOptions' => function (TrainingGroupWork $group) use ($model) {
                         return [
                             'class' => 'group-checkbox',
-                            'data-id' => $model->id, // Добавляем ID группы для передачи в JS
-                            'checked' => $model->open == 1,
+                            'data-id' => $group->id, // Добавляем ID группы для передачи в JS
+                            'checked' => $group->getOrderGroupRelation($model->id) == 1,
                         ];
                     },
                 ],
@@ -78,15 +116,17 @@ use yii\widgets\ActiveForm;
                 [
                     'class' => 'yii\grid\CheckboxColumn',
                     'name' => 'group-participant-selection',
-                    'checkboxOptions' => function (\frontend\models\work\educational\training_group\TrainingGroupParticipantWork $model) {
+                    'checkboxOptions' => function (TrainingGroupParticipantWork $participant) use ($model) {
                         return [
                             'class' => 'group-participant-checkbox' ,
-                            'training-group-id' => $model->training_group_id,
-                            'data-id' => $model->id, // Добавляем ID группы для передачи в JS
+                            'training-group-id' => $participant->training_group_id,
+                            'data-id' => $participant->id, // Добавляем ID группы для передачи в JS
+                            'checked' => $participant->getOrderTrainingGroupParticipantRelation($model->id) == 1,
                         ];
                     },
                 ],
                 'training_group_id',
+                'fullFio',
                 'id'
             ],
             'rowOptions' => function ($model, $key, $index) {
@@ -174,14 +214,12 @@ $this->registerJs("
             var elements = document.getElementsByName('row-' + groupId);
             Array.from(elements).forEach(element => {
                 element.style.display = 'block'; // Скрываем элемент
-                console.log(element);
             });
         }
         else {
             var elements = document.getElementsByName('row-' + groupId);
             Array.from(elements).forEach(element => {
                 element.style.display = 'none'; // Скрываем элемент
-                console.log(element);
             });
         }
     });

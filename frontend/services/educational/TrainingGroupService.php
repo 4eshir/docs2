@@ -322,11 +322,8 @@ class TrainingGroupService implements DatabaseService
             }
         }
         $newLessons = array_unique($newLessons);
-        
-        $addLessons = $this->setDifference($newLessons, $form->prevLessons, LessonGroupCompare::class);
-        $delLessons = $this->setDifference($form->prevLessons, $newLessons, LessonGroupCompare::class);
 
-        foreach ($addLessons as $lesson) {
+        foreach ($newLessons as $lesson) {
             $form->recordEvent(new CreateLessonGroupEvent(
                 $lesson->lesson_date,
                 $lesson->lesson_start_time,
@@ -337,10 +334,6 @@ class TrainingGroupService implements DatabaseService
                 $form->id
             ),
             TrainingGroupLessonWork::className());
-        }
-
-        foreach ($delLessons as $lesson) {
-            $form->recordEvent(new DeleteLessonGroupEvent($lesson->id), TrainingGroupLessonWork::className());
         }
     }
 
@@ -476,13 +469,15 @@ class TrainingGroupService implements DatabaseService
             ]
         );
 
-        $scheduleTable = HtmlBuilder::wrapTableInCheckboxesColumn(
-            Url::to(['group-deletion', 'id' => $formSchedule->id]),
-            'Удалить выбранные',
-            'check[]',
-            ArrayHelper::getColumn($formSchedule->prevLessons, 'id'),
-            $scheduleTable
-        );
+        if (count($formSchedule->lessons) > 0) {
+            $scheduleTable = HtmlBuilder::wrapTableInCheckboxesColumn(
+                Url::to(['group-deletion', 'id' => $formSchedule->id]),
+                'Удалить выбранные',
+                'check[]',
+                ArrayHelper::getColumn($formSchedule->prevLessons, 'id'),
+                $scheduleTable
+            );
+        }
 
         return [
             'formSchedule' => $formSchedule,

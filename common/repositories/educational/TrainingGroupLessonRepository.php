@@ -28,6 +28,11 @@ class TrainingGroupLessonRepository
         return $this->provider->get($id);
     }
 
+    public function getByIds($ids)
+    {
+        return TrainingGroupLessonWork::find()->where(['IN', 'id', $ids])->all();
+    }
+
     public function getLessonsFromGroup($id)
     {
         return $this->provider->getLessonsFromGroup($id);

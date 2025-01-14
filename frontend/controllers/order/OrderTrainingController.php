@@ -15,10 +15,8 @@ use common\repositories\general\OrderPeopleRepository;
 use common\repositories\order\OrderTrainingRepository;
 use common\services\general\files\FileService;
 use DomainException;
-use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
-use frontend\models\work\educational\training_group\TrainingGroupWork;
+use frontend\services\educational\OrderTrainingGroupParticipantService;
 use Yii;
-use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 
 class OrderTrainingController extends DocumentController
@@ -28,7 +26,7 @@ class OrderTrainingController extends DocumentController
     private OrderTrainingService $orderTrainingService;
     private OrderPeopleRepository $orderPeopleRepository;
     private OrderTrainingRepository $orderTrainingRepository;
-    private TrainingGroupRepository $trainingGroupRepository;
+    private OrderTrainingGroupParticipantService $orderTrainingGroupParticipantService;
 
     public function __construct(
         $id,
@@ -38,7 +36,7 @@ class OrderTrainingController extends DocumentController
         OrderTrainingService $orderTrainingService,
         OrderPeopleRepository $orderPeopleRepository,
         OrderTrainingRepository $orderTrainingRepository,
-        TrainingGroupRepository $trainingGroupRepository,
+        OrderTrainingGroupParticipantService $orderTrainingGroupParticipantService,
         FileService $fileService,
         FilesRepository $filesRepository,
         $config = []
@@ -49,7 +47,7 @@ class OrderTrainingController extends DocumentController
         $this->orderTrainingService = $orderTrainingService;
         $this->orderPeopleRepository = $orderPeopleRepository;
         $this->orderTrainingRepository = $orderTrainingRepository;
-        $this->trainingGroupRepository = $trainingGroupRepository;
+        $this->orderTrainingGroupParticipantService = $orderTrainingGroupParticipantService;
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
     }
     public function actionIndex(){
@@ -75,18 +73,7 @@ class OrderTrainingController extends DocumentController
         $model = new OrderTrainingWork();
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
-        $groups = new ActiveDataProvider([
-            'query' => TrainingGroupWork::find(),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-        ]);
-        $groupParticipant = new ActiveDataProvider([
-            'query' => TrainingGroupParticipantWork::find(),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-        ]);
+
         if ($model->load($post)) {
             if (!$model->validate()) {
                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
@@ -95,6 +82,9 @@ class OrderTrainingController extends DocumentController
             $this->orderTrainingService->getFilesInstances($model);
             $model->generateOrderNumber();
             $model->save();
+            $participants = $post['group-participant-selection'];
+            $status = 0;
+            $this->orderTrainingGroupParticipantService->addOrderTrainingGroupParticipantEvent($model, $model->id, $participants, $status);
             $this->orderTrainingService->saveFilesFromModel($model);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $model);
             $model->releaseEvents();
@@ -103,8 +93,8 @@ class OrderTrainingController extends DocumentController
         return $this->render('create', [
             'model' => $model,
             'people' => $people,
-            'groups' => $groups,
-            'groupParticipant' => $groupParticipant,
+            'groups' => $this->orderTrainingRepository->getOrderTrainingGroupData(),
+            'groupParticipant' => $this->orderTrainingRepository->getOrderTrainingGroupParticipantData()
         ]);
     }
     public function actionUpdate($id)
@@ -113,33 +103,32 @@ class OrderTrainingController extends DocumentController
         $people = $this->peopleRepository->getOrderedList();
         $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
         $post = Yii::$app->request->post();
-        $groups = new ActiveDataProvider([
-            'query' => TrainingGroupWork::find(),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-        ]);
-        $groupParticipant = new ActiveDataProvider([
-            'query' => TrainingGroupParticipantWork::find(),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-        ]);
+        $number = $model->order_number;
         if ($model->load($post) && $model->validate()) {
             $this->orderTrainingService->getFilesInstances($model);
+            $model->order_number = $number;
             $model->save();
             $this->orderTrainingService->saveFilesFromModel($model);
             $this->orderTrainingService->updateOrderPeopleEvent(
                 ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
                 $post["OrderTrainingWork"]["responsible_id"], $model);
+            $participants = $post['group-participant-selection'];
+            $status = 0;
+            $this->orderTrainingGroupParticipantService->updateOrderTrainingGroupParticipant($model, $model->id, $participants, $status);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
         return $this->render('update', [
             'model' => $model,
             'people' => $people,
-            'groups' => $groups,
-            'groupParticipant' => $groupParticipant,
+            'groups' => $this->orderTrainingRepository->getOrderTrainingGroupData(),
+            'groupParticipant' => $this->orderTrainingRepository->getOrderTrainingGroupParticipantData()
         ]);
+    }
+    public function actionGetListByBranch()
+    {
+        $branchId = Yii::$app->request->get('branch_id');
+        $nomenclatureList = Yii::$app->nomenclature->getListByBranch($branchId); // Получаем список по номеру отдела
+        return $this->asJson($nomenclatureList); // Возвращаем список в формате JSON
     }
 }

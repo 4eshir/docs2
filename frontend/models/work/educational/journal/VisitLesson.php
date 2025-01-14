@@ -19,6 +19,11 @@ class VisitLesson
         $this->status = $status;
     }
 
+    public function getLessonId()
+    {
+        return $this->lessonId;
+    }
+
     public static function fromString(string $json) : array
     {
         $lessonsArray = json_decode($json, true);
@@ -33,6 +38,15 @@ class VisitLesson
         }
 
         return $visitLessons;
+    }
+
+    /**
+     * @param VisitLesson[] $lessons
+     * @return int[]
+     */
+    public static function getLessonIds(array $lessons)
+    {
+        return array_map(fn($obj) => $obj->getLessonId(), $lessons);
     }
 
     public function __toString()

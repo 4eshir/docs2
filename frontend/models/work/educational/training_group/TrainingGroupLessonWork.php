@@ -48,7 +48,6 @@ class TrainingGroupLessonWork extends TrainingGroupLesson
                $this->lesson_date !== "" &&
                $this->lesson_start_time !== "" &&
                $this->branch !== "" &&
-               $this->auditorium_id !== "" &&
                $this->lesson_end_time !== "" &&
                $this->duration !== "";
     }
