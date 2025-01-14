@@ -12,6 +12,7 @@ use frontend\models\work\educational\journal\VisitLesson;
 use frontend\models\work\educational\journal\VisitWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use yii\helpers\ArrayHelper;
 
 class JournalService
 {
@@ -106,7 +107,38 @@ class JournalService
         $delParticipants = $this->setDifference($currentParticipants, $participants, ParticipantGroupCompare::class);
 
         $lessonString = $this->createLessonString($groupId, $addLessons, $delLessons);
-        var_dump($lessonString);
+
+        var_dump(ArrayHelper::getColumn($currentParticipants, 'participant_id'));
+        var_dump(ArrayHelper::getColumn($participants, 'participant_id'));
+        var_dump(ArrayHelper::getColumn($delParticipants, 'participant_id'));
+
+        $currentVisits = $this->visitRepository->getByTrainingGroup($groupId);
+        foreach ($currentVisits as $visit) {
+            /** @var VisitWork $visit */
+            $visit->lessons = $lessonString;
+            $this->visitRepository->save($visit);
+        }
+
+        foreach ($delParticipants as $participant) {
+            /** @var VisitWork $visit */
+            $visit = $this->visitRepository->getByGroupAndParticipant($groupId, $participant->participant_id);
+            if ($visit) {
+                $this->visitRepository->delete($visit);
+            }
+        }
+
+        if (count($addParticipants) > 0) {
+            foreach ($addParticipants as $participant) {
+                $newVisit = VisitWork::fill(
+                    $groupId,
+                    $participant->participant_id,
+                    $lessonString
+                );
+                $this->visitRepository->save($newVisit);
+            }
+        }
+
+        //var_dump($lessonString);
     }
 
     /**

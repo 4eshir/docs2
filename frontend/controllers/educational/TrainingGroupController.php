@@ -321,17 +321,6 @@ class TrainingGroupController extends DocumentController
             $this->groupLessonRepository->delete($entity);
         }
 
-        $formData = $this->service->prepareFormScheduleData($id);
-        $formSchedule = $formData['formSchedule'];
-        $modelLessons = $formData['modelLessons'];
-        $auditoriums = $formData['auditoriums'];
-        $scheduleTable = $formData['scheduleTable'];
-
-        return $this->render('_form-schedule', [
-            'model' => $formSchedule,
-            'modelLessons' => count($modelLessons) > 0 ? $modelLessons : [new TrainingGroupParticipantWork],
-            'auditoriums' => $auditoriums,
-            'scheduleTable' => $scheduleTable
-        ]);
+        return $this->redirect(['schedule-form', 'id' => $id]);
     }
 }

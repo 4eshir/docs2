@@ -16,7 +16,7 @@ namespace common\models\scaffold;
  * @property int|null $group_project_themes_id
  *
  * @property GroupProjectThemes $groupProjectThemes
- * @property PeopleStamp $participant
+ * @property ForeignEventParticipants $participant
  * @property TrainingGroup $trainingGroup
  */
 class TrainingGroupParticipant extends \yii\db\ActiveRecord
@@ -37,7 +37,7 @@ class TrainingGroupParticipant extends \yii\db\ActiveRecord
         return [
             [['participant_id', 'send_method', 'training_group_id', 'status', 'success', 'points', 'group_project_themes_id'], 'integer'],
             [['certificat_number'], 'string', 'max' => 11],
-            [['participant_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['participant_id' => 'id']],
+            [['participant_id'], 'exist', 'skipOnError' => true, 'targetClass' => ForeignEventParticipants::class, 'targetAttribute' => ['participant_id' => 'id']],
             [['training_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => TrainingGroup::class, 'targetAttribute' => ['training_group_id' => 'id']],
             [['group_project_themes_id'], 'exist', 'skipOnError' => true, 'targetClass' => GroupProjectThemes::class, 'targetAttribute' => ['group_project_themes_id' => 'id']],
         ];
@@ -78,7 +78,7 @@ class TrainingGroupParticipant extends \yii\db\ActiveRecord
      */
     public function getParticipant()
     {
-        return $this->hasOne(PeopleStamp::class, ['id' => 'participant_id']);
+        return $this->hasOne(ForeignEventParticipants::class, ['id' => 'participant_id']);
     }
 
     /**

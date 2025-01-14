@@ -23,6 +23,11 @@ class VisitRepository
         return VisitWork::find()->where(['training_group_id' => $groupId])->all();
     }
 
+    public function getByGroupAndParticipant($groupId, $participantId)
+    {
+        return VisitWork::find()->where(['training_group_id' => $groupId])->andWhere(['participant_id' => $participantId])->one();
+    }
+
     public function delete(VisitWork $visit)
     {
         return $visit->delete();
@@ -39,7 +44,7 @@ class VisitRepository
     public function getParticipantsFromGroup($groupId)
     {
         $visits = $this->getByTrainingGroup($groupId);
-        return (Yii::createObject(TrainingGroupParticipantRepository::class))->getByIds(ArrayHelper::getColumn($visits, 'participant_id'));
+        return (Yii::createObject(TrainingGroupParticipantRepository::class))->getByParticipantIds(ArrayHelper::getColumn($visits, 'participant_id'));
     }
 
     public function getLessonsFromGroup($groupId)
