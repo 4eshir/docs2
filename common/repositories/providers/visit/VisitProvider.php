@@ -1,12 +1,11 @@
 <?php
 
-
-namespace common\repositories\educational;
+namespace common\repositories\providers\visit;
 
 use DomainException;
 use frontend\models\work\educational\journal\VisitWork;
 
-class VisitRepository
+class VisitProvider implements VisitProviderInterface
 {
     public function get($id)
     {
@@ -26,7 +25,7 @@ class VisitRepository
     public function save(VisitWork $visit)
     {
         if (!$visit->save()) {
-            throw new DomainException('Ошибка сохранения образовательной программы. Проблемы: '.json_encode($visit->getErrors()));
+            throw new DomainException('Ошибка сохранения явок. Проблемы: '.json_encode($visit->getErrors()));
         }
         return $visit->id;
     }

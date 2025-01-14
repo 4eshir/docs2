@@ -2,41 +2,71 @@
 
 namespace common\repositories\educational;
 
+use common\repositories\providers\group_participant\TrainingGroupParticipantProvider;
+use common\repositories\providers\group_participant\TrainingGroupParticipantProviderInterface;
+use DomainException;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use Yii;
 
 class TrainingGroupParticipantRepository
 {
+    private $provider;
+
+    public function __construct(
+        TrainingGroupParticipantProviderInterface $provider = null
+    )
+    {
+        if (!$provider) {
+            $provider = Yii::createObject(TrainingGroupParticipantProvider::class);
+        }
+
+        $this->provider = $provider;
+    }
+
     public function get($id)
     {
-        return TrainingGroupParticipantWork::find()->where(['id' => $id])->one();
+        return $this->provider->get($id);
     }
 
     public function getParticipantsFromGroup($groupId)
     {
-        return TrainingGroupParticipantWork::find()->where(['training_group_id' => $groupId])->all();
+        return $this->provider->getParticipantsFromGroup($groupId);
     }
 
     public function prepareCreate($groupId, $participantId, $sendMethod)
     {
-        $model = TrainingGroupParticipantWork::fill($groupId, $participantId, $sendMethod);
-        $model->success = false;
-        $command = Yii::$app->db->createCommand();
-        $command->insert($model::tableName(), $model->getAttributes());
-        return $command->getRawSql();
+        if (get_class($this->provider) == TrainingGroupParticipantProvider::class) {
+            return $this->provider->prepareCreate($groupId, $participantId, $sendMethod);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода prepareCreate');
+        }
     }
 
     public function prepareDelete($id)
     {
-        $command = Yii::$app->db->createCommand();
-        $command->delete(TrainingGroupParticipantWork::tableName(), ['id' => $id]);
-        return $command->getRawSql();
+        if (get_class($this->provider) == TrainingGroupParticipantProvider::class) {
+            return $this->provider->prepareDelete($id);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода prepareDelete');
+        }
     }
 
     public function prepareUpdate($id, $participantId, $sendMethod)
     {
-        $command = Yii::$app->db->createCommand();
-        $command->update('training_group_participant', ['participant_id' => $participantId, 'send_method' => $sendMethod], "id = $id");
-        return $command->getRawSql();
+        if (get_class($this->provider) == TrainingGroupParticipantProvider::class) {
+            return $this->provider->prepareUpdate($id, $participantId, $sendMethod);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода prepareUpdate');
+        }
+    }
+
+    public function save(TrainingGroupParticipantWork $model)
+    {
+        return $this->provider->save($model);
+    }
+
+    public function delete(TrainingGroupParticipantWork $model)
+    {
+        return $this->provider->delete($model);
     }
 }

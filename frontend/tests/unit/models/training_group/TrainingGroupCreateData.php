@@ -19,7 +19,7 @@ class TrainingGroupCreateData
     {
         $this->userRepository = Yii::createObject(
             UserRepository::class,
-            ['userProvider' => Yii::createObject(UserMockProvider::class)]
+            ['provider' => Yii::createObject(UserMockProvider::class)]
         );
 
         $this->fillGroups();

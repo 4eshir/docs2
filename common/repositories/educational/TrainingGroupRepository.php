@@ -12,51 +12,51 @@ class TrainingGroupRepository
 {
     use CommonDatabaseFunctions;
 
-    private $groupProvider;
+    private $provider;
 
     public function __construct(
-        TrainingGroupProviderInterface $groupProvider = null
+        TrainingGroupProviderInterface $provider = null
     )
     {
-        if (!$groupProvider) {
-            $groupProvider = Yii::createObject(TrainingGroupProvider::class);
+        if (!$provider) {
+            $provider = Yii::createObject(TrainingGroupProvider::class);
         }
 
-        $this->groupProvider = $groupProvider;
+        $this->provider = $provider;
     }
 
     public function get($id)
     {
-        return $this->groupProvider->get($id);
+        return $this->provider->get($id);
     }
 
     public function getParticipants($id)
     {
-        return $this->groupProvider->getParticipants($id);
+        return $this->provider->getParticipants($id);
     }
 
     public function getLessons($id)
     {
-        return $this->groupProvider->getLessons($id);
+        return $this->provider->getLessons($id);
     }
 
     public function getExperts($id)
     {
-        return $this->groupProvider->getExperts($id);
+        return $this->provider->getExperts($id);
     }
 
     public function getThemes($id)
     {
-        return $this->groupProvider->getThemes($id);
+        return $this->provider->getThemes($id);
     }
 
     public function save(TrainingGroupWork $group)
     {
-        return $this->groupProvider->save($group);
+        return $this->provider->save($group);
     }
 
     public function delete(TrainingGroupWork $model)
     {
-        return $this->groupProvider->delete($model);
+        return $this->provider->delete($model);
     }
 }

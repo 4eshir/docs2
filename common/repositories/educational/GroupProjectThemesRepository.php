@@ -2,42 +2,46 @@
 
 namespace common\repositories\educational;
 
-use DomainException;
+use common\repositories\providers\group_project_themes\GroupProjectThemesProvider;
+use common\repositories\providers\group_project_themes\GroupProjectThemesProviderInterface;
 use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
 use Yii;
 
 class GroupProjectThemesRepository
 {
+    private $provider;
+
+    public function __construct(GroupProjectThemesProviderInterface $provider = null)
+    {
+        if (!$provider) {
+            $provider = Yii::createObject(GroupProjectThemesProvider::class);
+        }
+
+        $this->provider = $provider;
+    }
+
     public function get($id)
     {
-        return GroupProjectsThemesWork::find()->where(['id' => $id])->one();
+        return $this->provider->get($id);
     }
 
     public function getProjectThemesFromGroup($groupId)
     {
-        return GroupProjectsThemesWork::find()->where(['training_group_id' => $groupId])->all();
+        return $this->provider->getProjectThemesFromGroup($groupId);
     }
 
     public function prepareCreate($groupId, $themeId, $confirm)
     {
-        $model = GroupProjectsThemesWork::fill($groupId, $themeId, $confirm);
-        $command = Yii::$app->db->createCommand();
-        $command->insert($model::tableName(), $model->getAttributes());
-        return $command->getRawSql();
+        return $this->provider->prepareCreate($groupId, $themeId, $confirm);
     }
 
     public function prepareDelete($id)
     {
-        $command = Yii::$app->db->createCommand();
-        $command->delete(GroupProjectsThemesWork::tableName(), ['id' => $id]);
-        return $command->getRawSql();
+        return $this->provider->prepareDelete($id);
     }
 
     public function save(GroupProjectsThemesWork $theme)
     {
-        if (!$theme->save()) {
-            throw new DomainException('Ошибка сохранения связки учебной группы и темы проекта. Проблемы: '.json_encode($theme->getErrors()));
-        }
-        return $theme->id;
+        return $this->provider->save($theme);
     }
 }

@@ -12,30 +12,30 @@ class UserRepository
 {
     use CommonDatabaseFunctions;
 
-    private $userProvider;
+    private $provider;
 
-    public function __construct(UserProviderInterface $userProvider = null)
+    public function __construct(UserProviderInterface $provider = null)
     {
-        if (!$userProvider) {
-            $userProvider = Yii::createObject(UserProvider::class);
+        if (!$provider) {
+            $provider = Yii::createObject(UserProvider::class);
         }
 
-        $this->userProvider = $userProvider;
+        $this->provider = $provider;
     }
 
     public function get($id)
     {
-        return $this->userProvider->get($id);
+        return $this->provider->get($id);
     }
 
     public function getAll()
     {
-        return $this->userProvider->getAll();
+        return $this->provider->getAll();
     }
 
     public function findByUsername($username)
     {
-        return $this->userProvider->getByUsername($username);
+        return $this->provider->getByUsername($username);
     }
 
     public function changePassword($password, $userId)
@@ -52,6 +52,6 @@ class UserRepository
 
     public function save(UserWork $user)
     {
-        return $this->userProvider->save($user);
+        return $this->provider->save($user);
     }
 }
