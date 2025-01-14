@@ -14,11 +14,10 @@ class VisitWork extends Visit
     /** @var VisitLesson[] $visitLessons */
     public array $visitLessons;
 
-    public static function fill($groupId, int $participantId, string $lessons = '')
+    public static function fill(int $groupParticipantId, string $lessons = '')
     {
         $entity = new static();
-        $entity->training_group_id = $groupId;
-        $entity->participant_id = $participantId;
+        $entity->training_group_participant_id = $groupParticipantId;
         $entity->lessons = $lessons;
 
         return $entity;

@@ -8,11 +8,10 @@ use Yii;
  * This is the model class for table "visit".
  *
  * @property int $id
- * @property int|null $training_group_id
- * @property int|null $participant_id
+ * @property int|null $training_group_participant_id
  * @property string|null $lessons
  *
- * @property ForeignEventParticipants $participant
+ * @property TrainingGroupParticipant $groupParticipant
  */
 class Visit extends \yii\db\ActiveRecord
 {
@@ -32,8 +31,7 @@ class Visit extends \yii\db\ActiveRecord
         return [
             [['participant_id', 'training_group_id'], 'integer'],
             [['lessons'], 'string'],
-            [['participant_id'], 'exist', 'skipOnError' => true, 'targetClass' => ForeignEventParticipants::class, 'targetAttribute' => ['participant_id' => 'id']],
-            [['training_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => TrainingGroup::class, 'targetAttribute' => ['training_group_id' => 'id']],
+            [['training_group_participant_id'], 'exist', 'skipOnError' => true, 'targetClass' => TrainingGroupParticipant::class, 'targetAttribute' => ['training_group_participant_id' => 'id']],
         ];
     }
 
@@ -44,19 +42,8 @@ class Visit extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'participant_id' => 'Participant ID',
             'lessons' => 'Lessons',
         ];
-    }
-
-    /**
-     * Gets query for [[Participant]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getParticipant()
-    {
-        return $this->hasOne(ForeignEventParticipants::class, ['id' => 'participant_id']);
     }
 
     /**
@@ -64,8 +51,8 @@ class Visit extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTrainingGroup()
+    public function getTrainingGroupParticipant()
     {
-        return $this->hasOne(TrainingGroup::class, ['id' => 'training_group_id']);
+        return $this->hasOne(TrainingGroupParticipant::class, ['id' => 'training_group_participant_id']);
     }
 }
