@@ -59,4 +59,8 @@ class TrainingGroupRepository
     {
         return $this->provider->delete($model);
     }
+    public function getByBranch($branch)
+    {
+        return TrainingGroupWork::find()->where(['branch' => $branch]);
+    }
 }
