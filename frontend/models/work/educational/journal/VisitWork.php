@@ -3,7 +3,11 @@
 namespace frontend\models\work\educational\journal;
 
 use common\models\scaffold\Visit;
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 
+/**
+ * @property TrainingGroupParticipantWork $trainingGroupParticipantWork
+ */
 class VisitWork extends Visit
 {
     const NONE = 0;
@@ -33,5 +37,10 @@ class VisitWork extends Visit
         }, $this->visitLessons);
 
         $this->lessons = json_encode($lessonsArray);
+    }
+
+    public function getTrainingGroupParticipantWork()
+    {
+        return $this->hasOne(TrainingGroupParticipantWork::class, ['id' => 'training_group_participant_id']);
     }
 }

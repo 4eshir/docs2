@@ -36,22 +36,6 @@ class JournalService
         $this->participantRepository = $participantRepository;
     }
 
-    public function generateJournal($groupId)
-    {
-        $status = $this->checkJournalStatus($groupId);
-        $lessons = $this->lessonRepository->getLessonsFromGroup($groupId);
-        $participants = $this->participantRepository->getParticipantsFromGroup($groupId);
-
-        switch ($status) {
-            case self::JOURNAL_EMPTY:
-                return $this->createJournal($groupId, $lessons, $participants);
-            case self::JOURNAL_EXIST:
-                return $this->updateJournal($groupId, $lessons, $participants);
-            default:
-                break;
-        }
-    }
-
     public function checkJournalStatus($groupId)
     {
         $visits = $this->visitRepository->getByTrainingGroup($groupId);
@@ -65,31 +49,38 @@ class JournalService
 
     /**
      * @param $groupId
-     * @param TrainingGroupLessonWork[] $lessons
-     * @param TrainingGroupParticipantWork[] $participants
      */
-    public function createJournal($groupId, array $lessons, array $participants)
+    public function createJournal($groupId)
     {
+        $lessons = $this->lessonRepository->getLessonsFromGroup($groupId);
+        $participants = $this->participantRepository->getParticipantsFromGroup($groupId);
+
         // Конвертируем занятия
         $newLessons = [];
         foreach ($lessons as $lesson) {
             $newLessons[] = new VisitLesson($lesson->id, VisitWork::NONE);
         }
 
-        // Удаляем существующий журнал
-        $visits = $this->visitRepository->getByTrainingGroup($groupId);
-        foreach ($visits as $visit) {
-            $this->visitRepository->delete($visit);
-        }
+        $this->deleteJournal($groupId);
 
         // Создаем новый журнал
         foreach ($participants as $participant) {
             $visit = VisitWork::fill(
-                $groupId,
-                $participant->participant_id,
+                $participant->id,
                 TrainingGroupLessonWork::convertLessonsToJson($newLessons) ? : ''
             );
             $this->visitRepository->save($visit);
+        }
+
+        return true;
+    }
+
+    public function deleteJournal($groupId)
+    {
+        // Удаляем существующий журнал
+        $visits = $this->visitRepository->getByTrainingGroup($groupId);
+        foreach ($visits as $visit) {
+            $this->visitRepository->delete($visit);
         }
 
         return true;
@@ -147,7 +138,7 @@ class JournalService
      * @param TrainingGroupLessonWork[] $delLessons
      * @return false|string
      */
-    private function createLessonString($groupId, array $addLessons, array $delLessons)
+    public function createLessonString($groupId, array $addLessons, array $delLessons)
     {
         $curLessonsString = $this->visitRepository->getByTrainingGroup($groupId)[0]->lessons;
         $curLessonsJson = json_decode($curLessonsString);

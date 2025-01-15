@@ -36,6 +36,15 @@ class VisitRepository
         return $this->provider->getByTrainingGroup($groupId);
     }
 
+    public function getByGroupAndParticipant($groupId, $participantId)
+    {
+        return VisitWork::find()
+            ->joinWith(['trainingGroupParticipantWork trainingGroupParticipantWork'])
+            ->where(['trainingGroupParticipantWork.training_group_id' => $groupId])
+            ->andWhere(['trainingGroupParticipantWork.participant_id' => $participantId])
+            ->one();
+    }
+
     public function delete(VisitWork $visit)
     {
         return $this->provider->delete($visit);
@@ -62,5 +71,16 @@ class VisitRepository
         } else {
             throw new DomainException('Mock-провайдер не имеет реализации метода getLessonsFromGroup');
         }
+    }
+
+    public function prepareUpdateLessons($visitIds, $lessons)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->update(
+            'visit',
+            ['lessons' => $lessons],
+            ['IN', 'id ', $visitIds],
+        );
+        return $command->getRawSql();
     }
 }

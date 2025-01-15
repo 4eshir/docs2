@@ -29,7 +29,7 @@ class Visit extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['participant_id', 'training_group_id'], 'integer'],
+            [['training_group_participant_id'], 'integer'],
             [['lessons'], 'string'],
             [['training_group_participant_id'], 'exist', 'skipOnError' => true, 'targetClass' => TrainingGroupParticipant::class, 'targetAttribute' => ['training_group_participant_id' => 'id']],
         ];

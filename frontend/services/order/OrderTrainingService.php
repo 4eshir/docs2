@@ -28,6 +28,24 @@ class OrderTrainingService
         $this->filenameGenerator = $filenameGenerator;
         $this->orderMainService = $orderMainService;
     }
+    public function setStatus($number)
+    {
+        if ($number == '09-01') {
+
+        }
+        else if ($number == 1) {
+
+        }
+        else if ($number == 2) {
+
+        }
+        else if ($number == 3) {
+
+        }
+        else {
+            return false;
+        }
+    }
     public function createOrderPeopleArray(array $data)
     {
         $result = [];
