@@ -126,29 +126,9 @@ class OrderTrainingWork extends OrderMain
         $this->order_number = $numberPostfix['number'];
         $this->order_postfix = $numberPostfix['postfix'];
     }
-    public function setStatus()
+    public function setBranch($branch)
     {
-        // зачисление
-        if($this->order_number == NomenclatureDictionary::COD_ADD || $this->order_number == NomenclatureDictionary::TECHNOPARK_ADD
-         || $this->order_number == NomenclatureDictionary::TECHNOPARK_ADD_BUDGET || $this->order_number == NomenclatureDictionary::QUANTORIUM_ADD
-         || $this->order_number == NomenclatureDictionary::CDNTT_ADD || $this->order_number == NomenclatureDictionary::CDNTT_ADD_BUDGET
-         || $this->order_number == NomenclatureDictionary::MOB_QUANT_ADD || $this->order_number == NomenclatureDictionary::QUANTORIUM_ADD_BUDGET){
-            return 1;
-        }
-        // отчисление
-        if ($this->order_number == NomenclatureDictionary::COD_DEL || $this->order_number == NomenclatureDictionary::TECHNOPARK_DEL
-            || $this->order_number == NomenclatureDictionary::TECHNOPARK_DEL_BUDGET || $this->order_number == NomenclatureDictionary::QUANTORIUM_DEL
-            || $this->order_number == NomenclatureDictionary::CDNTT_DEL || $this->order_number == NomenclatureDictionary::CDNTT_DEL_BUDGET
-            || $this->order_number == NomenclatureDictionary::MOB_QUANT_DEL || $this->order_number == NomenclatureDictionary::QUANTORIUM_DEL_BUDGET) {
-            return 2;
-        }
-        // перевод
-        if($this->order_number == NomenclatureDictionary::CDNTT_TRANSFER){
-            return 3;
-        }
-
-
-        return 1;
+        $this->branch = $branch;
     }
     public function beforeValidate()
     {

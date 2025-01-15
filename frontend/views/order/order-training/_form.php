@@ -62,44 +62,10 @@ use yii\widgets\Pjax;
     )->label('Код и описание номенклатуры');
     ?>
     <div class="training-group">
-        <?= $this->render('_groups_grid', ['dataProvider' => $groups]) ?>
+        <?= $this->render('_groups_grid', ['dataProvider' => $groups, 'model' => $model]) ?>
     </div>
     <div class="training-group-participant">
-        <?php
-        echo GridView::widget([
-            'dataProvider' => $groupParticipant,
-            'columns' => [
-                [
-                    'class' => 'yii\grid\CheckboxColumn',
-                    'name' => 'group-participant-selection',
-                    'checkboxOptions' => function (TrainingGroupParticipantWork $participant) use ($model) {
-                        return [
-                            'class' => 'group-participant-checkbox' ,
-                            'training-group-id' => $participant->training_group_id,
-                            'data-id' => $participant->id, // Добавляем ID группы для передачи в JS
-                            'checked' => $participant->getOrderTrainingGroupParticipantRelation($model->id) == 1,
-                        ];
-                    },
-                ],
-                'training_group_id',
-                'fullFio',
-                'id'
-            ],
-            'rowOptions' => function ($model, $key, $index) {
-                return ['id' => 'row-' . $model->id, 'class' => 'row-class-' . $index, 'name' => 'row-' . $model->training_group_id, 'style' => 'display: none;'];
-            },
-            'tableOptions' => [
-                'class' => 'table table-striped table-bordered',
-                'style' => 'position: relative;', // Необязательно, для кастомизации таблицы
-            ],
-            'headerRowOptions' => [
-                'style' => 'display: none;', // Скрываем <thead>
-            ],
-            'summaryOptions' => [
-                'style' => 'display: none;', // Скрыть блок через CSS
-            ],
-        ]);
-        ?>
+        <?= $this->render('_group-participant_grid', ['dataProvider' => $groupParticipant, 'model' => $model]) ?>
     </div>
     <?= $form->field($model, 'order_name')->textInput()->label('Наименование приказа') ;?>
     <div id="bring_id">
@@ -161,25 +127,26 @@ use yii\widgets\Pjax;
         <?php ActiveForm::end(); ?>
 </div>
 <?php
-
-$this->registerJs("
+    $this->registerJs("
     $(document).on('change', '.group-checkbox', function () {
-        const groupId = $(this).data('id');
-        const isChecked = $(this).is(':checked');
-        if (isChecked) {
-            var elements = document.getElementsByName('row-' + groupId);
-            Array.from(elements).forEach(element => {
-                element.style.display = 'block'; // Скрываем элемент
-            });
-        }
-        else {
-            var elements = document.getElementsByName('row-' + groupId);
-            Array.from(elements).forEach(element => {
-                element.style.display = 'none'; // Скрываем элемент
-            });
-        }
-    });
-");
+        const checkedCheckboxes = $('.group-checkbox:checked'); 
+        const groupIds = [];
+        checkedCheckboxes.each(function () {
+            groupIds.push($(this).data('id')); // Собираем ID всех выбранных чекбоксов
+        });  
+        $.ajax({
+            url: '" . Url::to(['get-group-participants-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
+            type: 'GET',
+            data: { groupIds: JSON.stringify(groupIds) }, // Отправляем массив ID
+            success: function (data) {
+                var gridView = $('.training-group-participant .grid-view');
+                gridView.html(data.gridHtml); // Обновляем HTML GridView
+            },
+            error: function() {
+                alert('Ошибка при загрузке данных.');
+            }
+        });
+    });");
 ?>
 <?php
     $this->registerJs("
@@ -205,7 +172,6 @@ $this->registerJs("
 <?php
 $this->registerJs("$('#branch-dropdown').on('change', function() {
     var branchId = $(this).val();
-
     $.ajax({
         url:'" . Url::to(['order/order-training/get-group-by-branch']) . "',
         type: 'GET',
@@ -213,41 +179,31 @@ $this->registerJs("$('#branch-dropdown').on('change', function() {
         success: function(data) {
             var gridView = $('.training-group .grid-view');
             gridView.html(data.gridHtml); // Обновляем HTML GridView
-          
         },
         error: function() {
             alert('Ошибка при загрузке данных.');
         }
     });
 });");
-?>
-    <?php
-    $this->registerJs("$('#order-number-dropdown').on('change', function() {
-    var type = $(this).val();
-    $.ajax({
-        url:'" . Url::to(['order/order-training/get-group-participants-by-branch']) . "',
-        type: 'GET',
-        data: { type: type },
-        success: function(data) {
-            console.log(data);
-        },
-        error: function() {
-            alert('Ошибка при загрузке данных.');
-        }
-    });
-});");
-    ?>
-<script>
+$this->registerJs("
     window.onload = function () {
-        var checkboxes = document.getElementsByClassName('group-checkbox');
-        Array.from(checkboxes).forEach(function(checkbox) {
-            if (checkbox.checked) {
-                var elements = document.getElementsByName('row-' + checkbox.getAttribute('data-id'));
-                Array.from(elements).forEach(element => {
-                    element.style.display = 'block'; // Скрываем элемент
-                    console.log(element);
-                });
+        const checkedCheckboxes = $('.group-checkbox:checked'); 
+        const groupIds = [];
+        checkedCheckboxes.each(function () {
+            groupIds.push($(this).data('id')); // Собираем ID всех выбранных чекбоксов
+        });  
+        $.ajax({
+            url: '" . Url::to(['get-group-participants-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
+            type: 'GET',
+            data: { groupIds: JSON.stringify(groupIds) }, // Отправляем массив ID
+            success: function (data) {
+                var gridView = $('.training-group-participant .grid-view');
+                gridView.html(data.gridHtml); // Обновляем HTML GridView
+            },
+            error: function() {
+                alert('Ошибка при загрузке данных.');
             }
         });
     };
-</script>
+");
+?>

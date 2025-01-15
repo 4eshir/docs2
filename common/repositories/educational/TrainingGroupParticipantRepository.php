@@ -6,6 +6,7 @@ use common\repositories\providers\group_participant\TrainingGroupParticipantProv
 use common\repositories\providers\group_participant\TrainingGroupParticipantProviderInterface;
 use DomainException;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use Mpdf\Tag\Tr;
 use Yii;
 
 class TrainingGroupParticipantRepository
@@ -76,5 +77,17 @@ class TrainingGroupParticipantRepository
     public function delete(TrainingGroupParticipantWork $model)
     {
         return $this->provider->delete($model);
+    }
+    public function getAllByGroupQuery($id)
+    {
+        return TrainingGroupParticipantWork::find()->where(['training_group_id' => $id]);
+    }
+    public function getAll($id)
+    {
+        return TrainingGroupParticipantWork::find()->where(['id' => $id])->all();
+    }
+    public function getParticipantByGroupIdQuery($groupId)
+    {
+        return TrainingGroupParticipantWork::find()->where(['training_group_id' => $groupId]);
     }
 }
