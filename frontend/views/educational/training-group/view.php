@@ -4,12 +4,14 @@ use common\helpers\StringFormatter;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\services\educational\JournalService;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model TrainingGroupCombinedForm */
+/* @var $journalState */
 
 $this->title = $model->number;
 $this->params['breadcrumbs'][] = ['label' => 'Учебные группы', 'url' => ['index']];
@@ -57,7 +59,11 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
 
     <p>
         <?= Html::a('Редактировать', ['base-form', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Создать журнал', ['generate-journal', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+        <?php if ($journalState == JournalService::JOURNAL_EMPTY): ?>
+            <?= Html::a('Создать журнал', ['generate-journal', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+        <?php elseif ($journalState == JournalService::JOURNAL_EXIST): ?>
+            <?= Html::a('Удалить журнал', ['delete-journal', 'id' => $model->id], ['class' => 'btn btn-danger']) ?>
+        <?php endif; ?>
         <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [

@@ -287,12 +287,32 @@ class TrainingGroupController extends DocumentController
 
         return $this->render('view', [
             'model' => $form,
+            'journalState' => $this->journalService->checkJournalStatus($id)
         ]);
     }
 
     public function actionGenerateJournal($id)
     {
-        $result = $this->journalService->generateJournal($id);
+        $result = $this->journalService->createJournal($id);
+        if ($result) {
+            Yii::$app->session->setFlash('success', 'Журнал успешно создан');
+        }
+        else {
+            Yii::$app->session->setFlash('danger', 'Ошибка создания журнала');
+        }
+        return $this->redirect(['view', 'id' => $id]);
+    }
+
+    public function actionDeleteJournal($id)
+    {
+        $result = $this->journalService->deleteJournal($id);
+        if ($result) {
+            Yii::$app->session->setFlash('success', 'Журнал успешно удален');
+        }
+        else {
+            Yii::$app->session->setFlash('danger', 'Ошибка удаления журнала');
+        }
+        return $this->redirect(['view', 'id' => $id]);
     }
 
     public function actionDelete($id)

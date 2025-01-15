@@ -18,12 +18,19 @@ class VisitRepository
 
     public function getByTrainingGroup($groupId)
     {
-        return VisitWork::find()->where(['training_group_id' => $groupId])->all();
+        return VisitWork::find()
+            ->joinWith(['trainingGroupParticipantWork trainingGroupParticipantWork'])
+            ->where(['IN', 'trainingGroupParticipantWork.training_group_id', $groupId])
+            ->all();
     }
 
     public function getByGroupAndParticipant($groupId, $participantId)
     {
-        return VisitWork::find()->where(['training_group_id' => $groupId])->andWhere(['participant_id' => $participantId])->one();
+        return VisitWork::find()
+            ->joinWith(['trainingGroupParticipantWork trainingGroupParticipantWork'])
+            ->where(['trainingGroupParticipantWork.training_group_id' => $groupId])
+            ->andWhere(['trainingGroupParticipantWork.participant_id' => $participantId])
+            ->one();
     }
 
     public function delete(VisitWork $visit)
@@ -48,8 +55,22 @@ class VisitRepository
     public function getLessonsFromGroup($groupId)
     {
         /** @var VisitWork $visit */
-        $visit = VisitWork::find()->where(['training_group_id' => $groupId])->one();
+        $visit = VisitWork::find()
+            ->joinWith(['trainingGroupParticipantWork trainingGroupParticipantWork'])
+            ->where(['IN', 'trainingGroupParticipantWork.training_group_id', $groupId])
+            ->one();
         $lessonIds = VisitLesson::getLessonIds(VisitLesson::fromString($visit->lessons));
         return (Yii::createObject(TrainingGroupLessonRepository::class))->getByIds($lessonIds);
+    }
+
+    public function prepareUpdateLessons($visitIds, $lessons)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->update(
+            'visit',
+            ['lessons' => $lessons],
+            ['IN', 'id ', $visitIds],
+        );
+        return $command->getRawSql();
     }
 }

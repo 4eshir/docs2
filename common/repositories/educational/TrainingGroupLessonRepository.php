@@ -5,6 +5,8 @@ namespace common\repositories\educational;
 use common\repositories\providers\group_lesson\TrainingGroupLessonProvider;
 use common\repositories\providers\group_lesson\TrainingGroupLessonProviderInterface;
 use DomainException;
+use frontend\events\visit\AddLessonToVisitEvent;
+use frontend\events\visit\DeleteLessonFromVisitEvent;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use Yii;
 
@@ -56,8 +58,21 @@ class TrainingGroupLessonRepository
         }
     }
 
-    public function delete(TrainingGroupLessonWork $model)
+    public function delete(TrainingGroupLessonWork $lesson)
     {
-        return $model->delete();
+        $lesson->recordEvent(new DeleteLessonFromVisitEvent($lesson->training_group_id, [$lesson]), get_class($lesson));
+        $lesson->releaseEvents();
+        return $lesson->delete();
+    }
+
+    public function save(TrainingGroupLessonWork $lesson)
+    {
+        $lesson->recordEvent(new AddLessonToVisitEvent($lesson->training_group_id, [$lesson]), get_class($lesson));
+
+        if (!$lesson->save()) {
+            throw new DomainException('Ошибка сохранения образовательной программы. Проблемы: '.json_encode($lesson->getErrors()));
+        }
+        $lesson->releaseEvents();
+        return $lesson->id;
     }
 }
