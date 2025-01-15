@@ -15,8 +15,11 @@ use common\repositories\general\OrderPeopleRepository;
 use common\repositories\order\OrderTrainingRepository;
 use common\services\general\files\FileService;
 use DomainException;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\services\educational\OrderTrainingGroupParticipantService;
 use Yii;
+use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
 use yii\helpers\ArrayHelper;
 
 class OrderTrainingController extends DocumentController
@@ -27,6 +30,7 @@ class OrderTrainingController extends DocumentController
     private OrderPeopleRepository $orderPeopleRepository;
     private OrderTrainingRepository $orderTrainingRepository;
     private OrderTrainingGroupParticipantService $orderTrainingGroupParticipantService;
+    private TrainingGroupRepository $trainingGroupRepository;
 
     public function __construct(
         $id,
@@ -37,6 +41,7 @@ class OrderTrainingController extends DocumentController
         OrderPeopleRepository $orderPeopleRepository,
         OrderTrainingRepository $orderTrainingRepository,
         OrderTrainingGroupParticipantService $orderTrainingGroupParticipantService,
+        TrainingGroupRepository $trainingGroupRepository,
         FileService $fileService,
         FilesRepository $filesRepository,
         $config = []
@@ -48,6 +53,7 @@ class OrderTrainingController extends DocumentController
         $this->orderPeopleRepository = $orderPeopleRepository;
         $this->orderTrainingRepository = $orderTrainingRepository;
         $this->orderTrainingGroupParticipantService = $orderTrainingGroupParticipantService;
+        $this->trainingGroupRepository = $trainingGroupRepository;
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
     }
     public function actionIndex(){
@@ -93,7 +99,7 @@ class OrderTrainingController extends DocumentController
         return $this->render('create', [
             'model' => $model,
             'people' => $people,
-            'groups' => $this->orderTrainingRepository->getOrderTrainingGroupData(),
+            'groups' => $this->orderTrainingRepository->getEmptyOrderTrainingGroupList(),
             'groupParticipant' => $this->orderTrainingRepository->getOrderTrainingGroupParticipantData()
         ]);
     }
@@ -131,4 +137,21 @@ class OrderTrainingController extends DocumentController
         $nomenclatureList = Yii::$app->nomenclature->getListByBranch($branchId); // Получаем список по номеру отдела
         return $this->asJson($nomenclatureList); // Возвращаем список в формате JSON
     }
+    public function actionGetGroupByBranch($branch)
+    {
+        $groupsQuery = $this->trainingGroupRepository->getByBranch($branch);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $groupsQuery,
+        ]);
+        return $this->asJson([
+            'gridHtml' => $this->renderPartial('_groups_grid', [
+                'dataProvider' => $dataProvider,
+            ]),
+        ]);
+    }
+    public function actionGetGroupParticipantsByBranch($type)
+    {
+        var_dump($type);
+    }
+
 }

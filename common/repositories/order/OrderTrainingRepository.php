@@ -31,4 +31,9 @@ class OrderTrainingRepository
         ]);
         return $groupParticipant;
     }
+    public function getEmptyOrderTrainingGroupList(){
+        return  new ActiveDataProvider([
+            'query' => TrainingGroupWork::find()->where('0=1'), // Пустой результат
+        ]);
+    }
 }

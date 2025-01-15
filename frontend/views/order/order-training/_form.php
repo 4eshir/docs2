@@ -9,6 +9,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
+use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $model */
@@ -60,53 +61,8 @@ use yii\widgets\ActiveForm;
         ]
     )->label('Код и описание номенклатуры');
     ?>
-    <?php $this->registerJs("
-        $('#branch-dropdown').on('change', function() {
-            var branchId = $(this).val();
-            
-            $.ajax({
-                url: '" . Url::to(['order/order-training/get-list-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
-                type: 'GET',
-                data: { branch_id: branchId },
-                success: function(data) {
-                    var options;
-                    $.each(data, function(index, value) {
-                        options += '<option value=\"' + index + '\">' + value + '</option>';
-                    });
-                    $('#order-number-dropdown').html(options); // Обновляем второй выпадающий список
-                }
-            });
-        });
-");
-    ?>
-
-
-
     <div class="training-group">
-        <?php
-        echo GridView::widget([
-            'dataProvider' => $groups,
-            'columns' => [
-                [
-                    'class' => 'yii\grid\CheckboxColumn',
-                    'name' => 'group-selection',
-                    'checkboxOptions' => function (TrainingGroupWork $group) use ($model) {
-                        return [
-                            'class' => 'group-checkbox',
-                            'data-id' => $group->id, // Добавляем ID группы для передачи в JS
-                            'checked' => $group->getOrderGroupRelation($model->id) == 1,
-                        ];
-                    },
-                ],
-                'number',
-                'start_date',
-                'finish_date',
-            ],
-            'summaryOptions' => [
-                'style' => 'display: none;', // Скрыть блок через CSS
-            ],
-        ]);
-        ?>
+        <?= $this->render('_groups_grid', ['dataProvider' => $groups]) ?>
     </div>
     <div class="training-group-participant">
         <?php
@@ -225,6 +181,62 @@ $this->registerJs("
     });
 ");
 ?>
+<?php
+    $this->registerJs("
+        $('#branch-dropdown').on('change', function() {
+            var branchId = $(this).val();
+            
+            $.ajax({
+                url: '" . Url::to(['order/order-training/get-list-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
+                type: 'GET',
+                data: { branch_id: branchId },
+                success: function(data) {
+                    var options;
+                    options = '<option value=\"\">---</option>';
+                    $.each(data, function(index, value) {
+                        options += '<option value=\"' + index + '\">' + value + '</option>';
+                    });
+                    $('#order-number-dropdown').html(options); // Обновляем второй выпадающий список
+                }
+            });
+        });
+    ");
+?>
+<?php
+$this->registerJs("$('#branch-dropdown').on('change', function() {
+    var branchId = $(this).val();
+
+    $.ajax({
+        url:'" . Url::to(['order/order-training/get-group-by-branch']) . "',
+        type: 'GET',
+        data: { branch: branchId },
+        success: function(data) {
+            var gridView = $('.training-group .grid-view');
+            gridView.html(data.gridHtml); // Обновляем HTML GridView
+          
+        },
+        error: function() {
+            alert('Ошибка при загрузке данных.');
+        }
+    });
+});");
+?>
+    <?php
+    $this->registerJs("$('#order-number-dropdown').on('change', function() {
+    var type = $(this).val();
+    $.ajax({
+        url:'" . Url::to(['order/order-training/get-group-participants-by-branch']) . "',
+        type: 'GET',
+        data: { type: type },
+        success: function(data) {
+            console.log(data);
+        },
+        error: function() {
+            alert('Ошибка при загрузке данных.');
+        }
+    });
+});");
+    ?>
 <script>
     window.onload = function () {
         var checkboxes = document.getElementsByClassName('group-checkbox');
