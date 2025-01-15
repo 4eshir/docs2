@@ -43,6 +43,7 @@ use common\models\scaffold\Regulation;
 use common\models\scaffold\RussianNames;
 use common\models\scaffold\ThematicPlan;
 use common\models\scaffold\TrainingProgram;
+use common\models\scaffold\Visit;
 use common\models\User;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\general\RussianNamesWork;
@@ -96,6 +97,7 @@ class TableDictionary extends BaseDictionary
             TrainingProgram::tableName() => 'Учебные программы',
             User::tableName() => 'Пользователи',
             UserPermissionFunctionWork::tableName() => 'Пользователи-функции Rule-Based Access Model',
+            Visit::tableName() => 'Явки/неявки учеников на занятия'
         ];
     }
 

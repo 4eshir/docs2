@@ -6,6 +6,8 @@ use app\events\dictionaries\PeoplePositionCompanyBranchEventDelete;
 use common\components\traits\CommonDatabaseFunctions;
 use common\helpers\SortHelper;
 use common\repositories\general\PeoplePositionCompanyBranchRepository;
+use common\repositories\providers\people\PeopleProvider;
+use common\repositories\providers\people\PeopleProviderInterface;
 use DomainException;
 use frontend\models\work\general\PeopleWork;
 use Yii;
@@ -15,41 +17,58 @@ class PeopleRepository
 {
     use CommonDatabaseFunctions;
 
-    private PeoplePositionCompanyBranchRepository $peoplePositionCompanyBranchRepository;
+    private $provider;
 
-    public function __construct(PeoplePositionCompanyBranchRepository $peoplePositionCompanyBranchRepository)
+    public function __construct(
+        PeopleProviderInterface $provider = null
+    )
     {
-        $this->peoplePositionCompanyBranchRepository = $peoplePositionCompanyBranchRepository;
+        if (!$provider) {
+            $provider = Yii::createObject(PeopleProvider::class);
+        }
+
+        $this->provider = $provider;
     }
+
     public function prepareCreate($name, $surname, $patronymic)
     {
-        $model = PeopleWork::fill($name, $surname, $patronymic);
-        $command = Yii::$app->db->createCommand();
-        $command->insert($model::tableName(), $model->getAttributes());
-        return $command->getRawSql();
+        if (get_class($this->provider) == PeopleProvider::class) {
+            return $this->provider->prepareCreate($name, $surname, $patronymic);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода prepareCreate');
+        }
     }
 
     public function get($id)
     {
-        return PeopleWork::find()->where(['id' => $id])->one();
+        return $this->provider->get($id);
     }
 
     public function getPositionsCompanies($id)
     {
-        return $this->peoplePositionCompanyBranchRepository->getByPeople($id);
+        if (get_class($this->provider) == PeopleProvider::class) {
+            return $this->provider->getPositionsCompanies($id);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода getPositionsCompanies');
+        }
     }
 
     public function getLastPositionsCompanies($id)
     {
-        return $this->getPositionsCompanies($id)[0];
+        if (get_class($this->provider) == PeopleProvider::class) {
+            return $this->provider->getLastPositionsCompanies($id);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода getLastPositionsCompanies');
+        }
     }
 
     public function getCompaniesPositionsByPeople($peopleId)
     {
-        return [
-            $this->peoplePositionCompanyBranchRepository->getCompaniesByPeople($peopleId),
-            $this->peoplePositionCompanyBranchRepository->getPositionsByPeople($peopleId)
-        ];
+        if (get_class($this->provider) == PeopleProvider::class) {
+            return $this->provider->getCompaniesPositionsByPeople($peopleId);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода getCompaniesPositionsByPeople');
+        }
     }
 
     /**
@@ -61,57 +80,38 @@ class PeopleRepository
      */
     public function getOrderedList(int $orderedType = SortHelper::ORDER_TYPE_ID, int $orderDirection = SORT_DESC, $baseQuery = null)
     {
-        $query = $baseQuery ?: PeopleWork::find();
-        if (SortHelper::orderedAvailable(Yii::createObject(PeopleWork::class), $orderedType, $orderDirection)) {
-            switch ($orderedType) {
-                case SortHelper::ORDER_TYPE_ID:
-                    $query->orderBy(['id' => $orderDirection]);
-                    break;
-                case SortHelper::ORDER_TYPE_FIO:
-                    $query->orderBy(['surname' => $orderDirection, 'firstname' => $orderDirection, 'patronymic' => $orderDirection]);
-                    break;
-                default:
-                    throw new DomainException('Что-то пошло не так');
-            }
+        if (get_class($this->provider) == PeopleProvider::class) {
+            return $this->provider->getOrderedList($orderedType, $orderDirection, $baseQuery);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода getOrderedList');
         }
-        else {
-            throw new DomainException('Невозможно произвести сортировку по таблице ' . PeopleWork::tableName());
-        }
-
-        return $query->all();
     }
 
     public function getPeopleFromMainCompany()
     {
-        $query = PeopleWork::find()
-            ->where(['IN', 'id', $this->peoplePositionCompanyBranchRepository->getPeopleByCompany(Yii::$app->params['mainCompanyId'])]);
-
-        return $this->getOrderedList(SortHelper::ORDER_TYPE_FIO, SORT_ASC, $query);
+        if (get_class($this->provider) == PeopleProvider::class) {
+            return $this->provider->getPeopleFromMainCompany();
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода getPeopleFromMainCompany');
+        }
     }
 
     public function deletePosition($id)
     {
-        return $this->peoplePositionCompanyBranchRepository->delete($id);
+        if (get_class($this->provider) == PeopleProvider::class) {
+            return $this->provider->deletePosition($id);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода deletePosition');
+        }
     }
 
     public function save(PeopleWork $people)
     {
-        if (!$people->save()) {
-            throw new DomainException('Ошибка сохранения человека. Проблемы: '.json_encode($people->getErrors()));
-        }
-
-        return $people->id;
+        return $this->provider->save($people);
     }
 
     public function delete(PeopleWork $model)
     {
-        $positions = $this->peoplePositionCompanyBranchRepository->getByPeople($model->id);
-        foreach ($positions as $position) {
-            $model->recordEvent(new PeoplePositionCompanyBranchEventDelete($position->id), get_class($model));
-        }
-
-        $model->releaseEvents();
-
-        return $model->delete();
+        return $this->provider->delete($model);
     }
 }

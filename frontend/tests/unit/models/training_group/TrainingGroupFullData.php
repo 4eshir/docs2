@@ -3,6 +3,7 @@
 
 namespace frontend\tests\unit\models\training_group;
 
+use common\components\dictionaries\base\BranchDictionary;
 use common\repositories\educational\GroupProjectThemesRepository;
 use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\educational\TrainingGroupExpertRepository;
@@ -22,19 +23,12 @@ use Yii;
 class TrainingGroupFullData
 {
     protected UserRepository $userRepository;
-    protected GroupProjectThemesRepository $groupProjectThemesRepository;
-    protected TeacherGroupRepository $teacherGroupRepository;
-    protected TrainingGroupExpertRepository $groupExpertRepository;
-    protected TrainingGroupLessonRepository $groupLessonRepository;
-    protected TrainingGroupParticipantRepository $groupParticipantRepository;
-    protected VisitRepository $visitRepository;
 
     public $group;
     public $teachers;
     public $participants;
     public $lessons;
     public $experts;
-    public $themes;
 
     public function __construct($params = [])
     {
@@ -43,41 +37,153 @@ class TrainingGroupFullData
             ['provider' => Yii::createObject(UserMockProvider::class)]
         );
 
-        $this->groupProjectThemesRepository = Yii::createObject(
-            GroupProjectThemesRepository::class,
-            ['provider' => Yii::createObject(GroupProjectThemesMockProvider::class)]
-        );
-
-        $this->teacherGroupRepository = Yii::createObject(
-            TeacherGroupRepository::class,
-            ['provider' => Yii::createObject(TeacherGroupMockProvider::class)]
-        );
-
-        $this->groupExpertRepository = Yii::createObject(
-            TrainingGroupExpertRepository::class,
-            ['provider' => Yii::createObject(TrainingGroupExpertMockProvider::class)]
-        );
-
-        $this->groupLessonRepository = Yii::createObject(
-            TrainingGroupLessonRepository::class,
-            ['provider' => Yii::createObject(TrainingGroupLessonMockProvider::class)]
-        );
-
-        $this->groupParticipantRepository = Yii::createObject(
-            TrainingGroupParticipantRepository::class,
-            ['provider' => Yii::createObject(TrainingGroupParticipantMockProvider::class)]
-        );
-
-        $this->visitRepository = Yii::createObject(
-            VisitRepository::class,
-            ['provider' => Yii::createObject(VisitMockProvider::class)]
-        );
-
         $this->fillGroup();
     }
 
     private function fillGroup()
     {
+        $testUserId = null;
+        if (count($this->userRepository->getAll()) > 0) {
+            $testUserId = $this->userRepository->getAll()[0]->id;
+        }
 
+        $this->group = [
+            'start_date' => '2010-01-01',
+            'finish_date' => '2010-04-01',
+            'open' => 1,
+            'budget' => 1,
+            'branch' => BranchDictionary::TECHNOPARK,
+            'order_stop' => 1,
+            'archive' => 0,
+            'protection_date' => '2010-04-01',
+            'protection_confirm' => 1,
+            'is_network' => 0,
+            'state' => 0,
+            'created_at' => $testUserId,
+            'updated_at' => $testUserId,
+        ];
+
+        $this->teachers = [
+            [
+                'firstname' => 'Иван',
+                'surname' => 'Иванов',
+                'patronymic' => 'Иванович',
+                'company_id' => Yii::$app->params['mainCompanyId'],
+                'short' => 'ИИИ1',
+                'branch' => BranchDictionary::TECHNOPARK,
+                'birthdate' => '2000-01-01',
+                'sex' => 0,
+            ],
+            [
+                'firstname' => 'Петр',
+                'surname' => 'Петров',
+                'patronymic' => 'Петрович',
+                'company_id' => Yii::$app->params['mainCompanyId'],
+                'short' => 'ППП1',
+                'branch' => BranchDictionary::QUANTORIUM,
+                'birthdate' => '2001-01-01',
+                'sex' => 0,
+            ],
+            [
+                'firstname' => 'Андрей',
+                'surname' => 'Андреев',
+                'patronymic' => 'Андреевич',
+                'company_id' => Yii::$app->params['mainCompanyId'],
+                'short' => 'ААА1',
+                'branch' => BranchDictionary::CDNTT,
+                'birthdate' => '2002-01-01',
+                'sex' => 0,
+            ],
+        ];
+
+        $this->participants = [
+            [
+                'firstname' => 'Ученик 1 Имя',
+                'surname' => 'Ученик 1 Фамилия',
+                'patronymic' => 'Ученик 1 Отчество',
+                'birthdate' => '2010-01-01',
+                'sex' => 0,
+            ],
+            [
+                'firstname' => 'Ученик 2 Имя',
+                'surname' => 'Ученик 2 Фамилия',
+                'patronymic' => 'Ученик 2 Отчество',
+                'birthdate' => '2010-02-02',
+                'sex' => 0,
+            ],
+            [
+                'firstname' => 'Ученица 1 Имя',
+                'surname' => 'Ученица 1 Фамилия',
+                'patronymic' => 'Ученица 1 Отчество',
+                'birthdate' => '2015-01-01',
+                'sex' => 1,
+            ],
+            [
+                'firstname' => 'Ученица 2 Имя',
+                'surname' => 'Ученица 2 Фамилия',
+                'patronymic' => 'Ученица 2 Отчество',
+                'birthdate' => '2015-02-02',
+                'sex' => 1,
+            ],
+        ];
+
+        $this->lessons = [
+            [
+                'lesson_date' => '2025-01-09',
+                'lesson_start_time' => '08:00',
+                'lesson_end_time' => '08:40',
+                'duration' => 40,
+                'branch' => BranchDictionary::TECHNOPARK,
+            ],
+            [
+                'lesson_date' => '2025-01-16',
+                'lesson_start_time' => '08:00',
+                'lesson_end_time' => '08:40',
+                'duration' => 40,
+                'branch' => BranchDictionary::TECHNOPARK,
+            ],
+            [
+                'lesson_date' => '2025-01-23',
+                'lesson_start_time' => '08:00',
+                'lesson_end_time' => '08:40',
+                'duration' => 40,
+                'branch' => BranchDictionary::TECHNOPARK,
+            ],
+            [
+                'lesson_date' => '2025-01-30',
+                'lesson_start_time' => '09:00',
+                'lesson_end_time' => '09:40',
+                'duration' => 40,
+                'branch' => BranchDictionary::QUANTORIUM,
+            ],
+            [
+                'lesson_date' => '2025-02-06',
+                'lesson_start_time' => '09:00',
+                'lesson_end_time' => '09:50',
+                'duration' => 50,
+                'branch' => BranchDictionary::QUANTORIUM,
+            ],
+            [
+                'lesson_date' => '2025-02-13',
+                'lesson_start_time' => '09:00',
+                'lesson_end_time' => '09:50',
+                'duration' => 50,
+                'branch' => BranchDictionary::QUANTORIUM,
+            ],
+        ];
+
+        $this->experts = [
+            [
+                'firstname' => 'Эксперт 1 Имя',
+                'surname' => 'Эксперт 1 Фамилия',
+                'patronymic' => 'Эксперт 1 Отчество',
+            ],
+            [
+                'firstname' => 'Эксперт 2 Имя',
+                'surname' => 'Эксперт 2 Фамилия',
+                'patronymic' => 'Эксперт 2 Отчество',
+            ],
+        ];
     }
+
 }
