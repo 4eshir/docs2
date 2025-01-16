@@ -68,15 +68,54 @@ class NomenclatureDictionary extends BaseDictionary
             $this->list[self::MOB_QUANT_DEL],
         ];
     }
+    public static function getBranchByNomenclature($nomenclature)
+    {
+        switch ($nomenclature) {
+            case '09-01':
+                return BranchDictionary::TECHNOPARK;
+            case '09-02':
+                return BranchDictionary::TECHNOPARK;
+            case '09-22':
+                return BranchDictionary::TECHNOPARK;
+            case '09-23':
+                return BranchDictionary::TECHNOPARK;
+            case '10-01':
+                return BranchDictionary::QUANTORIUM;
+            case '10-02':
+                return BranchDictionary::QUANTORIUM;
+            case '10-26':
+                return BranchDictionary::QUANTORIUM;
+            case '10-27':
+                return BranchDictionary::QUANTORIUM;
+            case '11-01':
+                return BranchDictionary::CDNTT;
+            case '11-02':
+                return BranchDictionary::CDNTT;
+            case '11-26':
+                return BranchDictionary::CDNTT;
+            case '11-27':
+                return BranchDictionary::CDNTT;
+            case '11-31':
+                return BranchDictionary::CDNTT;
+            case '13-01':
+                return BranchDictionary::COD;
+            case '13-02':
+                return BranchDictionary::COD;
+            case '02-02':
+                return BranchDictionary::ADMINISTRATION;
+            default:
+                return null;
+        }
+    }
     public function getListByBranch($branch){
         switch ($branch){
             case BranchDictionary::TECHNOPARK:
                 return $this->list = [
-                    self::TECHNOPARK_ADD => '09-01 Приказы о зачислении обучающихся',
-                    self::TECHNOPARK_DEL => '09-02 Приказы об отчислении обучающихся',
-                    self::TECHNOPARK_ADD_BUDGET => '09-22 Приказы о зачислении обучающихся (по внебюджетной деятельности)',
-                    self::TECHNOPARK_DEL_BUDGET => '09-23 Приказы об отчислении обучающихся (по внебюджетной деятельности)',
-                ];
+                self::TECHNOPARK_ADD => '09-01 Приказы о зачислении обучающихся',
+                self::TECHNOPARK_DEL => '09-02 Приказы об отчислении обучающихся',
+                self::TECHNOPARK_ADD_BUDGET => '09-22 Приказы о зачислении обучающихся (по внебюджетной деятельности)',
+                self::TECHNOPARK_DEL_BUDGET => '09-23 Приказы об отчислении обучающихся (по внебюджетной деятельности)',
+            ];
             case BranchDictionary::QUANTORIUM:
                 return $this->list = [
                     self::QUANTORIUM_ADD => '10-01 Приказы о зачислении обучающихся',
@@ -111,5 +150,26 @@ class NomenclatureDictionary extends BaseDictionary
             default:
                 return $this->list = [];
         }
+    }
+    public static function getStatus($nomenclature)
+    {
+        if($nomenclature == NomenclatureDictionary::COD_ADD || $nomenclature == NomenclatureDictionary::TECHNOPARK_ADD
+            || $nomenclature == NomenclatureDictionary::TECHNOPARK_ADD_BUDGET || $nomenclature == NomenclatureDictionary::QUANTORIUM_ADD
+            || $nomenclature == NomenclatureDictionary::CDNTT_ADD || $nomenclature == NomenclatureDictionary::CDNTT_ADD_BUDGET
+            || $nomenclature == NomenclatureDictionary::MOB_QUANT_ADD || $nomenclature == NomenclatureDictionary::QUANTORIUM_ADD_BUDGET){
+            return 1;
+        }
+        // отчисление
+        if ($nomenclature == NomenclatureDictionary::COD_DEL || $nomenclature == NomenclatureDictionary::TECHNOPARK_DEL
+            || $nomenclature == NomenclatureDictionary::TECHNOPARK_DEL_BUDGET || $nomenclature == NomenclatureDictionary::QUANTORIUM_DEL
+            || $nomenclature == NomenclatureDictionary::CDNTT_DEL || $nomenclature == NomenclatureDictionary::CDNTT_DEL_BUDGET
+            || $nomenclature == NomenclatureDictionary::MOB_QUANT_DEL || $nomenclature == NomenclatureDictionary::QUANTORIUM_DEL_BUDGET) {
+            return 2;
+        }
+        // перевод
+        if($nomenclature == NomenclatureDictionary::CDNTT_TRANSFER){
+            return 3;
+        }
+        return 1;
     }
 }

@@ -1,5 +1,6 @@
 <?php
-
+/* @var $dataProvider */
+/* @var $model */
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use yii\grid\GridView;
 echo GridView::widget([

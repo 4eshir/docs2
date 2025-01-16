@@ -23,4 +23,8 @@ class OrderTrainingGroupParticipantRepository
             ['training_group_participant_id' => $trainingGroupParticipantId, 'order_id' => $orderId]);
         return $command->getRawSql();
     }
+    public function getByOrderId($orderId)
+    {
+        return OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all();
+    }
 }

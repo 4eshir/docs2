@@ -4,13 +4,18 @@ namespace app\services\order;
 
 use app\models\work\general\OrderPeopleWork;
 use app\models\work\order\OrderTrainingWork;
+use common\components\dictionaries\base\NomenclatureDictionary;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\repositories\educational\OrderTrainingGroupParticipantRepository;
+use common\repositories\educational\TrainingGroupParticipantRepository;
+use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\general\OrderPeopleRepository;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\events\general\OrderPeopleCreateEvent;
 use frontend\events\general\OrderPeopleDeleteEvent;
+use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
 
 class OrderTrainingService
@@ -18,33 +23,39 @@ class OrderTrainingService
     private FileService $fileService;
     private OrderMainFileNameGenerator $filenameGenerator;
     private OrderMainService $orderMainService;
+    private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
+    private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
+    private TrainingGroupRepository $trainingGroupRepository;
     public function __construct(
         FileService $fileService,
         OrderMainFileNameGenerator $filenameGenerator,
-        OrderMainService $orderMainService
+        OrderMainService $orderMainService,
+        OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository,
+        TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
+        TrainingGroupRepository $trainingGroupRepository
     )
     {
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
         $this->orderMainService = $orderMainService;
+        $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
+        $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
+        $this->trainingGroupRepository = $trainingGroupRepository;
+
     }
-    public function setStatus($number)
+    public function setBranch(OrderTrainingWork $model)
     {
-        if ($number == '09-01') {
-
-        }
-        else if ($number == 1) {
-
-        }
-        else if ($number == 2) {
-
-        }
-        else if ($number == 3) {
-
-        }
-        else {
-            return false;
-        }
+        $number = $model->order_number;
+        $parts = explode("/", $number);
+        $nomenclature = $parts[0];
+        $model->setBranch(NomenclatureDictionary::getBranchByNomenclature($nomenclature));
+    }
+    public function getStatus(OrderTrainingWork $model)
+    {
+        $number = $model->order_number;
+        $parts = explode("/", $number);
+        $nomenclature = $parts[0];
+        return NomenclatureDictionary::getStatus($nomenclature);
     }
     public function createOrderPeopleArray(array $data)
     {
