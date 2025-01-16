@@ -16,8 +16,6 @@ use yii\helpers\ArrayHelper;
 
 class JournalService
 {
-    use Math;
-
     const JOURNAL_EMPTY = 0;
     const JOURNAL_EXIST = 1;
 
@@ -119,12 +117,19 @@ class JournalService
         return json_encode(array_values($curLessonsJson));
     }
 
-    public function setVisitStatus($trainingGroupParticipantId, $lessonId, $status)
+    /**
+     * Изменение статуса одного занятия
+     * @param $trainingGroupParticipantId
+     * @param $lessonId
+     * @param $status
+     */
+    public function setVisitStatusSingle($trainingGroupParticipantId, $lessonId, $status)
     {
         $visit = $this->visitRepository->getByTrainingGroupParticipant($trainingGroupParticipantId);
         if ($visit) {
             $allLessons = VisitLesson::fromString($visit->lessons);
             $newLessons = [];
+            // здесь не используем VisitLesson::toString, в угоду однопроходности и оптимизации
             foreach ($allLessons as $lesson) {
                 /** @var VisitLesson $lesson */
                 if ($lesson->lessonId == $lessonId) {
@@ -133,7 +138,48 @@ class JournalService
 
                 $newLessons[] = (string)$lesson;
             }
+
             $visit->setLessons('['.(implode(",", $newLessons)).']');
+            $this->visitRepository->save($visit);
+        }
+    }
+
+    /**
+     * Изменение статуса для всех занятий у одного ученика в группе (основная функция для сохранения журнала)
+     * @param $trainingGroupParticipantId
+     * @param VisitLesson[] $statuses
+     */
+    public function setVisitStatusParticipant($trainingGroupParticipantId, array $statuses)
+    {
+        /** @var VisitWork $visit */
+        $visit = $this->visitRepository->getByTrainingGroupParticipant($trainingGroupParticipantId);
+        $lessons = VisitLesson::fromString($visit->lessons);
+        $lessonsString = $visit->lessons;
+        if (VisitLesson::equalArrays($lessons, $statuses)) {
+            $lessonsString = VisitLesson::toString($statuses);
+        }
+
+        $visit->lessons = $lessonsString;
+        $this->visitRepository->save($visit);
+    }
+
+    /**
+     * Удаляет занятие из журнала
+     * * note: затратная по памяти функция, использовать осторожно
+     * @param $groupId
+     * @param $lessonId
+     */
+    public function deleteLessonFromGroup($groupId, $lessonId)
+    {
+        $visits = $this->visitRepository->getByTrainingGroup($groupId);
+        foreach ($visits as $visit) {
+            /** @var VisitWork $visit */
+            $lessons = VisitLesson::fromString($visit->lessons);
+            $lessons = array_filter($lessons, function($lesson) use ($lessonId) {
+                /** @var VisitLesson $lesson */
+                return $lesson->lessonId !== $lessonId;
+            });
+            $visit->lessons = VisitLesson::toString($lessons);
             $this->visitRepository->save($visit);
         }
     }

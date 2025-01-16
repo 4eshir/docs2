@@ -24,6 +24,11 @@ class VisitLesson
         return $this->lessonId;
     }
 
+    /**
+     * Раскладывает json-строку на массив VisitLesson
+     * @param string $json
+     * @return array
+     */
     public static function fromString(string $json) : array
     {
         $lessonsArray = json_decode($json, true);
@@ -38,6 +43,20 @@ class VisitLesson
         }
 
         return $visitLessons;
+    }
+
+    /**
+     * Склеивает массив VisitLesson json-строку
+     * @param VisitLesson[] $visitLessons
+     */
+    public static function toString(array $visitLessons)
+    {
+        $newLessons = [];
+        foreach ($visitLessons as $visitLesson) {
+            $newLessons[] = (string)$visitLesson;
+        }
+
+        return '['.(implode(',', $newLessons)).']';
     }
 
     /**
@@ -65,8 +84,25 @@ class VisitLesson
         return false;
     }
 
+    /**
+     * Сравнивает два массива класса VisitLesson
+     * @param VisitLesson[] $arr1
+     * @param VisitLesson[] $arr2
+     */
+    public static function equalArrays(array $arr1, array $arr2)
+    {
+        $lessonIds1 = array_map(fn($lesson) => $lesson->lessonId, $arr1);
+        $lessonIds2 = array_map(fn($lesson) => $lesson->lessonId, $arr2);
+
+        $uniqueLessonIds1 = array_unique($lessonIds1);
+        $uniqueLessonIds2 = array_unique($lessonIds2);
+
+        return count($uniqueLessonIds1) === count($uniqueLessonIds2) &&
+            count(array_intersect($uniqueLessonIds1, $uniqueLessonIds2)) === count($uniqueLessonIds1);
+    }
+
     public function __toString()
     {
-        return "{\"lesson_id\":\"$this->lessonId\", \"status\":\"$this->status\"}";
+        return "{\"lesson_id\":$this->lessonId,\"status\":$this->status}";
     }
 }
