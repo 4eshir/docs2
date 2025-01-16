@@ -16,6 +16,7 @@ use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\PeopleStamp;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\educational\ProjectThemeRepository;
+use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\services\DatabaseService;
 use common\services\general\files\FileService;
@@ -58,6 +59,7 @@ class TrainingGroupService implements DatabaseService
     use CommonDatabaseFunctions, Math;
 
     private TrainingGroupRepository $trainingGroupRepository;
+    private TrainingGroupLessonRepository $trainingGroupLessonRepository;
     private ProjectThemeRepository $themeRepository;
     private FileService $fileService;
     private TrainingGroupFileNameGenerator $filenameGenerator;
@@ -65,6 +67,7 @@ class TrainingGroupService implements DatabaseService
 
     public function __construct(
         TrainingGroupRepository $trainingGroupRepository,
+        TrainingGroupLessonRepository $trainingGroupLessonRepository,
         ProjectThemeRepository $themeRepository,
         FileService $fileService,
         TrainingGroupFileNameGenerator $filenameGenerator,
@@ -72,6 +75,7 @@ class TrainingGroupService implements DatabaseService
     )
     {
         $this->trainingGroupRepository = $trainingGroupRepository;
+        $this->trainingGroupLessonRepository = $trainingGroupLessonRepository;
         $this->themeRepository = $themeRepository;
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
@@ -324,16 +328,7 @@ class TrainingGroupService implements DatabaseService
         $newLessons = array_unique($newLessons);
 
         foreach ($newLessons as $lesson) {
-            $form->recordEvent(new CreateLessonGroupEvent(
-                $lesson->lesson_date,
-                $lesson->lesson_start_time,
-                $lesson->lesson_end_time,
-                $lesson->duration,
-                $lesson->branch,
-                $lesson->auditorium_id,
-                $form->id
-            ),
-            TrainingGroupLessonWork::className());
+            $this->trainingGroupLessonRepository->save($lesson);
         }
     }
 

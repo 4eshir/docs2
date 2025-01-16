@@ -49,6 +49,22 @@ class VisitLesson
         return array_map(fn($obj) => $obj->getLessonId(), $lessons);
     }
 
+    /**
+     * @param VisitLesson[] $lessons
+     * @param $lessonId
+     * @return false|VisitLesson
+     */
+    public static function getLesson(array $lessons, $lessonId)
+    {
+        foreach ($lessons as $lesson) {
+            if ($lesson->lessonId == $lessonId) {
+                return $lesson;
+            }
+        }
+
+        return false;
+    }
+
     public function __toString()
     {
         return "{\"lesson_id\":\"$this->lessonId\", \"status\":\"$this->status\"}";

@@ -43,4 +43,10 @@ class VisitWork extends Visit
     {
         return $this->hasOne(TrainingGroupParticipantWork::class, ['id' => 'training_group_participant_id']);
     }
+
+    public function setLessons(string $lessons)
+    {
+        $this->lessons = $lessons;
+    }
+
 }

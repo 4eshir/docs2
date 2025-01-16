@@ -24,6 +24,7 @@ use frontend\forms\training_group\TrainingGroupCombinedForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
 use frontend\forms\training_group\TrainingGroupScheduleForm;
 use frontend\models\search\SearchTrainingGroup;
+use frontend\models\work\educational\journal\VisitWork;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
@@ -343,4 +344,11 @@ class TrainingGroupController extends DocumentController
 
         return $this->redirect(['schedule-form', 'id' => $id]);
     }
+
+    // DEBUG
+    public function actionTest($id)
+    {
+        $this->journalService->setVisitStatus(52, 155, VisitWork::ATTENDANCE);
+    }
+    // DEBUG
 }

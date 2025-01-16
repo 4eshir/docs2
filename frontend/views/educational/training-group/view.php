@@ -58,6 +58,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
     <h1><?= Html::encode('Группа '.$this->title) ?>
 
     <p>
+        <?= Html::a('Тест', ['test', 'id' => $model->id], ['class' => 'btn btn-secondary']) ?>
         <?= Html::a('Редактировать', ['base-form', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?php if ($journalState == JournalService::JOURNAL_EMPTY): ?>
             <?= Html::a('Создать журнал', ['generate-journal', 'id' => $model->id], ['class' => 'btn btn-success']) ?>

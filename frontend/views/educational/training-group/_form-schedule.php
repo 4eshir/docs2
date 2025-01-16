@@ -14,8 +14,9 @@ use yii\widgets\ActiveForm;
 /* @var $auditoriums */
 /* @var $scheduleTable */
 
-$this->title = "Редактировать учебную группу {$model->number}";
+$this->title = 'Редактирование';
 $this->params['breadcrumbs'][] = ['label' => 'Учебные группы', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => "Группа {$model->number}", 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

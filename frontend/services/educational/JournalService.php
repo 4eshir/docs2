@@ -86,52 +86,6 @@ class JournalService
         return true;
     }
 
-    public function updateJournal($groupId, array $lessons, array $participants)
-    {
-        $currentLessons = $this->visitRepository->getLessonsFromGroup($groupId);
-        $currentParticipants = $this->visitRepository->getParticipantsFromGroup($groupId);
-
-        $addLessons = $this->setDifference($lessons, $currentLessons, LessonGroupCompare::class);
-        $addParticipants = $this->setDifference($participants, $currentParticipants, ParticipantGroupCompare::class);
-
-        $delLessons = $this->setDifference($currentLessons, $lessons, LessonGroupCompare::class);
-        $delParticipants = $this->setDifference($currentParticipants, $participants, ParticipantGroupCompare::class);
-
-        $lessonString = $this->createLessonString($groupId, $addLessons, $delLessons);
-
-        var_dump(ArrayHelper::getColumn($currentParticipants, 'participant_id'));
-        var_dump(ArrayHelper::getColumn($participants, 'participant_id'));
-        var_dump(ArrayHelper::getColumn($delParticipants, 'participant_id'));
-
-        $currentVisits = $this->visitRepository->getByTrainingGroup($groupId);
-        foreach ($currentVisits as $visit) {
-            /** @var VisitWork $visit */
-            $visit->lessons = $lessonString;
-            $this->visitRepository->save($visit);
-        }
-
-        foreach ($delParticipants as $participant) {
-            /** @var VisitWork $visit */
-            $visit = $this->visitRepository->getByGroupAndParticipant($groupId, $participant->participant_id);
-            if ($visit) {
-                $this->visitRepository->delete($visit);
-            }
-        }
-
-        if (count($addParticipants) > 0) {
-            foreach ($addParticipants as $participant) {
-                $newVisit = VisitWork::fill(
-                    $groupId,
-                    $participant->participant_id,
-                    $lessonString
-                );
-                $this->visitRepository->save($newVisit);
-            }
-        }
-
-        //var_dump($lessonString);
-    }
-
     /**
      * @param $groupId
      * @param TrainingGroupLessonWork[] $addLessons
@@ -163,5 +117,24 @@ class JournalService
         }
 
         return json_encode(array_values($curLessonsJson));
+    }
+
+    public function setVisitStatus($trainingGroupParticipantId, $lessonId, $status)
+    {
+        $visit = $this->visitRepository->getByTrainingGroupParticipant($trainingGroupParticipantId);
+        if ($visit) {
+            $allLessons = VisitLesson::fromString($visit->lessons);
+            $newLessons = [];
+            foreach ($allLessons as $lesson) {
+                /** @var VisitLesson $lesson */
+                if ($lesson->lessonId == $lessonId) {
+                    $lesson->status = $status;
+                }
+
+                $newLessons[] = (string)$lesson;
+            }
+            $visit->setLessons('['.(implode(",", $newLessons)).']');
+            $this->visitRepository->save($visit);
+        }
     }
 }

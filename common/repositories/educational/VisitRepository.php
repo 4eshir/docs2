@@ -33,7 +33,16 @@ class VisitRepository
 
     public function getByTrainingGroup($groupId)
     {
-        return $this->provider->getByTrainingGroup($groupId);
+        if (get_class($this->provider) == VisitProvider::class) {
+            return $this->provider->getByTrainingGroup($groupId);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода getByTrainingGroup');
+        }
+    }
+
+    public function getByTrainingGroupParticipant($trainingGroupParticipantId)
+    {
+        return $this->provider->getByTrainingGroupParticipant($trainingGroupParticipantId);
     }
 
     public function getByGroupAndParticipant($groupId, $participantId)

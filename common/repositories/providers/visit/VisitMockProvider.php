@@ -18,10 +18,10 @@ class VisitMockProvider implements VisitProviderInterface
         return $this->data[$id] ?? null;
     }
 
-    public function getByTrainingGroup($groupId)
+    public function getByTrainingGroupParticipant($trainingGroupParticipantId)
     {
-        return array_filter($this->data, function($item) use ($groupId) {
-            return $item['training_group_id'] === $groupId;
+        return array_filter($this->data, function($item) use ($trainingGroupParticipantId) {
+            return $item['training_group_participant_id'] === $trainingGroupParticipantId;
         });
     }
 

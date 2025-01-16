@@ -19,7 +19,10 @@ class VisitProvider implements VisitProviderInterface
 
     public function getByTrainingGroup($groupId)
     {
-        return VisitWork::find()->where(['training_group_id' => $groupId])->all();
+        return VisitWork::find()
+            ->joinWith(['trainingGroupParticipantWork trainingGroupParticipantWork'])
+            ->where(['trainingGroupParticipantWork.training_group_id' => $groupId])
+            ->all();
     }
 
     public function delete(VisitWork $visit)
@@ -47,5 +50,10 @@ class VisitProvider implements VisitProviderInterface
         $visit = VisitWork::find()->where(['training_group_id' => $groupId])->one();
         $lessonIds = VisitLesson::getLessonIds(VisitLesson::fromString($visit->lessons));
         return (Yii::createObject(TrainingGroupLessonRepository::class))->getByIds($lessonIds);
+    }
+
+    public function getByTrainingGroupParticipant($trainingGroupParticipantId)
+    {
+        return VisitWork::find()->where(['training_group_participant_id' => $trainingGroupParticipantId])->one();
     }
 }
