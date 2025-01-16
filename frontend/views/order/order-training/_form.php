@@ -1,5 +1,7 @@
 <?php
 
+use app\models\work\order\OrderTrainingWork;
+use common\helpers\DateFormatter;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use kartik\select2\Select2;
@@ -9,6 +11,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
+use yii\widgets\DetailView;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
@@ -29,38 +32,61 @@ use yii\widgets\Pjax;
 </style>
 <div class="order-training-form">
     <?php $form = ActiveForm::begin(); ?>
-    <?=$form->field($model, 'order_date')->widget(DatePicker::class, [
-        'dateFormat' => 'php:d.m.Y',
-        'language' => 'ru',
-        'options' => [
-            'placeholder' => 'Дата',
-            'class'=> 'form-control',
-            'autocomplete'=>'off'
-        ],
-        'clientOptions' => [
-            'changeMonth' => true,
-            'changeYear' => true,
-            'yearRange' => '2000:2100',
-        ]])->label('Дата приказа'); ?>
-    <?=  $form->field($model, 'branch')->dropDownList(
-        Yii::$app->branches->getList(),
-        [
-            'prompt' => '---',
-            'id' => 'branch-dropdown' // Добавляем id для доступа в JavaScript
-        ]
-    )->label('Отдел');
+<?php if($model->id == NULL) {?>
+    <?=
+        $form->field($model, 'order_date')->widget(DatePicker::class, [
+            'dateFormat' => 'php:d.m.Y',
+            'language' => 'ru',
+            'options' => [
+                'placeholder' => 'Дата',
+                'class'=> 'form-control',
+                'autocomplete'=>'off'
+            ],
+            'clientOptions' => [
+                'changeMonth' => true,
+                'changeYear' => true,
+                'yearRange' => '2000:2100',
+        ]])->label('Дата приказа');
+    ?>
+    <?=
+        $form->field($model, 'branch')->dropDownList(
+            Yii::$app->branches->getList(),
+            [
+                'prompt' => '---',
+                'id' => 'branch-dropdown' // Добавляем id для доступа в JavaScript
+            ]
+        )->label('Отдел');
+    ?>
+    <?=
+        // Выпадающий список для выбора кода и описания номенклатуры
+        $form->field($model, 'order_number')->dropDownList(
+            [], // Сначала оставляем его пустым
+            [
+                'prompt' => '---',
+                'id' => 'order-number-dropdown' // Добавляем id для доступа в JavaScript
+            ])->label('Код и описание номенклатуры');
+        ?>
+        <?php } else {
+            echo DetailView::widget([
+                'model' => $model,
+                'attributes' => [
+                    ['label' => 'Дата приказа', 'attribute' => 'order_date', 'value' => function (OrderTrainingWork $model) {
+                        return DateFormatter::format($model->order_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
+                    }],
+                    ['label' => 'Код и номенклатура приказа', 'value' => function (OrderTrainingWork $model) {
+                        return $model->getOrderType();
+                    }],
+                    ['label' => 'Номер приказа', 'value' => function (OrderTrainingWork $model) {
+                        return $model->getNumberPostfix();
+                    }],
+                    ['label' => 'Отдел', 'value' => function (OrderTrainingWork $model) {
+                        return Yii::$app->branches->get($model->branch);
+                    }],
+                ],
+            ]);
+        }
     ?>
 
-    <?=
-    // Выпадающий список для выбора кода и описания номенклатуры
-    $form->field($model, 'order_number')->dropDownList(
-        [], // Сначала оставляем его пустым
-        [
-            'prompt' => '---',
-            'id' => 'order-number-dropdown' // Добавляем id для доступа в JavaScript
-        ]
-    )->label('Код и описание номенклатуры');
-    ?>
     <div class="training-group">
         <?= $this->render('_groups_grid', ['dataProvider' => $groups, 'model' => $model]) ?>
     </div>

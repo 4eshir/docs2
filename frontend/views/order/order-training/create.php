@@ -8,7 +8,7 @@ use yii\helpers\Html;
 /* @var $groups */
 /* @var $groupParticipant */
 $this->title = 'Добавить приказ об образовательной деятельности';
-$this->params['breadcrumbs'][] = ['label' => 'Приказы об участии', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Приказы об образовательной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="order-training-create">

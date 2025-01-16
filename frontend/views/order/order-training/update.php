@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $groups */
 /* @var $groupParticipant */
 $this->title = 'Изменить приказ об образовательной деятельности № '. $model->order_number;
-$this->params['breadcrumbs'][] = ['label' => 'Приказы об участии', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Приказы об образовательной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="order-training-update">

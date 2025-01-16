@@ -63,4 +63,8 @@ class TrainingGroupRepository
     {
         return TrainingGroupWork::find()->where(['branch' => $branch]);
     }
+    public function getByBranch($branch)
+    {
+        return TrainingGroupWork::find()->where(['branch' => $branch])->all();
+    }
 }

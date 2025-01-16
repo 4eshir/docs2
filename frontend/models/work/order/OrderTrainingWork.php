@@ -130,6 +130,13 @@ class OrderTrainingWork extends OrderMain
     {
         $this->branch = $branch;
     }
+    public function getOrderType()
+    {
+        $number = $this->order_number;
+        $parts = explode("/", $number);
+        $nomenclature = $parts[0];
+        return (new \common\components\dictionaries\base\NomenclatureDictionary)->get($nomenclature);
+    }
     public function beforeValidate()
     {
         $this->type = self::ORDER_TRAINING;

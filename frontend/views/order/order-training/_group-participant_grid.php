@@ -30,9 +30,6 @@ echo GridView::widget([
         'class' => 'table table-striped table-bordered',
         'style' => 'position: relative;', // Необязательно, для кастомизации таблицы
     ],
-    'headerRowOptions' => [
-        'style' => 'display: none;', // Скрываем <thead>
-    ],
     'summaryOptions' => [
         'style' => 'display: none;', // Скрыть блок через CSS
     ],

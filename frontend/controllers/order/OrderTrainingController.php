@@ -86,6 +86,8 @@ class OrderTrainingController extends DocumentController
         $model = new OrderTrainingWork();
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
+        $groups = $this->orderTrainingRepository->getEmptyOrderTrainingGroupList();
+        $groupParticipant = $this->orderTrainingRepository->getEmptyOrderTrainingGroupParticipantData();
         if ($model->load($post)) {
             if (!$model->validate()) {
                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
@@ -105,8 +107,8 @@ class OrderTrainingController extends DocumentController
         return $this->render('create', [
             'model' => $model,
             'people' => $people,
-            'groups' => $this->orderTrainingRepository->getEmptyOrderTrainingGroupList(),
-            'groupParticipant' => $this->orderTrainingRepository->getEmptyOrderTrainingGroupParticipantData()
+            'groups' => $groups,
+            'groupParticipant' => $groupParticipant
         ]);
     }
     public function actionUpdate($id)
@@ -117,6 +119,8 @@ class OrderTrainingController extends DocumentController
         $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
         $post = Yii::$app->request->post();
         $number = $model->order_number;
+        $groups = $this->orderTrainingRepository->getOrderTrainingGroupData($model);
+        $groupParticipant = $this->orderTrainingRepository->getOrderTrainingGroupParticipantData($model->id);
         if ($model->load($post) && $model->validate()) {
             $this->orderTrainingService->getFilesInstances($model);
             $model->order_number = $number;
@@ -134,8 +138,8 @@ class OrderTrainingController extends DocumentController
         return $this->render('update', [
             'model' => $model,
             'people' => $people,
-            'groups' => $this->orderTrainingRepository->getOrderTrainingGroupData($model),
-            'groupParticipant' => $this->orderTrainingRepository->getOrderTrainingGroupParticipantData($model->id)
+            'groups' => $groups,
+            'groupParticipant' => $groupParticipant
         ]);
     }
     public function actionGetListByBranch()
@@ -168,5 +172,4 @@ class OrderTrainingController extends DocumentController
             ]),
         ]);
     }
-
 }
