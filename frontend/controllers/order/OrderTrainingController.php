@@ -99,6 +99,7 @@ class OrderTrainingController extends DocumentController
             $participants = $post['group-participant-selection'];
             $status = $this->orderTrainingService->getStatus($model);
             $this->orderTrainingGroupParticipantService->addOrderTrainingGroupParticipantEvent($model, $model->id, $participants, $status);
+            $this->orderTrainingService->updateTrainingGroupParticipantStatus($participants, $status);
             $this->orderTrainingService->saveFilesFromModel($model);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $model);
             $model->releaseEvents();
@@ -132,6 +133,7 @@ class OrderTrainingController extends DocumentController
             $participants = $post['group-participant-selection'];
             $status = $this->orderTrainingService->getStatus($model);
             $this->orderTrainingGroupParticipantService->updateOrderTrainingGroupParticipant($model, $model->id, $participants, $status);
+            $this->orderTrainingService->updateTrainingGroupParticipantStatus($participants, $status);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -162,6 +164,8 @@ class OrderTrainingController extends DocumentController
     }
     public function actionGetGroupParticipantsByBranch($groupIds)
     {
+        $modelId = Yii::$app->request->get('modelId');
+        $nomenclature = Yii::$app->request->get('nomenclature');
         $groupIds = json_decode($groupIds);
         $dataProvider = new ActiveDataProvider([
             'query' => $this->trainingGroupParticipantRepository->getParticipantByGroupIdQuery($groupIds)

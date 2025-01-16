@@ -15,6 +15,7 @@ use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\events\general\OrderPeopleCreateEvent;
 use frontend\events\general\OrderPeopleDeleteEvent;
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
 
@@ -146,5 +147,13 @@ class OrderTrainingService
             $this->orderMainService->addOrderPeopleEvent($addSquadParticipant, $model);
         }
         $model->releaseEvents();
+    }
+    public function updateTrainingGroupParticipantStatus($participants, $status)
+    {
+        foreach ($participants as $participant) {
+            $model = TrainingGroupParticipantWork::findOne($participant);
+            $model->status = $status;
+            $model->save();
+        }
     }
 }

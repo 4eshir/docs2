@@ -157,13 +157,19 @@ use yii\widgets\Pjax;
     $(document).on('change', '.group-checkbox', function () {
         const checkedCheckboxes = $('.group-checkbox:checked'); 
         const groupIds = [];
+        var number = $('#order-number-dropdown').val();
+        var modelId = " . $model->id . ";
         checkedCheckboxes.each(function () {
             groupIds.push($(this).data('id')); // Собираем ID всех выбранных чекбоксов
         });  
         $.ajax({
             url: '" . Url::to(['get-group-participants-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
             type: 'GET',
-            data: { groupIds: JSON.stringify(groupIds) }, // Отправляем массив ID
+            data: { 
+                groupIds: JSON.stringify(groupIds), 
+                modelId: modelId, 
+                nomenclature:  number
+            }, // Отправляем массив ID
             success: function (data) {
                 var gridView = $('.training-group-participant .grid-view');
                 gridView.html(data.gridHtml); // Обновляем HTML GridView
@@ -215,13 +221,20 @@ $this->registerJs("
     window.onload = function () {
         const checkedCheckboxes = $('.group-checkbox:checked'); 
         const groupIds = [];
+        var number = $('#order-number-dropdown').val();
+        var modelId = " . $model->id . ";
+        console.log(number, modelId);
         checkedCheckboxes.each(function () {
             groupIds.push($(this).data('id')); // Собираем ID всех выбранных чекбоксов
         });  
         $.ajax({
             url: '" . Url::to(['get-group-participants-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
             type: 'GET',
-            data: { groupIds: JSON.stringify(groupIds) }, // Отправляем массив ID
+            data: { 
+                groupIds: JSON.stringify(groupIds), 
+                modelId: modelId, 
+                nomenclature:  number
+            }, // Отправляем массив ID
             success: function (data) {
                 var gridView = $('.training-group-participant .grid-view');
                 gridView.html(data.gridHtml); // Обновляем HTML GridView
