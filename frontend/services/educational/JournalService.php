@@ -150,7 +150,7 @@ class JournalService
 
         if (!empty($delLessonIds)) {
             $curLessonsJson = array_filter($curLessonsJson, function ($lesson) use ($delLessonIds) {
-                return !in_array($lesson->lessonId, $delLessonIds);
+                return !in_array($lesson->lesson_id, $delLessonIds);
             });
         }
 

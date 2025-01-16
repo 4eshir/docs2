@@ -69,7 +69,7 @@ class VisitRepository
         $command->update(
             'visit',
             ['lessons' => $lessons],
-            ['IN', 'id ', $visitIds],
+            ['IN', 'id', $visitIds],
         );
         return $command->getRawSql();
     }
