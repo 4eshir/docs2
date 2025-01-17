@@ -1,17 +1,8 @@
 <?php
 
-use app\components\DropDownPosition;
-use app\components\DynamicWidget;
-use common\components\dictionaries\base\BranchDictionary;
 use frontend\forms\journal\JournalForm;
-use frontend\models\work\dictionaries\CompanyWork;
-use frontend\models\work\dictionaries\PositionWork;
 use frontend\models\work\educational\journal\VisitWork;
-use frontend\models\work\general\PeoplePositionCompanyBranchWork;
-use frontend\models\work\general\PeopleWork;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -30,9 +21,10 @@ use yii\widgets\ActiveForm;
         <?= $form->field($model, 'groupId')->hiddenInput()->label(false) ?>
 
         <?php foreach ($model->participantLessons as $participantLesson): ?>
-            <h4>Participant ID: <?= $participantLesson->participantId ?></h4>
+            <h4>Participant ID: <?= $participantLesson->trainingGroupParticipantId ?></h4>
             <?php foreach ($participantLesson->lessonIds as $index => $lesson): ?>
-                <?= $form->field($lesson, "[$participantLesson->participantId][$index]status")
+                <?= $form->field($lesson, "[$participantLesson->trainingGroupParticipantId][$index]lessonId")->hiddenInput(['value' => $lesson->lessonId])->label(false) ?>
+                <?= $form->field($lesson, "[$participantLesson->trainingGroupParticipantId][$index]status")
                     ->dropDownList([
                         VisitWork::NONE => '---',
                         VisitWork::ATTENDANCE => 'Я',

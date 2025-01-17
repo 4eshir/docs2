@@ -6,16 +6,16 @@ namespace frontend\models\work\educational\journal;
 
 class ParticipantLessons
 {
-    public int $participantId;
+    public int $trainingGroupParticipantId;
     /** @var VisitLesson[] $lessonIds */
     public array $lessonIds;
 
     public function __construct(
-        int $participantId,
+        int $trainingGroupParticipantId,
         array $lessonIds
     )
     {
-        $this->participantId = $participantId;
+        $this->trainingGroupParticipantId = $trainingGroupParticipantId;
         $this->lessonIds = $lessonIds;
     }
 }

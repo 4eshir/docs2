@@ -3,20 +3,30 @@
 
 namespace frontend\models\work\educational\journal;
 
+use common\Model;
 use InvalidArgumentException;
 
-class VisitLesson
+class VisitLesson extends Model
 {
     public int $lessonId;
     public int $status;
 
     public function __construct(
         int $lessonId,
-        int $status
+        int $status,
+        $config = []
     )
     {
+        parent::__construct($config);
         $this->lessonId = $lessonId;
         $this->status = $status;
+    }
+
+    public function rules()
+    {
+        return [
+            [['lessonId', 'status'], 'integer']
+        ];
     }
 
     public function getLessonId()
