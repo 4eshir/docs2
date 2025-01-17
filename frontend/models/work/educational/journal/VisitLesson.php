@@ -4,12 +4,16 @@
 namespace frontend\models\work\educational\journal;
 
 use common\Model;
+use common\repositories\educational\TrainingGroupLessonRepository;
+use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use InvalidArgumentException;
+use Yii;
 
 class VisitLesson extends Model
 {
     public int $lessonId;
     public int $status;
+    public $lesson;
 
     public function __construct(
         int $lessonId,
@@ -20,6 +24,7 @@ class VisitLesson extends Model
         parent::__construct($config);
         $this->lessonId = $lessonId;
         $this->status = $status;
+        $this->lesson = (Yii::createObject(TrainingGroupLessonRepository::class))->get($this->lessonId);
     }
 
     public function rules()
@@ -114,5 +119,19 @@ class VisitLesson extends Model
     public function __toString()
     {
         return "{\"lesson_id\":$this->lessonId,\"status\":$this->status}";
+    }
+
+    public function getPrettyStatus()
+    {
+        switch ($this->status) {
+            case VisitWork::NONE:
+                return '--';
+            case VisitWork::ATTENDANCE:
+                return 'Я';
+            case VisitWork::NO_ATTENDANCE:
+                return 'Н';
+            case VisitWork::DISTANCE:
+                return 'Д';
+        }
     }
 }

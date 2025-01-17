@@ -38,7 +38,7 @@ class TrainingGroupParticipantRepository
      */
     public function getByParticipantIds(array $ids)
     {
-        return TrainingGroupParticipantWork::find()->where(['IN', 'participant_id', $ids])->all();
+        return $this->provider->getByParticipantIds($ids);
     }
 
     public function getParticipantsFromGroup($groupId)

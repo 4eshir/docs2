@@ -41,6 +41,10 @@ class JournalForm extends Model
                 );
             }
         }
+
+        foreach ($this->participantLessons as $participantLesson) {
+            $participantLesson->sortLessons();
+        }
     }
 
     public function load($data, $formName = null)

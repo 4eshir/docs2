@@ -45,8 +45,8 @@ class JournalController extends Controller
                     $participantLesson->lessonIds
                 );
             }
-            //var_dump($form->participantLessons[0]->lessonIds[0]);
-            //var_dump(Yii::$app->request->post()["VisitLesson"]);
+
+            return $this->redirect(['view', 'id' => $id]);
         }
 
         return $this->render('update', [

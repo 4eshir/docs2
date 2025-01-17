@@ -25,6 +25,13 @@ class TrainingGroupParticipantMockProvider implements TrainingGroupParticipantPr
         });
     }
 
+    public function getByParticipantIds(array $ids)
+    {
+        return array_filter($this->data, function ($participant) use ($ids) {
+            return in_array($participant->participant_id, $ids);
+        });
+    }
+
     public function delete(TrainingGroupParticipantWork $model)
     {
         unset($this->data[$model->id]);

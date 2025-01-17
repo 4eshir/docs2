@@ -63,7 +63,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
         <?php if ($journalState == JournalService::JOURNAL_EMPTY): ?>
             <?= Html::a('Создать журнал', ['generate-journal', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
         <?php elseif ($journalState == JournalService::JOURNAL_EXIST): ?>
-            <?= Html::a('Открыть журнал', ['educational/journal/update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Открыть журнал', ['educational/journal/view', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?= Html::a('Удалить журнал', ['delete-journal', 'id' => $model->id], ['class' => 'btn btn-danger']) ?>
         <?php endif; ?>
         <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
