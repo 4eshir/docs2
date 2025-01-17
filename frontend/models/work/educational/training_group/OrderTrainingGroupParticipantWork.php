@@ -8,13 +8,11 @@ class OrderTrainingGroupParticipantWork extends OrderTrainingGroupParticipant
 {
     public static function fill(
         $orderId,
-        $trainingGroupParticipantId,
-        $status
+        $trainingGroupParticipantId
     ){
         $entity = new static();
         $entity->order_id = $orderId;
         $entity->training_group_participant_id = $trainingGroupParticipantId;
-        $entity->status = $status;
         return $entity;
     }
 }

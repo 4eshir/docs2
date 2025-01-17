@@ -46,7 +46,7 @@ class OrderTrainingRepository
         $groupId = ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll($participantId),
             'training_group_id');
         $groupParticipant = new ActiveDataProvider([
-            'query' => $this->trainingGroupParticipantRepository->getAllByGroupQuery($groupId),
+            'query' => $this->trainingGroupParticipantRepository->getParticipantToEnrolUpdate($groupId, $orderId),
             'pagination' => [
                 'pageSize' => 10,
             ],

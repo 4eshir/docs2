@@ -8,7 +8,6 @@ namespace common\models\scaffold;
  * @property int $id
  * @property int $training_group_participant_id
  * @property int $order_id
- * @property int $status
  */
 class OrderTrainingGroupParticipant extends \yii\db\ActiveRecord
 {
@@ -26,8 +25,8 @@ class OrderTrainingGroupParticipant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'training_group_participant_id', 'order_id', 'status'], 'required'],
-            [['id', 'training_group_participant_id', 'order_id', 'status'], 'integer'],
+            [['id', 'training_group_participant_id', 'order_id'], 'required'],
+            [['id', 'training_group_participant_id', 'order_id'], 'integer'],
         ];
     }
 
@@ -40,7 +39,6 @@ class OrderTrainingGroupParticipant extends \yii\db\ActiveRecord
             'id' => 'ID',
             'training_group_participant_id' => 'Training Group Participant ID',
             'order_id' => 'Order ID',
-            'status' => 'Status',
         ];
     }
 }

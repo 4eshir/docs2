@@ -153,12 +153,18 @@ use yii\widgets\Pjax;
         <?php ActiveForm::end(); ?>
 </div>
 <?php
+    if($model->id != NULL){
+        $modelId = $model->id;
+    }
+    else {
+        $modelId = 0;
+    }
     $this->registerJs("
     $(document).on('change', '.group-checkbox', function () {
         const checkedCheckboxes = $('.group-checkbox:checked'); 
         const groupIds = [];
         var number = $('#order-number-dropdown').val();
-        var modelId = " . $model->id . ";
+        var modelId = " . $modelId . ";
         checkedCheckboxes.each(function () {
             groupIds.push($(this).data('id')); // Собираем ID всех выбранных чекбоксов
         });  
@@ -168,7 +174,7 @@ use yii\widgets\Pjax;
             data: { 
                 groupIds: JSON.stringify(groupIds), 
                 modelId: modelId, 
-                nomenclature:  number
+                nomenclature: number
             }, // Отправляем массив ID
             success: function (data) {
                 var gridView = $('.training-group-participant .grid-view');
@@ -222,8 +228,7 @@ $this->registerJs("
         const checkedCheckboxes = $('.group-checkbox:checked'); 
         const groupIds = [];
         var number = $('#order-number-dropdown').val();
-        var modelId = " . $model->id . ";
-        console.log(number, modelId);
+        var modelId = " . $modelId . ";
         checkedCheckboxes.each(function () {
             groupIds.push($(this).data('id')); // Собираем ID всех выбранных чекбоксов
         });  
