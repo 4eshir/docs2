@@ -10,16 +10,13 @@ class CreateOrderTrainingGroupParticipantEvent implements EventInterface
     public $id;
     public $orderId;
     public $trainingGroupParticipantId;
-    public $status;
     public OrderTrainingGroupParticipantRepository $repository;
     public function __construct(
         $orderId,
-        $trainingGroupParticipantId,
-        $status
+        $trainingGroupParticipantId
     ){
         $this->orderId = $orderId;
         $this->trainingGroupParticipantId = $trainingGroupParticipantId;
-        $this->status = $status;
         $this->repository = new OrderTrainingGroupParticipantRepository();
     }
     public function isSingleton(): bool
@@ -34,7 +31,6 @@ class CreateOrderTrainingGroupParticipantEvent implements EventInterface
             $this->repository->prepareCreate(
                 $this->orderId,
                 $this->trainingGroupParticipantId,
-                $this->status
             )
         ];
     }

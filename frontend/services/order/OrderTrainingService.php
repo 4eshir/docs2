@@ -148,12 +148,10 @@ class OrderTrainingService
         }
         $model->releaseEvents();
     }
-    public function updateTrainingGroupParticipantStatus($participants, $status)
+    public function updateTrainingGroupParticipantStatus($participant, $status)
     {
-        foreach ($participants as $participant) {
-            $model = TrainingGroupParticipantWork::findOne($participant);
-            $model->status = $status;
-            $model->save();
-        }
+        $model = $this->trainingGroupParticipantRepository->get($participant);
+        $model->status = $status;
+        $model->save();
     }
 }

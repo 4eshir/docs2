@@ -16,7 +16,6 @@ class m250111_092720_order_group_training_participant extends Migration
             'id' => $this->primaryKey(),
             'training_group_participant_id' => $this->integer()->notNull(),
             'order_id' => $this->integer()->notNull(),
-            'status' => $this->integer()->notNull(),
         ]);
     }
 

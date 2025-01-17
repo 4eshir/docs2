@@ -9,14 +9,14 @@ use Yii;
 
 class OrderTrainingGroupParticipantRepository
 {
-    public function prepareCreate($orderId, $trainingGroupParticipantId, $status)
+    public function prepareCreate($orderId, $trainingGroupParticipantId)
     {
-        $model = OrderTrainingGroupParticipantWork::fill($orderId, $trainingGroupParticipantId, $status);
+        $model = OrderTrainingGroupParticipantWork::fill($orderId, $trainingGroupParticipantId);
         $command = Yii::$app->db->createCommand();
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
-    public function prepareDelete($orderId, $trainingGroupParticipantId, $status)
+    public function prepareDelete($orderId, $trainingGroupParticipantId)
     {
         $command = Yii::$app->db->createCommand();
         $command->delete(OrderTrainingGroupParticipantWork::tableName(),
