@@ -121,7 +121,7 @@ class OrderTrainingController extends DocumentController
         $post = Yii::$app->request->post();
         $number = $model->order_number;
         $groups = $this->orderTrainingRepository->getOrderTrainingGroupData($model);
-        $groupParticipant = $this->orderTrainingRepository->getOrderTrainingGroupParticipantData($model->id);
+        $groupParticipant = $this->orderTrainingRepository->getOrderTrainingGroupParticipantData($model);
         if ($model->load($post) && $model->validate()) {
             $this->orderTrainingService->getFilesInstances($model);
             $model->order_number = $number;
@@ -169,17 +169,33 @@ class OrderTrainingController extends DocumentController
         $nomenclature = Yii::$app->request->get('nomenclature');
         $groupIds = json_decode($groupIds);
         if ($modelId == 0){
+            $status = NomenclatureDictionary::getStatus($nomenclature);
             //create
-            $dataProvider = new ActiveDataProvider([
-                'query' => $this->trainingGroupParticipantRepository->getAllByGroupQuery($groupIds)
-            ]);
+            if($status == 0){
+                $dataProvider = new ActiveDataProvider([
+                    'query' => $this->trainingGroupParticipantRepository->getAllParticipantToDeductByGroupQuery($groupIds)
+                ]);
+            }
+            if($status == 1){
+                $dataProvider = new ActiveDataProvider([
+                    'query' => $this->trainingGroupParticipantRepository->getAllParticipantToEnrollByGroupQuery($groupIds)
+                ]);
+            }
         } else {
             //update
-            $dataProvider = new ActiveDataProvider([
-                'query' => $this->trainingGroupParticipantRepository->getParticipantToEnrolUpdate($groupIds, $modelId)
-            ]);
+            $model = $this->orderTrainingRepository->get($modelId);
+            $status = $this->orderTrainingService->getStatus($model);
+            if ($status == 0){
+                $dataProvider = new ActiveDataProvider([
+                    'query' => $this->trainingGroupParticipantRepository->getParticipantToDeductUpdate($groupIds, $modelId)
+                ]);
+            }
+            if ($status == 1){
+                $dataProvider = new ActiveDataProvider([
+                    'query' => $this->trainingGroupParticipantRepository->getParticipantToEnrollUpdate($groupIds, $modelId)
+                ]);
+            }
         }
-
         return $this->asJson([
             'gridHtml' => $this->renderPartial('_group-participant_grid', [
                 'dataProvider' => $dataProvider,

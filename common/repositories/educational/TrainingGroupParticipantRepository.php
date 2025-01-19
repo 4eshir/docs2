@@ -82,16 +82,28 @@ class TrainingGroupParticipantRepository
     {
         return $this->provider->delete($model);
     }
-    public function getAllByGroupQuery($groupId)
+    public function getAllParticipantToEnrollByGroupQuery($groupId)
     {
         return TrainingGroupParticipantWork::find()->andWhere(['<>', 'status', 1])->andWhere(['training_group_id' => $groupId]);
     }
-    public function getParticipantToEnrolUpdate($groupId, $orderId){
+    public function getAllParticipantToDeductByGroupQuery($groupId)
+    {
+        return TrainingGroupParticipantWork::find()->andWhere(['<>', 'status', 0])->andWhere(['training_group_id' => $groupId]);
+    }
+    public function getParticipantToEnrollUpdate($groupId, $orderId){
         $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all(),
             'training_group_participant_id');
         $query = TrainingGroupParticipantWork::find()
             ->orWhere(['id' => $orderParticipantId])
             ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 0]]);
+        return $query;
+    }
+    public function getParticipantToDeductUpdate($groupId, $orderId){
+        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all(),
+            'training_group_participant_id');
+        $query = TrainingGroupParticipantWork::find()
+            ->orWhere(['id' => $orderParticipantId])
+            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 1]]);
         return $query;
     }
     public function getAll($id)
