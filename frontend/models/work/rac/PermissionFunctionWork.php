@@ -6,6 +6,10 @@ use common\models\scaffold\PermissionFunction;
 
 class PermissionFunctionWork extends PermissionFunction
 {
+    const PERMISSION_THEIR_GROUPS_ID = 2;
+    const PERMISSION_BRANCH_GROUPS_ID = 3;
+    const PERMISSION_ALL_GROUPS_ID = 4;
+
     public static function fill($name, $shortCode, $id = null)
     {
         $entity = new static();

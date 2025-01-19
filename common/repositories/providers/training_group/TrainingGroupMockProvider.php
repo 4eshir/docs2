@@ -22,6 +22,11 @@ class TrainingGroupMockProvider implements TrainingGroupProviderInterface
         return $this->dataStore[$id] ?? null;
     }
 
+    public function getAll()
+    {
+        return $this->dataStore;
+    }
+
     public function getParticipants($id)
     {
         return $this->participantsData[$id] ?? [];

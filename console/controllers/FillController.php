@@ -85,9 +85,9 @@ class FillController extends Controller
     private function createFunctions()
     {
         $fIds[1] = $this->functionRepository->save(PermissionFunctionWork::fill('Добавление новых учебных групп', 'add_group', 1));
-        $fIds[2] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр своих учебных групп', 'view_self_groups', 2));
-        $fIds[3] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр учебных групп своего отдела', 'view_branch_groups', 3));
-        $fIds[4] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр всех учебных групп', 'view_all_groups', 4));
+        $fIds[2] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр своих учебных групп', 'view_self_groups', PermissionFunctionWork::PERMISSION_THEIR_GROUPS_ID));
+        $fIds[3] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр учебных групп своего отдела', 'view_branch_groups', PermissionFunctionWork::PERMISSION_BRANCH_GROUPS_ID));
+        $fIds[4] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр всех учебных групп', 'view_all_groups', PermissionFunctionWork::PERMISSION_ALL_GROUPS_ID));
         $fIds[5] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование своих учебных групп', 'edit_self_groups', 5));
         $fIds[6] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование учебных групп своего отдела', 'edit_branch_groups', 6));
         $fIds[7] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование всех учебных групп', 'edit_all_groups', 7));

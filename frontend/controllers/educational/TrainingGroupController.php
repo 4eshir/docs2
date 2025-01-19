@@ -2,6 +2,8 @@
 
 namespace frontend\controllers\educational;
 
+use common\components\access\pbac\data\PbacGroupData;
+use common\components\access\pbac\PbacGroupAccess;
 use common\controllers\DocumentController;
 use common\helpers\common\RequestHelper;
 use common\helpers\html\HtmlBuilder;
@@ -15,6 +17,7 @@ use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\event\ForeignEventRepository;
 use common\repositories\general\FilesRepository;
+use common\repositories\general\UserRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\educational\training_group\AddTeachersToGroupEvent;
@@ -32,6 +35,7 @@ use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\models\work\general\UserWork;
 use frontend\models\work\ProjectThemeWork;
 use frontend\services\educational\JournalService;
 use frontend\services\educational\TrainingGroupService;
@@ -349,7 +353,13 @@ class TrainingGroupController extends DocumentController
     // DEBUG
     public function actionTest($id)
     {
-        $this->journalService->deleteLessonFromGroup(7, 3);
+        $pbac = new PbacGroupAccess(
+            new PbacGroupData(
+                (Yii::createObject(UserRepository::class))->get(1), []
+            )
+        );
+
+        var_dump(ArrayHelper::getColumn($pbac->getAllowedGroups(), 'id'));
     }
     // DEBUG
 }

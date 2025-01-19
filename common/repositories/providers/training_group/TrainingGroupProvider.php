@@ -37,6 +37,19 @@ class TrainingGroupProvider implements TrainingGroupProviderInterface
         return TrainingGroupWork::find()->where(['id' => $id])->one();
     }
 
+    public function getAll()
+    {
+        return TrainingGroupWork::find()->all();
+    }
+
+    public function getByTeacher($teacherId)
+    {
+        return TrainingGroupWork::find()
+            ->joinWith(['teacherWork teacherWork'])
+            ->where(['teacherWork.people_id' => $teacherId])
+            ->all();
+    }
+
     public function getParticipants($id)
     {
         return TrainingGroupParticipantWork::find()->where(['training_group_id' => $id])->all();
@@ -64,6 +77,16 @@ class TrainingGroupProvider implements TrainingGroupProviderInterface
             throw new DomainException('Ошибка сохранения учебной группы. Проблемы: '.json_encode($group->getErrors()));
         }
         return $group->id;
+    }
+
+    public function getByBranchQuery($branch)
+    {
+        return TrainingGroupWork::find()->where(['branch' => $branch]);
+    }
+
+    public function getByBranch(array $branches)
+    {
+        return TrainingGroupWork::find()->where(['IN', 'branch', $branches])->all();
     }
 
     public function delete(TrainingGroupWork $model)

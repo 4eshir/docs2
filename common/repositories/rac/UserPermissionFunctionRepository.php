@@ -52,6 +52,11 @@ class UserPermissionFunctionRepository
         return PermissionFunctionWork::find()->where(['IN', 'id', $userPermissions])->all();
     }
 
+    public function getByUserAndPermission($userId, $permissionId)
+    {
+        return UserPermissionFunctionWork::find()->where(['user_id' => $userId])->andWhere(['function_id' => $permissionId])->all();
+    }
+
     public function save(UserPermissionFunctionWork $userFunction)
     {
         if (!$userFunction->save()) {

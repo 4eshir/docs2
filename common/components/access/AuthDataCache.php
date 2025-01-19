@@ -47,7 +47,7 @@ class AuthDataCache
     }
 
     /**
-     * Загрузка данных в Redis из готово массива правил
+     * Загрузка данных в Redis из готового массива правил
      *
      * @param array $permissions массив правил @see PermissionFunctionWork
      * @param int $userId

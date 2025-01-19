@@ -5,6 +5,7 @@ namespace common\repositories\educational;
 use common\components\traits\CommonDatabaseFunctions;
 use common\repositories\providers\training_group\TrainingGroupProvider;
 use common\repositories\providers\training_group\TrainingGroupProviderInterface;
+use DomainException;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use Yii;
 
@@ -28,6 +29,20 @@ class TrainingGroupRepository
     public function get($id)
     {
         return $this->provider->get($id);
+    }
+
+    public function getAll()
+    {
+        return $this->provider->getAll();
+    }
+
+    public function getByTeacher($teacherId)
+    {
+        if (get_class($this->provider) == TrainingGroupProvider::class) {
+            return $this->provider->getByTeacher($teacherId);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода getByTeacher');
+        }
     }
 
     public function getParticipants($id)
@@ -59,12 +74,22 @@ class TrainingGroupRepository
     {
         return $this->provider->delete($model);
     }
+
     public function getByBranchQuery($branch)
     {
-        return TrainingGroupWork::find()->where(['branch' => $branch]);
+        if (get_class($this->provider) == TrainingGroupProvider::class) {
+            return $this->provider->getByBranchQuery($branch);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода getByBranchQuery');
+        }
     }
-    public function getByBranch($branch)
+
+    public function getByBranches(array $branches)
     {
-        return TrainingGroupWork::find()->where(['branch' => $branch])->all();
+        if (get_class($this->provider) == TrainingGroupProvider::class) {
+            return $this->provider->getByBranch($branches);
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода getByBranches');
+        }
     }
 }
