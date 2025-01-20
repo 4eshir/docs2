@@ -153,22 +153,23 @@ class NomenclatureDictionary extends BaseDictionary
     }
     public static function getStatus($nomenclature)
     {
-        // отчисление
-        if ($nomenclature == NomenclatureDictionary::COD_DEL || $nomenclature == NomenclatureDictionary::TECHNOPARK_DEL
-            || $nomenclature == NomenclatureDictionary::TECHNOPARK_DEL_BUDGET || $nomenclature == NomenclatureDictionary::QUANTORIUM_DEL
-            || $nomenclature == NomenclatureDictionary::CDNTT_DEL || $nomenclature == NomenclatureDictionary::CDNTT_DEL_BUDGET
-            || $nomenclature == NomenclatureDictionary::MOB_QUANT_DEL || $nomenclature == NomenclatureDictionary::QUANTORIUM_DEL_BUDGET) {
-            return 0;
-        }
+        // зачисление
         if($nomenclature == NomenclatureDictionary::COD_ADD || $nomenclature == NomenclatureDictionary::TECHNOPARK_ADD
             || $nomenclature == NomenclatureDictionary::TECHNOPARK_ADD_BUDGET || $nomenclature == NomenclatureDictionary::QUANTORIUM_ADD
             || $nomenclature == NomenclatureDictionary::CDNTT_ADD || $nomenclature == NomenclatureDictionary::CDNTT_ADD_BUDGET
             || $nomenclature == NomenclatureDictionary::MOB_QUANT_ADD || $nomenclature == NomenclatureDictionary::QUANTORIUM_ADD_BUDGET){
             return 1;
         }
+        // отчисление
+        if ($nomenclature == NomenclatureDictionary::COD_DEL || $nomenclature == NomenclatureDictionary::TECHNOPARK_DEL
+            || $nomenclature == NomenclatureDictionary::TECHNOPARK_DEL_BUDGET || $nomenclature == NomenclatureDictionary::QUANTORIUM_DEL
+            || $nomenclature == NomenclatureDictionary::CDNTT_DEL || $nomenclature == NomenclatureDictionary::CDNTT_DEL_BUDGET
+            || $nomenclature == NomenclatureDictionary::MOB_QUANT_DEL || $nomenclature == NomenclatureDictionary::QUANTORIUM_DEL_BUDGET) {
+            return 2;
+        }
         // перевод
         if($nomenclature == NomenclatureDictionary::CDNTT_TRANSFER){
-            return 2;
+            return 3;
         }
         return 0;
     }

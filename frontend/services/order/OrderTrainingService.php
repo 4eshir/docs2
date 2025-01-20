@@ -11,6 +11,7 @@ use common\repositories\educational\OrderTrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\general\OrderPeopleRepository;
+use common\repositories\order\OrderTrainingRepository;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\events\general\OrderPeopleCreateEvent;
@@ -34,6 +35,7 @@ class OrderTrainingService
         OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository,
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
         TrainingGroupRepository $trainingGroupRepository
+
     )
     {
         $this->fileService = $fileService;
@@ -125,33 +127,34 @@ class OrderTrainingService
     public function updateOrderPeopleEvent($respPeople, $formRespPeople , OrderTrainingWork $model)
     {
         if($respPeople != NULL && $formRespPeople != NULL) {
-            $addSquadParticipant = array_diff($formRespPeople, $respPeople);
-            $deleteSquadParticipant = array_diff($respPeople, $formRespPeople);
+            $addArray = array_diff($formRespPeople, $respPeople);
+            $deleteArray = array_diff($respPeople, $formRespPeople);
         }
         else if($formRespPeople == NULL && $respPeople != NULL) {
-            $deleteSquadParticipant = $respPeople;
-            $addSquadParticipant = NULL;
+            $deleteArray = $respPeople;
+            $addArray = NULL;
         }
         else if($respPeople == NULL && $formRespPeople != NULL) {
-            $addSquadParticipant = $formRespPeople;
-            $deleteSquadParticipant = NULL;
+            $addArray = $formRespPeople;
+            $deleteArray = NULL;
         }
         else {
-            $deleteSquadParticipant = NULL;
-            $addSquadParticipant = NULL;
+            $deleteArray = NULL;
+            $addArray = NULL;
         }
-        if($deleteSquadParticipant != NULL) {
-            $this->orderMainService->deleteOrderPeopleEvent($deleteSquadParticipant, $model);
+        if($deleteArray != NULL) {
+            $this->orderMainService->deleteOrderPeopleEvent($deleteArray, $model);
         }
-        if($addSquadParticipant != NULL) {
-            $this->orderMainService->addOrderPeopleEvent($addSquadParticipant, $model);
+        if($addArray != NULL) {
+            $this->orderMainService->addOrderPeopleEvent($addArray, $model);
         }
         $model->releaseEvents();
     }
     public function updateTrainingGroupParticipantStatus($participant, $status)
     {
+        /* @var $model TrainingGroupParticipantWork */
         $model = $this->trainingGroupParticipantRepository->get($participant);
-        $model->status = $status;
-        $model->save();
+        $model->setStatus($status);
+        $this->trainingGroupParticipantRepository->save($model);
     }
 }

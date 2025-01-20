@@ -55,4 +55,7 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
         $model = ForeignEventParticipantsWork::findOne($this->participant_id);
         return $model->getFullFio();
     }
+    public function setStatus($status){
+        $this->status = $status;
+    }
 }

@@ -95,7 +95,7 @@ class OrderTrainingController extends DocumentController
             $respPeopleId = DynamicWidget::getData(basename(OrderTrainingWork::class), "responsible_id", $post);
             $this->orderTrainingService->getFilesInstances($model);
             $model->generateOrderNumber();
-            $model->save();
+            $this->orderTrainingRepository->save($model);
             $participants = $post['group-participant-selection'];
             $status = $this->orderTrainingService->getStatus($model);
             $this->orderTrainingGroupParticipantService->addOrderTrainingGroupParticipantEvent($model, $model->id, $participants, $status);
@@ -125,7 +125,7 @@ class OrderTrainingController extends DocumentController
         if ($model->load($post) && $model->validate()) {
             $this->orderTrainingService->getFilesInstances($model);
             $model->order_number = $number;
-            $model->save();
+            $this->orderTrainingRepository->save($model);
             $this->orderTrainingService->saveFilesFromModel($model);
             $this->orderTrainingService->updateOrderPeopleEvent(
                 ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
@@ -171,28 +171,28 @@ class OrderTrainingController extends DocumentController
         if ($modelId == 0){
             $status = NomenclatureDictionary::getStatus($nomenclature);
             //create
-            if($status == 0){
-                $dataProvider = new ActiveDataProvider([
-                    'query' => $this->trainingGroupParticipantRepository->getAllParticipantToDeductByGroupQuery($groupIds)
-                ]);
-            }
             if($status == 1){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getAllParticipantToEnrollByGroupQuery($groupIds)
+                ]);
+            }
+            if($status == 2){
+                $dataProvider = new ActiveDataProvider([
+                    'query' => $this->trainingGroupParticipantRepository->getAllParticipantToDeductByGroupQuery($groupIds)
                 ]);
             }
         } else {
             //update
             $model = $this->orderTrainingRepository->get($modelId);
             $status = $this->orderTrainingService->getStatus($model);
-            if ($status == 0){
-                $dataProvider = new ActiveDataProvider([
-                    'query' => $this->trainingGroupParticipantRepository->getParticipantToDeductUpdate($groupIds, $modelId)
-                ]);
-            }
             if ($status == 1){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToEnrollUpdate($groupIds, $modelId)
+                ]);
+            }
+            if ($status == 2){
+                $dataProvider = new ActiveDataProvider([
+                    'query' => $this->trainingGroupParticipantRepository->getParticipantToDeductUpdate($groupIds, $modelId)
                 ]);
             }
         }
