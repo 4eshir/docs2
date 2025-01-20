@@ -21,6 +21,7 @@ use yii\jui\DatePicker;
 /* @var $teams */
 /* @var $nominations */
 /* @var $actTable */
+/* @var $participants */
 ?>
 
 <style>
@@ -751,7 +752,7 @@ use yii\jui\DatePicker;
                                 <div id = "form-<?=$i?>" hidden>
                                     <div>
                                         <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::classname(), [
-                                                'data' => ArrayHelper::map($people,'id','fullFio'),
+                                                'data' => ArrayHelper::map($participants,'id','fullFio'),
                                                 'size' => Select2::LARGE,
                                                 'options' => [
                                                         'prompt' => 'Выберите участника' ,

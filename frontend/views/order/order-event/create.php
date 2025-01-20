@@ -7,6 +7,7 @@ use yii\helpers\Html;
 /* @var $modelActs */
 /* @var $nominations */
 /* @var $teams */
+/* @var $participants */
 $this->title = 'Добавить приказ об участии';
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об участии', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -21,6 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'modelActs' => $modelActs,
         'nominations' => $nominations,
         'teams' => $teams,
+        'participants' => $participants
     ]) ?>
 
 </div>

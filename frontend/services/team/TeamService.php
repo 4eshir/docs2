@@ -3,13 +3,9 @@
 namespace app\services\team;
 
 use app\events\team\TeamNameCreateEvent;
-use app\models\work\event\ForeignEventWork;
 use app\models\work\team\TeamNameWork;
-use app\models\work\team\TeamWork;
-use common\helpers\html\HtmlBuilder;
 use common\repositories\team\TeamRepository;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
 
 class TeamService
 {
