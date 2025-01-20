@@ -19,7 +19,7 @@ use Yii;
  * @property int $allow_remote
  * @property int $form
  */
-class  ActParticipant extends \yii\db\ActiveRecord
+class ActParticipant extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}

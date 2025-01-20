@@ -20,20 +20,28 @@ use yii\widgets\ActiveForm;
 
         <?= $form->field($model, 'groupId')->hiddenInput()->label(false) ?>
 
-        <?php foreach ($model->participantLessons as $participantLesson): ?>
-            <h4>Participant ID: <?= $participantLesson->trainingGroupParticipantId ?></h4>
-            <?php foreach ($participantLesson->lessonIds as $index => $lesson): ?>
-                <?= $form->field($lesson, "[$participantLesson->trainingGroupParticipantId][$index]lessonId")->hiddenInput(['value' => $lesson->lessonId])->label(false) ?>
-                <?= $form->field($lesson, "[$participantLesson->trainingGroupParticipantId][$index]status")
-                    ->dropDownList([
-                        VisitWork::NONE => '---',
-                        VisitWork::ATTENDANCE => 'Я',
-                        VisitWork::NO_ATTENDANCE => 'Н',
-                        VisitWork::DISTANCE => 'Д'
-                    ])
-                    ->label("Lesson ID: {$lesson->lessonId}"); ?>
+        <table class="table table-bordered">
+            <?php foreach ($model->participantLessons as $participantLesson): ?>
+                <tr>
+                    <td>
+                        Participant ID: <?= $participantLesson->trainingGroupParticipantId ?>
+                    </td>
+                    <?php foreach ($participantLesson->lessonIds as $index => $lesson): ?>
+                        <td>
+                            <?= $form->field($lesson, "[$participantLesson->trainingGroupParticipantId][$index]lessonId")->hiddenInput(['value' => $lesson->lessonId])->label(false) ?>
+                            <?= $form->field($lesson, "[$participantLesson->trainingGroupParticipantId][$index]status")
+                                ->dropDownList([
+                                    VisitWork::NONE => '---',
+                                    VisitWork::ATTENDANCE => 'Я',
+                                    VisitWork::NO_ATTENDANCE => 'Н',
+                                    VisitWork::DISTANCE => 'Д'
+                                ])
+                                ->label("Lesson ID: {$lesson->lessonId}"); ?>
+                        </td>
+                    <?php endforeach; ?>
+                </tr>
             <?php endforeach; ?>
-        <?php endforeach; ?>
+        </table>
 
     </div>
 

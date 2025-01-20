@@ -25,14 +25,17 @@ class ActParticipantRepository
         $this->orderEventRepository = $orderEventRepository;
         $this->foreignEventRepository = $foreignEventRepository;
     }
+
     public function getByForeignEventId($foreignEventId){
         return ActParticipantWork::find()->where(['foreign_event_id' => $foreignEventId])->all();
     }
+
     public function prepareCreate($modelAct, $teamNameId, $foreignEventId)
     {
         $modelAct->save();
         return $modelAct->id;
     }
+
     public function getOneByUniqueAttributes($teamNameId, $nomination, $foreignEventId)
     {
         return ActParticipantWork::find()
@@ -41,6 +44,7 @@ class ActParticipantRepository
             ->andWhere(['nomination' => $nomination])
             ->one();
     }
+
     public function getAllByUniqueAttributes($teamNameId, $nomination, $foreignEventId)
     {
         return ActParticipantWork::find()
@@ -49,10 +53,12 @@ class ActParticipantRepository
             ->andWhere(['nomination' => $nomination])
             ->all();
     }
+
     public function getByTypeAndForeignEventId($foreignEventId, $type)
     {
         return ActParticipantWork::find()->andWhere(['foreign_event_id' => $foreignEventId])->andWhere(['type' => $type])->all();
     }
+
     public function checkUniqueAct($foreignEventId, $teamNameId, $focus, $form, $nomination)
     {
         return count(ActParticipantWork::find()
@@ -63,10 +69,12 @@ class ActParticipantRepository
             ->andWhere(['nomination' => $nomination])
             ->all());
     }
+
     public function getById($id)
     {
         return ActParticipantWork::findOne($id);
     }
+
     public function save($model)
     {
         if (!$model->save()) {
@@ -74,6 +82,7 @@ class ActParticipantRepository
         }
         return $model->id;
     }
+
     public function delete(ActParticipantWork $model)
     {
         $squadParticipants = $this->squadParticipantRepository->getAllByActId($model->id);

@@ -3,10 +3,20 @@ namespace app\models\work\event;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\models\scaffold\ForeignEvent;
+use common\repositories\act_participant\ActParticipantRepository;
+use common\repositories\general\PeopleStampRepository;
+use frontend\models\work\general\PeopleStampWork;
+use frontend\models\work\general\PeopleWork;
+use Yii;
+use yii\helpers\ArrayHelper;
 
 class ForeignEventWork extends ForeignEvent
 {
     use EventTrait;
+
+    const EXPORT_TYPE = 1;
+    const VIEW_TYPE = 2;
+
     public $actFiles;
 
     public static function fill(
@@ -72,5 +82,38 @@ class ForeignEventWork extends ForeignEvent
         return parent::beforeValidate(); 
     }
 
+    public function getTeachers($type = self::EXPORT_TYPE)
+    {
+        $acts = (Yii::createObject(ActParticipantRepository::class))->getByForeignEventId($this->id);
+        $teacherIds = array_merge(ArrayHelper::getColumn($acts, 'teacher_id'), ArrayHelper::getColumn($acts, 'teacher2_id'));
+        $stamps = (Yii::createObject(PeopleStampRepository::class))->getStamps($teacherIds);
+        $result = '';
+        foreach ($stamps as $stamp) {
+            /** @var PeopleStampWork $stamp */
+            $result .= $stamp->getFIO(PeopleWork::FIO_SURNAME_INITIALS);
+            if ($type == self::EXPORT_TYPE) {
+                $result .= ' ';
+            }
+            else if ($type == self::VIEW_TYPE) {
+                $result .= '<br>';
+            }
+        }
 
+        return $result;
+    }
+
+    public function getWinners()
+    {
+        return '';
+    }
+
+    public function getPrizes()
+    {
+        return '';
+    }
+
+    public function isTrip()
+    {
+        return !is_null($this->order_business_trip_id);
+    }
 }

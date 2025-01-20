@@ -15,6 +15,7 @@ class SquadParticipantRepository
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
+
     public function prepareDelete($actParticipantId, $participantId){
         $model = SquadParticipantWork::find()
             ->andWhere(['act_participant_id' => $actParticipantId])
@@ -24,9 +25,11 @@ class SquadParticipantRepository
         $command->delete($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
+
     public function getCountByActAndParticipantId($actId, $participantId){
         return count(SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId, 'participant_id' => $participantId])->all());
     }
+
     public function getAllByActId($actId){
         return SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId])->all();
     }
