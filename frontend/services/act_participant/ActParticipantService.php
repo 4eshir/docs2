@@ -2,7 +2,6 @@
 namespace app\services\act_participant;
 use app\events\act_participant\ActParticipantCreateEvent;
 use app\models\work\team\ActParticipantWork;
-use app\models\work\team\TeamWork;
 use app\services\team\TeamService;
 use common\helpers\files\filenames\ActParticipantFileNameGenerator;
 use common\helpers\files\FilesHelper;

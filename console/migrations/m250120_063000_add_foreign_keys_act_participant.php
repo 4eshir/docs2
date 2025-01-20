@@ -28,6 +28,23 @@ class m250120_063000_add_foreign_keys_act_participant extends Migration
             'id',
             'RESTRICT',
         );
+        $this->addForeignKey(
+            'fk-act_participant-3',
+            'act_participant',
+            'team_name_id',
+            'team_name',
+            'id',
+            'RESTRICT',
+        );
+        $this->addForeignKey(
+            'fk-act_participant-4',
+            'act_participant',
+            'foreign_event_id',
+            'foreign_event',
+            'id',
+            'RESTRICT',
+        );
+
     }
 
     /**
@@ -37,6 +54,9 @@ class m250120_063000_add_foreign_keys_act_participant extends Migration
     {
         $this->dropForeignKey('fk-act_participant-1', 'act_participant');
         $this->dropForeignKey('fk-act_participant-2', 'act_participant');
+        $this->dropForeignKey('fk-act_participant-3', 'act_participant');
+        $this->dropForeignKey('fk-act_participant-4', 'act_participant');
+        $this->dropTable('act_participant');
         return true;
     }
 

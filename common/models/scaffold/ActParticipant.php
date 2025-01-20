@@ -1,23 +1,26 @@
 <?php
 namespace common\models\scaffold;
-use app\models\work\team\TeamNameWork;
-use app\models\work\team\TeamWork;
-use frontend\models\work\general\PeopleWork;
 use Yii;
+
 /**
  * This is the model class for table "act_participant".
  *
  * @property int $id
  * @property int|null $teacher_id
  * @property int|null $teacher2_id
- * @property int|null $branch
- * @property int|null $focus
- * @property int|null $type
- * @property string|null $nomination
+ * @property int $branch
+ * @property int $focus
+ * @property int $type
+ * @property string $nomination
  * @property int|null $team_name_id
+ * @property int|null $form
  * @property int $foreign_event_id
- * @property int $allow_remote
- * @property int $form
+ * @property int|null $allow_remote
+ *
+ * @property ForeignEvent $foreignEvent
+ * @property PeopleStamp $teacher
+ * @property PeopleStamp $teacher2
+ * @property TeamName $teamName
  */
 class ActParticipant extends \yii\db\ActiveRecord
 {
@@ -35,9 +38,13 @@ class ActParticipant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['teacher_id', 'teacher2_id', 'branch', 'focus', 'type', 'team_name_id', 'foreign_event_id', 'allow_remote', 'form'], 'integer'],
-            //[['branch', 'focus', 'type', 'nomination', 'foreign_event_id'], 'required'],
+            [['teacher_id', 'teacher2_id', 'branch', 'focus', 'type', 'team_name_id', 'form', 'foreign_event_id', 'allow_remote'], 'integer'],
+            [['branch', 'focus', 'type', 'nomination', 'foreign_event_id'], 'required'],
             [['nomination'], 'string', 'max' => 1000],
+            [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['teacher_id' => 'id']],
+            [['teacher2_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['teacher2_id' => 'id']],
+            [['team_name_id'], 'exist', 'skipOnError' => true, 'targetClass' => TeamName::class, 'targetAttribute' => ['team_name_id' => 'id']],
+            [['foreign_event_id'], 'exist', 'skipOnError' => true, 'targetClass' => ForeignEvent::class, 'targetAttribute' => ['foreign_event_id' => 'id']],
         ];
     }
 
@@ -55,9 +62,49 @@ class ActParticipant extends \yii\db\ActiveRecord
             'type' => 'Type',
             'nomination' => 'Nomination',
             'team_name_id' => 'Team Name ID',
+            'form' => 'Form',
             'foreign_event_id' => 'Foreign Event ID',
             'allow_remote' => 'Allow Remote',
-            'form' => 'Form',
         ];
+    }
+
+    /**
+     * Gets query for [[ForeignEvent]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getForeignEvent()
+    {
+        return $this->hasOne(ForeignEvent::class, ['id' => 'foreign_event_id']);
+    }
+
+    /**
+     * Gets query for [[Teacher]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeacher()
+    {
+        return $this->hasOne(PeopleStamp::class, ['id' => 'teacher_id']);
+    }
+
+    /**
+     * Gets query for [[Teacher2]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeacher2()
+    {
+        return $this->hasOne(PeopleStamp::class, ['id' => 'teacher2_id']);
+    }
+
+    /**
+     * Gets query for [[TeamName]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTeamName()
+    {
+        return $this->hasOne(TeamName::class, ['id' => 'team_name_id']);
     }
 }
