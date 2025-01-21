@@ -7,6 +7,7 @@ use common\components\dictionaries\base\NomenclatureDictionary;
 use common\repositories\educational\OrderTrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
+use DomainException;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use yii\data\ActiveDataProvider;
@@ -53,14 +54,6 @@ class OrderTrainingRepository
         $groupId = ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll($participantId),
             'training_group_id');
         $status = $this->orderTrainingService->getStatus($model);
-        if ($status == 0) {
-            $groupParticipant = new ActiveDataProvider([
-                'query' => $this->trainingGroupParticipantRepository->getParticipantToDeductUpdate($groupId, $orderId),
-                'pagination' => [
-                    'pageSize' => 10,
-                ],
-            ]);
-        }
         if($status == 1) {
             $groupParticipant = new ActiveDataProvider([
                 'query' => $this->trainingGroupParticipantRepository->getParticipantToEnrollUpdate($groupId, $orderId),
@@ -69,7 +62,22 @@ class OrderTrainingRepository
                 ],
             ]);
         }
+        if ($status == 2) {
+            $groupParticipant = new ActiveDataProvider([
+                'query' => $this->trainingGroupParticipantRepository->getParticipantToDeductUpdate($groupId, $orderId),
+                'pagination' => [
+                    'pageSize' => 10,
+                ],
+            ]);
+        }
         return $groupParticipant;
+    }
+    public function save(OrderTrainingWork $model)
+    {
+        if (!$model->save()) {
+            throw new DomainException('Ошибка сохранения документа. Проблемы: '.json_encode($model->getErrors()));
+        }
+        return $model->id;
     }
     public function getEmptyOrderTrainingGroupParticipantData(){
         $groupParticipant = new ActiveDataProvider([

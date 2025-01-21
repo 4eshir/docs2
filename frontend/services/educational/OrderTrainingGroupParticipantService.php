@@ -53,6 +53,7 @@ class OrderTrainingGroupParticipantService
         if ($deleteParticipants != NULL) {
             foreach ($deleteParticipants as $deleteParticipant) {
                 $model->recordEvent(new DeleteOrderTrainingGroupParticipantEvent($orderId, $deleteParticipant), OrderTrainingGroupParticipantWork::class);
+                // здесь должен быть old status
                 $this->orderTrainingService->updateTrainingGroupParticipantStatus($deleteParticipant, 0);
             }
         }
