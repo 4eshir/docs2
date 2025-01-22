@@ -34,15 +34,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
         $gridColumns = [
             ['attribute' => 'certificate_number', 'format' => 'raw', 'value' => function(CertificateWork $model){
-                return StringFormatter::stringAsLink($model->certificate_number, Url::to(['view', 'id' => $model->id]));
+                return $model->certificate_number;
             }],
             ['attribute' => 'certificate_template_id', 'format' => 'raw', 'value' => function(CertificateWork $model){
-                return StringFormatter::stringAsLink($model->certificateTemplatesWork->name, Url::to(['/educational/certificate-template/view', 'id' => $model->id]));
+                return $model->certificateTemplatesWork->name;
             }],
-            ['attribute' => 'certificatTemplateName', 'format' => 'raw'],
-            ['attribute' => 'participantName', 'label' => 'Отдел', 'format' => 'raw'],
-            ['attribute' => 'participantGroup', 'format' => 'raw'],
-            ['attribute' => 'participantProtection', 'format' => 'raw'],
+            ['attribute' => 'participant_id', 'format' => 'raw', 'value' => function(CertificateWork $model){
+                return $model->trainingGroupParticipantWork->participantWork->getFIO(PeopleWork::FIO_FULL);
+            }],
+            ['attribute' => 'training_group_id', 'format' => 'raw', 'value' => function(CertificateWork $model){
+                return $model->trainingGroupParticipantWork->trainingGroupWork->number;
+            }],
+            ['attribute' => 'protection_date', 'format' => 'raw', 'value' => function(CertificateWork $model){
+                return $model->trainingGroupParticipantWork->trainingGroupWork->protection_date;
+            }],
 
         ];
         echo '<b>Скачать файл </b>';

@@ -50,6 +50,12 @@ class TrainingGroupProvider implements TrainingGroupProviderInterface
             ->all();
     }
 
+    public function getGroupsForCertificates()
+    {
+        $date = date("Y-m-d", strtotime('+3 days'));
+        return TrainingGroupWork::find()->where(['<=','finish_date', $date])->andWhere(['archive' => 0])->orderBy(['id' => SORT_DESC])->all();
+    }
+
     public function getParticipants($id)
     {
         return TrainingGroupParticipantWork::find()->where(['training_group_id' => $id])->all();
