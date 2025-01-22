@@ -7,7 +7,6 @@ use app\models\work\order\OrderTrainingWork;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;
-use common\repositories\educational\OrderTrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\general\OrderPeopleRepository;
@@ -25,14 +24,12 @@ class OrderTrainingService
     private FileService $fileService;
     private OrderMainFileNameGenerator $filenameGenerator;
     private OrderMainService $orderMainService;
-    private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
     private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
     private TrainingGroupRepository $trainingGroupRepository;
     public function __construct(
         FileService $fileService,
         OrderMainFileNameGenerator $filenameGenerator,
         OrderMainService $orderMainService,
-        OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository,
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
         TrainingGroupRepository $trainingGroupRepository
 
@@ -41,7 +38,6 @@ class OrderTrainingService
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
         $this->orderMainService = $orderMainService;
-        $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
         $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
         $this->trainingGroupRepository = $trainingGroupRepository;
 
@@ -149,12 +145,5 @@ class OrderTrainingService
             $this->orderMainService->addOrderPeopleEvent($addArray, $model);
         }
         $model->releaseEvents();
-    }
-    public function updateTrainingGroupParticipantStatus($participant, $status)
-    {
-        /* @var $model TrainingGroupParticipantWork */
-        $model = $this->trainingGroupParticipantRepository->get($participant);
-        $model->setStatus($status);
-        $this->trainingGroupParticipantRepository->save($model);
     }
 }

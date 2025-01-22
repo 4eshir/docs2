@@ -92,4 +92,8 @@ class TrainingGroupRepository
             throw new DomainException('Mock-провайдер не имеет реализации метода getByBranches');
         }
     }
+    public function getByIds($ids)
+    {
+        return TrainingGroupWork::findAll(['id' => $ids]);
+    }
 }

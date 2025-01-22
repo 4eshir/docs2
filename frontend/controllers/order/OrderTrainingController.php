@@ -20,7 +20,6 @@ use common\services\general\files\FileService;
 use DomainException;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
-use frontend\services\educational\OrderTrainingGroupParticipantService;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
@@ -33,9 +32,7 @@ class OrderTrainingController extends DocumentController
     private OrderTrainingService $orderTrainingService;
     private OrderPeopleRepository $orderPeopleRepository;
     private OrderTrainingRepository $orderTrainingRepository;
-    private OrderTrainingGroupParticipantService $orderTrainingGroupParticipantService;
     private TrainingGroupRepository $trainingGroupRepository;
-    private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
 
     public function __construct(
         $id,
@@ -45,7 +42,6 @@ class OrderTrainingController extends DocumentController
         OrderTrainingService $orderTrainingService,
         OrderPeopleRepository $orderPeopleRepository,
         OrderTrainingRepository $orderTrainingRepository,
-        OrderTrainingGroupParticipantService $orderTrainingGroupParticipantService,
         TrainingGroupRepository $trainingGroupRepository,
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
         FileService $fileService,
@@ -58,9 +54,7 @@ class OrderTrainingController extends DocumentController
         $this->orderTrainingService = $orderTrainingService;
         $this->orderPeopleRepository = $orderPeopleRepository;
         $this->orderTrainingRepository = $orderTrainingRepository;
-        $this->orderTrainingGroupParticipantService = $orderTrainingGroupParticipantService;
         $this->trainingGroupRepository = $trainingGroupRepository;
-        $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
     }
     public function actionIndex(){
@@ -86,8 +80,8 @@ class OrderTrainingController extends DocumentController
         $model = new OrderTrainingWork();
         $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
-        $groups = $this->orderTrainingRepository->getEmptyOrderTrainingGroupList();
-        $groupParticipant = $this->orderTrainingRepository->getEmptyOrderTrainingGroupParticipantData();
+        $groups = NULL;
+        $groupParticipant = NULL;
         if ($model->load($post)) {
             if (!$model->validate()) {
                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
@@ -98,8 +92,9 @@ class OrderTrainingController extends DocumentController
             $this->orderTrainingRepository->save($model);
             $participants = $post['group-participant-selection'];
             $status = $this->orderTrainingService->getStatus($model);
-            $this->orderTrainingGroupParticipantService->addOrderTrainingGroupParticipantEvent($model, $model->id, $participants, $status);
-            $this->orderTrainingService->updateTrainingGroupParticipantStatus($participants, $status);
+            //create
+            //code
+            //create
             $this->orderTrainingService->saveFilesFromModel($model);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $model);
             $model->releaseEvents();
@@ -120,19 +115,21 @@ class OrderTrainingController extends DocumentController
         $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
         $post = Yii::$app->request->post();
         $number = $model->order_number;
-        $groups = $this->orderTrainingRepository->getOrderTrainingGroupData($model);
-        $groupParticipant = $this->orderTrainingRepository->getOrderTrainingGroupParticipantData($model);
+        $groups = NULL;
+        $groupParticipant = NULL;
         if ($model->load($post) && $model->validate()) {
             $this->orderTrainingService->getFilesInstances($model);
             $model->order_number = $number;
             $this->orderTrainingRepository->save($model);
+            $participants = $post['group-participant-selection'];
+            $status = $this->orderTrainingService->getStatus($model);
+            //update
+            //code
+            //update
             $this->orderTrainingService->saveFilesFromModel($model);
             $this->orderTrainingService->updateOrderPeopleEvent(
                 ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
                 $post["OrderTrainingWork"]["responsible_id"], $model);
-            $participants = $post['group-participant-selection'];
-            $status = $this->orderTrainingService->getStatus($model);
-            $this->orderTrainingGroupParticipantService->updateOrderTrainingGroupParticipant($model, $model->id, $participants, $status);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -168,38 +165,34 @@ class OrderTrainingController extends DocumentController
         $modelId = Yii::$app->request->get('modelId');
         $nomenclature = Yii::$app->request->get('nomenclature');
         $groupIds = json_decode($groupIds);
+        $dataProvider = new ActiveDataProvider([]);
         if ($modelId == 0){
             $status = NomenclatureDictionary::getStatus($nomenclature);
             //create
-            if($status == 1){
-                $dataProvider = new ActiveDataProvider([
-                    'query' => $this->trainingGroupParticipantRepository->getAllParticipantToEnrollByGroupQuery($groupIds)
-                ]);
+            if ($status == 1){
             }
-            if($status == 2){
-                $dataProvider = new ActiveDataProvider([
-                    'query' => $this->trainingGroupParticipantRepository->getAllParticipantToDeductByGroupQuery($groupIds)
-                ]);
+            if ($status == 2){
             }
-        } else {
+            if ($status == 3){
+            }
+        }
+        else {
             //update
             $model = $this->orderTrainingRepository->get($modelId);
             $status = $this->orderTrainingService->getStatus($model);
             if ($status == 1){
-                $dataProvider = new ActiveDataProvider([
-                    'query' => $this->trainingGroupParticipantRepository->getParticipantToEnrollUpdate($groupIds, $modelId)
-                ]);
             }
-            if ($status == 2){
-                $dataProvider = new ActiveDataProvider([
-                    'query' => $this->trainingGroupParticipantRepository->getParticipantToDeductUpdate($groupIds, $modelId)
-                ]);
+            if ($status == 2) {
+            }
+            if ($status == 3){
             }
         }
         return $this->asJson([
             'gridHtml' => $this->renderPartial('_group-participant_grid', [
                 'dataProvider' => $dataProvider,
-                'model' => $this->orderTrainingRepository->get($modelId)
+                'model' => $this->orderTrainingRepository->get($modelId),
+                'nomenclature' => $nomenclature,
+                'groups' => $this->trainingGroupRepository->getByIds($groupIds)
             ]),
         ]);
     }
