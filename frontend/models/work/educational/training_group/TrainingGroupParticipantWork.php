@@ -7,7 +7,8 @@ use common\models\scaffold\TrainingGroupParticipant;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\general\PeopleStampWork;
 /**
- * @property ForeignEventParticipantsWork participantWork
+ * @property ForeignEventParticipantsWork $participantWork
+ * @property TrainingGroupWork $trainingGroupWork
  */
 
 class TrainingGroupParticipantWork extends TrainingGroupParticipant
@@ -50,6 +51,12 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
     {
         return $this->hasOne(ForeignEventParticipantsWork::class, ['id' => 'participant_id']);
     }
+
+    public function getTrainingGroupWork()
+    {
+        return $this->hasOne(TrainingGroupWork::class, ['id' => 'training_group_id']);
+    }
+
     public function getFullFio()
     {
         $model = ForeignEventParticipantsWork::findOne($this->participant_id);
