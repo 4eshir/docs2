@@ -134,8 +134,13 @@ class OrderTrainingWork extends OrderMain
     {
         $number = $this->order_number;
         $parts = explode("/", $number);
-        $nomenclature = $parts[0];
-        return (new \common\components\dictionaries\base\NomenclatureDictionary)->get($nomenclature);
+        return (new \common\components\dictionaries\base\NomenclatureDictionary)->get($parts[0]);
+    }
+    public function getStatus()
+    {
+        $number = $this->order_number;
+        $parts = explode("/", $number);
+        return NomenclatureDictionary::getStatus($parts[0]);
     }
     public function beforeValidate()
     {

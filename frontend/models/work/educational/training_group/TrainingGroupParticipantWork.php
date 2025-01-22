@@ -48,4 +48,25 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
         $model = ForeignEventParticipantsWork::findOne($this->participant_id);
         return $model->getFullFio();
     }
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+    public function getActivity($id, $orderId){
+        if($id != NULL && $orderId != NULL) {
+            if (
+                OrderTrainingGroupParticipantWork::find()
+                    ->andWhere(['training_group_participant_in_id' => $id])
+                    ->andWhere(['order_id' => $orderId])
+                    ->count() +
+                OrderTrainingGroupParticipantWork::find()
+                    ->andWhere(['training_group_participant_out_id' => $id])
+                    ->andWhere(['order_id' => $orderId])
+                    ->count() > 0
+            ) {
+                return 1;
+            }
+        }
+        return 0;
+    }
 }

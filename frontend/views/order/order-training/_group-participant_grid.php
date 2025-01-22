@@ -5,10 +5,10 @@ use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
-/* @var $dataProvider */
-/* @var $model */
+/* @var $dataProvider \yii\data\ActiveDataProvider */
+/* @var $model \app\models\work\order\OrderTrainingWork*/
 /* @var $nomenclature */
-/* @var $groups */
+/* @var $transferGroups */
 
 if($nomenclature != '11-31') {
     // зачисление и отчисление
@@ -23,7 +23,7 @@ if($nomenclature != '11-31') {
                         'class' => 'group-participant-checkbox',
                         'training-group-id' => $participant->training_group_id,
                         'data-id' => $participant->id, // Добавляем ID группы для передачи в JS
-                        'checked' => 1
+                        'checked' => $participant->getActivity($participant->id, $model->id) == 1
                     ];
                 },
             ],
@@ -64,13 +64,21 @@ else {
             [
                 'attribute' => 'dropdownField', // Условное имя атрибута
                 'format' => 'raw', // Чтобы отобразить HTML-код
-                'label' => 'Список групп',
-                'value' => function (TrainingGroupParticipantWork $participant) use ($groups, $model) {
+                'label' => 'Исходная групп',
+                'value' => function (TrainingGroupParticipantWork $participant) use ($transferGroups, $model) {
+                    return $participant->trainingGroupWork->number;
+                },
+            ],
+            [
+                'attribute' => 'dropdownField', // Условное имя атрибута
+                'format' => 'raw', // Чтобы отобразить HTML-код
+                'label' => 'Куда переводится',
+                'value' => function (TrainingGroupParticipantWork $participant) use ($transferGroups, $model) {
                     // Формируем HTML-код выпадающего списка
                     return Html::dropDownList(
-                        'transfer-group', // Имя элемента
+                        'transfer-group['.$participant->id.']', // Имя элемента
                         $participant->training_group_id, // Значение по умолчанию
-                        ArrayHelper::map($groups, 'id', 'number'),
+                        ArrayHelper::map($transferGroups, 'id', 'number'),
                         [
                             'class' => 'form-control', // CSS-класс
                             'data-id' => $participant->id, // Пользовательские атрибуты

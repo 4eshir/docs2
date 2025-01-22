@@ -2,6 +2,8 @@
 
 namespace frontend\models\work\educational\training_group;
 
+use app\models\work\order\OrderTrainingWork;
+use common\components\dictionaries\base\NomenclatureDictionary;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -122,5 +124,25 @@ class TrainingGroupWork extends TrainingGroup
     public function getTeacherWork()
     {
         return $this->hasOne(PeopleStampWork::class, ['id' => 'teacher_id']);
+    }
+    public function getActivity($orderId){
+        if ($orderId != NULL) {
+            $participants = TrainingGroupParticipantWork::find()->where(['training_group_id' => $this->id])->all();
+            foreach ($participants as $participant) {
+                if (
+                    OrderTrainingGroupParticipantWork::find()
+                        ->andWhere(['training_group_participant_in_id' => $participant->id])
+                        ->andWhere(['order_id' => $orderId])
+                        ->count() +
+                    OrderTrainingGroupParticipantWork::find()
+                        ->andWhere(['training_group_participant_out_id' => $participant->id])
+                        ->andWhere(['order_id' => $orderId])
+                        ->count() > 0
+                ) {
+                    return 1;
+                }
+            }
+        }
+        return 0;
     }
 }

@@ -21,6 +21,7 @@ use yii\widgets\Pjax;
 /* @var $docFiles */
 /* @var $groups */
 /* @var $groupParticipant */
+/* @var $transferGroups */
 ?>
 <style>
     .bordered-div {
@@ -88,10 +89,18 @@ use yii\widgets\Pjax;
     ?>
 
     <div class="training-group">
-        <?= $this->render('_groups_grid', ['dataProvider' => $groups, 'model' => $model]) ?>
+        <?= $this->render('_groups_grid', [
+            'dataProvider' => $groups,
+            'model' => $model,
+        ]) ?>
     </div>
     <div class="training-group-participant">
-        <?= $this->render('_group-participant_grid', ['dataProvider' => $groupParticipant, 'model' => $model]) ?>
+        <?= $this->render('_group-participant_grid', [
+            'dataProvider' => $groupParticipant,
+            'model' => $model,
+            'nomenclature' => $model->getStatus(),
+            'transferGroups' => $transferGroups,
+        ]) ?>
     </div>
     <?= $form->field($model, 'order_name')->textInput()->label('Наименование приказа') ;?>
     <div id="bring_id">

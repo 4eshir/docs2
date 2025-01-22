@@ -5,6 +5,7 @@ namespace common\repositories\educational;
 use common\repositories\providers\group_participant\TrainingGroupParticipantProvider;
 use common\repositories\providers\group_participant\TrainingGroupParticipantProviderInterface;
 use DomainException;
+use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use Mpdf\Tag\Tr;
 use Yii;
@@ -83,5 +84,51 @@ class TrainingGroupParticipantRepository
     public function getAll($id)
     {
         return TrainingGroupParticipantWork::find()->where(['id' => $id])->all();
+    }
+    public function empty()
+    {
+        return TrainingGroupParticipantWork::find()->where(['id' => 0]);
+    }
+    public function getParticipantsToEnrollCreate($groupIds)
+    {
+        return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => 0]);
+    }
+    public function getParticipantsToDeductCreate($groupIds)
+    {
+        return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => 1]);
+    }
+    public function getParticipantsToTransferCreate($groupIds)
+    {
+        return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => 1]);
+    }
+    public function getParticipantToEnrollUpdate($groupId, $orderId){
+        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all(),
+            'training_group_participant_in_id');
+        $query = TrainingGroupParticipantWork::find()
+            ->orWhere(['id' => $orderParticipantId])
+            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 0]]);
+        return $query;
+    }
+    public function getParticipantToDeductUpdate($groupId, $orderId){
+        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all(),
+            'training_group_participant_out_id');
+        $query = TrainingGroupParticipantWork::find()
+            ->orWhere(['id' => $orderParticipantId])
+            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 1]]);
+        return $query;
+    }
+    public function getParticipantToTransferUpdate($groupId, $orderId)
+    {
+        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all(),
+            'training_group_participant_out_id');
+        $query = TrainingGroupParticipantWork::find()
+            ->orWhere(['id' => $orderParticipantId])
+            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 1]]);
+        return $query;
+    }
+    public function setStatus($id, $status){
+        $model = TrainingGroupParticipantWork::findOne($id);
+        $model->setStatus($status);
+        return $this->save($model);
     }
 }

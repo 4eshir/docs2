@@ -13,7 +13,7 @@ echo GridView::widget([
                 return [
                     'class' => 'group-checkbox',
                     'data-id' => $group->id,
-                    'checked' => 1,
+                    'checked' => $group->getActivity($model->id) == 1,
                 ];
             },
         ],
