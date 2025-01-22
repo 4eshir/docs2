@@ -32,6 +32,14 @@ class TrainingGroupMockProvider implements TrainingGroupProviderInterface
         return $this->participantsData[$id] ?? [];
     }
 
+    public function getGroupsForCertificates()
+    {
+        $date = date("Y-m-d", strtotime('+3 days'));
+        return array_filter($this->dataStore, function($item) use ($date) {
+            return $item['archive'] === 0 && $item['finish_date'] <= $date;
+        });
+    }
+
     public function getLessons($id)
     {
         return $this->lessonsData[$id] ?? [];

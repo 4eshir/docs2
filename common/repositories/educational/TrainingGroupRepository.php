@@ -45,6 +45,11 @@ class TrainingGroupRepository
         }
     }
 
+    public function getGroupsForCertificates()
+    {
+        return $this->provider->getGroupsForCertificates();
+    }
+
     public function getParticipants($id)
     {
         return $this->provider->getParticipants($id);
