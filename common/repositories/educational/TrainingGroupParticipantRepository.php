@@ -2,8 +2,6 @@
 
 namespace common\repositories\educational;
 
-use app\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
-use common\models\scaffold\OrderTrainingGroupParticipant;
 use common\repositories\providers\group_participant\TrainingGroupParticipantProvider;
 use common\repositories\providers\group_participant\TrainingGroupParticipantProviderInterface;
 use DomainException;
@@ -81,30 +79,6 @@ class TrainingGroupParticipantRepository
     public function delete(TrainingGroupParticipantWork $model)
     {
         return $this->provider->delete($model);
-    }
-    public function getAllParticipantToEnrollByGroupQuery($groupId)
-    {
-        return TrainingGroupParticipantWork::find()->andWhere(['<>', 'status', 1])->andWhere(['training_group_id' => $groupId]);
-    }
-    public function getAllParticipantToDeductByGroupQuery($groupId)
-    {
-        return TrainingGroupParticipantWork::find()->andWhere(['<>', 'status', 0])->andWhere(['training_group_id' => $groupId]);
-    }
-    public function getParticipantToEnrollUpdate($groupId, $orderId){
-        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all(),
-            'training_group_participant_id');
-        $query = TrainingGroupParticipantWork::find()
-            ->orWhere(['id' => $orderParticipantId])
-            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 0]]);
-        return $query;
-    }
-    public function getParticipantToDeductUpdate($groupId, $orderId){
-        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all(),
-            'training_group_participant_id');
-        $query = TrainingGroupParticipantWork::find()
-            ->orWhere(['id' => $orderParticipantId])
-            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 1]]);
-        return $query;
     }
     public function getAll($id)
     {
