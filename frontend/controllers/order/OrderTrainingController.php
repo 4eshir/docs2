@@ -90,7 +90,6 @@ class OrderTrainingController extends DocumentController
             $this->orderTrainingRepository->save($model);
             $status = $this->orderTrainingService->getStatus($model);
             //create
-            var_dump($status);
             $this->orderTrainingService->createOrderTrainingGroupParticipantEvent($model, $status, $post);
             //create
             $this->orderTrainingService->saveFilesFromModel($model);
@@ -115,6 +114,7 @@ class OrderTrainingController extends DocumentController
         $number = $model->order_number;
         $groups = $this->orderTrainingService->getGroupsDataProvider($model);
         $groupParticipant = $this->orderTrainingService->getParticipantsDataProvider($model);
+        $transferGroups = $this->trainingGroupRepository->getByBranchQuery($model->branch)->all();
         if ($model->load($post) && $model->validate()) {
             $this->orderTrainingService->getFilesInstances($model);
             $model->order_number = $number;
@@ -134,7 +134,8 @@ class OrderTrainingController extends DocumentController
             'model' => $model,
             'people' => $people,
             'groups' => $groups,
-            'groupParticipant' => $groupParticipant
+            'groupParticipant' => $groupParticipant,
+            'transferGroups' => $transferGroups
         ]);
     }
     public function actionGetListByBranch()
@@ -160,9 +161,10 @@ class OrderTrainingController extends DocumentController
     public function actionGetGroupParticipantsByBranch($groupIds)
     {
         $modelId = Yii::$app->request->get('modelId');
-        $nomenclature = Yii::$app->request->get('nomenclature');
+
         $groupIds = json_decode($groupIds);
         if ($modelId == 0){
+            $nomenclature = Yii::$app->request->get('nomenclature');
             $status = NomenclatureDictionary::getStatus($nomenclature);
             //create
             if ($status == 1){
@@ -185,6 +187,7 @@ class OrderTrainingController extends DocumentController
             //update
             $model = $this->orderTrainingRepository->get($modelId);
             $status = $this->orderTrainingService->getStatus($model);
+            $nomenclature = $model->getNomenclature();
             if ($status == 1){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToEnrollUpdate($groupIds, $modelId)
