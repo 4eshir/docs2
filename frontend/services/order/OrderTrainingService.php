@@ -210,22 +210,23 @@ class OrderTrainingService
             }
         }
         if($status == 3) {
-
             $transferGroupIds = $post['transfer-group'];
+            var_dump($participantIds, $transferGroupIds);
             if($participantIds != NULL){
                 foreach ($participantIds as $participantId) {
                     if($transferGroupIds[$participantId] != NULL) {
                         //create new TrainingGroupParticipant
-                        $model = TrainingGroupParticipantWork::fill(
+                        $newTrainingGroupParticipant = TrainingGroupParticipantWork::fill(
                             $transferGroupIds[$participantId],
                             $participantId,
                             NULL
                         );
-                        $this->trainingGroupParticipantRepository->save($model);
-                        $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($participantId, $transferGroupIds[$participantId], $model->id),
+                        $newTrainingGroupParticipant->setStatus($status - 1);
+                        $this->trainingGroupParticipantRepository->save($newTrainingGroupParticipant);
+                        $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($participantId, $transferGroupIds[$participantId], $newTrainingGroupParticipant->id),
                             OrderTrainingWork::class);
-                        $this->trainingGroupParticipantRepository->setStatus($participantId, $status );
                         //update old TrainingGroupParticipant
+                        $this->trainingGroupParticipantRepository->setStatus($participantId, $status - 2);
                     }
                 }
             }
@@ -309,6 +310,10 @@ class OrderTrainingService
                     $this->trainingGroupParticipantRepository->setStatus($createParticipant, 2);
                 }
             }
+        }
+        if($status == 3) {
+
+
         }
     }
 }

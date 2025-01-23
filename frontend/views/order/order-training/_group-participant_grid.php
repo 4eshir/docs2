@@ -27,8 +27,15 @@ if($nomenclature != '11-31') {
                     ];
                 },
             ],
-            'training_group_id',
             'fullFio',
+            [
+                'attribute' => 'dropdownField', // Условное имя атрибута
+                'format' => 'raw', // Чтобы отобразить HTML-код
+                'label' => 'Группа',
+                'value' => function (TrainingGroupParticipantWork $participant) use ($transferGroups, $model) {
+                    return $participant->trainingGroupWork->number;
+                },
+            ],
             'id'
         ],
         'rowOptions' => function ($model, $key, $index) {

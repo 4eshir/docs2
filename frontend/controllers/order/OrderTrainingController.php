@@ -88,10 +88,10 @@ class OrderTrainingController extends DocumentController
             $this->orderTrainingService->getFilesInstances($model);
             $model->generateOrderNumber();
             $this->orderTrainingRepository->save($model);
-            $participants = $post['group-participant-selection'];
             $status = $this->orderTrainingService->getStatus($model);
             //create
-            $this->orderTrainingService->createOrderTrainingGroupParticipantEvent($model, $participants, $status);
+            var_dump($status);
+            $this->orderTrainingService->createOrderTrainingGroupParticipantEvent($model, $status, $post);
             //create
             $this->orderTrainingService->saveFilesFromModel($model);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $model);
