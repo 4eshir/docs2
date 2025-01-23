@@ -4,9 +4,7 @@ use app\components\VerticalActionColumn;
 use common\helpers\DateFormatter;
 use common\helpers\html\HtmlCreator;
 use common\helpers\StringFormatter;
-use frontend\helpers\document\DocumentOutHelper;
 use frontend\models\work\document_in_out\DocumentOutWork;
-use kartik\daterange\DateRangePicker;
 use kartik\export\ExportMenu;
 use yii\bootstrap4\Modal;
 use yii\grid\GridView;
@@ -22,17 +20,19 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 /* @var $model \frontend\models\work\document_in_out\DocumentOutWork */
 /* @var $peopleList */
+/* @var $buttonsAct */
+
 $this->title = 'Исходящая документация';
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
+
 <div class="document-out-index">
     <div class="substrate">
         <h1><?= Html::encode($this->title) ?></h1>
 
         <div class="flexx space">
             <div class="flexx">
-                <?= DocumentOutHelper::createGroupButton(); ?>
+                <?= $buttonsAct; ?>
 
                 <div class="export-menu">
                     <?php

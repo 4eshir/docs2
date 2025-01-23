@@ -1,16 +1,10 @@
 <?php
 
-use common\helpers\DateFormatter;
-use common\helpers\files\FilesHelper;
-use common\helpers\StringFormatter;
-use frontend\models\work\document_in_out\DocumentInWork;
-use frontend\models\work\general\PeopleWork;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model \frontend\models\work\document_in_out\DocumentInWork */
+/* @var $buttonsAct */
 
 $this->title = $model->document_theme;
 $this->params['breadcrumbs'][] = ['label' => 'Входящая документация', 'url' => ['index']];
@@ -21,18 +15,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="document-in-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="substrate">
+        <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+        <div class="flexx space">
+            <div class="flexx">
+                <?= $buttonsAct ?>
+            </div>
+        </div>
+    </div>
 
     <div class="card">
         <div class="card-block-1">
