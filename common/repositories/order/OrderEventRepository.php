@@ -1,6 +1,7 @@
 <?php
 namespace common\repositories\order;
 use app\models\work\order\OrderEventWork;
+use app\models\work\order\OrderMainWork;
 use DomainException;
 use yii\web\UploadedFile;
 class OrderEventRepository
@@ -17,6 +18,12 @@ class OrderEventRepository
     {
         return OrderEventWork::find()->all();
     }
+
+    public function getEventOrdersByLastTime($lastDate)
+    {
+        return OrderEventWork::find()->where(['type' => OrderMainWork::ORDER_EVENT])->andWhere(['>=', 'order_date', $lastDate])->all();
+    }
+
     public function save(OrderEventWork $model)
     {
         if (!$model->save()) {

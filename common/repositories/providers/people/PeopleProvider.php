@@ -34,6 +34,11 @@ class PeopleProvider implements PeopleProviderInterface
         return PeopleWork::find()->where(['id' => $id])->one();
     }
 
+    public function getAll()
+    {
+        return PeopleWork::find()->all();
+    }
+
     public function getPositionsCompanies($id)
     {
         return $this->peoplePositionCompanyBranchRepository->getByPeople($id);

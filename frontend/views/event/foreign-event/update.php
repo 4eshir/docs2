@@ -1,9 +1,14 @@
 <?php
 
+use frontend\forms\event\ForeignEventForm;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\ForeignEventWork */
+/* @var $model ForeignEventForm */
+/* @var $peoples */
+/* @var $orders6 */
+/* @var $orders9 */
+/* @var $modelAchievements */
 
 $this->title = 'Редактировать: ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Учет достижений в мероприятиях', 'url' => ['index']];
@@ -16,8 +21,10 @@ $this->params['breadcrumbs'][] = 'Редактирование';
 
     <?= $this->render('_form', [
         'model' => $model,
-        'modelParticipants' => $modelParticipants,
-        'modelAchievement' => $modelAchievement,
+        'peoples' => $peoples,
+        'orders6' => $orders6,
+        'orders9' => $orders9,
+        'modelAchievements' => $modelAchievements
     ]) ?>
 
 </div>

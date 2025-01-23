@@ -44,6 +44,11 @@ class PeopleRepository
         return $this->provider->get($id);
     }
 
+    public function getAll()
+    {
+        return $this->provider->getAll();
+    }
+
     public function getPositionsCompanies($id)
     {
         if (get_class($this->provider) == PeopleProvider::class) {

@@ -34,9 +34,6 @@ namespace common\models\scaffold;
 
 class OrderMain extends \yii\db\ActiveRecord
 {
-    public const ORDER_MAIN = 1;
-    public const ORDER_EVENT = 2;
-    public const ORDER_TRAINING = 3;
     /**
      * {@inheritdoc}
      */

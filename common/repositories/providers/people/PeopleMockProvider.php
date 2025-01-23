@@ -19,6 +19,11 @@ class PeopleMockProvider implements PeopleProviderInterface
         return $this->data[$id] ?? null;
     }
 
+    public function getAll()
+    {
+        return $this->data;
+    }
+
     public function save(PeopleWork $model)
     {
         $this->data[] = $model;

@@ -65,6 +65,7 @@ class ActParticipantWork extends ActParticipant
         $this->form = $form;
         return $this;
     }
+
     public function getTeachers()
     {
         $firstTeacher = PeopleWork::findOne($this->teacher_id);
@@ -72,6 +73,7 @@ class ActParticipantWork extends ActParticipant
         return $firstTeacher->firstname . ' ' . $firstTeacher->surname . ' ' . $firstTeacher->patronymic. "\n" .
              $secondTeacher->firstname . ' ' . $secondTeacher->surname . ' ' . $secondTeacher->patronymic;
     }
+
     public function getTeam()
     {
         if ($this->team_name_id && $this->type == 1) {
@@ -82,6 +84,7 @@ class ActParticipantWork extends ActParticipant
             return "Участие в командах не предусмотрено";
         }
     }
+
     public function getParticipants(){
         $participants = [];
         $squadParticipants = SquadParticipant::findAll(['act_participant' => $this->id]);
@@ -92,6 +95,7 @@ class ActParticipantWork extends ActParticipant
         }
         return $participants;
     }
+
     public function getTypeParticipant(){
         if($this->type == 1){
             return "Командный";
@@ -100,15 +104,19 @@ class ActParticipantWork extends ActParticipant
             return "Личный";
         }
     }
+
     public function getFocusName(){
         return Yii::$app->focus->get($this->focus);
     }
+
     public function getBranchName(){
         return Yii::$app->branches->get($this->branch);
     }
+
     public function getFormName(){
         return Yii::$app->eventWay->get($this->form);
     }
+
     public function getFileLinks($filetype)
     {
         if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {

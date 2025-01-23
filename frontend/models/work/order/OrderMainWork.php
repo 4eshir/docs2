@@ -25,6 +25,11 @@ use Yii;
 class OrderMainWork extends OrderMain
 {
     use EventTrait;
+
+    public const ORDER_MAIN = 1;
+    public const ORDER_EVENT = 2;
+    public const ORDER_TRAINING = 3;
+
     /**
      * Имена файлов для сохранения в БД
      */
@@ -63,11 +68,20 @@ class OrderMainWork extends OrderMain
     }
     public function getFullNumber()
     {
-        if ($this->order_postfix == null)
+        if ($this->order_postfix == null) {
             return $this->order_number;
-        else
+        }
+        else {
             return $this->order_number.'/'.$this->order_postfix;
+        }
     }
+
+    public function getFullName()
+    {
+        $result = $this->getFullNumber();
+        return "$result {$this->order_name}";
+    }
+
     public function getOrderDate()
     {
         return $this->order_date;

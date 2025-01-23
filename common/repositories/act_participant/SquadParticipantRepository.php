@@ -33,4 +33,13 @@ class SquadParticipantRepository
     public function getAllByActId($actId){
         return SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId])->all();
     }
+
+    public function getAllByActIds(array $actIds){
+        return SquadParticipantWork::find()->andWhere(['IN', 'act_participant_id', $actIds])->all();
+    }
+
+    public function getAllFromEvent($foreignEventId)
+    {
+        return SquadParticipantWork::find()->joinWith(['actParticipantWork actParticipantWork'])->where(['actParticipantWork.foreign_event_id' => $foreignEventId])->all();
+    }
 }
