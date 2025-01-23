@@ -9,14 +9,14 @@ use app\models\work\order\OrderTrainingWork;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;
+use common\repositories\educational\OrderTrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\services\general\files\FileService;
-use frontend\events\educational\training_group\CreateTrainingGroupParticipantEvent;
+use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
-use phpseclib3\File\ASN1\Maps\DSAPrivateKey;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
@@ -28,12 +28,14 @@ class OrderTrainingService
     private OrderMainService $orderMainService;
     private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
     private TrainingGroupRepository $trainingGroupRepository;
+    private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
     public function __construct(
         FileService $fileService,
         OrderMainFileNameGenerator $filenameGenerator,
         OrderMainService $orderMainService,
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
-        TrainingGroupRepository $trainingGroupRepository
+        TrainingGroupRepository $trainingGroupRepository,
+        OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository
 
     )
     {
@@ -42,6 +44,7 @@ class OrderTrainingService
         $this->orderMainService = $orderMainService;
         $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
         $this->trainingGroupRepository = $trainingGroupRepository;
+        $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
 
     }
     public function setBranch(OrderTrainingWork $model)
@@ -330,8 +333,52 @@ class OrderTrainingService
             }
         }
         if($status == 3) {
-
-
+            $formParticipants = $post['group-participant-selection'];
+            $groups = $post['transfer-group'];
+            $existsParticipants = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
+                ->andWhere(['order_id' => $model->id])
+                ->andWhere(['IS NOT','training_group_participant_in_id' , NULL])
+                ->andWhere(['IS NOT','training_group_participant_out_id' , NULL])
+                ->all(),
+                'training_group_participant_out_id');
+            if($formParticipants == NULL && $existsParticipants == NULL){
+                $deleteParticipants = NULL;
+                $createParticipants = NULL;
+            }
+            else if($formParticipants != NULL && $existsParticipants == NULL) {
+                $deleteParticipants = NULL;
+                $createParticipants = $formParticipants;
+            }
+            else if($formParticipants == NULL && $existsParticipants != NULL) {
+                $deleteParticipants = $existsParticipants;
+                $createParticipants = NULL;
+            }
+            else if($formParticipants != NULL && $formParticipants != NULL){
+                $deleteParticipants = array_diff($existsParticipants, $formParticipants);
+                $createParticipants = array_diff($formParticipants, $existsParticipants);
+            }
+            if ($deleteParticipants != NULL) {
+                foreach ($deleteParticipants as $deleteParticipant) {
+                    $deleteOrderParticipant = $this->orderTrainingGroupParticipantRepository->getUnique($deleteParticipant , $model->id);
+                    $newTrainingGroupParticipant = $this->trainingGroupParticipantRepository->get($deleteOrderParticipant->training_group_participant_in_id);
+                    $model->recordEvent(new DeleteOrderTrainingGroupParticipantEvent($deleteParticipant, $deleteOrderParticipant->training_group_participant_in_id,  $model->id), OrderTrainingGroupParticipantWork::class);
+                    $model->recordEvent(new DeleteTrainingGroupParticipantEvent($newTrainingGroupParticipant->id), TrainingGroupParticipantWork::class);
+                    $this->trainingGroupParticipantRepository->setStatus($deleteOrderParticipant->training_group_participant_out_id, 1);
+                }
+            }
+            if ($createParticipants != NULL) {
+                foreach ($createParticipants as $createParticipant) {
+                    $newTrainingGroupParticipant = TrainingGroupParticipantWork::fill(
+                        $groups[$createParticipant],
+                        ($this->trainingGroupParticipantRepository->get($createParticipant))->participant_id,
+                        NULL
+                    );
+                    $newTrainingGroupParticipant->setStatus($status - 2);
+                    $this->trainingGroupParticipantRepository->save($newTrainingGroupParticipant);
+                    $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($createParticipant, $newTrainingGroupParticipant->id, $model->id), OrderTrainingGroupParticipantWork::class);
+                    $this->trainingGroupParticipantRepository->setStatus($createParticipant, $status - 1);
+                }
+            }
         }
     }
 }

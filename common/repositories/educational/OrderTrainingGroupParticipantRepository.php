@@ -35,4 +35,11 @@ class OrderTrainingGroupParticipantRepository
             ]);
         return $command->getRawSql();
     }
+    public function getUnique($trainingGroupParticipantOutId, $orderId){
+        return OrderTrainingGroupParticipantWork::find()
+            //->andWhere(['training_group_participant_in_id' => $trainingGroupParticipantInId])
+            ->andWhere(['training_group_participant_out_id' => $trainingGroupParticipantOutId])
+            ->andWhere(['order_id' => $orderId])
+            ->one();
+    }
 }

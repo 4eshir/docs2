@@ -84,7 +84,7 @@ else {
                     // Формируем HTML-код выпадающего списка
                     return Html::dropDownList(
                         'transfer-group['.$participant->id.']', // Имя элемента
-                        $participant->training_group_id, // Значение по умолчанию
+                        $participant->getActualGroup($model->id), // Значение по умолчанию
                         ArrayHelper::map($transferGroups, 'id', 'number'),
                         [
                             'class' => 'form-control', // CSS-класс
