@@ -142,6 +142,12 @@ class OrderTrainingWork extends OrderMain
         $parts = explode("/", $number);
         return NomenclatureDictionary::getStatus($parts[0]);
     }
+    public function getNomenclature()
+    {
+        $number = $this->order_number;
+        $parts = explode("/", $number);
+        return $parts[0];
+    }
     public function beforeValidate()
     {
         $this->type = self::ORDER_TRAINING;

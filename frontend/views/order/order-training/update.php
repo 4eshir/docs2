@@ -6,6 +6,7 @@ use yii\helpers\Html;
 /* @var $people */
 /* @var $groups */
 /* @var $groupParticipant */
+/* @var $transferGroups */
 $this->title = 'Изменить приказ об образовательной деятельности № '. $model->order_number;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об образовательной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -19,6 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'people' => $people,
         'groups' => $groups,
         'groupParticipant' => $groupParticipant,
+        'transferGroups' => $transferGroups
     ]) ?>
 </div>
 

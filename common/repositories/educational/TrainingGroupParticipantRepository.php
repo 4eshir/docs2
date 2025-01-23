@@ -102,7 +102,9 @@ class TrainingGroupParticipantRepository
         return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => 1]);
     }
     public function getParticipantToEnrollUpdate($groupId, $orderId){
-        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all(),
+        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
+            ->andWhere(['order_id' => $orderId])->andWhere(['training_group_participant_out_id' => NULL])
+            ->all(),
             'training_group_participant_in_id');
         $query = TrainingGroupParticipantWork::find()
             ->orWhere(['id' => $orderParticipantId])
@@ -110,7 +112,9 @@ class TrainingGroupParticipantRepository
         return $query;
     }
     public function getParticipantToDeductUpdate($groupId, $orderId){
-        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all(),
+        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
+            ->andWhere(['order_id' => $orderId])->andWhere(['training_group_participant_in_id' => NULL])
+            ->all(),
             'training_group_participant_out_id');
         $query = TrainingGroupParticipantWork::find()
             ->orWhere(['id' => $orderParticipantId])
@@ -119,11 +123,21 @@ class TrainingGroupParticipantRepository
     }
     public function getParticipantToTransferUpdate($groupId, $orderId)
     {
-        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $orderId])->all(),
+        $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
+            ->andWhere(['order_id' => $orderId])->andWhere(['IS NOT', 'training_group_participant_out_id', NULL])
+            ->andWhere(['IS NOT', 'training_group_participant_in_id', NULL])
+            ->all(),
             'training_group_participant_out_id');
+        $exceptParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
+            ->andWhere(['order_id' => $orderId])->andWhere(['IS NOT', 'training_group_participant_out_id', NULL])
+            ->andWhere(['IS NOT', 'training_group_participant_in_id', NULL])
+            ->all(),
+            'training_group_participant_in_id');
+
         $query = TrainingGroupParticipantWork::find()
             ->orWhere(['id' => $orderParticipantId])
             ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 1]]);
+        $query = $query->andWhere(['not in', 'id', $exceptParticipantId]);
         return $query;
     }
     public function setStatus($id, $status){

@@ -19,7 +19,7 @@ namespace common\models\scaffold;
  * @property ForeignEventParticipants $participant
  * @property TrainingGroup $trainingGroup
  */
-class TrainingGroupParticipant extends \yii\db\ActiveRecord
+class  TrainingGroupParticipant extends \yii\db\ActiveRecord
 {
     /**
      * {@inheritdoc}

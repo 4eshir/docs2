@@ -63,7 +63,7 @@ else {
                         'class' => 'group-participant-checkbox',
                         'training-group-id' => $participant->training_group_id,
                         'data-id' => $participant->id, // Добавляем ID группы для передачи в JS
-                        'checked' => NULL,
+                        'checked' => $participant->getActivity($participant->id, $model->id) == 1,
                     ];
                 },
             ],

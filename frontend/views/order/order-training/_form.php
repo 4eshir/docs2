@@ -15,7 +15,7 @@ use yii\widgets\DetailView;
 use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
-/* @var $model */
+/* @var $model OrderTrainingWork */
 /* @var $people */
 /* @var $scanFile */
 /* @var $docFiles */
@@ -98,7 +98,7 @@ use yii\widgets\Pjax;
         <?= $this->render('_group-participant_grid', [
             'dataProvider' => $groupParticipant,
             'model' => $model,
-            'nomenclature' => $model->getStatus(),
+            'nomenclature' => $model->getNomenclature(),
             'transferGroups' => $transferGroups,
         ]) ?>
     </div>
