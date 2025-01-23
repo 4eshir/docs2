@@ -73,17 +73,42 @@ class DocumentInController extends DocumentController
             $this->repository->createReserve($model);
             $this->repository->save($model);
         }
+
+        $links = [
+            'Добавить документ' => ['url' => Url::to([Yii::$app->frontUrls::DOC_IN_CREATE]), 'class' => 'btn-primary'],
+            'Добавить резерв' => ['url' => Url::to([Yii::$app->frontUrls::DOC_IN_RESERVE]), 'class' => 'btn-primary'],
+        ];
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'model' => $model,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml,
         ]);
     }
 
     public function actionView($id)
     {
+        $links = [
+            'Редактировать' => [
+                'url' => ['update', 'id' => $id],
+                'class' => 'btn-primary',
+            ],
+            'Удалить' => [
+                'url' => ['delete', 'id' => $id],
+                'class' => 'btn-danger',
+                'data' => [
+                    'confirm' => 'Вы уверены, что хотите удалить этот элемент?',
+                    'method' => 'post',
+                ],
+            ],
+        ];
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('view', [
-            'model' => $this->repository->get($id)
+            'model' => $this->repository->get($id),
+            'buttonsAct' => $buttonHtml,
         ]);
     }
 

@@ -39,14 +39,14 @@ table {
 }
 
 thead {
-    box-shadow: rgb(232, 237, 241) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.175) 0px 0px 0px 1px;
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
     border: none;
 }
 
 tbody {
-    box-shadow: rgb(232, 237, 241) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.175) 0px 0.5px 0px 1px;
     border-bottom-left-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
     border: none;
@@ -192,6 +192,13 @@ a:hover svg path, #filterToggle:hover svg path {
     font-weight: 700;
 }
 
+a.btn-primary, .btn-primary:hover, a.btn-danger, a.btn-danger:hover {
+    color: white;
+}
+a.btn-secondary, a.btn-secondary:hover, a.btn-warning:hover {
+    color: black;
+}
+
 .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
@@ -303,7 +310,7 @@ a:hover {
 }
 
 .button-group {
-    margin: auto 0;
+    margin: 1.75em 0;
 }
 
 .button-group a {
@@ -320,7 +327,7 @@ a:hover {
 
 .filter-toggle {
     cursor: pointer;
-    margin: 20px;
+    margin: auto 0;
 }
 
 .filter-panel {
@@ -328,7 +335,7 @@ a:hover {
     border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
     padding: 1em;
-    margin-top: 10px;
+    margin-top: 1em;
     background-color: #f5f7f9;
 }
 
@@ -360,7 +367,7 @@ a:hover {
     background-color: white;
     border-radius: var(--border-radius);
     padding: 1em;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--bs-border-color-translucent);
 }
 
 .substrate, .filter-panel {

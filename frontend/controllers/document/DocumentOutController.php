@@ -22,6 +22,7 @@ use frontend\models\work\document_in_out\DocumentOutWork;
 use frontend\models\work\general\FilesWork;
 use frontend\services\document\DocumentOutService;
 use Yii;
+use yii\helpers\Url;
 use yii\web\Controller;
 
 class DocumentOutController extends Controller
@@ -69,17 +70,41 @@ class DocumentOutController extends Controller
             $this->repository->createReserve($model);
             $this->repository->save($model);
         }
+        $links = [
+            'Добавить документ' => ['url' => Url::to([Yii::$app->frontUrls::DOC_OUT_CREATE]), 'class' => 'btn-primary'],
+            'Добавить резерв' => ['url' => Url::to([Yii::$app->frontUrls::DOC_OUT_RESERVE]), 'class' => 'btn-primary'],
+        ];
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'model' => $model,
             'peopleList' => $people,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml,
         ]);
     }
     public function actionView($id)
     {
+        $links = [
+            'Редактировать' => [
+                'url' => ['update', 'id' => $id],
+                'class' => 'btn-primary',
+            ],
+            'Удалить' => [
+                'url' => ['delete', 'id' => $id],
+                'class' => 'btn-danger',
+                'data' => [
+                    'confirm' => 'Вы уверены, что хотите удалить этот элемент?',
+                    'method' => 'post',
+                ],
+            ],
+        ];
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('view', [
-            'model' => $this->repository->get($id)
+            'model' => $this->repository->get($id),
+            'buttonsAct' => $buttonHtml,
         ]);
     }
     public function actionCreate(){

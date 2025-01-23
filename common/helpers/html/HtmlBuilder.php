@@ -60,17 +60,23 @@ class HtmlBuilder
 
     /**
      * Создает группу кнопок
-     * $linksArray должен быть ассоциативным массивом ['Имя кнопки' => 'ссылка']
+     * $linksArray должен быть ассоциативным массивом ['Имя кнопки' => ['url' => ['ссылка'], 'class' => '...', 'data' => [...] ], ...]
+     * параметры class и data являются не обязательными
      * @param $linksArray
      * @return string
      */
     public static function createGroupButton($linksArray)
     {
         $result = '<div class="button-group">';
-        $class = count($linksArray) < 3 ? 'btn-primary' : 'btn-secondary';
-        foreach ($linksArray as $label => $url) {
-            $result .= Html::a($label, $url, ['class' => $class]);
+
+        foreach ($linksArray as $label => $linkOptions) {
+            $url = $linkOptions['url'];
+            $class = $linkOptions['class'] ?? 'btn-secondary'; // Класс по умолчанию
+            $data = $linkOptions['data'] ?? [];
+
+            $result .= Html::a($label, $url, ['class' => [$class], 'data' => $data,]);
         }
+
         $result .= '</div>';
         return $result;
     }

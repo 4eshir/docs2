@@ -16,6 +16,7 @@ use frontend\events\educational\training_group\CreateTrainingGroupParticipantEve
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use phpseclib3\File\ASN1\Maps\DSAPrivateKey;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
@@ -171,20 +172,40 @@ class OrderTrainingService
         if($status == 1) {
             $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $model->id])->all(),
                 'training_group_participant_in_id');
+            $groupId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['id' => $orderParticipantId])->all(),
+                'training_group_id'
+            );
+            $query = TrainingGroupParticipantWork::find()
+                ->orWhere(['id' => $orderParticipantId])
+                ->orWhere(['and', ['training_group_id' => $groupId], ['status' => $status - 1]]);
         }
         if($status == 2) {
             $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $model->id])->all(),
                 'training_group_participant_out_id');
+            $groupId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['id' => $orderParticipantId])->all(),
+                'training_group_id'
+            );
+            $query = TrainingGroupParticipantWork::find()
+                ->orWhere(['id' => $orderParticipantId])
+                ->orWhere(['and', ['training_group_id' => $groupId], ['status' => $status - 1]]);
         }
-        if($status == 2){
-            //code
+        if($status == 3){
+            $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $model->id])->all(),
+                'training_group_participant_out_id');
+            $groupId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['id' => $orderParticipantId])->all(),
+                'training_group_id'
+            );
+            $exceptParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
+                ->andWhere(['order_id' => $model->id])->andWhere(['IS NOT', 'training_group_participant_out_id', NULL])
+                ->andWhere(['IS NOT', 'training_group_participant_in_id', NULL])
+                ->all(),
+                'training_group_participant_in_id');
+
+            $query = TrainingGroupParticipantWork::find()
+                ->orWhere(['id' => $orderParticipantId])
+                ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 1]]);
+            $query = $query->andWhere(['not in', 'id', $exceptParticipantId]);
         }
-        $groupId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['id' => $orderParticipantId])->all(),
-            'training_group_id'
-        );
-        $query = TrainingGroupParticipantWork::find()
-            ->orWhere(['id' => $orderParticipantId])
-            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => $status - 1]]);
         return new ActiveDataProvider([
             'query' => $query
         ]);
@@ -211,27 +232,24 @@ class OrderTrainingService
         }
         if($status == 3) {
             $transferGroupIds = $post['transfer-group'];
-            var_dump($participantIds, $transferGroupIds);
             if($participantIds != NULL){
                 foreach ($participantIds as $participantId) {
                     if($transferGroupIds[$participantId] != NULL) {
-                        //create new TrainingGroupParticipant
                         $newTrainingGroupParticipant = TrainingGroupParticipantWork::fill(
                             $transferGroupIds[$participantId],
-                            $participantId,
+                            ($this->trainingGroupParticipantRepository->get($participantId))->participant_id,
                             NULL
                         );
-                        $newTrainingGroupParticipant->setStatus($status - 1);
+                        $newTrainingGroupParticipant->setStatus($status - 2);
                         $this->trainingGroupParticipantRepository->save($newTrainingGroupParticipant);
-                        $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($participantId, $transferGroupIds[$participantId], $newTrainingGroupParticipant->id),
+                        $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($participantId, $newTrainingGroupParticipant->id, $model->id),
                             OrderTrainingWork::class);
                         //update old TrainingGroupParticipant
-                        $this->trainingGroupParticipantRepository->setStatus($participantId, $status - 2);
+                        $this->trainingGroupParticipantRepository->setStatus($participantId, $status - 1);
                     }
                 }
             }
         }
-
     }
     public function deleteOrderTrainingGroupParticipantEvent(OrderTrainingWork $model, $id){
     }
