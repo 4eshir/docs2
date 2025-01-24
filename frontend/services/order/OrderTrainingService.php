@@ -238,23 +238,30 @@ class OrderTrainingService
             if($participantIds != NULL){
                 foreach ($participantIds as $participantId) {
                     if($transferGroupIds[$participantId] != NULL) {
-                        $newTrainingGroupParticipant = TrainingGroupParticipantWork::fill(
-                            $transferGroupIds[$participantId],
-                            ($this->trainingGroupParticipantRepository->get($participantId))->participant_id,
-                            NULL
-                        );
-                        $newTrainingGroupParticipant->setStatus($status - 2);
-                        $this->trainingGroupParticipantRepository->save($newTrainingGroupParticipant);
-                        $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($participantId, $newTrainingGroupParticipant->id, $model->id),
-                            OrderTrainingWork::class);
-                        //update old TrainingGroupParticipant
-                        $this->trainingGroupParticipantRepository->setStatus($participantId, $status - 1);
+                        if (!$this->isPossibleToInsertTrainingGroupParticipant($transferGroupIds[$participantId], ($this->trainingGroupParticipantRepository->get($participantId))->participant_id)) {
+                            $newTrainingGroupParticipant = TrainingGroupParticipantWork::fill(
+                                $transferGroupIds[$participantId],
+                                ($this->trainingGroupParticipantRepository->get($participantId))->participant_id,
+                                NULL
+                            );
+                            $newTrainingGroupParticipant->setStatus($status - 2);
+                            $this->trainingGroupParticipantRepository->save($newTrainingGroupParticipant);
+                            $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($participantId, $newTrainingGroupParticipant->id, $model->id),
+                                OrderTrainingWork::class);
+                            //update old TrainingGroupParticipant
+                            $this->trainingGroupParticipantRepository->setStatus($participantId, $status - 1);
+                        }
                     }
                 }
             }
         }
     }
-    public function deleteOrderTrainingGroupParticipantEvent(OrderTrainingWork $model, $id){
+    public function isPossibleToInsertTrainingGroupParticipant($groupId, $participantId){
+        return $this->trainingGroupParticipantRepository->isExist($groupId, $participantId);
+    }
+    public function isPossibleToDelete($groupId, $participantId)
+    {
+        //code
     }
     public function updateOrderTrainingGroupParticipantEvent(OrderTrainingWork $model, $status, $post){
         $trainingGroupParticipants = $post['group-participant-selection'];
@@ -332,7 +339,7 @@ class OrderTrainingService
                 }
             }
         }
-        if($status == 3) {
+        if ($status == 3) {
             $formParticipants = $post['group-participant-selection'];
             $groups = $post['transfer-group'];
             $existsParticipants = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
@@ -368,15 +375,19 @@ class OrderTrainingService
             }
             if ($createParticipants != NULL) {
                 foreach ($createParticipants as $createParticipant) {
-                    $newTrainingGroupParticipant = TrainingGroupParticipantWork::fill(
-                        $groups[$createParticipant],
-                        ($this->trainingGroupParticipantRepository->get($createParticipant))->participant_id,
-                        NULL
-                    );
-                    $newTrainingGroupParticipant->setStatus($status - 2);
-                    $this->trainingGroupParticipantRepository->save($newTrainingGroupParticipant);
-                    $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($createParticipant, $newTrainingGroupParticipant->id, $model->id), OrderTrainingGroupParticipantWork::class);
-                    $this->trainingGroupParticipantRepository->setStatus($createParticipant, $status - 1);
+                    if($groups[$createParticipant] != NULL) {
+                        if (!$this->isPossibleToInsertTrainingGroupParticipant($groups[$createParticipant], ($this->trainingGroupParticipantRepository->get($createParticipant))->participant_id)) {
+                            $newTrainingGroupParticipant = TrainingGroupParticipantWork::fill(
+                                $groups[$createParticipant],
+                                ($this->trainingGroupParticipantRepository->get($createParticipant))->participant_id,
+                                NULL
+                            );
+                            $newTrainingGroupParticipant->setStatus($status - 2);
+                            $this->trainingGroupParticipantRepository->save($newTrainingGroupParticipant);
+                            $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($createParticipant, $newTrainingGroupParticipant->id, $model->id), OrderTrainingGroupParticipantWork::class);
+                            $this->trainingGroupParticipantRepository->setStatus($createParticipant, $status - 1);
+                        }
+                    }
                 }
             }
         }

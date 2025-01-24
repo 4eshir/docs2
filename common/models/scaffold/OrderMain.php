@@ -37,6 +37,9 @@ class OrderMain extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public const ORDER_MAIN = 1;
+    public const ORDER_EVENT = 2;
+    public const ORDER_TRAINING = 3;
     public static function tableName()
     {
         return 'document_order';

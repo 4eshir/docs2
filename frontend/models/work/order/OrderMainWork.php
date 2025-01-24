@@ -26,9 +26,6 @@ class OrderMainWork extends OrderMain
 {
     use EventTrait;
 
-    public const ORDER_MAIN = 1;
-    public const ORDER_EVENT = 2;
-    public const ORDER_TRAINING = 3;
 
     /**
      * Имена файлов для сохранения в БД
