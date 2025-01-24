@@ -145,4 +145,12 @@ class TrainingGroupParticipantRepository
         $model->setStatus($status);
         return $this->save($model);
     }
+    public function isExist($groupId, $participantId)
+    {
+        return TrainingGroupParticipantWork::find()
+            ->andWhere(['participant_id' => $participantId])
+            ->andWhere(['training_group_id' => $groupId])
+            ->andWhere(['status' => 1])
+            ->exists();
+    }
 }

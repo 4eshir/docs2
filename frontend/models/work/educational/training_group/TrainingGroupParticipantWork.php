@@ -69,4 +69,22 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
         }
         return 0;
     }
+
+    public function getActualGroup($modelId)
+    {
+        if($modelId != NULL) {
+            $orderParticipant = OrderTrainingGroupParticipantWork::find()
+                ->andWhere(['training_group_participant_out_id' => $this->id])
+                ->andWhere(['order_id' => $modelId])
+                ->one();
+            if($orderParticipant == NULL) {
+                return $this->training_group_id;
+            }
+            $participant = TrainingGroupParticipantWork::find()->andWhere(['id' => $orderParticipant->training_group_participant_in_id])->one();
+            return $participant->training_group_id;
+        }
+        else {
+            return $this->training_group_id;
+        }
+    }
 }
