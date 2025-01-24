@@ -24,6 +24,7 @@ class FilesHelper
     const TYPE_CONTRACT = 'contract';
     const TYPE_PRESENTATION = 'presentation';
     const TYPE_WORK = 'work';
+    const TYPE_PARTICIPATION = 'participation';
 
     const FILE_SERVER = 'server';
     const FILE_YADI = 'yadi';

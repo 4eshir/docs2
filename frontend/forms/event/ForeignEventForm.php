@@ -6,7 +6,9 @@ use app\models\work\event\ForeignEventWork;
 use app\models\work\order\OrderEventWork;
 use app\models\work\team\ActParticipantWork;
 use app\models\work\team\SquadParticipantWork;
+use common\events\EventTrait;
 use common\helpers\html\HtmlBuilder;
+use common\helpers\StringFormatter;
 use common\Model;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\act_participant\SquadParticipantRepository;
@@ -14,12 +16,15 @@ use common\repositories\event\ForeignEventRepository;
 use common\repositories\event\ParticipantAchievementRepository;
 use common\repositories\order\OrderEventRepository;
 use frontend\models\work\event\ParticipantAchievementWork;
+use frontend\models\work\general\PeopleWork;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 class ForeignEventForm extends Model
 {
+    use EventTrait;
+
     // Неизменяемые поля
     public $id;
     public $name;
@@ -110,14 +115,21 @@ class ForeignEventForm extends Model
     public function fillOldAchievements($foreignEventId)
     {
         $achievements = (Yii::createObject(ParticipantAchievementRepository::class))->getByForeignEvent($foreignEventId);
+        $flattenedParticipants = array_map(function ($innerArray) {
+            return implode('<br>', array_map(function ($participant) {
+                return $participant->participantWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS);
+            }, $innerArray));
+        }, ArrayHelper::getColumn($achievements, 'actParticipantWork.squadParticipants'));
+
+
         return HtmlBuilder::createTableWithActionButtons(
             [
-                array_merge(['Участник'], ArrayHelper::getColumn($achievements, 'participantWork.surnameInitials')),
-                array_merge(['Статус'], ArrayHelper::getColumn($achievements, 'participantWork.surnameInitials')),
-                array_merge(['Достижение'], ArrayHelper::getColumn($achievements, 'actParticipantWork.teachers')),
-                array_merge(['Акт участия'], ArrayHelper::getColumn($achievements, 'actParticipantWork.focusName')),
-                array_merge(['Номер сертификата'], ArrayHelper::getColumn($achievements, 'actParticipantWork.nomination')),
-                array_merge(['Дата сертификата'], ArrayHelper::getColumn($achievements, 'participantWork.teamNameWork.name')),
+                array_merge(['Участник'], $flattenedParticipants),
+                array_merge(['Статус'], ArrayHelper::getColumn($achievements, 'actParticipantWork.prettyType')),
+                array_merge(['Достижение'], ArrayHelper::getColumn($achievements, 'achievement')),
+                array_merge(['Акт участия'], ArrayHelper::getColumn($achievements, 'actParticipantWork.string')),
+                array_merge(['Номер сертификата'], ArrayHelper::getColumn($achievements, 'cert_number')),
+                array_merge(['Дата сертификата'], ArrayHelper::getColumn($achievements, 'date')),
             ],
             [
                 HtmlBuilder::createButtonsArray(

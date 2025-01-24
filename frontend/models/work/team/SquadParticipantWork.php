@@ -24,10 +24,7 @@ class SquadParticipantWork extends SquadParticipant
 
     public function getActString()
     {
-        return $this->participantWork->getFullFio() . '(' .
-            Yii::$app->focus->get($this->actParticipantWork->focus) . ', номинация: ' .
-            $this->actParticipantWork->nomination . ')' .
-            ($this->actParticipantWork->team_name_id ? 'Командное участие' : 'Индивидуальное участие');
+        return $this->participantWork->getFullFio() . '(' . $this->actParticipantWork->getString(). ')';
     }
 
     public function getActParticipantWork()

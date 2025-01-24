@@ -153,7 +153,7 @@ class OrderEventController extends DocumentController
             );
             $this->foreignEventRepository->save($modelForeignEvent);
             $this->orderMainService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
-            $this->foreignEventService->saveFilesFromModel($modelForeignEvent, $model->actFiles, $number);
+            $this->foreignEventService->saveActFilesFromModel($modelForeignEvent, $model->actFiles, $number);
             $model->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $modelOrderEvent->releaseEvents();

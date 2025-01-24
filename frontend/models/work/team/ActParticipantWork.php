@@ -15,6 +15,10 @@ class ActParticipantWork extends ActParticipant
 {
     use EventTrait;
     public $actFiles;
+
+    const TYPE_PRIZE = 0;
+    const TYPE_WINNER = 1;
+
     public static function fill(
         $teacherId,
         $teacher2Id,
@@ -135,5 +139,29 @@ class ActParticipantWork extends ActParticipant
                 break;
         }
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
+    }
+
+    public function getString()
+    {
+        return 'Направленность: ' . Yii::$app->focus->get($this->focus) . '; Номинация: ' .
+            (is_null($this->nomination) ? $this->nomination : 'нет') . '; ' .
+            ($this->team_name_id ? 'Командное участие' : 'Индивидуальное участие');
+    }
+
+    public function getPrettyType()
+    {
+        switch ($this->type) {
+            case self::TYPE_PRIZE:
+                return 'Призер';
+            case self::TYPE_WINNER:
+                return 'Победитель';
+            default:
+                return '---';
+        }
+    }
+
+    public function getSquadParticipants()
+    {
+        return $this->hasMany(SquadParticipantWork::class, ['act_participant_id' => 'id']);
     }
 }

@@ -164,6 +164,10 @@ use yii\jui\DatePicker;
 
     <?= $form->field($model, 'maxAge')->textInput(['readonly' => true]) ?>
 
+    <?php if (strlen($model->oldAchievements) > 10): ?>
+        <?= $model->oldAchievements; ?>
+    <?php endif; ?>
+
     <div class="panel-body">
         <?php
             DynamicFormWidget::begin([
@@ -197,32 +201,25 @@ use yii\jui\DatePicker;
                         <div class="row">
                             <div>
                                 <div class="col-xs-6">
-                                    <?= $form->field($modelAchievement, "[{$i}]fio")
+                                    <?= $form->field($modelAchievement, "[{$i}]act_participant_id")
                                         ->dropDownList(ArrayHelper::map($model->squadParticipantsModel, 'id', 'actString'), ['prompt' => '---'])
                                         ->label('Акт участия');
                                     ?>
                                 </div>
                                 <div class="col-xs-4">
-                                    <?= $form->field($modelAchievement, "[{$i}]achieve")->textInput(); ?>
+                                    <?= $form->field($modelAchievement, "[{$i}]achievement")->textInput(); ?>
                                 </div>
                                 <div class="col-xs-4">
                                     <?= $form->field($modelAchievement, "[{$i}]cert_number")->textInput(); ?>
                                 </div>
 
                                 <div class="col-xs-4">
-                                    <?= $form->field($modelAchievement, "[{$i}]date")->widget(DatePicker::class, [
-                                        'dateFormat' => 'php:Y-m-d',
-                                        'language' => 'ru',
-                                        'options' => [
-                                            'placeholder' => 'Дата',
-                                            'class'=> 'form-control date_achieve',
-                                            'autocomplete'=>'off'
-                                        ],
-                                        'clientOptions' => [
-                                            'changeMonth' => true,
-                                            'changeYear' => true,
-                                            'yearRange' => '2000:2100',
-                                        ]]) ?>
+                                    <?= $form->field($modelAchievement, "[{$i}]date")->textInput(
+                                        [
+                                            'type' => 'date',
+                                            'class' => 'form-control'
+                                        ]
+                                    ) ?>
                                 </div>
                                 <div class="col-xs-4" style="margin-top: 30px;">
                                     <?php
