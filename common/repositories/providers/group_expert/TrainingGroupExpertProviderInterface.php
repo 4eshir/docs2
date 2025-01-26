@@ -8,5 +8,5 @@ interface TrainingGroupExpertProviderInterface
 {
     public function get($id);
     public function getExpertsFromGroup($groupId);
-    public function save(TrainingGroupExpertWork $expert);
+    public function save(TrainingGroupExpertWork $model);
 }

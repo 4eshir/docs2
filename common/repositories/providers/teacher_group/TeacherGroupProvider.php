@@ -28,11 +28,11 @@ class TeacherGroupProvider implements TeacherGroupProviderInterface
         return $command->getRawSql();
     }
 
-    public function save(TeacherGroupWork $teacher)
+    public function save(TeacherGroupWork $model)
     {
-        if (!$teacher->save()) {
-            throw new DomainException('Ошибка сохранения связки учебной группы и педагога. Проблемы: '.json_encode($teacher->getErrors()));
+        if (!$model->save()) {
+            throw new DomainException('Ошибка сохранения связки учебной группы и педагога. Проблемы: '.json_encode($model->getErrors()));
         }
-        return $teacher->id;
+        return $model->id;
     }
 }

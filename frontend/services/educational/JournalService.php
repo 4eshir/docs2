@@ -59,7 +59,7 @@ class JournalService
             $newLessons[] = new VisitLesson($lesson->id, VisitWork::NONE);
         }
 
-        $this->deleteJournal($groupId);
+        //$this->deleteJournal($groupId);
 
         // Создаем новый журнал
         foreach ($participants as $participant) {
@@ -148,6 +148,7 @@ class JournalService
      * Изменение статуса для всех занятий у одного ученика в группе (основная функция для сохранения журнала)
      * @param $trainingGroupParticipantId
      * @param VisitLesson[] $statuses
+     * @return int
      */
     public function setVisitStatusParticipant($trainingGroupParticipantId, array $statuses)
     {
@@ -160,7 +161,7 @@ class JournalService
         }
 
         $visit->lessons = $lessonsString;
-        $this->visitRepository->save($visit);
+        return $this->visitRepository->save($visit);
     }
 
     /**

@@ -13,7 +13,7 @@ use yii\helpers\ArrayHelper;
 
 class VisitRepository
 {
-    private $provider;
+    public $provider;
 
     public function __construct(
         VisitProviderInterface $provider = null

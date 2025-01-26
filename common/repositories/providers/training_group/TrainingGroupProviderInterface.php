@@ -11,6 +11,6 @@ interface TrainingGroupProviderInterface
     public function getLessons($id);
     public function getExperts($id);
     public function getThemes($id);
-    public function save(TrainingGroupWork $group);
+    public function save(TrainingGroupWork $model);
     public function delete(TrainingGroupWork $model);
 }

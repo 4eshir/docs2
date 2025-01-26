@@ -11,7 +11,12 @@ use frontend\models\work\general\PeopleStampWork;
 
 class TrainingGroupParticipantWork extends TrainingGroupParticipant
 {
-    public static function fill($groupId, $participantId, $sendMethod, $id = null)
+    public static function fill(
+        $groupId,
+        $participantId,
+        $sendMethod,
+        $id = null
+    )
     {
         $entity = new static();
         $entity->id = $id;

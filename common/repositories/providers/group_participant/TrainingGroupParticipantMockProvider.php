@@ -40,7 +40,8 @@ class TrainingGroupParticipantMockProvider implements TrainingGroupParticipantPr
 
     public function save(TrainingGroupParticipantWork $model)
     {
+        $model->id = count($this->data);
         $this->data[] = $model;
-        return count($this->data) - 1;
+        return $model->id;
     }
 }

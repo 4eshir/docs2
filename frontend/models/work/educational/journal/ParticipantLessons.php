@@ -6,10 +6,13 @@ namespace frontend\models\work\educational\journal;
 
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
+use common\repositories\providers\group_participant\TrainingGroupParticipantProvider;
 use Yii;
 
 class ParticipantLessons
 {
+    private TrainingGroupParticipantRepository $repository;
+
     public $participant;
     public int $trainingGroupParticipantId;
     /** @var VisitLesson[] $lessonIds */
@@ -17,15 +20,23 @@ class ParticipantLessons
 
     public function __construct(
         int $trainingGroupParticipantId,
-        array $lessonIds
+        array $lessonIds,
+        TrainingGroupParticipantRepository $repository = null
     )
     {
         $this->trainingGroupParticipantId = $trainingGroupParticipantId;
         $this->lessonIds = $lessonIds;
-        $this->participant =
-            (Yii::createObject(TrainingGroupParticipantRepository::class))
-            ->get($this->trainingGroupParticipantId)
-            ->participantWork;
+        if (!$repository) {
+            $repository = Yii::createObject(
+                TrainingGroupParticipantRepository::class,
+                ['provider' => Yii::createObject(TrainingGroupParticipantProvider::class)]
+            );
+        }
+        /** @var TrainingGroupParticipantRepository $repository */
+        $this->repository = $repository;
+
+        $participantWork = $this->repository->get($this->trainingGroupParticipantId);
+        $this->participant = $participantWork ? $participantWork->participantWork : null;
     }
 
     public function sortLessons()

@@ -3,6 +3,7 @@
 namespace frontend\tests\unit\models\training_group;
 
 use common\models\scaffold\People;
+use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\educational\GroupProjectThemesRepository;
 use common\repositories\educational\TeacherGroupRepository;
@@ -15,11 +16,16 @@ use common\repositories\providers\group_expert\TrainingGroupExpertMockProvider;
 use common\repositories\providers\group_lesson\TrainingGroupLessonMockProvider;
 use common\repositories\providers\group_participant\TrainingGroupParticipantMockProvider;
 use common\repositories\providers\group_project_themes\GroupProjectThemesMockProvider;
+use common\repositories\providers\participant\ParticipantMockProvider;
 use common\repositories\providers\people\PeopleMockProvider;
 use common\repositories\providers\teacher_group\TeacherGroupMockProvider;
 use common\repositories\providers\training_group\TrainingGroupMockProvider;
 use common\repositories\providers\visit\VisitMockProvider;
 use Exception;
+use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
+use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
+use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\general\PeopleWork;
 use Yii;
@@ -33,6 +39,7 @@ class TrainingGroupCreateTest extends \Codeception\Test\Unit
     protected TrainingGroupLessonRepository $groupLessonRepository;
     protected TrainingGroupParticipantRepository $groupParticipantRepository;
     protected PeopleRepository $peopleRepository;
+    protected ForeignEventParticipantsRepository $participantsRepository;
     protected VisitRepository $visitRepository;
 
     /**
@@ -77,6 +84,11 @@ class TrainingGroupCreateTest extends \Codeception\Test\Unit
         $this->peopleRepository = Yii::createObject(
             PeopleRepository::class,
             ['provider' => Yii::createObject(PeopleMockProvider::class)]
+        );
+
+        $this->participantsRepository = Yii::createObject(
+            ForeignEventParticipantsRepository::class,
+            ['provider' => Yii::createObject(ParticipantMockProvider::class)]
         );
 
         $this->visitRepository = Yii::createObject(
@@ -148,17 +160,101 @@ class TrainingGroupCreateTest extends \Codeception\Test\Unit
      */
     public function testFullGroup(TrainingGroupFullData $data)
     {
-        foreach ($data->teachers as $people) {
-            $this->peopleRepository->save(
-                PeopleWork::fill(
-                    $people['firstname'],
-                    $people['surname'],
-                    $people['patronymic']
+        try {
+            $teacherIds = [];
+            foreach ($data->teachers as $people) {
+                $teacherIds[] = $this->peopleRepository->save(
+                    PeopleWork::fill(
+                        $people['firstname'],
+                        $people['surname'],
+                        $people['patronymic']
+                    )
+                );
+            }
+
+            $groupId = $this->groupRepository->save(
+                TrainingGroupWork::fill(
+                    $data->group['start_date'],
+                    $data->group['finish_date'],
+                    $data->group['open'],
+                    $data->group['budget'],
+                    $data->group['branch'],
+                    $data->group['order_stop'],
+                    $data->group['archive'],
+                    $data->group['protection_date'],
+                    $data->group['protection_confirm'],
+                    $data->group['is_network'],
+                    $data->group['state'],
+                    $data->group['created_at'],
+                    $data->group['updated_at']
                 )
             );
-        }
 
-        var_dump($this->peopleRepository->get(0)->attributes);die;
+            $lessonIds = [];
+            foreach ($data->lessons as $lesson) {
+                $lessonIds[] = $this->groupLessonRepository->save(
+                    TrainingGroupLessonWork::fill(
+                        $groupId,
+                        $lesson['lesson_date'],
+                        $lesson['lesson_start_time'],
+                        $lesson['branch'],
+                        null,
+                        $lesson['lesson_end_time'],
+                        $lesson['duration']
+                    )
+                );
+            }
+
+            $participantIds = [];
+            foreach ($data->participants as $participant) {
+                $participantId = $this->participantsRepository->save(
+                    ForeignEventParticipantsWork::fill(
+                        $participant['firstname'],
+                        $participant['surname'],
+                        $participant['birthdate'],
+                        $participant['email'],
+                        $participant['sex'],
+                        $participant['patronymic']
+                    )
+                );
+
+                $participantIds[] = $this->groupParticipantRepository->save(
+                    TrainingGroupParticipantWork::fill(
+                        $groupId,
+                        $participantId,
+                        null
+                    )
+                );
+            }
+
+            $expertIds = [];
+            foreach ($data->experts as $expert) {
+                $expertId = $this->peopleRepository->save(
+                    PeopleWork::fill(
+                        $expert['firstname'],
+                        $expert['surname'],
+                        $expert['patronymic']
+                    )
+                );
+
+                $expertIds[] = $this->groupExpertRepository->save(
+                    TrainingGroupExpertWork::fill(
+                        $groupId,
+                        $expertId,
+                        $expert['type']
+                    )
+                );
+            }
+
+            $this->assertNotNull($groupId, 'Ошибка сохранения группы');
+            $this->assertNotContains(null, $teacherIds, 'Найден null в массиве teacherIds');
+            $this->assertNotContains(null, $lessonIds, 'Найден null в массиве lessonIds');
+            $this->assertNotContains(null, $participantIds, 'Найден null в массиве participantIds');
+            $this->assertNotContains(null, $expertIds, 'Найден null в массиве expertIds');
+        }
+        catch (Exception $exception) {
+            $this->fail('Ошибка сохранения группы: ' . $exception->getMessage());
+        }
     }
 
     public function getFullGroupData()

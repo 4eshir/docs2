@@ -55,10 +55,11 @@ class TrainingGroupMockProvider implements TrainingGroupProviderInterface
         return $this->themesData[$id] ?? [];
     }
 
-    public function save(TrainingGroupWork $group)
+    public function save(TrainingGroupWork $model)
     {
-        $this->dataStore[] = $group;
-        return count($this->dataStore) - 1;
+        $model->id = count($this->dataStore);
+        $this->dataStore[] = $model;
+        return $model->id;
     }
 
     public function delete(TrainingGroupWork $model)

@@ -8,5 +8,5 @@ interface GroupProjectThemesProviderInterface
 {
     public function get($id);
     public function getProjectThemesFromGroup($groupId);
-    public function save(GroupProjectsThemesWork $theme);
+    public function save(GroupProjectsThemesWork $model);
 }

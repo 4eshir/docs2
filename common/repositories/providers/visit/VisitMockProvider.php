@@ -6,7 +6,7 @@ use frontend\models\work\educational\journal\VisitWork;
 
 class VisitMockProvider implements VisitProviderInterface
 {
-    private $data = [];
+    public $data = [];
 
     public function __construct(array $data = [])
     {
@@ -20,9 +20,11 @@ class VisitMockProvider implements VisitProviderInterface
 
     public function getByTrainingGroupParticipant($trainingGroupParticipantId)
     {
-        return array_filter($this->data, function($item) use ($trainingGroupParticipantId) {
+        $filtered = array_filter($this->data, function($item) use ($trainingGroupParticipantId) {
             return $item['training_group_participant_id'] === $trainingGroupParticipantId;
         });
+
+        return reset($filtered);
     }
 
     public function delete(VisitWork $model)
@@ -33,7 +35,8 @@ class VisitMockProvider implements VisitProviderInterface
 
     public function save(VisitWork $model)
     {
+        $model->id = count($this->data);
         $this->data[] = $model;
-        return count($this->data) - 1;
+        return $model->id;
     }
 }

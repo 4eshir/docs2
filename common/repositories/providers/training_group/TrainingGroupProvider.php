@@ -77,12 +77,12 @@ class TrainingGroupProvider implements TrainingGroupProviderInterface
         return ProjectThemeWork::find()->where(['IN', 'id', ArrayHelper::getColumn($groupProjects, 'project_theme_id')])->all();
     }
 
-    public function save(TrainingGroupWork $group)
+    public function save(TrainingGroupWork $model)
     {
-        if (!$group->save()) {
-            throw new DomainException('Ошибка сохранения учебной группы. Проблемы: '.json_encode($group->getErrors()));
+        if (!$model->save()) {
+            throw new DomainException('Ошибка сохранения учебной группы. Проблемы: '.json_encode($model->getErrors()));
         }
-        return $group->id;
+        return $model->id;
     }
 
     public function getByBranchQuery($branch)

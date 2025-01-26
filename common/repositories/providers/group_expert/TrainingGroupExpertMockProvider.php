@@ -25,9 +25,10 @@ class TrainingGroupExpertMockProvider implements TrainingGroupExpertProviderInte
         });
     }
 
-    public function save(TrainingGroupExpertWork $expert)
+    public function save(TrainingGroupExpertWork $model)
     {
-        $this->data[] = $expert;
-        return count($this->data) - 1;
+        $model->id = count($this->data);
+        $this->data[] = $model;
+        return $model->id;
     }
 }

@@ -5,12 +5,15 @@ namespace frontend\models\work\educational\journal;
 
 use common\Model;
 use common\repositories\educational\TrainingGroupLessonRepository;
+use common\repositories\providers\group_lesson\TrainingGroupLessonProvider;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use InvalidArgumentException;
 use Yii;
 
 class VisitLesson extends Model
 {
+    private TrainingGroupLessonRepository $repository;
+
     public int $lessonId;
     public int $status;
     public $lesson;
@@ -18,13 +21,23 @@ class VisitLesson extends Model
     public function __construct(
         int $lessonId,
         int $status,
+        TrainingGroupLessonRepository $repository = null,
         $config = []
     )
     {
         parent::__construct($config);
         $this->lessonId = $lessonId;
         $this->status = $status;
-        $this->lesson = (Yii::createObject(TrainingGroupLessonRepository::class))->get($this->lessonId);
+        if (!$repository) {
+            $repository = Yii::createObject(
+                TrainingGroupLessonRepository::class,
+                ['provider' => Yii::createObject(TrainingGroupLessonProvider::class)]
+            );
+        }
+        /** @var TrainingGroupLessonRepository $repository */
+        $this->repository = $repository;
+
+        $this->lesson = $this->repository->get($this->lessonId);
     }
 
     public function rules()

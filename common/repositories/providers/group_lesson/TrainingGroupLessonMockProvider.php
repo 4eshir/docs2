@@ -18,6 +18,18 @@ class TrainingGroupLessonMockProvider implements TrainingGroupLessonProviderInte
         return $this->data[$id] ?? null;
     }
 
+    public function getAll()
+    {
+        return $this->data;
+    }
+
+    public function getByIds($ids)
+    {
+        return array_filter($this->data, function($key) use ($ids) {
+            return in_array($key, $ids);
+        }, ARRAY_FILTER_USE_BOTH);
+    }
+
     public function getLessonsFromGroup($id)
     {
         return array_filter($this->data, function($item) use ($id) {
@@ -33,7 +45,8 @@ class TrainingGroupLessonMockProvider implements TrainingGroupLessonProviderInte
 
     public function save(TrainingGroupLessonWork $model)
     {
+        $model->id = count($this->data);
         $this->data[] = $model;
-        return count($this->data) - 1;
+        return $model->id;
     }
 }

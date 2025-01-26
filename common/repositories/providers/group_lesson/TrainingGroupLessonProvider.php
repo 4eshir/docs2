@@ -14,6 +14,11 @@ class TrainingGroupLessonProvider implements TrainingGroupLessonProviderInterfac
         return TrainingGroupLessonWork::find()->where(['id' => $id])->one();
     }
 
+    public function getByIds($ids)
+    {
+        return TrainingGroupLessonWork::find()->where(['IN', 'id', $ids])->all();
+    }
+
     public function getLessonsFromGroup($id)
     {
         return TrainingGroupLessonWork::find()->where(['training_group_id' => $id])->all();

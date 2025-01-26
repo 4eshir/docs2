@@ -20,9 +20,10 @@ class TeacherGroupMockProvider implements TeacherGroupProviderInterface
         });
     }
 
-    public function save(TeacherGroupWork $teacher)
+    public function save(TeacherGroupWork $model)
     {
-        $this->data[] = $teacher;
-        return count($this->data) - 1;
+        $model->id = count($this->data);
+        $this->data[] = $model;
+        return $model->id;
     }
 }

@@ -26,8 +26,9 @@ class PeopleMockProvider implements PeopleProviderInterface
 
     public function save(PeopleWork $model)
     {
+        $model->id = count($this->data);
         $this->data[] = $model;
-        return count($this->data) - 1;
+        return $model->id;
     }
 
     public function delete(PeopleWork $model)

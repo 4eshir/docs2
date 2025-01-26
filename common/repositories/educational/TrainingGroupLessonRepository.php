@@ -30,9 +30,14 @@ class TrainingGroupLessonRepository
         return $this->provider->get($id);
     }
 
+    public function getAll()
+    {
+        return $this->provider->getAll();
+    }
+
     public function getByIds($ids)
     {
-        return TrainingGroupLessonWork::find()->where(['IN', 'id', $ids])->all();
+        return $this->provider->getByIds($ids);
     }
 
     public function getLessonsFromGroup($id)
@@ -58,21 +63,13 @@ class TrainingGroupLessonRepository
         }
     }
 
-    public function delete(TrainingGroupLessonWork $lesson)
+    public function delete(TrainingGroupLessonWork $model)
     {
-        $lesson->recordEvent(new DeleteLessonFromVisitEvent($lesson->training_group_id, [$lesson]), get_class($lesson));
-        $lesson->releaseEvents();
-        return $lesson->delete();
+        return $this->provider->delete($model);
     }
 
-    public function save(TrainingGroupLessonWork $lesson)
+    public function save(TrainingGroupLessonWork $model)
     {
-        $lesson->recordEvent(new AddLessonToVisitEvent($lesson->training_group_id, [$lesson]), get_class($lesson));
-
-        if (!$lesson->save()) {
-            throw new DomainException('Ошибка сохранения образовательной программы. Проблемы: '.json_encode($lesson->getErrors()));
-        }
-        $lesson->releaseEvents();
-        return $lesson->id;
+        return $this->provider->save($model);
     }
 }

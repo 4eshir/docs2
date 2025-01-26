@@ -18,6 +18,7 @@ use common\repositories\providers\group_project_themes\GroupProjectThemesMockPro
 use common\repositories\providers\teacher_group\TeacherGroupMockProvider;
 use common\repositories\providers\user\UserMockProvider;
 use common\repositories\providers\visit\VisitMockProvider;
+use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use Yii;
 
 class TrainingGroupFullData
@@ -68,7 +69,7 @@ class TrainingGroupFullData
                 'firstname' => 'Иван',
                 'surname' => 'Иванов',
                 'patronymic' => 'Иванович',
-                'company_id' => Yii::$app->params['mainCompanyId'],
+                'company_id' => 1,
                 'short' => 'ИИИ1',
                 'branch' => BranchDictionary::TECHNOPARK,
                 'birthdate' => '2000-01-01',
@@ -78,7 +79,7 @@ class TrainingGroupFullData
                 'firstname' => 'Петр',
                 'surname' => 'Петров',
                 'patronymic' => 'Петрович',
-                'company_id' => Yii::$app->params['mainCompanyId'],
+                'company_id' => 1,
                 'short' => 'ППП1',
                 'branch' => BranchDictionary::QUANTORIUM,
                 'birthdate' => '2001-01-01',
@@ -88,7 +89,7 @@ class TrainingGroupFullData
                 'firstname' => 'Андрей',
                 'surname' => 'Андреев',
                 'patronymic' => 'Андреевич',
-                'company_id' => Yii::$app->params['mainCompanyId'],
+                'company_id' => 1,
                 'short' => 'ААА1',
                 'branch' => BranchDictionary::CDNTT,
                 'birthdate' => '2002-01-01',
@@ -102,6 +103,7 @@ class TrainingGroupFullData
                 'surname' => 'Ученик 1 Фамилия',
                 'patronymic' => 'Ученик 1 Отчество',
                 'birthdate' => '2010-01-01',
+                'email' => 'test@test.ru',
                 'sex' => 0,
             ],
             [
@@ -109,6 +111,7 @@ class TrainingGroupFullData
                 'surname' => 'Ученик 2 Фамилия',
                 'patronymic' => 'Ученик 2 Отчество',
                 'birthdate' => '2010-02-02',
+                'email' => 'test@test.ru',
                 'sex' => 0,
             ],
             [
@@ -116,6 +119,7 @@ class TrainingGroupFullData
                 'surname' => 'Ученица 1 Фамилия',
                 'patronymic' => 'Ученица 1 Отчество',
                 'birthdate' => '2015-01-01',
+                'email' => 'test@test.ru',
                 'sex' => 1,
             ],
             [
@@ -123,6 +127,7 @@ class TrainingGroupFullData
                 'surname' => 'Ученица 2 Фамилия',
                 'patronymic' => 'Ученица 2 Отчество',
                 'birthdate' => '2015-02-02',
+                'email' => 'test@test.ru',
                 'sex' => 1,
             ],
         ];
@@ -177,11 +182,13 @@ class TrainingGroupFullData
                 'firstname' => 'Эксперт 1 Имя',
                 'surname' => 'Эксперт 1 Фамилия',
                 'patronymic' => 'Эксперт 1 Отчество',
+                'type' => TrainingGroupExpertWork::TYPE_EXTERNAL,
             ],
             [
                 'firstname' => 'Эксперт 2 Имя',
                 'surname' => 'Эксперт 2 Фамилия',
                 'patronymic' => 'Эксперт 2 Отчество',
+                'type' => TrainingGroupExpertWork::TYPE_INTERNAL,
             ],
         ];
     }

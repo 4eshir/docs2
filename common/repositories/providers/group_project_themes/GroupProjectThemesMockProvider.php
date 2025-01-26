@@ -25,9 +25,10 @@ class GroupProjectThemesMockProvider implements GroupProjectThemesProviderInterf
         });
     }
 
-    public function save(GroupProjectsThemesWork $theme)
+    public function save(GroupProjectsThemesWork $model)
     {
-        $this->data[] = $theme;
-        return count($this->data) - 1;
+        $model->id = count($this->data);
+        $this->data[] = $model;
+        return $model->id;
     }
 }

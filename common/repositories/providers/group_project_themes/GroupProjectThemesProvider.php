@@ -33,11 +33,11 @@ class GroupProjectThemesProvider implements GroupProjectThemesProviderInterface
         return $command->getRawSql();
     }
 
-    public function save(GroupProjectsThemesWork $theme)
+    public function save(GroupProjectsThemesWork $model)
     {
-        if (!$theme->save()) {
-            throw new DomainException('Ошибка сохранения связки учебной группы и темы проекта. Проблемы: '.json_encode($theme->getErrors()));
+        if (!$model->save()) {
+            throw new DomainException('Ошибка сохранения связки учебной группы и темы проекта. Проблемы: '.json_encode($model->getErrors()));
         }
-        return $theme->id;
+        return $model->id;
     }
 }

@@ -40,11 +40,11 @@ class TrainingGroupExpertProvider implements TrainingGroupExpertProviderInterfac
         return $command->getRawSql();
     }
 
-    public function save(TrainingGroupExpertWork $expert)
+    public function save(TrainingGroupExpertWork $model)
     {
-        if (!$expert->save()) {
-            throw new DomainException('Ошибка сохранения связки учебной группы и эксперта. Проблемы: '.json_encode($expert->getErrors()));
+        if (!$model->save()) {
+            throw new DomainException('Ошибка сохранения связки учебной группы и эксперта. Проблемы: '.json_encode($model->getErrors()));
         }
-        return $expert->id;
+        return $model->id;
     }
 }

@@ -20,7 +20,15 @@ class TrainingGroupLessonWork extends TrainingGroupLesson
     public $autoDate;
     public $auditoriumName;
 
-    public static function fill($groupId, $lessonDate, $lessonStartTime, $branch, $auditoriumId, $lessonEndTime, $duration)
+    public static function fill(
+        $groupId,
+        $lessonDate,
+        $lessonStartTime,
+        $branch,
+        $auditoriumId,
+        $lessonEndTime,
+        $duration
+    )
     {
         $entity = new static();
         $entity->training_group_id = $groupId;
