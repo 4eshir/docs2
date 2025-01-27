@@ -7,6 +7,7 @@ use app\models\work\order\OrderEventWork;
 use app\models\work\team\ActParticipantWork;
 use app\models\work\team\SquadParticipantWork;
 use common\events\EventTrait;
+use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\Model;
@@ -17,15 +18,36 @@ use common\repositories\event\ParticipantAchievementRepository;
 use common\repositories\order\OrderEventRepository;
 use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\general\PeopleWork;
+use InvalidArgumentException;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
+/**
+ * @property $id
+ * @property $name
+ * @property $organizer
+ * @property $startDate
+ * @property $endDate
+ * @property $city
+ * @property $format
+ * @property $level
+ * @property $minister
+ * @property $minAge
+ * @property $maxAge
+ * @property OrderEventWork $orderParticipant
+ * @property $addOrderParticipant
+ * @property $keyWords
+ * @property $orderBusinessTrip
+ * @property $doc
+ * @property $escort
+ */
 class ForeignEventForm extends Model
 {
     use EventTrait;
 
     // Неизменяемые поля
+    public ForeignEventWork $event;
     public $id;
     public $name;
     public $organizer;
@@ -63,6 +85,7 @@ class ForeignEventForm extends Model
         /** @var ForeignEventWork $event */
         $event = (Yii::createObject(ForeignEventRepository::class))->get($foreignEventId);
         $order = (Yii::createObject(OrderEventRepository::class))->get($event->order_participant_id);
+        $this->event = $event;
         $this->id = $foreignEventId;
         $this->name = $order->order_name;
         $this->organizer = $event->organizer_id;
@@ -142,5 +165,85 @@ class ForeignEventForm extends Model
                     ['id' => ArrayHelper::getColumn($achievements, 'id')])
             ]
         );
+    }
+
+    public function isBusinessTrip()
+    {
+        return !is_null($this->orderBusinessTrip);
+    }
+
+    public function getParticipantsLink()
+    {
+        $mapped = array_map(function(SquadParticipantWork $item) {
+            return
+                StringFormatter::stringAsLink(
+                    $item->participantWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS),
+                    Url::to(['/dictionaries/foreign-event-participants/view', 'id' => $item->participant_id])
+                ) . ' (педагог(-и): ' .
+                $item->actParticipantWork->getTeachersLink() .
+                ', отдел(-ы) для учета: ' .
+                $item->actParticipantWork->getBranches() . ')';
+        }, $this->squadParticipantsModel);
+
+        return implode('<br>', $mapped);
+    }
+
+    public function getAchievementsLink()
+    {
+        $mapped = array_map(function(SquadParticipantWork $item) {
+            return StringFormatter::stringAsLink(
+                $item->participantWork->getFIO(PeopleWork::FIO_FULL),
+                Url::to(['/dictionaries/foreign-event-participants/view', 'id' => $item->participant_id])
+            );
+        }, $this->squadParticipantsModel);
+
+        return implode('<br>', $mapped);
+    }
+
+    public function getAgeRange()
+    {
+        return "{$this->minAge} - {$this->maxAge} л.";
+    }
+
+    public function getOrderParticipant()
+    {
+        return StringFormatter::stringAsLink(
+            $this->orderParticipant->order_name,
+            Url::to(['/order/order-event/view', 'id' => $this->orderParticipant->id])
+        );
+    }
+
+    public function getAddOrderParticipant()
+    {
+        /** @var OrderEventWork $order */
+        $order = (Yii::createObject(OrderEventRepository::class))->get($this->addOrderParticipant);
+        return StringFormatter::stringAsLink(
+            $order->order_name,
+            Url::to(['/order/order-event/view', 'id' => $order->id])
+        );
+    }
+
+    /**
+     * Возвращает массив
+     * link => форматированная ссылка на документ
+     * id => ID записи в таблице files
+     * @param $filetype
+     * @return array
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getFileLinks($filetype)
+    {
+        if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
+            throw new InvalidArgumentException('Неизвестный тип файла');
+        }
+
+        $addPath = '';
+        switch ($filetype) {
+            case FilesHelper::TYPE_DOC:
+                $addPath = FilesHelper::createAdditionalPath(ForeignEventWork::tableName(), FilesHelper::TYPE_DOC);
+                break;
+        }
+
+        return FilesHelper::createFileLinks($this->event, $filetype, $addPath);
     }
 }

@@ -4,13 +4,20 @@ namespace app\models\work\team;
 
 use common\events\EventTrait;
 use common\helpers\files\FilesHelper;
+use common\helpers\StringFormatter;
 use common\models\scaffold\ActParticipant;
 use common\models\scaffold\SquadParticipant;
+use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
+/**
+ * @property PeopleStampWork $teacherWork
+ * @property PeopleStampWork $teacher2Work
+ */
 class ActParticipantWork extends ActParticipant
 {
     use EventTrait;
@@ -160,8 +167,40 @@ class ActParticipantWork extends ActParticipant
         }
     }
 
+    public function getTeachersLink()
+    {
+        $result = StringFormatter::stringAsLink(
+            $this->teacherWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS),
+            Url::to(['/dictionaries/people/view', 'id' => $this->teacherWork->people_id])
+        );
+
+        if (!is_null($this->teacher2_id)) {
+            $result .= ';' . StringFormatter::stringAsLink(
+                $this->teacher2Work->getFIO(PeopleWork::FIO_SURNAME_INITIALS),
+                Url::to(['/dictionaries/people/view', 'id' => $this->teacher2Work->people_id])
+            );
+        }
+
+        return $result;
+    }
+
+    public function getBranches()
+    {
+        return 'stub';
+    }
+
     public function getSquadParticipants()
     {
         return $this->hasMany(SquadParticipantWork::class, ['act_participant_id' => 'id']);
+    }
+
+    public function getTeacherWork()
+    {
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'teacher_id']);
+    }
+
+    public function getTeacher2Work()
+    {
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'teacher2_id']);
     }
 }

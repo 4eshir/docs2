@@ -37,7 +37,7 @@ class ForeignEventService
 
     public function getFilesInstances(ForeignEventForm $form)
     {
-        $form->doc = UploadedFile::getInstances($form, 'doc');
+        $form->doc = UploadedFile::getInstance($form, 'doc');
     }
 
     public function saveAchievementFileFromModel(ForeignEventForm $model)

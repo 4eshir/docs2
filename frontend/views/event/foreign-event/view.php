@@ -1,10 +1,13 @@
 <?php
 
+use common\helpers\files\FilesHelper;
+use frontend\forms\event\ForeignEventForm;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\ForeignEventWork */
+/* @var $model ForeignEventForm */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Учет достижений в мероприятиях', 'url' => ['index']];
@@ -24,10 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
-        <?php
-        $error = $model->getErrorsWork();
-        if ($error !== '' && ((\app\models\components\RoleBaseAccess::CheckRole(Yii::$app->user->identity->getId(), 7)) || (\app\models\components\RoleBaseAccess::CheckRole(Yii::$app->user->identity->getId(), 6))))
-            echo Html::a('Простить ошибки', ['amnesty', 'id' => $model->id], ['class' => 'btn btn-warning',
+        <?= Html::a('Простить ошибки', ['amnesty', 'id' => $model->id], ['class' => 'btn btn-warning',
                 'data' => [
                     'confirm' => 'Вы действительно хотите простить все ошибки в карточке учета мероприятия?',
                     'method' => 'post',
@@ -35,76 +35,54 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
     </p>
 
-    <div class="content-container" style="color: #ff0000; font: 18px bold;">
-        <?php
-        $error = $model->getErrorsWork();
-        if ($error != '')
-        {
-            echo '<p style="">';
-            echo $error;
-            echo '</p>';
-        }
-        ?>
-    </div>
+    <?= DetailView::widget([
+        'model' => $model,
+        'attributes' => [
+            ['attribute' => 'name', 'value' => function (ForeignEventForm $model) {
+                return $model->name;
+            }],
+            ['attribute' => 'organizer'],
+            ['attribute' => 'startDate', 'value' => function (ForeignEventForm $model) {
+                return $model->startDate;
+            }],
+            ['attribute' => 'endDate'],
+            ['attribute' => 'city'],
+            ['attribute' => 'eventWay', 'value' => function (ForeignEventForm $model) {
+                return Yii::$app->eventWay->get($model->format);
+            }],
+            ['attribute' => 'eventLevel', 'value' => function (ForeignEventForm $model) {
+                return Yii::$app->eventLevel->get($model->level);
+            }],
+            ['attribute' => 'minister', 'value' => function (ForeignEventForm $model) {
+                return Yii::$app->eventWay->get($model->format);
+            }],
+            ['attribute' => 'participantsLink', 'format' => 'raw', 'value' => function (ForeignEventForm $model) {
+                return $model->getParticipantsLink();
+            }],
+            ['attribute' => 'achievementsLink', 'format' => 'raw', 'value' => function (ForeignEventForm $model) {
+                return $model->getAchievementsLink();
+            }],
+            ['attribute' => 'achievementsLink', 'format' => 'raw', 'value' => function (ForeignEventForm $model) {
+                return $model->getAgeRange();
+            }],
+            ['attribute' => 'businessTrip', 'format' => 'raw', 'value' => function (ForeignEventForm $model) {
+                return !is_null($model->orderBusinessTrip) ? 'Есть' : 'Нет';
+            }],
 
-    <?php
-    if ($model->business_trip == 0)
-    { ?>
-        <?= DetailView::widget([
-            'model' => $model,
-            'attributes' => [
-                'name',
-                'companyString',
-                'start_date',
-                'finish_date',
-                'city',
-                'eventWayString',
-                'eventLevelString',
-                'isMinpros',
-                ['attribute' => 'participantsLink', 'format' => 'raw'],
-                ['attribute' => 'achievementsLink', 'format' => 'raw'],
-                'ageRange',
-                'businessTrip',
+            ['attribute' => 'orderParticipationString', 'format' => 'raw', 'value' => function (ForeignEventForm $model) {
+                return $model->getOrderParticipant();
+            }],
+            ['attribute' => 'addOrderParticipationString', 'format' => 'raw', 'value' => function (ForeignEventForm $model) {
+                return $model->getAddOrderParticipant();
+            }],
 
-                ['attribute' => 'orderParticipationString', 'format' => 'raw'],
-                ['attribute' => 'addOrderParticipationString', 'format' => 'raw'],
-
-                'key_words',
-                ['attribute' => 'docString', 'format' => 'raw'],
-                'creatorString',
-                'editorString',
-            ],
-        ]) ?>
-    <?php }
-    else
-    { ?>
-        <?= DetailView::widget([
-            'model' => $model,
-            'attributes' => [
-                'name',
-                'companyString',
-                'start_date',
-                'finish_date',
-                'city',
-                'eventWayString',
-                'eventLevelString',
-                ['attribute' => 'participantsLink', 'format' => 'raw'],
-                ['attribute' => 'achievementsLink', 'format' => 'raw'],
-                'ageRange',
-                'businessTrip',
-                ['attribute' => 'escort_id', 'value' => function ($model) { return $model->escort->shortName; }],
-                ['attribute' => 'orderBusinessTripString', 'format' => 'raw'],
-
-                ['attribute' => 'orderParticipationString', 'format' => 'raw'],
-                ['attribute' => 'addOrderParticipationString', 'format' => 'raw'],
-
-                'key_words',
-                ['attribute' => 'docString', 'format' => 'raw'],
-            ],
-        ]) ?>
-    <?php
-    }
-    ?>
-
+            ['attribute' => 'keyWords'],
+            ['attribute' => 'doc', 'format' => 'raw', 'value' => function (ForeignEventForm $model) {
+                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_DOC), 'link'));
+            }],
+            'creatorString',
+            'editorString',
+        ],
+    ]) ?>
 
 </div>
