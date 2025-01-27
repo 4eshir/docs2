@@ -3,6 +3,10 @@
 namespace common\components\dictionaries\base;
 class NomenclatureDictionary extends BaseDictionary
 {
+    const ORDER_INIT = 0;
+    const ORDER_ENROLL = 1;
+    const ORDER_DEDUCT = 2;
+    const ORDER_TRANSFER = 3;
     public const ADMIN_ORDER = '02-02';
     public const COD_ADD = '13-01';
     public const COD_DEL = '13-02';
@@ -158,19 +162,19 @@ class NomenclatureDictionary extends BaseDictionary
             || $nomenclature == NomenclatureDictionary::TECHNOPARK_ADD_BUDGET || $nomenclature == NomenclatureDictionary::QUANTORIUM_ADD
             || $nomenclature == NomenclatureDictionary::CDNTT_ADD || $nomenclature == NomenclatureDictionary::CDNTT_ADD_BUDGET
             || $nomenclature == NomenclatureDictionary::MOB_QUANT_ADD || $nomenclature == NomenclatureDictionary::QUANTORIUM_ADD_BUDGET){
-            return 1;
+            return self::ORDER_ENROLL;
         }
         // отчисление
         if ($nomenclature == NomenclatureDictionary::COD_DEL || $nomenclature == NomenclatureDictionary::TECHNOPARK_DEL
             || $nomenclature == NomenclatureDictionary::TECHNOPARK_DEL_BUDGET || $nomenclature == NomenclatureDictionary::QUANTORIUM_DEL
             || $nomenclature == NomenclatureDictionary::CDNTT_DEL || $nomenclature == NomenclatureDictionary::CDNTT_DEL_BUDGET
             || $nomenclature == NomenclatureDictionary::MOB_QUANT_DEL || $nomenclature == NomenclatureDictionary::QUANTORIUM_DEL_BUDGET) {
-            return 2;
+            return self::ORDER_DEDUCT;
         }
         // перевод
         if($nomenclature == NomenclatureDictionary::CDNTT_TRANSFER){
-            return 3;
+            return self::ORDER_TRANSFER;
         }
-        return 0;
+        return self::ORDER_INIT;
     }
 }

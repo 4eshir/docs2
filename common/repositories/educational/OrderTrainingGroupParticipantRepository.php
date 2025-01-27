@@ -42,4 +42,7 @@ class OrderTrainingGroupParticipantRepository
             ->andWhere(['order_id' => $orderId])
             ->one();
     }
+    public function countByTrainingGroupParticipantOutId($trainingGroupParticipantOutId){
+        return OrderTrainingGroupParticipantWork::find()->where(['training_group_participant_out_id' => $trainingGroupParticipantOutId])->count();
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace common\repositories\educational;
 
+use app\models\work\order\OrderTrainingWork;
+use common\components\dictionaries\base\NomenclatureDictionary;
 use common\repositories\providers\group_participant\TrainingGroupParticipantProvider;
 use common\repositories\providers\group_participant\TrainingGroupParticipantProviderInterface;
 use DomainException;
@@ -91,15 +93,15 @@ class TrainingGroupParticipantRepository
     }
     public function getParticipantsToEnrollCreate($groupIds)
     {
-        return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => 0]);
+        return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => NomenclatureDictionary::ORDER_INIT]);
     }
     public function getParticipantsToDeductCreate($groupIds)
     {
-        return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => 1]);
+        return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => NomenclatureDictionary::ORDER_ENROLL]);
     }
     public function getParticipantsToTransferCreate($groupIds)
     {
-        return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => 1]);
+        return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => NomenclatureDictionary::ORDER_ENROLL]);
     }
     public function getParticipantToEnrollUpdate($groupId, $orderId){
         $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
@@ -108,7 +110,7 @@ class TrainingGroupParticipantRepository
             'training_group_participant_in_id');
         $query = TrainingGroupParticipantWork::find()
             ->orWhere(['id' => $orderParticipantId])
-            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 0]]);
+            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => NomenclatureDictionary::ORDER_INIT]]);
         return $query;
     }
     public function getParticipantToDeductUpdate($groupId, $orderId){
@@ -118,7 +120,7 @@ class TrainingGroupParticipantRepository
             'training_group_participant_out_id');
         $query = TrainingGroupParticipantWork::find()
             ->orWhere(['id' => $orderParticipantId])
-            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 1]]);
+            ->orWhere(['and', ['training_group_id' => $groupId], ['status' => NomenclatureDictionary::ORDER_ENROLL]]);
         return $query;
     }
     public function getParticipantToTransferUpdate($groupId, $orderId)
@@ -150,7 +152,7 @@ class TrainingGroupParticipantRepository
         return TrainingGroupParticipantWork::find()
             ->andWhere(['participant_id' => $participantId])
             ->andWhere(['training_group_id' => $groupId])
-            ->andWhere(['status' => 1])
+            ->andWhere(['status' => NomenclatureDictionary::ORDER_ENROLL])
             ->exists();
     }
 }
