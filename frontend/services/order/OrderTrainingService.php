@@ -172,7 +172,7 @@ class OrderTrainingService
     public function getParticipantsDataProvider(OrderTrainingWork $model)
     {
         $status = $this->getStatus($model);
-        if($status == 1) {
+        if($status == NomenclatureDictionary::ORDER_ENROLL) {
             $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $model->id])->all(),
                 'training_group_participant_in_id');
             $groupId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['id' => $orderParticipantId])->all(),
@@ -182,7 +182,7 @@ class OrderTrainingService
                 ->orWhere(['id' => $orderParticipantId])
                 ->orWhere(['and', ['training_group_id' => $groupId], ['status' => $status - 1]]);
         }
-        if($status == 2) {
+        if($status == NomenclatureDictionary::ORDER_DEDUCT) {
             $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $model->id])->all(),
                 'training_group_participant_out_id');
             $groupId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['id' => $orderParticipantId])->all(),
@@ -192,7 +192,7 @@ class OrderTrainingService
                 ->orWhere(['id' => $orderParticipantId])
                 ->orWhere(['and', ['training_group_id' => $groupId], ['status' => $status - 1]]);
         }
-        if($status == 3){
+        if($status == NomenclatureDictionary::ORDER_TRANSFER){
             $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $model->id])->all(),
                 'training_group_participant_out_id');
             $groupId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['id' => $orderParticipantId])->all(),
@@ -206,7 +206,7 @@ class OrderTrainingService
 
             $query = TrainingGroupParticipantWork::find()
                 ->orWhere(['id' => $orderParticipantId])
-                ->orWhere(['and', ['training_group_id' => $groupId], ['status' => 1]]);
+                ->orWhere(['and', ['training_group_id' => $groupId], ['status' => NomenclatureDictionary::ORDER_ENROLL]]);
             $query = $query->andWhere(['not in', 'id', $exceptParticipantId]);
         }
         return new ActiveDataProvider([
@@ -215,7 +215,7 @@ class OrderTrainingService
     }
     public function createOrderTrainingGroupParticipantEvent(OrderTrainingWork $model, $status, $post){
         $participantIds = $post['group-participant-selection'];
-        if($status == 1) {
+        if($status == NomenclatureDictionary::ORDER_ENROLL) {
             if ($participantIds != NULL) {
                 foreach ($participantIds as $participantId) {
                     $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent(NULL, $participantId, $model->id),
@@ -224,7 +224,7 @@ class OrderTrainingService
                 }
             }
         }
-        if($status == 2) {
+        if($status == NomenclatureDictionary::ORDER_DEDUCT) {
             if ($participantIds != NULL) {
                 foreach ($participantIds as $participantId) {
                     $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($participantId, NULL, $model->id),
@@ -233,7 +233,7 @@ class OrderTrainingService
                 }
             }
         }
-        if($status == 3) {
+        if($status == NomenclatureDictionary::ORDER_TRANSFER) {
             $transferGroupIds = $post['transfer-group'];
             if($participantIds != NULL){
                 foreach ($participantIds as $participantId) {
@@ -259,13 +259,17 @@ class OrderTrainingService
     public function isPossibleToInsertTrainingGroupParticipant($groupId, $participantId){
         return $this->trainingGroupParticipantRepository->isExist($groupId, $participantId);
     }
-    public function isPossibleToDelete($groupId, $participantId)
+    public function isPossibleToDeleteOrderTrainingGroupParticipant($participantId)
     {
-        //code
+        if($this->orderTrainingGroupParticipantRepository->countByTrainingGroupParticipantOutId($participantId) > 0){
+            return false;
+        } else {
+            return true;
+        }
     }
     public function updateOrderTrainingGroupParticipantEvent(OrderTrainingWork $model, $status, $post){
         $trainingGroupParticipants = $post['group-participant-selection'];
-        if ($status == 1) {
+        if ($status == NomenclatureDictionary::ORDER_ENROLL) {
             $formParticipants = $trainingGroupParticipants;
             $existsParticipants = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
                 ->andWhere(['order_id' => $model->id])
@@ -290,19 +294,20 @@ class OrderTrainingService
             }
             if ($deleteParticipants != NULL) {
                 foreach ($deleteParticipants as $deleteParticipant) {
-                    $model->recordEvent(new DeleteOrderTrainingGroupParticipantEvent(NULL, $deleteParticipant, $model->id), OrderTrainingGroupParticipantWork::class);
-                    //old status
-                    $this->trainingGroupParticipantRepository->setStatus( $deleteParticipant, 0);
+                    if ($this->isPossibleToDeleteOrderTrainingGroupParticipant($deleteParticipant)) {
+                        $model->recordEvent(new DeleteOrderTrainingGroupParticipantEvent(NULL, $deleteParticipant, $model->id), OrderTrainingGroupParticipantWork::class);
+                        $this->trainingGroupParticipantRepository->setStatus($deleteParticipant, NomenclatureDictionary::ORDER_INIT);
+                    }
                 }
             }
             if ($createParticipants != NULL) {
                 foreach ($createParticipants as $createParticipant) {
                     $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent(NULL, $createParticipant, $model->id), OrderTrainingGroupParticipantWork::class);
-                    $this->trainingGroupParticipantRepository->setStatus($createParticipant, 1);
+                    $this->trainingGroupParticipantRepository->setStatus($createParticipant, NomenclatureDictionary::ORDER_ENROLL);
                 }
             }
         }
-        if ($status == 2){
+        if ($status == NomenclatureDictionary::ORDER_DEDUCT){
             $formParticipants = $trainingGroupParticipants;
             $existsParticipants = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
                 ->andWhere(['order_id' => $model->id])
@@ -329,17 +334,17 @@ class OrderTrainingService
                 foreach ($deleteParticipants as $deleteParticipant) {
                     $model->recordEvent(new DeleteOrderTrainingGroupParticipantEvent($deleteParticipant, NULL, $model->id), OrderTrainingGroupParticipantWork::class);
                     //old status
-                    $this->trainingGroupParticipantRepository->setStatus( $deleteParticipant, 1);
+                    $this->trainingGroupParticipantRepository->setStatus( $deleteParticipant, NomenclatureDictionary::ORDER_ENROLL);
                 }
             }
             if ($createParticipants != NULL) {
                 foreach ($createParticipants as $createParticipant) {
                     $model->recordEvent(new CreateOrderTrainingGroupParticipantEvent($createParticipant,NULL, $model->id), OrderTrainingGroupParticipantWork::class);
-                    $this->trainingGroupParticipantRepository->setStatus($createParticipant, 2);
+                    $this->trainingGroupParticipantRepository->setStatus($createParticipant, NomenclatureDictionary::ORDER_DEDUCT);
                 }
             }
         }
-        if ($status == 3) {
+        if ($status == NomenclatureDictionary::ORDER_TRANSFER) {
             $formParticipants = $post['group-participant-selection'];
             $groups = $post['transfer-group'];
             $existsParticipants = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
@@ -366,11 +371,13 @@ class OrderTrainingService
             }
             if ($deleteParticipants != NULL) {
                 foreach ($deleteParticipants as $deleteParticipant) {
-                    $deleteOrderParticipant = $this->orderTrainingGroupParticipantRepository->getUnique($deleteParticipant , $model->id);
-                    $newTrainingGroupParticipant = $this->trainingGroupParticipantRepository->get($deleteOrderParticipant->training_group_participant_in_id);
-                    $model->recordEvent(new DeleteOrderTrainingGroupParticipantEvent($deleteParticipant, $deleteOrderParticipant->training_group_participant_in_id,  $model->id), OrderTrainingGroupParticipantWork::class);
-                    $model->recordEvent(new DeleteTrainingGroupParticipantEvent($newTrainingGroupParticipant->id), TrainingGroupParticipantWork::class);
-                    $this->trainingGroupParticipantRepository->setStatus($deleteOrderParticipant->training_group_participant_out_id, 1);
+                    $deleteOrderParticipant = $this->orderTrainingGroupParticipantRepository->getUnique($deleteParticipant, $model->id);
+                    if ($this->isPossibleToDeleteOrderTrainingGroupParticipant($deleteOrderParticipant->training_group_participant_in_id)) {
+                        $newTrainingGroupParticipant = $this->trainingGroupParticipantRepository->get($deleteOrderParticipant->training_group_participant_in_id);
+                        $model->recordEvent(new DeleteOrderTrainingGroupParticipantEvent($deleteParticipant, $deleteOrderParticipant->training_group_participant_in_id, $model->id), OrderTrainingGroupParticipantWork::class);
+                        $model->recordEvent(new DeleteTrainingGroupParticipantEvent($newTrainingGroupParticipant->id), TrainingGroupParticipantWork::class);
+                        $this->trainingGroupParticipantRepository->setStatus($deleteOrderParticipant->training_group_participant_out_id, NomenclatureDictionary::ORDER_ENROLL);
+                    }
                 }
             }
             if ($createParticipants != NULL) {
