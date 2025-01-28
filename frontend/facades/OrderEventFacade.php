@@ -11,6 +11,7 @@ use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\event\ForeignEventRepository;
 use common\repositories\general\OrderPeopleRepository;
+use common\repositories\general\PeopleStampRepository;
 use common\repositories\order\OrderEventRepository;
 use frontend\forms\OrderEventForm;
 use frontend\models\forms\ActParticipantForm;
@@ -20,6 +21,7 @@ class OrderEventFacade
 {
     private OrderEventRepository $orderEventRepository;
     private PeopleRepository $peopleRepository;
+    private PeopleStampRepository $peopleStampRepository;
     private ForeignEventRepository $foreignEventRepository;
     private OrderMainService $orderMainService;
     private ActParticipantService $actParticipantService;
@@ -29,6 +31,7 @@ class OrderEventFacade
     public function __construct(
         OrderEventRepository $orderEventRepository,
         PeopleRepository $peopleRepository,
+        PeopleStampRepository $peopleStampRepository,
         ForeignEventRepository $foreignEventRepository,
         OrderMainService $orderMainService,
         ActParticipantService $actParticipantService,
@@ -38,6 +41,7 @@ class OrderEventFacade
     ){
         $this->orderEventRepository = $orderEventRepository;
         $this->peopleRepository = $peopleRepository;
+        $this->peopleStampRepository = $peopleStampRepository;
         $this->foreignEventRepository = $foreignEventRepository;
         $this->orderMainService = $orderMainService;
         $this->actParticipantService = $actParticipantService;
@@ -50,7 +54,8 @@ class OrderEventFacade
         /* @var ForeignEventWork $modelForeignEvent */
         /* @var OrderEventForm $model */
         $modelOrderEvent = $this->orderEventRepository->get($id);
-        $people = $this->peopleRepository->getOrderedList();
+        //$people = $this->peopleRepository->getOrderedList();
+        $people = $this->peopleStampRepository->getAll();
         $modelForeignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
         $modelActForms = [new ActParticipantForm];
         $model = OrderEventForm::fill($modelOrderEvent, $modelForeignEvent);

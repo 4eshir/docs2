@@ -11,11 +11,13 @@ use app\services\order\OrderMainService;
 use app\services\team\TeamService;
 use common\controllers\DocumentController;
 use common\repositories\act_participant\ActParticipantRepository;
+use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\event\ForeignEventRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\general\OrderPeopleRepository;
+use common\repositories\general\PeopleStampRepository;
 use common\repositories\order\OrderEventRepository;
 use common\repositories\team\TeamRepository;
 use common\services\general\files\FileService;
@@ -25,6 +27,7 @@ use frontend\facades\OrderEventFacade;
 use frontend\forms\OrderEventForm;
 use frontend\models\forms\ActParticipantForm;
 use frontend\models\search\SearchOrderEvent;
+use frontend\services\dictionaries\PeopleService;
 use frontend\services\event\ForeignEventService;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -47,6 +50,8 @@ class OrderEventController extends DocumentController
     private TeamRepository $teamRepository;
     private TeamService $teamService;
     private ForeignEventParticipantsRepository $foreignEventParticipantsRepository;
+    private CompanyRepository $companyRepository;
+    private PeopleStampRepository $peopleStampRepository;
     public function __construct(
         $id, $module,
         PeopleRepository $peopleRepository,
@@ -66,6 +71,8 @@ class OrderEventController extends DocumentController
         TeamRepository $teamRepository,
         TeamService $teamService,
         ForeignEventParticipantsRepository $foreignEventParticipantsRepository,
+        CompanyRepository $companyRepository,
+        PeopleStampRepository $peopleStampRepository,
         $config = []
     )
     {
@@ -86,6 +93,8 @@ class OrderEventController extends DocumentController
         $this->teamRepository = $teamRepository;
         $this->teamService = $teamService;
         $this->foreignEventParticipantsRepository = $foreignEventParticipantsRepository;
+        $this->companyRepository = $companyRepository;
+        $this->peopleStampRepository = $peopleStampRepository;
         parent::__construct($id, $module, $fileService, $fileRepository, $config);
     }
     public function actionIndex() {
@@ -99,12 +108,13 @@ class OrderEventController extends DocumentController
     public function actionCreate() {
         /* @var OrderEventForm $model */
         $model = new OrderEventForm();
-        $people = $this->peopleRepository->getOrderedList();
+        $people = $this->peopleStampRepository->getAll();
         $modelActs = [new ActParticipantForm];
         $post = Yii::$app->request->post();
         $teams = [];
         $nominations = [];
         $participants = $this->foreignEventParticipantsRepository->getSortedList();
+        $company = $this->companyRepository->getList();
         if($model->load($post)) {
             $acts = $post["ActParticipantForm"];
             if (!$model->validate()) {
@@ -138,7 +148,7 @@ class OrderEventController extends DocumentController
             $this->orderEventService->saveFilesFromModel($modelOrderEvent);
             $modelForeignEvent = ForeignEventWork::fill(
                 $model->eventName,
-                $model->organizer_id,
+                (int)$model->organizer_id,
                 $model->dateBegin,
                 $model->dateEnd,
                 $model->city,
@@ -166,7 +176,8 @@ class OrderEventController extends DocumentController
             'modelActs' => $modelActs,
             'nominations' => $nominations,
             'teams' => $teams,
-            'participants' => $participants
+            'participants' => $participants,
+            'company' => $company
         ]);
     }
     public function actionView($id)
@@ -204,6 +215,7 @@ class OrderEventController extends DocumentController
         $orderNumber = $modelData['orderNumber'];
         $model->responsible_id = $modelData['responsiblePeople'];
         $participants = $this->foreignEventParticipantsRepository->getSortedList();
+        $company = $this->companyRepository->getList();
         $post = Yii::$app->request->post();
         if($model->load($post)){
             if (!$model->validate()) {
@@ -266,7 +278,8 @@ class OrderEventController extends DocumentController
             'teams' => $teams,
             'modelActs' => $modelActForms,
             'actTable' => $actTable,
-            'participants' => $participants
+            'participants' => $participants,
+            'company' => $company
         ]);
     }
     public function actionAct($id)

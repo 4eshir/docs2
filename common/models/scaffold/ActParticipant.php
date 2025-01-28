@@ -39,7 +39,7 @@ class ActParticipant extends \yii\db\ActiveRecord
     {
         return [
             [['teacher_id', 'teacher2_id', 'branch', 'focus', 'type', 'team_name_id', 'form', 'foreign_event_id', 'allow_remote'], 'integer'],
-            [['branch', 'focus', 'type', 'nomination', 'foreign_event_id'], 'required'],
+            [['focus', 'type', 'nomination', 'foreign_event_id'], 'required'],
             [['nomination'], 'string', 'max' => 1000],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['teacher_id' => 'id']],
             [['teacher2_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['teacher2_id' => 'id']],

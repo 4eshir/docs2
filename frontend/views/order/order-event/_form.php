@@ -22,6 +22,7 @@ use yii\jui\DatePicker;
 /* @var $nominations */
 /* @var $actTable */
 /* @var $participants */
+/* @var $company */
 ?>
 
 <style>
@@ -436,7 +437,7 @@ use yii\jui\DatePicker;
         margin: 10px 0;        /* Отступы сверху и снизу */
     }
 </style>
-<div class="order-main-form">
+<div class="order-event-form">
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
         'dateFormat' => 'php:d.m.Y',
@@ -466,7 +467,7 @@ use yii\jui\DatePicker;
             ];
             echo $form
                 ->field($model, 'organizer_id')
-                ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                ->dropDownList(ArrayHelper::map($company, 'id', 'name'), $params)
                 ->label('Организатор');
             ?>
         </div>
@@ -780,9 +781,19 @@ use yii\jui\DatePicker;
                                         'class' => 'form-control pos',
                                         'prompt' => '---',
                                     ];
-                                    echo $form
-                                        ->field($modelAct, "[{$i}]branch")
-                                        ->dropDownList(Yii::$app->branches->getList(), $params)
+                                    echo $form->field($modelAct, "[{$i}]branch")->widget(
+                                            Select2::classname(), [
+                                            'data' => Yii::$app->branches->getList() ,
+                                            'size' => Select2::LARGE,
+                                                'options' => [
+                                                    'prompt' => 'Выберите участника' ,
+                                                    'multiple' => true
+                                                ],
+                                                'pluginOptions' => [
+                                                    'allowClear' => true
+                                                ],
+                                            ]
+                                        )
                                         ->label('Отделы');
                                     ?>
                                     <?php

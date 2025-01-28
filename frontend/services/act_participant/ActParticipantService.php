@@ -30,6 +30,7 @@ class ActParticipantService
     private SquadParticipantService $squadParticipantService;
     private SquadParticipantRepository $squadParticipantRepository;
     private PeopleRepository $peopleRepository;
+    private ActParticipantBranchService $actParticipantBranchService;
 
     public function __construct(
         TeamRepository $teamRepository,
@@ -39,7 +40,8 @@ class ActParticipantService
         FileService $fileService,
         SquadParticipantService $squadParticipantService,
         SquadParticipantRepository $squadParticipantRepository,
-        PeopleRepository $peopleRepository
+        PeopleRepository $peopleRepository,
+        ActParticipantBranchService $actParticipantBranchService
     )
     {
         $this->teamRepository = $teamRepository;
@@ -50,6 +52,7 @@ class ActParticipantService
         $this->squadParticipantService = $squadParticipantService;
         $this->squadParticipantRepository = $squadParticipantRepository;
         $this->peopleRepository = $peopleRepository;
+        $this->actParticipantBranchService = $actParticipantBranchService;
     }
     public function getFilesInstance(ActParticipantForm $modelActParticipant, $index)
     {
@@ -110,12 +113,13 @@ class ActParticipantService
                 else {
                     $teamNameId = NULL;
                 }
+
                 $modelAct = ActParticipantWork::fill(
                     $modelActParticipantForm->firstTeacher,
                     $modelActParticipantForm->secondTeacher,
                     $teamNameId,
                     $foreignEventId,
-                    $modelActParticipantForm->branch,
+                    NULL,
                     $modelActParticipantForm->focus,
                     $modelActParticipantForm->type,
                     $modelActParticipantForm->allowRemote,
@@ -126,10 +130,14 @@ class ActParticipantService
                 if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
                     $this->actParticipantRepository->save($modelAct);
                 }
+                var_dump($act["branch"], $modelAct->id );
                 if ($modelAct->id != NULL) {
                     $this->saveFilesFromModel($modelAct, $index);
                     $modelAct->releaseEvents();
                     $this->squadParticipantService->addSquadParticipantEvent($modelAct, $act["participant"], $modelAct->id);
+                    foreach($act["branch"] as $branch){
+                        $this->actParticipantBranchService->addActParticipantBranchEvent($modelAct->id, $branch);
+                    }
                 }
                 $index++;
             }

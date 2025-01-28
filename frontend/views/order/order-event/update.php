@@ -17,6 +17,7 @@ use yii\helpers\Html;
 /* @var $modelActs */
 /* @var $actTable */
 /* @var $participants */
+/* @var $company */
 $this->title = 'Приказ об участии' . $model->order_number;
 $this->params['breadcrumbs'][] = ['label' => 'Приказ об участии', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
@@ -38,7 +39,8 @@ $this->params['breadcrumbs'][] = 'Редактирование';
             'teams' => $teams,
             'modelActs' => $modelActs,
             'actTable' => $actTable,
-            'participants' => $participants
+            'participants' => $participants,
+            'company' => $company,
         ]
     ) ?>
 </div>

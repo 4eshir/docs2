@@ -21,7 +21,7 @@ class m250123_060814_add_order_people_table extends Migration
         '{{%fk-order_people-people_id}}',
         '{{%order_people}}',
         'people_id',
-        '{{%people}}', // Replace with actual table name for `people`
+        '{{%people_stamp}}', // Replace with actual table name for `people`
         'id',
         'RESTRICT'
         );
