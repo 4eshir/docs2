@@ -161,6 +161,16 @@ $(document).ready(function() {
 });
 
 /**
+ * Открытие модального окна для создания резервов исходящей документации
+ */
+$(window).on('load', function() {
+    $('#open-modal').click(function(event) {
+        event.preventDefault();
+        $('#modal-reserve').modal('show');
+    });
+});
+
+/**
  * Изменение стандартной пагинации
  */
 document.addEventListener('DOMContentLoaded', function () {
@@ -205,10 +215,3 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
-
-function checkPropertiesIndex()
-{
-    console.log(window.location.href);
-    console.log('-----------------');
-    return /index$/.test(window.location.href);
-}
