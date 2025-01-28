@@ -8,6 +8,9 @@ use common\models\scaffold\ParticipantAchievement;
 /** @property ActParticipantWork $actParticipantWork */
 class ParticipantAchievementWork extends ParticipantAchievement
 {
+    const TYPE_PRIZE = 0;
+    const TYPE_WINNER = 1;
+
     public static function fill(
         $actParticipantId,
         $achievement,
@@ -26,6 +29,18 @@ class ParticipantAchievementWork extends ParticipantAchievement
         $entity->date = $date;
 
         return $entity;
+    }
+
+    public function getPrettyType()
+    {
+        switch ($this->type) {
+            case self::TYPE_PRIZE:
+                return 'Призер';
+            case self::TYPE_WINNER:
+                return 'Победитель';
+            default:
+                return '---';
+        }
     }
 
     public function getActParticipantWork()

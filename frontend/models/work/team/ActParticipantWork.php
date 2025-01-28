@@ -7,6 +7,7 @@ use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\models\scaffold\ActParticipant;
 use common\models\scaffold\SquadParticipant;
+use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
@@ -22,9 +23,6 @@ class ActParticipantWork extends ActParticipant
 {
     use EventTrait;
     public $actFiles;
-
-    const TYPE_PRIZE = 0;
-    const TYPE_WINNER = 1;
 
     public static function fill(
         $teacherId,
@@ -85,7 +83,7 @@ class ActParticipantWork extends ActParticipant
              $secondTeacher->firstname . ' ' . $secondTeacher->surname . ' ' . $secondTeacher->patronymic;
     }
 
-    public function getTeam()
+    public function getTeamName()
     {
         if ($this->team_name_id && $this->type == 1) {
             $team = TeamNameWork::findOne($this->team_name_id);
@@ -105,6 +103,26 @@ class ActParticipantWork extends ActParticipant
 
         }
         return $participants;
+    }
+
+    public function getFormattedLinkedParticipants()
+    {
+        $squadParticipants = SquadParticipantWork::findAll(['act_participant_id' => $this->id]);
+
+        $participants = [];
+        foreach ($squadParticipants as $participant) {
+            $participants[] = StringFormatter::stringAsLink(
+                $participant->participantWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS),
+                Url::to(['/dictionaries/foreign-event-participants/view', 'id' => $participant->participant_id])
+            );
+        }
+
+        $result = implode(', ', $participants);
+        if ($this->team_name_id) {
+            $result = $this->getTeamName() . ' (' . $result . ')';
+        }
+
+        return $result;
     }
 
     public function getTypeParticipant(){
@@ -153,18 +171,6 @@ class ActParticipantWork extends ActParticipant
         return 'Направленность: ' . Yii::$app->focus->get($this->focus) . '; Номинация: ' .
             (is_null($this->nomination) ? $this->nomination : 'нет') . '; ' .
             ($this->team_name_id ? 'Командное участие' : 'Индивидуальное участие');
-    }
-
-    public function getPrettyType()
-    {
-        switch ($this->type) {
-            case self::TYPE_PRIZE:
-                return 'Призер';
-            case self::TYPE_WINNER:
-                return 'Победитель';
-            default:
-                return '---';
-        }
     }
 
     public function getTeachersLink()

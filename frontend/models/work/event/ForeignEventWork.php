@@ -7,9 +7,14 @@ use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\general\PeopleStampRepository;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\models\work\general\UserWork;
 use Yii;
 use yii\helpers\ArrayHelper;
 
+/**
+ * @property UserWork $creatorWork
+ * @property UserWork $lastEditWork
+ */
 class ForeignEventWork extends ForeignEvent
 {
     use EventTrait;
@@ -115,5 +120,15 @@ class ForeignEventWork extends ForeignEvent
     public function isTrip()
     {
         return !is_null($this->order_business_trip_id);
+    }
+
+    public function getCreatorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
+    }
+
+    public function getLastEditWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
     }
 }

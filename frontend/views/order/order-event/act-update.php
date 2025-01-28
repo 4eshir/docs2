@@ -187,7 +187,7 @@ use yii\widgets\DetailView;
                                             return $model->nomination;
                                         }],
                                         ['label' => 'Команда', 'value' => function (ActParticipantWork $model) {
-                                            return $model->getTeam();
+                                            return $model->getTeamName();
                                         }],
                                     ],
                                 ]) ?>

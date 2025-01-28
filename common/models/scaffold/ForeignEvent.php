@@ -21,12 +21,16 @@ namespace common\models\scaffold;
  * @property int|null $escort_id
  * @property int|null $add_order_participant_id
  * @property int|null $order_business_trip_id
+ * @property int|null $creator_id
+ * @property int|null $last_edit_id
  *
  * @property DocumentOrder $addOrderParticipant
  * @property PeopleStamp $escort
  * @property DocumentOrder $orderBusinessTrip
  * @property DocumentOrder $orderParticipant
  * @property Company $organizer
+ * @property User $creator
+ * @property User $lastEdit
  */
 class ForeignEvent extends \yii\db\ActiveRecord
 {
@@ -53,6 +57,8 @@ class ForeignEvent extends \yii\db\ActiveRecord
             [['escort_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['escort_id' => 'id']],
             [['add_order_participant_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentOrder::class, 'targetAttribute' => ['add_order_participant_id' => 'id']],
             [['order_business_trip_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentOrder::class, 'targetAttribute' => ['order_business_trip_id' => 'id']],
+            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
+            [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['last_edit_id' => 'id']],
         ];
     }
 
@@ -129,5 +135,15 @@ class ForeignEvent extends \yii\db\ActiveRecord
     public function getOrganizer()
     {
         return $this->hasOne(Company::class, ['id' => 'organizer_id']);
+    }
+
+    public function getCreator()
+    {
+        return $this->hasOne(User::class, ['id' => 'creator_id']);
+    }
+
+    public function getLastEdit()
+    {
+        return $this->hasOne(User::class, ['id' => 'last_edit_id']);
     }
 }

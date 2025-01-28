@@ -63,8 +63,12 @@ class ForeignEventForm extends Model
 
     public string $squadParticipants;
 
-    /** @var SquadParticipantWork[] $squadParticipantsModel */
+    /**
+     * @var SquadParticipantWork[] $squadParticipantsModel
+     * @var ParticipantAchievementWork[] $oldAchievementsModel
+     */
     public array $squadParticipantsModel;
+    public array $oldAchievementsModel;
     public string $oldAchievements;
 
     // Изменяемые поля
@@ -74,17 +78,46 @@ class ForeignEventForm extends Model
     public $escort;
     public $orderBusinessTrip;
     public $isBusinessTrip;
+    public $lastEditId;
 
-    /** @var ParticipantAchievementWork[] $achievements */
+    /** @var ParticipantAchievementWork[] $newAchievements */
     public array $newAchievements;
 
-    public function __construct($foreignEventId, $config = [])
+    private ParticipantAchievementRepository $achievementRepository;
+    private OrderEventRepository $orderEventRepository;
+    private ForeignEventRepository $foreignEventRepository;
+    private SquadParticipantRepository $squadParticipantRepository;
+
+    public function __construct(
+        $foreignEventId,
+        ParticipantAchievementRepository $achievementRepository = null,
+        OrderEventRepository $orderEventRepository = null,
+        ForeignEventRepository $foreignEventRepository = null,
+        SquadParticipantRepository $squadParticipantRepository = null,
+        $config = [])
     {
         parent::__construct($config);
+        if (is_null($achievementRepository)) {
+            $achievementRepository = Yii::createObject(ParticipantAchievementRepository::class);
+        }
+        if (is_null($orderEventRepository)) {
+            $orderEventRepository = Yii::createObject(OrderEventRepository::class);
+        }
+        if (is_null($foreignEventRepository)) {
+            $foreignEventRepository = Yii::createObject(ForeignEventRepository::class);
+        }
+        if (is_null($squadParticipantRepository)) {
+            $squadParticipantRepository = Yii::createObject(SquadParticipantRepository::class);
+        }
+        $this->achievementRepository = $achievementRepository;
+        $this->orderEventRepository = $orderEventRepository;
+        $this->foreignEventRepository = $foreignEventRepository;
+        $this->squadParticipantRepository = $squadParticipantRepository;
+
         /** @var OrderEventWork $order */
         /** @var ForeignEventWork $event */
-        $event = (Yii::createObject(ForeignEventRepository::class))->get($foreignEventId);
-        $order = (Yii::createObject(OrderEventRepository::class))->get($event->order_participant_id);
+        $event = $this->foreignEventRepository->get($foreignEventId);
+        $order = $this->orderEventRepository->get($event->order_participant_id);
         $this->event = $event;
         $this->id = $foreignEventId;
         $this->name = $order->order_name;
@@ -98,14 +131,16 @@ class ForeignEventForm extends Model
         $this->minAge = $event->min_age;
         $this->maxAge = $event->max_age;
         $this->orderParticipant = $order;
-        $this->squadParticipantsModel = (Yii::createObject(SquadParticipantRepository::class))->getAllFromEvent($foreignEventId);
+        $this->squadParticipantsModel = $this->squadParticipantRepository->getAllFromEvent($foreignEventId);
         $this->squadParticipants = $this->fillActParticipants($foreignEventId);
         $this->oldAchievements = $this->fillOldAchievements($foreignEventId);
+        $this->oldAchievementsModel = $this->achievementRepository->getByForeignEvent($foreignEventId);
 
         $this->addOrderParticipant = $event->add_order_participant_id;
         $this->keyWords = $event->key_words;
         $this->escort = $event->escort_id;
         $this->orderBusinessTrip = $event->order_business_trip_id;
+        $this->lastEditId = Yii::$app->user->identity->getId();
     }
 
     public function fillActParticipants($foreignEventId)
@@ -182,7 +217,8 @@ class ForeignEventForm extends Model
                 ) . ' (педагог(-и): ' .
                 $item->actParticipantWork->getTeachersLink() .
                 ', отдел(-ы) для учета: ' .
-                $item->actParticipantWork->getBranches() . ')';
+                $item->actParticipantWork->getBranches() . ')' .
+                (is_null($item->actParticipantWork->team_name_id) ? '' : " - Команда {$item->actParticipantWork->getTeamName()}");
         }, $this->squadParticipantsModel);
 
         return implode('<br>', $mapped);
@@ -190,12 +226,13 @@ class ForeignEventForm extends Model
 
     public function getAchievementsLink()
     {
-        $mapped = array_map(function(SquadParticipantWork $item) {
-            return StringFormatter::stringAsLink(
-                $item->participantWork->getFIO(PeopleWork::FIO_FULL),
-                Url::to(['/dictionaries/foreign-event-participants/view', 'id' => $item->participant_id])
-            );
-        }, $this->squadParticipantsModel);
+        $mapped = array_map(function(ParticipantAchievementWork $item) {
+            return
+                $item->getPrettyType() . ': ' .
+                $item->actParticipantWork->getFormattedLinkedParticipants() . ' [' .
+                $item->actParticipantWork->getBranches() . '] — ' .
+                $item->achievement;
+        }, $this->oldAchievementsModel);
 
         return implode('<br>', $mapped);
     }
@@ -245,5 +282,14 @@ class ForeignEventForm extends Model
         }
 
         return FilesHelper::createFileLinks($this->event, $filetype, $addPath);
+    }
+
+    public function save()
+    {
+        $this->event->add_order_participant_id = $this->addOrderParticipant;
+        $this->event->key_words = $this->keyWords;
+        $this->event->order_business_trip_id = $this->orderBusinessTrip;
+        $this->event->last_edit_id = $this->lastEditId;
+        $this->foreignEventRepository->save($this->event);
     }
 }

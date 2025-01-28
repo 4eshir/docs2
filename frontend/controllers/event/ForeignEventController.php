@@ -60,6 +60,7 @@ class ForeignEventController extends DocumentController
             $this->service->attachAchievement($form);
             $this->service->getFilesInstances($form);
             $this->service->saveAchievementFileFromModel($form);
+            $form->save();
             $form->releaseEvents();
             return $this->redirect(['view', 'id' => $id]);
         }
