@@ -2,12 +2,14 @@
 
 namespace app\models\search;
 
+use app\models\work\order\DocumentOrderWork;
+use app\models\work\order\OrderTrainingWork;
 use frontend\models\search\SearchOrderMain;
 use app\models\work\order\OrderEventWork;
 use common\helpers\DateFormatter;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-class SearchOrderTraining extends SearchOrderMain
+class SearchOrderTraining extends OrderTrainingWork
 {
     const ORDER_TYPE = 3;
     public $fullNumber;
@@ -36,7 +38,7 @@ class SearchOrderTraining extends SearchOrderMain
     {
         $this->load($params);
         $query = OrderEventWork::find()
-            ->where(['type' => self::ORDER_TYPE])
+            ->where(['type' => DocumentOrderWork::ORDER_TRAINING])
             ->joinWith('bring');
         if ($this->Date !== '' && $this->Date !== null) {
             $dates = DateFormatter::splitDates($this->Date);
