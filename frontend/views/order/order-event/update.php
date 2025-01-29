@@ -5,7 +5,6 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model \app\models\work\order\OrderEventWork */
 /* @var $people */
-/* @var $modelResponsiblePeople */
 /* @var $foreignEventTable */
 /* @var $scanFile */
 /* @var $docFiles */
@@ -29,7 +28,6 @@ $this->params['breadcrumbs'][] = 'Редактирование';
     <?= $this->render('_form', [
             'model' => $model,
             'people' => $people,
-            'modelResponsiblePeople' => $modelResponsiblePeople,
             'scanFile' => $scanFile,
             'docFiles' => $docFiles,
             'foreignEventTable' => $foreignEventTable,

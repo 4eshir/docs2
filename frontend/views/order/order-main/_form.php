@@ -21,7 +21,6 @@ use yii\jui\DatePicker;
 /* @var $modelExpire */
 /* @var $orders */
 /* @var $regulations */
-/* @var $modelResponsiblePeople */
 /* @var $modelChangedDocuments */
 /* @var $scanFile */
 /* @var $docFiles */
@@ -85,10 +84,6 @@ use yii\jui\DatePicker;
         ?>
 
     </div>
-
-    <?php if (strlen($modelResponsiblePeople) > 10): ?>
-        <?= $modelResponsiblePeople; ?>
-    <?php endif; ?>
     <?= $form->field($model, "responsiblePeople")->widget(Select2::class, [
         'data' => ArrayHelper::map($people,'id','fullFio'),
         'size' => Select2::LARGE,
@@ -129,7 +124,6 @@ use yii\jui\DatePicker;
                         </div>
                         <div class="clearfix"></div>
                         <div class="panel-body">
-                            OK!!!
                             <?php
                             $params = [
                                 'class' => 'form-control pos',

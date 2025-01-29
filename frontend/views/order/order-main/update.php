@@ -9,7 +9,6 @@ use yii\helpers\Html;
 /* @var $modelExpire */
 /* @var $orders */
 /* @var $regulations */
-/* @var $modelResponsiblePeople */
 /* @var $modelChangedDocuments */
 /* @var $scanFile */
 /* @var $docFiles */
@@ -31,7 +30,6 @@ $this->params['breadcrumbs'][] = 'Редактирование';
         'modelExpire' => $modelExpire,
         'orders' => $orders,
         'regulations' => $regulations,
-        'modelResponsiblePeople' => $modelResponsiblePeople,
         'modelChangedDocuments' => $modelChangedDocuments,
         'scanFile' => $scanFile,
         'docFiles' => $docFiles,

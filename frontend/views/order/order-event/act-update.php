@@ -141,7 +141,9 @@ use yii\widgets\DetailView;
     <div class = "bordered-div" id = "acts">
         <h3>Акты участия</h3>
         <div class="panel-body">
-            <?php DynamicFormWidget::begin([
+            <?php
+            //не работает виджет, забыл убрать
+            DynamicFormWidget::begin([
                 'widgetContainer' => 'dynamicform_wrapper_act', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
                 'widgetBody' => '.container-items-act', // required: css class selector
                 'widgetItem' => '.item-act', // required: css class

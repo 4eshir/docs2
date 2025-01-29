@@ -14,11 +14,28 @@ class ExpireForm extends Model
     public $expireOrderId;
     public $docType;
     public $expireType;
-    public function attachAttributes(ExpireWork $model, $activeRegulationId, $expireRegulationId, $expireOrderId, $docType, $expireType){
-        $model->active_regulation_id = $activeRegulationId;
-        $model->expire_regulation_id = $expireRegulationId;
-        $model->expire_order_id = $expireOrderId;
-        $model->document_type = $docType;
-        $model->expire_type = $expireType;
+    public static function attachAttributes($activeRegulationId, $expireRegulationId, $expireOrderId, $docType, $expireType){
+        $model = new static();
+        if ($expireRegulationId == ""){
+            $expireRegulationId = NULL;
+        }
+        if ($expireType == ""){
+            $expireType = NULL;
+        }
+        if ($expireType == ""){
+            $expireType = NULL;
+        }
+        if ($activeRegulationId == ""){
+            $activeRegulationId = NULL;
+        }
+        if ($docType == ""){
+            $docType = NULL;
+        }
+        $model->activeRegulationId = $activeRegulationId;
+        $model->expireRegulationId = $expireRegulationId;
+        $model->expireOrderId = $expireOrderId;
+        $model->docType = $docType;
+        $model->expireType = $expireType;
+        return $model;
     }
 }

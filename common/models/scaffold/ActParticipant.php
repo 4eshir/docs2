@@ -8,7 +8,6 @@ use Yii;
  * @property int $id
  * @property int|null $teacher_id
  * @property int|null $teacher2_id
- * @property int $branch
  * @property int $focus
  * @property int $type
  * @property string $nomination
@@ -38,7 +37,7 @@ class ActParticipant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['teacher_id', 'teacher2_id', 'branch', 'focus', 'type', 'team_name_id', 'form', 'foreign_event_id', 'allow_remote'], 'integer'],
+            [['teacher_id', 'teacher2_id', 'focus', 'type', 'team_name_id', 'form', 'foreign_event_id', 'allow_remote'], 'integer'],
             [['focus', 'type', 'nomination', 'foreign_event_id'], 'required'],
             [['nomination'], 'string', 'max' => 1000],
             [['teacher_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['teacher_id' => 'id']],
@@ -57,7 +56,6 @@ class ActParticipant extends \yii\db\ActiveRecord
             'id' => 'ID',
             'teacher_id' => 'Teacher ID',
             'teacher2_id' => 'Teacher2 ID',
-            'branch' => 'Branch',
             'focus' => 'Focus',
             'type' => 'Type',
             'nomination' => 'Nomination',

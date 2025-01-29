@@ -13,7 +13,6 @@ use yii\jui\DatePicker;
 /* @var $docFiles */
 /* @var $teamList */
 /* @var $awardList */
-/* @var $modelResponsiblePeople */
 /* @var $foreignEventTable */
 /* @var $teamTable */
 /* @var $awardTable */

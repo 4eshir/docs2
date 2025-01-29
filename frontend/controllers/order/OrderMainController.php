@@ -1,16 +1,10 @@
 <?php
 namespace frontend\controllers\order;
-use app\components\DynamicWidget;
-use app\models\work\general\OrderPeopleWork;
-use app\models\work\order\DocumentOrderWork;
-use app\models\work\order\ExpireWork;
 use app\models\work\order\OrderMainWork;
+use app\services\order\DocumentOrderService;
 use app\services\order\OrderMainService;
-use common\controllers\DocumentController;
-use common\helpers\DateFormatter;
+use app\services\order\OrderPeopleService;
 use common\helpers\files\FilesHelper;
-use common\models\scaffold\OrderMain;
-use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\expire\ExpireRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\general\OrderPeopleRepository;
@@ -20,18 +14,14 @@ use common\repositories\order\DocumentOrderRepository;
 use common\repositories\regulation\RegulationRepository;
 use common\services\general\files\FileService;
 use common\repositories\order\OrderMainRepository;
-
 use DomainException;
 use frontend\events\general\FileDeleteEvent;
 use frontend\helpers\HeaderWizard;
 use frontend\models\forms\ExpireForm;
 use frontend\models\search\SearchOrderMain;
 use frontend\models\work\general\FilesWork;
-use frontend\models\work\general\PeopleStampWork;
-use frontend\models\work\regulation\RegulationWork;
-use PHPUnit\Util\Xml\ValidationResult;
 use yii;
-use yii\base\InvalidConfigException;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
 class OrderMainController extends Controller
@@ -39,6 +29,7 @@ class OrderMainController extends Controller
     private OrderMainRepository $repository;
     private DocumentOrderRepository $documentOrderRepository;
     private OrderMainService $service;
+    public DocumentOrderService $documentOrderService;
     private ExpireRepository $expireRepository;
     private PeopleStampRepository $peopleStampRepository;
     private OrderPeopleRepository $orderPeopleRepository;
@@ -46,6 +37,7 @@ class OrderMainController extends Controller
     private RegulationRepository $regulationRepository;
     private FileService $fileService;
     private FilesRepository $filesRepository;
+    private OrderPeopleService $orderPeopleService;
 
     public function __construct(
         $id,
@@ -53,6 +45,7 @@ class OrderMainController extends Controller
         OrderMainRepository $repository,
         DocumentOrderRepository $documentOrderRepository,
         OrderMainService $service,
+        DocumentOrderService $documentOrderService,
         FileService $fileService,
         ExpireRepository $expireRepository,
         FilesRepository $filesRepository,
@@ -60,10 +53,12 @@ class OrderMainController extends Controller
         OrderPeopleRepository $orderPeopleRepository,
         UserRepository $userRepository,
         RegulationRepository $regulationRepository,
+        OrderPeopleService $orderPeopleService,
         $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->service = $service;
+        $this->documentOrderService = $documentOrderService;
         $this->documentOrderRepository = $documentOrderRepository;
         $this->expireRepository = $expireRepository;
         $this->filesRepository = $filesRepository;
@@ -73,6 +68,7 @@ class OrderMainController extends Controller
         $this->userRepository = $userRepository;
         $this->regulationRepository = $regulationRepository;
         $this->repository = $repository;
+        $this->orderPeopleService = $orderPeopleService;
 
     }
     public function actionIndex(){
@@ -97,12 +93,10 @@ class OrderMainController extends Controller
             }
             $model->generateOrderNumber();
             $this->repository->save($model);
-            $this->service->getFilesInstances($model);
-
-            $this->service->addExpireEvent($modelExpire, $model);
-            //сделать
-            $this->service->addOrderPeopleEvent($respPeople, $model);
-            $this->service->saveFilesFromModel($model);
+            $this->documentOrderService->getFilesInstances($model);
+            $this->service->addExpireEvent($post["ExpireForm"], $model);
+            $this->orderPeopleService->addOrderPeopleEvent($post["OrderMainWork"]["responsiblePeople"], $model);
+            $this->documentOrderService->saveFilesFromModel($model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -119,43 +113,41 @@ class OrderMainController extends Controller
     {
         /* @var OrderMainWork $model */
         $model = $this->repository->get($id);
-        $bringPeople = $this->peopleRepository->getOrderedList();
+        $people = $this->peopleStampRepository->getAll();
         $post = Yii::$app->request->post();
-        $orders = OrderMainWork::find()->all();
-        $regulations = RegulationWork::find()->all();
-        $modelResponsiblePeople = $this->service->getResponsiblePeopleTable($model->id);
+        $orders = $this->documentOrderRepository->getAll();
+        $regulations = $this->regulationRepository->getOrderedList();
+        $users = $this->userRepository->getAll();
+        $modelExpire = [new ExpireForm()];
         $modelChangedDocuments = $this->service->getChangedDocumentsTable($model->id);
-        $tables = $this->service->getUploadedFilesTables($model);
+        $tables = $this->documentOrderService->getUploadedFilesTables($model);
+        $model->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'));
         if($model->load($post)){
-            $model->type = OrderMainWork::ORDER_MAIN;
-            $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
-            $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
-            $regulation = DynamicWidget::getData(basename(OrderMainWork::class), "regulations", $post);
-            $status = DynamicWidget::getData(basename(OrderMainWork::class), "status", $post);
             if(!$model->validate()){
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $this->repository->save($model);
-            $this->service->getFilesInstances($model);
-            $this->service->addExpireEvent($docs, $regulation, $status, $model);
-            $this->service->addOrderPeopleEvent($respPeople, $model);
-            $this->service->saveFilesFromModel($model);
+            $this->documentOrderService->getFilesInstances($model);
+            $this->orderPeopleService->updateOrderPeopleEvent(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
+                $post["OrderMainWork"]["responsiblePeople"], $model);
+            $this->service->addExpireEvent($post["ExpireForm"], $model);
+            $this->documentOrderService->saveFilesFromModel($model);
             $model->releaseEvents();
-            return $this->redirect(['update', 'id' => $model->id]);
+            return $this->redirect(['view', 'id' => $model->id]);
         }
         return $this->render('update', [
             'orders' => $orders,
             'model' => $model,
-            'bringPeople' => $bringPeople,
+            'people' => $people,
+            'users' => $users,
+            'modelExpire' => $modelExpire,
             'regulations' => $regulations,
-            'modelResponsiblePeople' => $modelResponsiblePeople,
             'modelChangedDocuments' => $modelChangedDocuments,
             'scanFile' => $tables['scan'],
             'docFiles' => $tables['docs'],
         ]);
     }
     public function actionDelete($id){
-        
         $model = $this->repository->get($id);
         $number = $model->order_number;
         if ($model) {
@@ -169,7 +161,7 @@ class OrderMainController extends Controller
     }
     public function actionView($id){
         $modelResponsiblePeople = implode('<br>',
-            $this->service->createOrderPeopleArray(
+            $this->documentOrderService->createOrderPeopleArray(
                 $this->orderPeopleRepository->getResponsiblePeople($id)
             )
         );
@@ -212,11 +204,6 @@ class OrderMainController extends Controller
         catch (DomainException $e) {
             return 'Oops! Something wrong';
         }
-    }
-    public function actionDeletePeople($id, $modelId)
-    {
-        $this->orderPeopleRepository->deleteByPeopleId($id);
-        return $this->redirect(['update', 'id' => $modelId]);
     }
     public function actionDeleteDocument($id, $modelId)
     {

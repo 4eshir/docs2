@@ -23,13 +23,12 @@ class ActParticipantWork extends ActParticipant
 {
     use EventTrait;
     public $actFiles;
-
+    public $branch;
     public static function fill(
         $teacherId,
         $teacher2Id,
         $teamNameId,
         $foreignEventId,
-        $branch,
         $focus,
         $type,
         $allowRemote,
@@ -40,7 +39,6 @@ class ActParticipantWork extends ActParticipant
         $entity->teacher_id = $teacherId;
         $entity->teacher2_id = $teacher2Id;
         $entity->team_name_id = $teamNameId;
-        $entity->branch = $branch;
         $entity->focus = $focus;
         $entity->type = $type;
         $entity->nomination = $nomination;
@@ -54,7 +52,6 @@ class ActParticipantWork extends ActParticipant
         $teacher2Id,
         $teamNameId,
         $foreignEventId,
-        $branch,
         $focus,
         $type,
         $allowRemote,
@@ -65,7 +62,6 @@ class ActParticipantWork extends ActParticipant
         $this->teacher_id = $teacherId;
         $this->teacher2_id = $teacher2Id;
         $this->team_name_id = $teamNameId;
-        $this->branch = $branch;
         $this->focus = $focus;
         $this->type = $type;
         $this->nomination = $nomination;
@@ -139,7 +135,12 @@ class ActParticipantWork extends ActParticipant
     }
 
     public function getBranchName(){
-        return Yii::$app->branches->get($this->branch);
+        $actsBranch = ActParticipantBranchWork::find()->where(['act_participant_id' => $this->id])->all();
+        $fullBranch = '';
+        foreach($actsBranch as $actBranch){
+            $fullBranch = $fullBranch . ' ' . Yii::$app->branches->get($actBranch->branch);
+        }
+        return $fullBranch;
     }
 
     public function getFormName(){
