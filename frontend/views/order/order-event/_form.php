@@ -751,20 +751,29 @@ use yii\jui\DatePicker;
                         <div class="panel-body">
                             <div class="row">
                                 <div id = "form-<?=$i?>" hidden>
-                                    <div>
-                                        <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::classname(), [
-                                                'data' => ArrayHelper::map($participants,'id','fullFio'),
-                                                'size' => Select2::LARGE,
-                                                'options' => [
-                                                        'prompt' => 'Выберите участника' ,
-                                                    'multiple' => true
-                                                ],
-                                                'pluginOptions' => [
-                                                    'allowClear' => true
-                                                ],
-                                            ])->label('ФИО участника'); ?>
+                                    <div class="container personal-dropdown-list">
+                                        <?php
+                                        $params = [
+                                            'id' => 'personalParticipantDropdown',
+                                            'class' => 'form-control pos personalDropDownList',
+                                            'prompt' => '---Выберите участника---',
+                                        ];
+                                        echo $form->field($modelAct, "[{$i}]personalParticipants[]")->dropDownList(ArrayHelper::map($participants,'id','fullFio'), $params)->label('ФИО участника');
+                                        ?>
                                     </div>
+
                                     <div class="container team-dropdown-list">
+                                        <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::class, [
+                                            'data' => ArrayHelper::map($participants,'id','fullFio'),
+                                            'size' => Select2::LARGE,
+                                            'options' => [
+                                                'prompt' => 'Выберите участника' ,
+                                                'multiple' => true
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ])->label('ФИО участников'); ?>
                                         В составе команды<br>
                                         <?php
                                         $params = [
@@ -923,9 +932,13 @@ use yii\jui\DatePicker;
 </script>
 <script>
     function updateTeamDropdownList() {
-        const divs = document.querySelectorAll('div.team-dropdown-list');
+        var divs = document.querySelectorAll('div.team-dropdown-list');
         divs.forEach((div, index) => {
             div.id = `team-dropdown-list-${index + 1}`; // Уникальное имя с индексом
+        });
+        divs = document.querySelectorAll('div.personal-dropdown-list');
+        divs.forEach((div, index) => {
+            div.id = `personal-dropdown-list-${index + 1}`; // Уникальное имя с индексом
         });
         requestAnimationFrame(updateTeamDropdownList);
     }
@@ -962,24 +975,28 @@ use yii\jui\DatePicker;
             let extractedIndex = index[1];
             extractedIndex++;
             var teamDropdownList = document.getElementById(`team-dropdown-list-${extractedIndex}`);
+            var personalDropDownList = document.getElementById(`personal-dropdown-list-${extractedIndex}`);
             var formList = document.getElementById(`form-${extractedIndex - 1}--0`);
             if(formList != null) {
                 if (radio.value === '0') {
                     teamDropdownList.hidden = true;
-
+                    personalDropDownList.hidden = false;
                     formList.hidden = false;
                 } else if (radio.value === '1') {
                     formList.hidden = false;
                     teamDropdownList.hidden = false;
+                    personalDropDownList.hidden = true;
                 }
             }
             var firstList = document.getElementById(`form-${extractedIndex - 1}`);
             if(firstList != null) {
                 if (radio.value === '0') {
                     teamDropdownList.hidden = true;
+                    personalDropDownList.hidden = false;
                     firstList.hidden = false;
                 } else if (radio.value === '1') {
                     teamDropdownList.hidden = false;
+                    personalDropDownList.hidden = true;
                     firstList.hidden = false;
                 }
             }

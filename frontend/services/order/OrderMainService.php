@@ -18,6 +18,7 @@ use frontend\events\expire\ExpireCreateEvent;
 use frontend\events\general\FileCreateEvent;
 use frontend\events\general\OrderPeopleCreateEvent;
 use frontend\events\general\OrderPeopleDeleteEvent;
+use frontend\models\forms\ExpireForm;
 use frontend\models\work\document_in_out\DocumentInWork;
 use frontend\models\work\regulation\RegulationWork;
 use Yii;
@@ -159,11 +160,24 @@ class OrderMainService {
         $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
         $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
     }
-    public function addExpireEvent($docs, $regulation, $status, $model) {
-        $old_docs = $docs;
-        $old_regulation = $regulation;
-        $docs = array_unique($docs);
-        $regulation = array_unique($regulation);
+    public function addExpireEvent($expires, OrderMainWork $model) {
+        /* @var ExpireForm $expire */
+        foreach ($expires as $expire) {
+            var_dump($expire);
+            /*if (!($expire->expire_order_id != NULL && $expire->expire_regulation_id != NULL)
+                && $this->expireRepository->checkUnique($model->id, $expire->active_regulation_id, $expire->expire_order_id, $expire->document_type, $expire->expire_type))
+            {
+                $model->recordEvent(new ExpireCreateEvent(
+                    $model->id, $expire->active_regulation_id, $expire->expire_order_id, $expire->document_type, $expire->expire_type
+                ), ExpireWork::class);
+            }*/
+        }
+
+
+
+
+
+        /*
         foreach ($docs as $doc) {
             $index = $this->getIndexByElement($old_docs, $doc);
             if ($doc != NULL && $status[$index] != NULL && $doc != $model->id) {
@@ -183,7 +197,7 @@ class OrderMainService {
                         $reg, NULL, 1, $status[$index]), ExpireWork::class);
                 }
             }
-        }
+        }*/
     }
     public function getIndexByElement($array, $element)
     {

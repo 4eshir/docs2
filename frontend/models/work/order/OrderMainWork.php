@@ -6,30 +6,22 @@ use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\OrderNumberHelper;
+use common\models\scaffold\DocumentOrder;
 use common\models\scaffold\OrderMain;
 use common\models\scaffold\People;
+use common\models\scaffold\PeopleStamp;
 use common\repositories\order\OrderMainRepository;
+use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 use Yii;
-
-/**
- * @property PeopleWork $correspondentWork
- * @property PeopleWork $creatorWork
- * @property PeopleWork $lastUpdateWork
- * @property PeopleWork $executorWork
- * @property PeopleWork $bringWork
- *
- *
- */
-class OrderMainWork extends OrderMain
+class OrderMainWork extends DocumentOrderWork
 {
     use EventTrait;
-
-
     /**
      * Имена файлов для сохранения в БД
      */
+    public $responsiblePeople;
     public $names;
     public $orders;
     public $status;
@@ -107,39 +99,21 @@ class OrderMainWork extends OrderMain
            return $this->bring_id;
         }
     }
-    public function getResponsiblePeople($post)
-    {
-        return $post["OrderMainWork"]["names"];
-    }
-    public function getDocumentExpire($post)
-    {
-
-        return $post["OrderMainWork"]["orders"];
-    }
-    public function getRegulationExpire($post)
-    {
-
-        return $post["OrderMainWork"]["regulations"];
-    }
-    public function getStatusExpire($post)
-    {
-        return $post["OrderMainWork"]["radio"];
-    }
     public function getCreatorWork()
     {
-        return PeopleWork::findOne($this->creator_id);
+        return PeopleStampWork::findOne($this->creator_id);
     }
     public function getLastUpdateWork()
     {
-        return PeopleWork::findOne($this->last_edit_id);
+        return PeopleStampWork::findOne($this->last_edit_id);
     }
     public function getBringWork()
     {
-        return PeopleWork::findOne($this->bring_id);
+        return PeopleStampWork::findOne($this->bring_id);
     }
     public function getExecutorWork()
     {
-        return PeopleWork::findOne($this->executor_id);
+        return PeopleStampWork::findOne($this->executor_id);
     }
     public function getExecutorName()
     {
@@ -204,7 +178,8 @@ class OrderMainWork extends OrderMain
     public function beforeValidate()
     {
         $this->order_copy_id = 1;
+        $this->type = DocumentOrderWork::ORDER_MAIN;
         $this->order_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
-        return parent::beforeValidate(); 
+        return parent::beforeValidate();
     }
 }

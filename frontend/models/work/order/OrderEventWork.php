@@ -3,11 +3,9 @@
 namespace app\models\work\order;
 
 use common\events\EventTrait;
-use common\helpers\files\FilesHelper;
-use common\models\scaffold\OrderMain;
-use InvalidArgumentException;
+use common\models\scaffold\DocumentOrder;
 
-class OrderEventWork extends OrderMainWork
+class OrderEventWork extends DocumentOrderWork
 {
     use EventTrait;
     public $actFiles;

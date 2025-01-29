@@ -86,15 +86,21 @@ class ActParticipantService
         $index = 0;
         foreach ($acts as $act){
             if(
-                $act["participant"] != NULL &&
+                ($act["participant"] != NULL || $act['personalParticipant']) &&
                 $act["nomination"] != NULL &&
                 $act["focus"] != NULL &&
                 $act["form"] != NULL &&
                 ($act["firstTeacher"] != NULL || $act["secondTeacher"] != NULL) &&
                 $act["type"] != NULL
             ) {
+                if($act["type"] == 0) {
+                    $participants = $act['personalParticipant'];
+                }
+                if($act["type"] == 1) {
+                    $participants = $act["participant"];
+                }
                 $modelActParticipantForm = ActParticipantForm::fill(
-                    $act["participant"],
+                    $participants,
                     $act["firstTeacher"],
                     $act["secondTeacher"],
                     $act["branch"],
@@ -130,7 +136,6 @@ class ActParticipantService
                 if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
                     $this->actParticipantRepository->save($modelAct);
                 }
-                var_dump($act["branch"], $modelAct->id );
                 if ($modelAct->id != NULL) {
                     $this->saveFilesFromModel($modelAct, $index);
                     $modelAct->releaseEvents();

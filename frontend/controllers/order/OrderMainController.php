@@ -2,6 +2,8 @@
 namespace frontend\controllers\order;
 use app\components\DynamicWidget;
 use app\models\work\general\OrderPeopleWork;
+use app\models\work\order\DocumentOrderWork;
+use app\models\work\order\ExpireWork;
 use app\models\work\order\OrderMainWork;
 use app\services\order\OrderMainService;
 use common\controllers\DocumentController;
@@ -12,14 +14,20 @@ use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\expire\ExpireRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\general\OrderPeopleRepository;
+use common\repositories\general\PeopleStampRepository;
+use common\repositories\general\UserRepository;
+use common\repositories\order\DocumentOrderRepository;
+use common\repositories\regulation\RegulationRepository;
 use common\services\general\files\FileService;
 use common\repositories\order\OrderMainRepository;
 
 use DomainException;
 use frontend\events\general\FileDeleteEvent;
 use frontend\helpers\HeaderWizard;
+use frontend\models\forms\ExpireForm;
 use frontend\models\search\SearchOrderMain;
 use frontend\models\work\general\FilesWork;
+use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\regulation\RegulationWork;
 use PHPUnit\Util\Xml\ValidationResult;
 use yii;
@@ -29,10 +37,13 @@ use yii\web\Controller;
 class OrderMainController extends Controller
 {
     private OrderMainRepository $repository;
+    private DocumentOrderRepository $documentOrderRepository;
     private OrderMainService $service;
     private ExpireRepository $expireRepository;
-    private PeopleRepository $peopleRepository;
+    private PeopleStampRepository $peopleStampRepository;
     private OrderPeopleRepository $orderPeopleRepository;
+    private UserRepository $userRepository;
+    private RegulationRepository $regulationRepository;
     private FileService $fileService;
     private FilesRepository $filesRepository;
 
@@ -40,21 +51,27 @@ class OrderMainController extends Controller
         $id,
         $module,
         OrderMainRepository $repository,
+        DocumentOrderRepository $documentOrderRepository,
         OrderMainService $service,
         FileService $fileService,
         ExpireRepository $expireRepository,
         FilesRepository $filesRepository,
-        PeopleRepository $peopleRepository,
+        PeopleStampRepository $peopleStampRepository,
         OrderPeopleRepository $orderPeopleRepository,
+        UserRepository $userRepository,
+        RegulationRepository $regulationRepository,
         $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->service = $service;
+        $this->documentOrderRepository = $documentOrderRepository;
         $this->expireRepository = $expireRepository;
         $this->filesRepository = $filesRepository;
         $this->fileService = $fileService;
-        $this->peopleRepository = $peopleRepository;
+        $this->peopleStampRepository = $peopleStampRepository;
         $this->orderPeopleRepository = $orderPeopleRepository;
+        $this->userRepository = $userRepository;
+        $this->regulationRepository = $regulationRepository;
         $this->repository = $repository;
 
     }
@@ -68,33 +85,34 @@ class OrderMainController extends Controller
     }
     public function actionCreate(){
         $model = new OrderMainWork();
-        $bringPeople = $this->peopleRepository->getOrderedList();
+        $people = $this->peopleStampRepository->getAll();
+        $users = $this->userRepository->getAll();
+        $orders = $this->documentOrderRepository->getAll();
+        $regulations = $this->regulationRepository->getOrderedList();
+        $modelExpire = [new ExpireForm()];
         $post = Yii::$app->request->post();
-        $orders = OrderMainWork::find()->all();
-        $regulations = RegulationWork::find()->all();
         if ($model->load($post)) {
-            $model->type = OrderMainWork::ORDER_MAIN;
-            $model->generateOrderNumber();
-            $respPeople = DynamicWidget::getData(basename(OrderMainWork::class), "names", $post);
-            $docs = DynamicWidget::getData(basename(OrderMainWork::class), "orders", $post);
-            $regulation = DynamicWidget::getData(basename(OrderMainWork::class), "regulations", $post);
-            $status = DynamicWidget::getData(basename(OrderMainWork::class), "status", $post);
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
+            $model->generateOrderNumber();
             $this->repository->save($model);
             $this->service->getFilesInstances($model);
-            $this->service->addExpireEvent($docs, $regulation,$status ,$model);
+
+            $this->service->addExpireEvent($modelExpire, $model);
+            //сделать
             $this->service->addOrderPeopleEvent($respPeople, $model);
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
         return $this->render('create', [
-            'orders' => $orders,
             'model' => $model,
-            'bringPeople' => $bringPeople,
-            'regulations' => $regulations,
+            'people' => $people,
+            'users' => $users,
+            'modelExpire' => $modelExpire,
+            'orders' => $orders,
+            'regulations' => $regulations
         ]);
     }
     public function actionUpdate($id)

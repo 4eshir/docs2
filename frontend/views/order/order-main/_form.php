@@ -4,6 +4,8 @@ use app\components\DropDownDocument;
 use app\components\DropDownResponsiblePeopleWidget;
 use app\components\DynamicWidget;
 use app\models\work\order\OrderMainWork;
+use kartik\select2\Select2;
+use kidzen\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
@@ -13,13 +15,16 @@ use yii\jui\DatePicker;
 /* @var $this yii\web\View */
 /* @var $model OrderMainWork */
 /* @var $form yii\widgets\ActiveForm */
-/* @var $bringPeople */
-/* @var $scanFile */
-/* @var $docFiles */
+/* @var $people */
+/* @var $users */
+
+/* @var $modelExpire */
 /* @var $orders */
 /* @var $regulations */
 /* @var $modelResponsiblePeople */
 /* @var $modelChangedDocuments */
+/* @var $scanFile */
+/* @var $docFiles */
 ?>
 <style>
     .bordered-div {
@@ -30,7 +35,7 @@ use yii\jui\DatePicker;
     }
 </style>
 <div class="order-main-form">
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
         'dateFormat' => 'php:d.m.Y',
         'language' => 'ru',
@@ -62,7 +67,7 @@ use yii\jui\DatePicker;
         ];
         echo $form
             ->field($model, 'bring_id')
-            ->dropDownList(ArrayHelper::map($bringPeople, 'id', 'fullFio'), $params)
+            ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
             ->label('Проект вносит');
         ?>
     </div>
@@ -75,7 +80,7 @@ use yii\jui\DatePicker;
         ];
         echo $form
             ->field($model, 'executor_id')
-            ->dropDownList(ArrayHelper::map($bringPeople, 'id', 'fullFio'), $params)
+            ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
             ->label('Кто исполняет');
         ?>
 
@@ -84,104 +89,74 @@ use yii\jui\DatePicker;
     <?php if (strlen($modelResponsiblePeople) > 10): ?>
         <?= $modelResponsiblePeople; ?>
     <?php endif; ?>
-
-
-    <div class="bordered-div">
-        <?php DynamicWidget::begin([
-            'widgetContainer' => 'dynamicform_wrapper',
-            'widgetBody' => '.container-items',
-            'widgetItem' => '.item',
-            'model' => $model,
-            'formId' => 'dynamic-form',
-            'formFields' => ['order_name'],
-        ]); ?>
-        <div class="container-items">
-            <h5 class="panel-title pull-left">Ответственные</h5><!-- widgetBody -->
-            <div class="pull-right">
-                <button type="button" class="add-item btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
-            </div>
-            <div class="item panel panel-default" id = "item"><!-- widgetItem -->
-                <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
-                <div class="panel-heading">
-                    <div class="clearfix"></div>
-                </div>
-                <div class = "form-label">
-                    <div class="panel-body">
-                        <?php
-                        $params = [
-                            'id' => 'names',
-                            'class' => 'form-control pos',
-                            'prompt' => '---',
-                        ];
-                        echo $form
-                            ->field($model, 'names[]')
-                            ->dropDownList(ArrayHelper::map($bringPeople, 'id', 'fullFio'), $params)
-                            ->label('Ответственные');
-                        ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <?php
-        DynamicWidget::end()
-        ?>
-    </div>
+    <?= $form->field($model, "responsiblePeople")->widget(Select2::class, [
+        'data' => ArrayHelper::map($people,'id','fullFio'),
+        'size' => Select2::LARGE,
+        'options' => [
+            'prompt' => 'Выберите ответственного' ,
+            'multiple' => true
+        ],
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ])->label('ФИО ответственного'); ?>
     <?php if (strlen($modelChangedDocuments) > 10): ?>
         <?= $modelChangedDocuments; ?>
     <?php endif; ?>
     <div class="bordered-div">
-        <?php DynamicWidget::begin([
-            'widgetContainer' => 'dynamicform_wrapper',
-            'widgetBody' => '.container-items',
-            'widgetItem' => '.item',
-            'model' => $model,
+        <?php DynamicFormWidget::begin([
+            'widgetContainer' => 'dynamicform_wrapper_act', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
+            'widgetBody' => '.container-items-act', // required: css class selector
+            'widgetItem' => '.item-act', // required: css class
+            'limit' => 20, // the maximum times, an element can be cloned (default 999)
+            'min' => 1,
+            'insertButton' => '.add-item-act', // css class
+            'deleteButton' => '.remove-item-act', // css class
+            'model' => $modelExpire[0],
             'formId' => 'dynamic-form',
-            'formFields' => ['order_name'],
+            'formFields' => [
+                'full_name',
+            ],
         ]); ?>
-
-        <div class="container-items">
-            <h5 class="panel-title pull-left">Изменение документов</h5><!-- widgetBody -->
-            <div class="pull-right">
-                <button type="button" class="add-item btn btn-success btn-xs" onclick = updateName()><span class="glyphicon glyphicon-plus"></span></button>
-            </div>
-            <div class="item panel panel-default" id = "item"><!-- widgetItem -->
-                <button type="button" class="remove-item btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
-                <div class="panel-heading">
-                    <div class="clearfix"></div>
-                </div>
-                <div class = "form-label">
-                    <div class="panel-body">
-                        <?php
-                        $params = [
-                            'id' => 'names',
-                            'class' => 'form-control pos',
-                            'prompt' => '---',
-                        ];
-                        echo $form
-                            ->field($model, 'orders[]')
-                            ->dropDownList(ArrayHelper::map($orders, 'id', 'orderName'), $params)
-                            ->label('Приказ');
-                        echo $form
-                            ->field($model, 'regulations[]')
-                            ->dropDownList(ArrayHelper::map($regulations, 'id', 'name'), $params)
-                            ->label('Положение');
-                        echo $form
-                            ->field($model, 'status[]') // Используем обычный статус
-                            ->dropDownList([
-                                '1' => 'Утратило силу',
-                                '2' => 'Изменено',
-                            ], [
-                                'prompt' => '---', // Подсказка для выбора
-                            ])
-                            ->label('Статус');
-                        ?>
+        <div class="container-items-act"><!-- widgetContainer -->
+            <?php foreach ($modelExpire as $i => $expire): ?>
+                <div class="item-act panel panel-default"><!-- widgetBody -->
+                    <div class="panel-heading">
+                        <h3 class="panel-title pull-left"></h3>
+                        <div class="pull-right">
+                            <button type="button" class="add-item-act btn btn-success btn-xs" ><i class="glyphicon glyphicon-plus">+</i></button>
+                            <button type="button" class="remove-item-act btn btn-danger btn-xs"><i class="glyphicon glyphicon-minus">-</i></button>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="panel-body">
+                            OK!!!
+                            <?php
+                            $params = [
+                                'class' => 'form-control pos',
+                                'prompt' => '---',
+                            ];
+                            echo $form
+                                ->field($expire, "[{$i}]expireOrderId")
+                                ->dropDownList(ArrayHelper::map($orders, 'id', 'fullOrderName'), $params)
+                                ->label('Приказ');
+                            echo $form
+                                ->field($expire, "[{$i}]expireRegulationId")
+                                ->dropDownList(ArrayHelper::map($regulations, 'id', 'name'), $params)
+                                ->label('Положение');
+                            echo $form
+                                ->field($expire, "[{$i}]expireType") // Используем обычный статус
+                                ->dropDownList([
+                                    '1' => 'Утратило силу',
+                                    '2' => 'Изменено',
+                                ], $params)
+                                ->label('Статус');
+                            ?>
+                        </div>
                     </div>
                 </div>
-            </div>
+            <?php endforeach; ?>
         </div>
-        <?php
-        DynamicWidget::end()
-        ?>
+        <?php DynamicFormWidget::end(); ?>
     </div>
     <?= $form->field($model, 'key_words')->textInput(['maxlength' => true])->label('Ключевые слова') ?>
     <div class="panel-body" style="padding: 0; margin: 0"></div>

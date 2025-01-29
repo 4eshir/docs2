@@ -42,7 +42,8 @@ class ExpireCreateEvent implements EventInterface
                 $this->expire_regulation_id ,
                 $this->expire_order_id ,
                 $this->document_type ,
-                $this->expire_type)
+                $this->expire_type
+            )
         ];
     }
 }
