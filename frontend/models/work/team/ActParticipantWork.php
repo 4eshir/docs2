@@ -18,6 +18,7 @@ use yii\helpers\Url;
 /**
  * @property PeopleStampWork $teacherWork
  * @property PeopleStampWork $teacher2Work
+ * @property TeamNameWork $teamNameWork
  */
 class ActParticipantWork extends ActParticipant
 {
@@ -92,7 +93,7 @@ class ActParticipantWork extends ActParticipant
 
     public function getParticipants(){
         $participants = [];
-        $squadParticipants = SquadParticipant::findAll(['act_participant' => $this->id]);
+        $squadParticipants = SquadParticipantWork::findAll(['act_participant' => $this->id]);
         foreach($squadParticipants as $squadParticipant){
             $person = PeopleWork::findOne($squadParticipant["participant_id"]);
             $participants[] = $person['surname'] . ' ' . $person['firstname'] . ' ' . $person['patronymic']. "\n";
@@ -152,16 +153,11 @@ class ActParticipantWork extends ActParticipant
         if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
             throw new InvalidArgumentException('Неизвестный тип файла');
         }
+
         $addPath = '';
         switch ($filetype) {
-            case FilesHelper::TYPE_SCAN:
-                $addPath = FilesHelper::createAdditionalPath($this::tableName(), FilesHelper::TYPE_SCAN);
-                break;
-            case FilesHelper::TYPE_DOC:
-                $addPath = FilesHelper::createAdditionalPath($this::tableName(), FilesHelper::TYPE_DOC);
-                break;
-            case FilesHelper::TYPE_APP:
-                $addPath = FilesHelper::createAdditionalPath($this::tableName(), FilesHelper::TYPE_APP);
+            case FilesHelper::TYPE_MATERIAL:
+                $addPath = FilesHelper::createAdditionalPath($this::tableName(), FilesHelper::TYPE_MATERIAL);
                 break;
         }
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
@@ -204,6 +200,11 @@ class ActParticipantWork extends ActParticipant
     public function getTeacherWork()
     {
         return $this->hasOne(PeopleStampWork::class, ['id' => 'teacher_id']);
+    }
+
+    public function getTeamNameWork()
+    {
+        return $this->hasOne(TeamNameWork::class, ['id' => 'team_name_id']);
     }
 
     public function getTeacher2Work()

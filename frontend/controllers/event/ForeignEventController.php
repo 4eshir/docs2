@@ -8,6 +8,8 @@ use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\order\OrderEventRepository;
 use common\services\general\files\FileService;
+use DomainException;
+use frontend\forms\event\EventParticipantForm;
 use frontend\forms\event\ForeignEventForm;
 use frontend\models\search\SearchForeignEvent;
 use frontend\models\work\event\ParticipantAchievementWork;
@@ -78,6 +80,28 @@ class ForeignEventController extends DocumentController
     {
         $form = new ForeignEventForm($id);
         return $this->render('view',[
+            'model' => $form
+        ]);
+    }
+
+    public function actionUpdateParticipant($actId)
+    {
+        $form = new EventParticipantForm($actId);
+
+        if ($form->load(Yii::$app->request->post())) {
+            if (!$form->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($form->getErrors()));
+            }
+
+            $this->service->getParticipantFilesInstances($form);
+            $this->service->saveParticipantFileFromModel($form);
+            $form->save();
+            $form->releaseEvents();
+
+            return $this->redirect(['update', 'id' => $actId]);
+        }
+
+        return $this->render('update-participant', [
             'model' => $form
         ]);
     }

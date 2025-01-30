@@ -14,6 +14,7 @@ use common\repositories\act_participant\ActParticipantRepository;
 use common\services\general\files\FileService;
 use frontend\events\foreign_event\ParticipantAchievementEvent;
 use frontend\events\general\FileCreateEvent;
+use frontend\forms\event\EventParticipantForm;
 use frontend\forms\event\ForeignEventForm;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
@@ -33,11 +34,6 @@ class ForeignEventService
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
         $this->actParticipantRepository = $actParticipantRepository;
-    }
-
-    public function getFilesInstances(ForeignEventForm $form)
-    {
-        $form->doc = UploadedFile::getInstance($form, 'doc');
     }
 
     public function saveAchievementFileFromModel(ForeignEventForm $model)
@@ -63,6 +59,33 @@ class ForeignEventService
                     FilesHelper::LOAD_TYPE_SINGLE
                 ),
                 get_class($model)
+            );
+        }
+    }
+
+    public function saveParticipantFileFromModel(EventParticipantForm $model)
+    {
+        if ($model->fileMaterial !== null) {
+            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_MATERIAL);
+
+            $this->fileService->uploadFile(
+                $model->fileMaterial,
+                $filename,
+                [
+                    'tableName' => ActParticipantWork::tableName(),
+                    'fileType' => FilesHelper::TYPE_MATERIAL
+                ]
+            );
+
+            $model->recordEvent(
+                new FileCreateEvent(
+                    ForeignEventWork::tableName(),
+                    $model->actParticipant->id,
+                    FilesHelper::TYPE_MATERIAL,
+                    $filename,
+                    FilesHelper::LOAD_TYPE_SINGLE
+                ),
+                get_class($model->actParticipant)
             );
         }
     }
@@ -103,5 +126,15 @@ class ForeignEventService
                 get_class($participantAchievement)
             );
         }
+    }
+
+    public function getFilesInstances(ForeignEventForm $form)
+    {
+        $form->doc = UploadedFile::getInstance($form, 'doc');
+    }
+
+    public function getParticipantFilesInstances(EventParticipantForm $form)
+    {
+        $form->fileMaterial = UploadedFile::getInstance($form, 'fileMaterial');
     }
 }

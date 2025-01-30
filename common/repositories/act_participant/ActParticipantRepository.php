@@ -3,6 +3,7 @@
 namespace common\repositories\act_participant;
 
 use app\models\work\event\ForeignEventWork;
+use app\models\work\team\ActParticipantBranchWork;
 use app\models\work\team\ActParticipantWork;
 use app\models\work\team\SquadParticipantWork;
 use common\models\scaffold\ActParticipant;
@@ -54,6 +55,11 @@ class ActParticipantRepository
             ->all();
     }
 
+    public function getParticipantBranches($actId)
+    {
+        return ActParticipantBranchWork::find()->where(['act_participant_id' => $actId])->all();
+    }
+
     public function getByTypeAndForeignEventId($foreignEventId, $type)
     {
         return ActParticipantWork::find()->andWhere(['foreign_event_id' => $foreignEventId])->andWhere(['type' => $type])->all();
@@ -70,7 +76,7 @@ class ActParticipantRepository
             ->all());
     }
 
-    public function getById($id)
+    public function get($id)
     {
         return ActParticipantWork::findOne($id);
     }

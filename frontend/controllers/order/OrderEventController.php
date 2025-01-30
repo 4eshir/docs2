@@ -274,7 +274,7 @@ class OrderEventController extends DocumentController
     public function actionAct($id)
     {
         /* @var $act ActParticipantWork */
-        $act = [$this->actParticipantRepository->getById($id)];
+        $act = [$this->actParticipantRepository->get($id)];
         if($act[0] == NULL){
             return $this->redirect(['index']);
         }
@@ -325,7 +325,7 @@ class OrderEventController extends DocumentController
     }
     public function actionActDelete($id)
     {
-        $model = $this->actParticipantRepository->getById($id);
+        $model = $this->actParticipantRepository->get($id);
         $foreignEvent = $this->foreignEventRepository->get($model->foreign_event_id);
         $order = $this->orderEventRepository->get($foreignEvent->order_participant_id);
         $this->actParticipantRepository->delete($model);

@@ -25,6 +25,7 @@ class FilesHelper
     const TYPE_PRESENTATION = 'presentation';
     const TYPE_WORK = 'work';
     const TYPE_PARTICIPATION = 'participation';
+    const TYPE_MATERIAL = 'material';
 
     const FILE_SERVER = 'server';
     const FILE_YADI = 'yadi';
@@ -46,6 +47,7 @@ class FilesHelper
             self::TYPE_MAIN => 'Основные документы',
             self::TYPE_CONTRACT => 'Файлы договоров',
             self::TYPE_PRESENTATION => 'Презентационные материалы',
+            self::TYPE_MATERIAL => 'Представленные материалы',
             self::TYPE_WORK => 'Рабочие материалы',
         ];
     }
