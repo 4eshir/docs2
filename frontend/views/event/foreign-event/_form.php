@@ -171,13 +171,13 @@ use yii\jui\DatePicker;
     <div class="panel-body">
         <?php
             DynamicFormWidget::begin([
-                'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-                'widgetBody' => '.container-items', // required: css class selector
-                'widgetItem' => '.item', // required: css class
-                'limit' => 20, // the maximum times, an element can be cloned (default 999)
-                'min' => 1, // 0 or 1 (default 1)
-                'insertButton' => '.add-item', // css class
-                'deleteButton' => '.remove-item', // css class
+                'widgetContainer' => 'dynamicform_wrapper',
+                'widgetBody' => '.container-items',
+                'widgetItem' => '.item',
+                'limit' => 20,
+                'min' => 1,
+                'insertButton' => '.add-item',
+                'deleteButton' => '.remove-item',
                 'model' => $modelAchievements[0],
                 'formId' => 'dynamic-form',
                 'formFields' => [
@@ -258,7 +258,7 @@ use yii\jui\DatePicker;
         ?>
     </div>
 
-    <div id="divOrderTrip" <?php echo !$model->orderBusinessTrip == 0 ? 'hidden' : '' ?>>
+    <div id="divOrderTrip" <?php echo !$model->orderBusinessTrip ? 'hidden' : '' ?>>
         <?= $form->field($model, 'orderBusinessTrip')
             ->dropDownList(ArrayHelper::map($orders6,'id','fullName'), ['prompt' => '---']);
         ?>
@@ -273,6 +273,9 @@ use yii\jui\DatePicker;
     <?= $form->field($model, 'keyWords')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'doc')->fileInput() ?>
+    <?php if (strlen($model->docTable) > 10): ?>
+        <?= $model->docTable; ?>
+    <?php endif; ?>
 
     <div class="form-group">
         <div class="button">

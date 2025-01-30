@@ -1,12 +1,13 @@
 <?php
 
+use app\models\work\team\ActParticipantWork;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use app\models\work\TeacherParticipantBranchWork;
 use yii\jui\DatePicker;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\TeacherParticipantWork */
+/* @var $model ActParticipantWork */
 
 $tPart = \app\models\work\TeacherParticipantWork::find()->where(['id' => $model->teacher_participant_id])->one();
 

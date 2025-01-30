@@ -65,4 +65,9 @@ class OrderEventWork extends OrderMainWork
         $this->scanFile = $scanFile;
         $this->docFiles = $docFiles;
     }
+
+    public function getFullName()
+    {
+        return "{$this->order_number} {$this->order_name}";
+    }
 }

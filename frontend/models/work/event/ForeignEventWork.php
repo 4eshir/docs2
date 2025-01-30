@@ -2,12 +2,14 @@
 namespace app\models\work\event;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
+use common\helpers\files\FilesHelper;
 use common\models\scaffold\ForeignEvent;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\general\PeopleStampRepository;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\general\UserWork;
+use InvalidArgumentException;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -105,6 +107,20 @@ class ForeignEventWork extends ForeignEvent
         }
 
         return $result;
+    }
+
+    public function getFileLinks($filetype)
+    {
+        if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
+            throw new InvalidArgumentException('Неизвестный тип файла');
+        }
+        $addPath = '';
+        switch ($filetype) {
+            case FilesHelper::TYPE_DOC:
+                $addPath = FilesHelper::createAdditionalPath($this::tableName(), FilesHelper::TYPE_DOC);
+                break;
+        }
+        return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
 
     public function getWinners()
