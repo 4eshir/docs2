@@ -13,7 +13,6 @@ use yii\jui\DatePicker;
 /* @var $docFiles */
 /* @var $teamList */
 /* @var $awardList */
-/* @var $modelResponsiblePeople */
 /* @var $foreignEventTable */
 /* @var $teamTable */
 /* @var $awardTable */
@@ -22,6 +21,7 @@ use yii\jui\DatePicker;
 /* @var $nominations */
 /* @var $actTable */
 /* @var $participants */
+/* @var $company */
 ?>
 
 <style>
@@ -436,7 +436,7 @@ use yii\jui\DatePicker;
         margin: 10px 0;        /* Отступы сверху и снизу */
     }
 </style>
-<div class="order-main-form">
+<div class="order-event-form">
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
         'dateFormat' => 'php:d.m.Y',
@@ -466,7 +466,7 @@ use yii\jui\DatePicker;
             ];
             echo $form
                 ->field($model, 'organizer_id')
-                ->dropDownList(ArrayHelper::map($people, 'id', 'fullFio'), $params)
+                ->dropDownList(ArrayHelper::map($company, 'id', 'name'), $params)
                 ->label('Организатор');
             ?>
         </div>
@@ -750,20 +750,29 @@ use yii\jui\DatePicker;
                         <div class="panel-body">
                             <div class="row">
                                 <div id = "form-<?=$i?>" hidden>
-                                    <div>
-                                        <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::classname(), [
-                                                'data' => ArrayHelper::map($participants,'id','fullFio'),
-                                                'size' => Select2::LARGE,
-                                                'options' => [
-                                                        'prompt' => 'Выберите участника' ,
-                                                    'multiple' => true
-                                                ],
-                                                'pluginOptions' => [
-                                                    'allowClear' => true
-                                                ],
-                                            ])->label('ФИО участника'); ?>
+                                    <div class="container personal-dropdown-list">
+                                        <?php
+                                        $params = [
+                                            'id' => 'personalParticipantDropdown',
+                                            'class' => 'form-control pos personalDropDownList',
+                                            'prompt' => '---Выберите участника---',
+                                        ];
+                                        echo $form->field($modelAct, "[{$i}]personalParticipants[]")->dropDownList(ArrayHelper::map($participants,'id','fullFio'), $params)->label('ФИО участника');
+                                        ?>
                                     </div>
+
                                     <div class="container team-dropdown-list">
+                                        <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::class, [
+                                            'data' => ArrayHelper::map($participants,'id','fullFio'),
+                                            'size' => Select2::LARGE,
+                                            'options' => [
+                                                'prompt' => 'Выберите участника' ,
+                                                'multiple' => true
+                                            ],
+                                            'pluginOptions' => [
+                                                'allowClear' => true
+                                            ],
+                                        ])->label('ФИО участников'); ?>
                                         В составе команды<br>
                                         <?php
                                         $params = [
@@ -780,9 +789,19 @@ use yii\jui\DatePicker;
                                         'class' => 'form-control pos',
                                         'prompt' => '---',
                                     ];
-                                    echo $form
-                                        ->field($modelAct, "[{$i}]branch")
-                                        ->dropDownList(Yii::$app->branches->getList(), $params)
+                                    echo $form->field($modelAct, "[{$i}]branch")->widget(
+                                            Select2::classname(), [
+                                            'data' => Yii::$app->branches->getList() ,
+                                            'size' => Select2::LARGE,
+                                                'options' => [
+                                                    'prompt' => 'Выберите участника' ,
+                                                    'multiple' => true
+                                                ],
+                                                'pluginOptions' => [
+                                                    'allowClear' => true
+                                                ],
+                                            ]
+                                        )
                                         ->label('Отделы');
                                     ?>
                                     <?php
@@ -912,9 +931,13 @@ use yii\jui\DatePicker;
 </script>
 <script>
     function updateTeamDropdownList() {
-        const divs = document.querySelectorAll('div.team-dropdown-list');
+        var divs = document.querySelectorAll('div.team-dropdown-list');
         divs.forEach((div, index) => {
             div.id = `team-dropdown-list-${index + 1}`; // Уникальное имя с индексом
+        });
+        divs = document.querySelectorAll('div.personal-dropdown-list');
+        divs.forEach((div, index) => {
+            div.id = `personal-dropdown-list-${index + 1}`; // Уникальное имя с индексом
         });
         requestAnimationFrame(updateTeamDropdownList);
     }
@@ -951,24 +974,28 @@ use yii\jui\DatePicker;
             let extractedIndex = index[1];
             extractedIndex++;
             var teamDropdownList = document.getElementById(`team-dropdown-list-${extractedIndex}`);
+            var personalDropDownList = document.getElementById(`personal-dropdown-list-${extractedIndex}`);
             var formList = document.getElementById(`form-${extractedIndex - 1}--0`);
             if(formList != null) {
                 if (radio.value === '0') {
                     teamDropdownList.hidden = true;
-
+                    personalDropDownList.hidden = false;
                     formList.hidden = false;
                 } else if (radio.value === '1') {
                     formList.hidden = false;
                     teamDropdownList.hidden = false;
+                    personalDropDownList.hidden = true;
                 }
             }
             var firstList = document.getElementById(`form-${extractedIndex - 1}`);
             if(firstList != null) {
                 if (radio.value === '0') {
                     teamDropdownList.hidden = true;
+                    personalDropDownList.hidden = false;
                     firstList.hidden = false;
                 } else if (radio.value === '1') {
                     teamDropdownList.hidden = false;
+                    personalDropDownList.hidden = true;
                     firstList.hidden = false;
                 }
             }

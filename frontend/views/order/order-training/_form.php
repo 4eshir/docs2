@@ -144,7 +144,7 @@ use yii\widgets\Pjax;
     </div>
     <?= $form->field($model, 'key_words')->textInput()->label('Ключевые слова') ?>
     <?= $form->field($model, 'scanFile')->fileInput()->label('Скан документа') ?>
-    <?php if (strlen($scanFile) > 10): ?>
+    <?php  if (strlen($scanFile) > 10): ?>
         <?= $scanFile; ?>
     <?php endif; ?>
 
@@ -161,6 +161,9 @@ use yii\widgets\Pjax;
 
         <?php ActiveForm::end(); ?>
 </div>
+
+
+
 <?php
     if($model->id != NULL){
         $modelId = $model->id;

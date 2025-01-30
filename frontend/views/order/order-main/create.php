@@ -3,7 +3,9 @@
 use yii\helpers\Html;
 
 /* @var $model \app\models\work\order\OrderMainWork */
-/* @var $bringPeople */
+/* @var $people */
+/* @var $users */
+/* @var $modelExpire */
 /* @var $orders */
 /* @var $regulations */
 $this->title = 'Добавить приказ об основной деятельности';
@@ -17,7 +19,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= $this->render('_form', [
             'model' => $model,
-            'bringPeople' => $bringPeople,
+            'people' => $people,
+            'users' => $users,
+            'modelExpire' => $modelExpire,
             'orders' => $orders,
             'regulations' => $regulations
         ]) ?>

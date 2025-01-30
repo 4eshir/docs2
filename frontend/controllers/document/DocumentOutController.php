@@ -1,6 +1,7 @@
 <?php
 
 namespace frontend\controllers\document;
+use common\helpers\ButtonsFormatter;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
@@ -22,7 +23,6 @@ use frontend\models\work\document_in_out\DocumentOutWork;
 use frontend\models\work\general\FilesWork;
 use frontend\services\document\DocumentOutService;
 use Yii;
-use yii\helpers\Url;
 use yii\web\Controller;
 
 class DocumentOutController extends Controller
@@ -37,17 +37,17 @@ class DocumentOutController extends Controller
     private DocumentOutService $service;
 
     public function __construct(
-                              $id,
-                              $module,
+        $id,
+        $module,
         DocumentOutRepository $repository,
-        PeopleRepository      $peopleRepository,
-        PositionRepository    $positionRepository,
-        CompanyRepository     $companyRepository,
-        FileService           $fileService,
-        PeopleStampService    $peopleStampService,
-        FilesRepository       $filesRepository,
-        DocumentOutService    $service,
-                              $config = [])
+        PeopleRepository $peopleRepository,
+        PositionRepository $positionRepository,
+        CompanyRepository $companyRepository,
+        FileService $fileService,
+        PeopleStampService $peopleStampService,
+        FilesRepository $filesRepository,
+        DocumentOutService $service,
+        $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->repository = $repository;
@@ -70,10 +70,8 @@ class DocumentOutController extends Controller
             $this->repository->createReserve($model);
             $this->repository->save($model);
         }
-        $links = [
-            'Добавить документ' => ['url' => Url::to([Yii::$app->frontUrls::DOC_OUT_CREATE]), 'class' => 'btn-primary'],
-            'Добавить резерв' => ['url' => Url::to([Yii::$app->frontUrls::DOC_OUT_RESERVE]), 'class' => 'btn-primary'],
-        ];
+
+        $links = ButtonsFormatter::PrimaryLinkAndModal(Yii::$app->frontUrls::DOC_OUT_CREATE, '#modal-reserve');
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('index', [
@@ -86,20 +84,7 @@ class DocumentOutController extends Controller
     }
     public function actionView($id)
     {
-        $links = [
-            'Редактировать' => [
-                'url' => ['update', 'id' => $id],
-                'class' => 'btn-primary',
-            ],
-            'Удалить' => [
-                'url' => ['delete', 'id' => $id],
-                'class' => 'btn-danger',
-                'data' => [
-                    'confirm' => 'Вы уверены, что хотите удалить этот элемент?',
-                    'method' => 'post',
-                ],
-            ],
-        ];
+        $links = ButtonsFormatter::UpdateDeleteLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('view', [

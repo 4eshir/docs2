@@ -18,6 +18,7 @@ use frontend\events\expire\ExpireCreateEvent;
 use frontend\events\general\FileCreateEvent;
 use frontend\events\general\OrderPeopleCreateEvent;
 use frontend\events\general\OrderPeopleDeleteEvent;
+use frontend\models\forms\ExpireForm;
 use frontend\models\work\document_in_out\DocumentInWork;
 use frontend\models\work\regulation\RegulationWork;
 use Yii;
@@ -49,58 +50,6 @@ class OrderMainService {
         $this->orderMainRepository = $orderMainRepository;
         $this->filenameGenerator = $filenameGenerator;
     }
-    public function createOrderPeopleArray(array $data)
-    {
-        $result = [];
-        foreach ($data as $item) {
-            /** @var OrderPeopleWork $item */
-            $result[] = $item->getFullFio();
-        }
-        return $result;
-    }
-    public function getUploadedFilesTables(OrderMainWork $model)
-    {
-        $scanLinks = $model->getFileLinks(FilesHelper::TYPE_SCAN);
-        $scanFile = HtmlBuilder::createTableWithActionButtons(
-            [
-                array_merge(['Название файла'], ArrayHelper::getColumn($scanLinks, 'link'))
-            ],
-            [
-                HtmlBuilder::createButtonsArray(
-                    'Удалить',
-                    Url::to('delete-file'),
-                    ['modelId' => array_fill(0, count($scanLinks), $model->id), 'fileId' => ArrayHelper::getColumn($scanLinks, 'id')])
-            ]
-        );
-
-        $docLinks = $model->getFileLinks(FilesHelper::TYPE_DOC);
-        $docFiles = HtmlBuilder::createTableWithActionButtons(
-            [
-                array_merge(['Название файла'], ArrayHelper::getColumn($docLinks, 'link'))
-            ],
-            [
-                HtmlBuilder::createButtonsArray(
-                    'Удалить',
-                    Url::to('delete-file'),
-                    ['modelId' => array_fill(0, count($docLinks), $model->id), 'fileId' => ArrayHelper::getColumn($docLinks, 'id')])
-            ]
-        );
-
-        $appLinks = $model->getFileLinks(FilesHelper::TYPE_APP);
-        $appFiles = HtmlBuilder::createTableWithActionButtons(
-            [
-                array_merge(['Название файла'], ArrayHelper::getColumn($appLinks, 'link'))
-            ],
-            [
-                HtmlBuilder::createButtonsArray(
-                    'Удалить',
-                    Url::to('delete-file'),
-                    ['modelId' => array_fill(0, count($appLinks), $model->id), 'fileId' => ArrayHelper::getColumn($appLinks, 'id')])
-            ]
-        );
-
-        return ['scan' => $scanFile, 'docs' => $docFiles, 'app' => $appFiles];
-    }
     public function createChangedDocumentsArray(array $data)
     {
         $result = [];
@@ -121,21 +70,6 @@ class OrderMainService {
         }
         return $result;
     }
-    public function getResponsiblePeopleTable(int $modelId)
-    {
-        $responsiblePeople = $this->orderPeopleRepository->getResponsiblePeople($modelId);
-        return HtmlBuilder::createTableWithActionButtons(
-            [
-                array_merge(['Ответственные'], ArrayHelper::getColumn($responsiblePeople, 'fullFio'))
-            ],
-            [
-                HtmlBuilder::createButtonsArray(
-                    'Удалить',
-                    Url::to('delete-people'),
-                    ['id' => ArrayHelper::getColumn($responsiblePeople, 'id'), 'modelId' => array_fill(0, count($responsiblePeople), $modelId)])
-            ]
-        );
-    }
     public function getChangedDocumentsTable(int $modelId)
     {
         $expires = $this->expireRepository->getExpireByActiveRegulationId($modelId);
@@ -154,58 +88,22 @@ class OrderMainService {
             ]
         );
     }
-    public function getFilesInstances(OrderMainWork $model)
-    {
-        $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
-        $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
-    }
-    public function addExpireEvent($docs, $regulation, $status, $model) {
-        $old_docs = $docs;
-        $old_regulation = $regulation;
-        $docs = array_unique($docs);
-        $regulation = array_unique($regulation);
-        foreach ($docs as $doc) {
-            $index = $this->getIndexByElement($old_docs, $doc);
-            if ($doc != NULL && $status[$index] != NULL && $doc != $model->id) {
-                if ($this->expireRepository->checkUnique($model->id, NULL, $doc, 1, 1) &&
-                    $this->expireRepository->checkUnique($model->id, NULL, $doc, 1, 2)) {
-                    $model->recordEvent(new ExpireCreateEvent($model->id,
-                        NULL, $doc, 1, $status[$index]), ExpireWork::class);
-                }
-            }
-        }
-        foreach ($regulation as $reg) {
-            $index = $this->getIndexByElement($old_regulation, $reg);
-            if ($reg != NULL && $status[$index] != NULL) {
-                if ($this->expireRepository->checkUnique($model->id, $reg, NULL, 1, 1) &&
-                    $this->expireRepository->checkUnique($model->id, $reg, NULL, 1, 2)) {
-                    $model->recordEvent(new ExpireCreateEvent($model->id,
-                        $reg, NULL, 1, $status[$index]), ExpireWork::class);
-                }
-            }
-        }
-    }
-    public function getIndexByElement($array, $element)
-    {
-        $index = 0;
-        foreach ($array as $item) {
-            if ($item == $element) {
-                return $index;
-            }
-            $index++;
-        }
-        return -1;
-    }
-    public function addOrderPeopleEvent($respPeople, $model)
-    {
-        if (is_array($respPeople)) {
-            $respPeople = array_unique($respPeople);
-            foreach ($respPeople as $person) {
-                if ($person != NULL) {
-                    if ($this->orderPeopleRepository->checkUnique($person, $model->id)) {
-                        $model->recordEvent(new OrderPeopleCreateEvent($person, $model->id), OrderPeopleWork::class);
-                    }
-                }
+    public function addExpireEvent($expires, OrderMainWork $model) {
+        /* @var ExpireForm $expire */
+        foreach ($expires as $expire) {
+            $expire = ExpireForm::attachAttributes($model->id, $expire["expireRegulationId"], $expire["expireOrderId"], $expire["docType"], $expire["expireType"]);
+            if (($expire->expireOrderId != "" xor $expire->expireRegulationId != "")
+                && $this->expireRepository->checkUnique(
+                    $model->id,
+                    $expire->expireRegulationId,
+                    $expire->expireOrderId,
+                    $expire->docType,
+                    $expire->expireType)
+            )
+            {
+                $model->recordEvent(new ExpireCreateEvent(
+                    $model->id, $expire->expireRegulationId, $expire->expireOrderId, $expire->docType, $expire->expireType
+                ), ExpireWork::class);
             }
         }
     }
@@ -218,84 +116,6 @@ class OrderMainService {
                         $model->recordEvent(new OrderPeopleDeleteEvent($person, $model->id), OrderPeopleWork::class);
                     }
                 }
-            }
-        }
-    }
-    public function updateOrderPeopleEvent($respPeople, $formRespPeople , OrderEventWork $model)
-    {
-        if($respPeople != NULL && $formRespPeople != NULL) {
-            $addSquadParticipant = array_diff($formRespPeople, $respPeople);
-            $deleteSquadParticipant = array_diff($respPeople, $formRespPeople);
-        }
-        else if($formRespPeople == NULL && $respPeople != NULL) {
-            $deleteSquadParticipant = $respPeople;
-            $addSquadParticipant = NULL;
-        }
-        else if($respPeople == NULL && $formRespPeople != NULL) {
-            $addSquadParticipant = $formRespPeople;
-            $deleteSquadParticipant = NULL;
-        }
-        else {
-            $deleteSquadParticipant = NULL;
-            $addSquadParticipant = NULL;
-        }
-        if($deleteSquadParticipant != NULL) {
-            //var_dump('delete', $deleteSquadParticipant);
-            $this->deleteOrderPeopleEvent($deleteSquadParticipant, $model);
-        }
-        if($addSquadParticipant != NULL) {
-            //var_dump('add', $addSquadParticipant);
-            $this->addOrderPeopleEvent($addSquadParticipant, $model);
-        }
-        $model->releaseEvents();
-    }
-    public function saveFilesFromModel(OrderMainWork $model)
-    {
-        if ($model->scanFile !== null) {
-            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN);
-            $this->fileService->uploadFile(
-                $model->scanFile,
-                $filename,
-                [
-                    'tableName' => OrderMainWork::tableName(),
-                    'fileType' => FilesHelper::TYPE_SCAN
-                ]
-            );
-
-            $model->recordEvent(
-                new FileCreateEvent(
-                    $model::tableName(),
-                    $model->id,
-                    FilesHelper::TYPE_SCAN,
-                    $filename,
-                    FilesHelper::LOAD_TYPE_SINGLE
-                ),
-                get_class($model)
-            );
-        }
-        if ($model->docFiles != NULL) {
-            for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
-                $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_DOC, ['counter' => $i]);
-
-                $this->fileService->uploadFile(
-                    $model->docFiles[$i - 1],
-                    $filename,
-                    [
-                        'tableName' => OrderMainWork::tableName(),
-                        'fileType' => FilesHelper::TYPE_DOC
-                    ]
-                );
-
-                $model->recordEvent(
-                    new FileCreateEvent(
-                        $model::tableName(),
-                        $model->id,
-                        FilesHelper::TYPE_DOC,
-                        $filename,
-                        FilesHelper::LOAD_TYPE_SINGLE
-                    ),
-                    get_class($model)
-                );
             }
         }
     }

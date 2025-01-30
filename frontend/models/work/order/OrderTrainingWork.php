@@ -20,94 +20,11 @@ use Yii;
  * @property PeopleWork $executorWork
  * @property PeopleWork $bringWork
  */
-class OrderTrainingWork extends OrderMain
+class OrderTrainingWork extends DocumentOrderWork
 {
     use EventTrait;
     public $responsible_id;
     public $branch;
-    public $scanFile;
-    public $docFiles;
-    public function getFullNumber()
-    {
-        if ($this->order_postfix == null)
-            return $this->order_number;
-        else
-            return $this->order_number.'/'.$this->order_postfix;
-    }
-    public function getOrderDate()
-    {
-        return $this->order_date;
-    }
-
-    public function getNumberPostfix()
-    {
-        if ($this->order_postfix == null) {
-            return $this->order_number;
-        }
-        else {
-            return $this->order_number.'/'.$this->order_postfix;
-        }
-    }
-    public function getOrderName()
-    {
-        return $this->order_name;
-    }
-    public function getBringName()
-    {
-        $model = PeopleWork::findOne($this->bring_id);
-        if($model != NULL) {
-            return $model->getFullFio();
-        }
-        else {
-            return $this->bring_id;
-        }
-    }
-    public function getCreatorWork()
-    {
-        return PeopleWork::findOne($this->creator_id);
-    }
-    public function getLastUpdateWork()
-    {
-        return PeopleWork::findOne($this->last_edit_id);
-    }
-    public function getBringWork()
-    {
-        return PeopleWork::findOne($this->bring_id);
-    }
-    public function getExecutorWork()
-    {
-        return PeopleWork::findOne($this->executor_id);
-    }
-    public function getExecutorName()
-    {
-        $model = PeopleWork::findOne($this->executor_id);
-        if($model != NULL) {
-            return $model->getFullFio();
-        }
-        else {
-            return $this->bring_id;
-        }
-    }
-    public function getFileLinks($filetype)
-    {
-        if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
-            throw new InvalidArgumentException('Неизвестный тип файла');
-        }
-        $addPath = '';
-        switch ($filetype) {
-            case FilesHelper::TYPE_SCAN:
-                $addPath = FilesHelper::createAdditionalPath(OrderTrainingWork::tableName(), FilesHelper::TYPE_SCAN);
-                break;
-            case FilesHelper::TYPE_DOC:
-                $addPath = FilesHelper::createAdditionalPath(OrderTrainingWork::tableName(), FilesHelper::TYPE_DOC);
-                break;
-            case FilesHelper::TYPE_APP:
-                $addPath = FilesHelper::createAdditionalPath(OrderTrainingWork::tableName(), FilesHelper::TYPE_APP);
-                break;
-        }
-
-        return FilesHelper::createFileLinks($this, $filetype, $addPath);
-    }
     public function generateOrderNumber()
     {
         $formNumber = $this->order_number;

@@ -25,14 +25,13 @@ class OrderTrainingService
 {
     private FileService $fileService;
     private OrderMainFileNameGenerator $filenameGenerator;
-    private OrderMainService $orderMainService;
+
     private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
     private TrainingGroupRepository $trainingGroupRepository;
     private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
     public function __construct(
         FileService $fileService,
         OrderMainFileNameGenerator $filenameGenerator,
-        OrderMainService $orderMainService,
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
         TrainingGroupRepository $trainingGroupRepository,
         OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository
@@ -41,7 +40,6 @@ class OrderTrainingService
     {
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
-        $this->orderMainService = $orderMainService;
         $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
         $this->trainingGroupRepository = $trainingGroupRepository;
         $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
@@ -60,96 +58,6 @@ class OrderTrainingService
         $parts = explode("/", $number);
         $nomenclature = $parts[0];
         return NomenclatureDictionary::getStatus($nomenclature);
-    }
-    public function createOrderPeopleArray(array $data)
-    {
-        $result = [];
-        foreach ($data as $item) {
-            /** @var OrderPeopleWork $item */
-            $result[] = $item->getFullFio();
-        }
-        return $result;
-    }
-    public function getFilesInstances(OrderTrainingWork $model)
-    {
-        $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
-        $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
-    }
-    public function saveFilesFromModel(OrderTrainingWork $model)
-    {
-        if ($model->scanFile !== null) {
-            $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_SCAN);
-            $this->fileService->uploadFile(
-                $model->scanFile,
-                $filename,
-                [
-                    'tableName' => OrderTrainingWork::tableName(),
-                    'fileType' => FilesHelper::TYPE_SCAN
-                ]
-            );
-
-            $model->recordEvent(
-                new FileCreateEvent(
-                    $model::tableName(),
-                    $model->id,
-                    FilesHelper::TYPE_SCAN,
-                    $filename,
-                    FilesHelper::LOAD_TYPE_SINGLE
-                ),
-                get_class($model)
-            );
-        }
-        if ($model->docFiles != NULL) {
-            for ($i = 1; $i < count($model->docFiles) + 1; $i++) {
-                $filename = $this->filenameGenerator->generateFileName($model, FilesHelper::TYPE_DOC, ['counter' => $i]);
-
-                $this->fileService->uploadFile(
-                    $model->docFiles[$i - 1],
-                    $filename,
-                    [
-                        'tableName' => OrderTrainingWork::tableName(),
-                        'fileType' => FilesHelper::TYPE_DOC
-                    ]
-                );
-
-                $model->recordEvent(
-                    new FileCreateEvent(
-                        $model::tableName(),
-                        $model->id,
-                        FilesHelper::TYPE_DOC,
-                        $filename,
-                        FilesHelper::LOAD_TYPE_SINGLE
-                    ),
-                    get_class($model)
-                );
-            }
-        }
-    }
-    public function updateOrderPeopleEvent($respPeople, $formRespPeople , OrderTrainingWork $model)
-    {
-        if($respPeople != NULL && $formRespPeople != NULL) {
-            $addArray = array_diff($formRespPeople, $respPeople);
-            $deleteArray = array_diff($respPeople, $formRespPeople);
-        }
-        else if($formRespPeople == NULL && $respPeople != NULL) {
-            $deleteArray = $respPeople;
-            $addArray = NULL;
-        }
-        else if($respPeople == NULL && $formRespPeople != NULL) {
-            $addArray = $formRespPeople;
-            $deleteArray = NULL;
-        }
-        else {
-            $deleteArray = NULL;
-            $addArray = NULL;
-        }
-        if($deleteArray != NULL) {
-            $this->orderMainService->deleteOrderPeopleEvent($deleteArray, $model);
-        }
-        if($addArray != NULL) {
-            $this->orderMainService->addOrderPeopleEvent($addArray, $model);
-        }
-        $model->releaseEvents();
     }
     public function getGroupsEmptyDataProvider()
     {

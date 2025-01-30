@@ -2,15 +2,19 @@
 
 namespace app\models\work\order;
 
+use app\services\order\OrderMainService;
 use common\events\EventTrait;
-use common\helpers\files\FilesHelper;
-use common\models\scaffold\OrderMain;
-use InvalidArgumentException;
+use common\helpers\DateFormatter;
+use common\models\scaffold\DocumentOrder;
+use common\repositories\order\OrderMainRepository;
+use Yii;
 
-class OrderEventWork extends OrderMainWork
+class OrderEventWork extends DocumentOrderWork
 {
     use EventTrait;
     public $actFiles;
+    public $scanFile;
+    public $docFiles;
     public static function fill(
          $order_copy_id, $order_number, $order_postfix,
          $order_date, $order_name, $signed_id,
@@ -69,5 +73,32 @@ class OrderEventWork extends OrderMainWork
     public function getFullName()
     {
         return "{$this->order_number} {$this->order_name}";
+    }
+
+    public function generateOrderNumber()
+    {
+        $formNumber = $this->order_number;
+        $model_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
+        $year = substr(DateFormatter::format($model_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash), 0, 4);
+        $array_number = [];
+        $index = 1;
+        $upItem = NULL;
+        $equalItem = [];
+        $downItem = NULL;
+        $isPostfix = NULL;
+        $records = Yii::createObject(OrderMainRepository::class)->getEqualPrefix($formNumber);
+        $array_number = Yii::createObject(OrderMainService::class)->createArrayNumber($records, $array_number);
+        $numberPostfix = Yii::createObject(OrderMainService::class)
+            ->createOrderNumber($array_number, $downItem, $equalItem, $upItem, $isPostfix, $index, $formNumber, $model_date);
+        $this->order_number = $numberPostfix['number'];
+        $this->order_postfix = $numberPostfix['postfix'];
+    }
+
+    public function beforeValidate()
+    {
+        $this->order_copy_id = 1;
+        $this->type = DocumentOrderWork::ORDER_EVENT;
+        $this->order_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
+        return parent::beforeValidate();
     }
 }

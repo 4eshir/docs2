@@ -4,8 +4,7 @@ namespace frontend\controllers\document;
 
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
-use common\helpers\DateFormatter;
-use common\helpers\files\FilesHelper;
+use common\helpers\ButtonsFormatter;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\SortHelper;
 use common\helpers\StringFormatter;
@@ -25,9 +24,6 @@ use frontend\models\search\SearchDocumentIn;
 use frontend\models\work\document_in_out\DocumentInWork;
 use frontend\services\document\DocumentInService;
 use Yii;
-use yii\data\ActiveDataProvider;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
 
 class DocumentInController extends DocumentController
 {
@@ -39,18 +35,21 @@ class DocumentInController extends DocumentController
     private DocumentInService $service;
     private PeopleStampService $peopleStampService;
     private LockWizard $lockWizard;
+    private ButtonsFormatter $buttonsRepository;
+
     public function __construct(
-                                 $id,
-                                 $module,
-        DocumentInRepository     $repository,
+        $id,
+        $module,
+        DocumentInRepository $repository,
         InOutDocumentsRepository $inOutRepository,
-        PeopleRepository         $peopleRepository,
-        PositionRepository       $positionRepository,
-        CompanyRepository        $companyRepository,
-        DocumentInService        $service,
-        PeopleStampService       $peopleStampService,
-        LockWizard               $lockWizard,
-                                 $config = [])
+        PeopleRepository $peopleRepository,
+        PositionRepository $positionRepository,
+        CompanyRepository $companyRepository,
+        DocumentInService $service,
+        PeopleStampService $peopleStampService,
+        LockWizard $lockWizard,
+        ButtonsFormatter $buttonsRepository,
+        $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;
@@ -61,6 +60,7 @@ class DocumentInController extends DocumentController
         $this->service = $service;
         $this->peopleStampService = $peopleStampService;
         $this->lockWizard = $lockWizard;
+        $this->buttonsRepository = $buttonsRepository;
     }
 
     public function actionIndex()
@@ -74,10 +74,7 @@ class DocumentInController extends DocumentController
             $this->repository->save($model);
         }
 
-        $links = [
-            'Добавить документ' => ['url' => Url::to([Yii::$app->frontUrls::DOC_IN_CREATE]), 'class' => 'btn-primary'],
-            'Добавить резерв' => ['url' => Url::to([Yii::$app->frontUrls::DOC_IN_RESERVE]), 'class' => 'btn-primary'],
-        ];
+        $links = ButtonsFormatter::TwoPrimaryLinks(Yii::$app->frontUrls::DOC_IN_CREATE, Yii::$app->frontUrls::DOC_IN_RESERVE);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('index', [
@@ -90,20 +87,7 @@ class DocumentInController extends DocumentController
 
     public function actionView($id)
     {
-        $links = [
-            'Редактировать' => [
-                'url' => ['update', 'id' => $id],
-                'class' => 'btn-primary',
-            ],
-            'Удалить' => [
-                'url' => ['delete', 'id' => $id],
-                'class' => 'btn-danger',
-                'data' => [
-                    'confirm' => 'Вы уверены, что хотите удалить этот элемент?',
-                    'method' => 'post',
-                ],
-            ],
-        ];
+        $links = ButtonsFormatter::UpdateDeleteLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('view', [

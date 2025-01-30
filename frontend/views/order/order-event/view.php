@@ -1,9 +1,8 @@
 <?php
 
-use app\models\work\order\OrderMainWork;
+use app\models\work\order\OrderEventWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
-use common\helpers\StringFormatter;
 use frontend\models\work\general\PeopleWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -33,31 +32,31 @@ $this->params['breadcrumbs'][] = ['label' => 'Приказы о мероприя
     DetailView::widget([
         'model' => $model,
         'attributes' => [
-            ['label' => 'Регистрационный номер приказа', 'value' => function (OrderMainWork $model) {
+            ['label' => 'Регистрационный номер приказа', 'value' => function (OrderEventWork $model) {
                 return $model->getNumberPostfix();
             }],
             ['label' => 'Наименование приказа', 'attribute' => 'order_name'],
-            ['label' => 'Дата приказа', 'attribute' => 'order_date', 'value' => function (OrderMainWork $model) {
+            ['label' => 'Дата приказа', 'attribute' => 'order_date', 'value' => function (OrderEventWork $model) {
                 return DateFormatter::format($model->order_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
             }],
 
-            ['label' => 'Проект вносит', 'attribute' => 'bring_id', 'value' => function (OrderMainWork $model) {
+            ['label' => 'Проект вносит', 'attribute' => 'bring_id', 'value' => function (OrderEventWork $model) {
                 return $model->bringWork ? $model->bringWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
             }],
-            ['label' => 'Исполнитель', 'attribute' => 'executor_id', 'value' => function (OrderMainWork $model) {
+            ['label' => 'Исполнитель', 'attribute' => 'executor_id', 'value' => function (OrderEventWork $model) {
                 return $model->executorWork ? $model->executorWork->getFullFio() : '';
             }],
             ['label' => 'Ответственные', 'value' => $modelResponsiblePeople, 'format' => 'raw'],
-            ['label' => 'Скан документа', 'attribute' => 'scan', 'value' => function (OrderMainWork $model) {
+            ['label' => 'Скан документа', 'attribute' => 'scan', 'value' => function (OrderEventWork $model) {
                 return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
             }, 'format' => 'raw'],
-            ['label' => 'Редактируемые документы', 'attribute' => 'doc', 'value' => function (OrderMainWork $model) {
+            ['label' => 'Редактируемые документы', 'attribute' => 'doc', 'value' => function (OrderEventWork $model) {
                 return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_DOC), 'link'));
             }, 'format' => 'raw'],
-            ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => function (OrderMainWork $model) {
+            ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => function (OrderEventWork $model) {
                 return $model->creatorWork ? $model->creatorWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
             }],
-            ['label' => 'Последний редактор', 'attribute' => 'last_update_id', 'value' => function (OrderMainWork $model) {
+            ['label' => 'Последний редактор', 'attribute' => 'last_update_id', 'value' => function (OrderEventWork $model) {
                 return $model->lastUpdateWork ? $model->lastUpdateWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
             }],
         ],

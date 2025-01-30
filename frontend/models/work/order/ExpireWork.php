@@ -48,4 +48,12 @@ class ExpireWork extends Expire
     ) {
         return $this->expire_regulation_id == NULL ? 'Приказ' : 'Положение';
     }
+    public function customLoad($post , $modelId)
+    {
+        $this->active_regulation_id = $modelId;
+        $this->expire_regulation_id = $post['expireRegulationId'];
+        $this->expire_order_id = $post['expireOrderId'];
+        $this->document_type = DocumentOrderWork::ORDER_MAIN;
+        $this->expire_type = $post['expireType'];
+    }
 }

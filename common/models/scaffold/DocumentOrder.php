@@ -2,6 +2,8 @@
 
 namespace common\models\scaffold;
 
+use common\repositories\general\PeopleStampRepository;
+
 /**
  * This is the model class for table "document_order".
  *
@@ -22,12 +24,12 @@ namespace common\models\scaffold;
  * @property int|null $nomenclature_id
  * @property int|null $study_type
  *
- * @property People $bring
+ * @property PeopleStamp $bring
  * @property User $creator
- * @property People $executor
+ * @property PeopleStamp $executor
  * @property User $lastEdit
  * @property LegacyResponsible[] $legacyResponsibles
- * @property People $signed
+ * @property PeopleStamp $signed
  */
 class DocumentOrder extends \yii\db\ActiveRecord
 {
@@ -48,9 +50,9 @@ class DocumentOrder extends \yii\db\ActiveRecord
             [['order_copy_id', 'order_postfix', 'signed_id', 'bring_id', 'executor_id', 'creator_id', 'last_edit_id', 'type', 'state', 'nomenclature_id', 'study_type'], 'integer'],
             [['order_date'], 'safe'],
             [['order_number', 'order_name', 'key_words'], 'string', 'max' => 255],
-            [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['signed_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['executor_id' => 'id']],
-            [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['bring_id' => 'id']],
+            [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['signed_id' => 'id']],
+            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['executor_id' => 'id']],
+            [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['bring_id' => 'id']],
             [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
             [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['last_edit_id' => 'id']],
         ];
@@ -88,7 +90,7 @@ class DocumentOrder extends \yii\db\ActiveRecord
      */
     public function getBring()
     {
-        return $this->hasOne(People::class, ['id' => 'bring_id']);
+        return $this->hasOne(PeopleStamp::class, ['id' => 'bring_id']);
     }
 
     /**
@@ -108,7 +110,7 @@ class DocumentOrder extends \yii\db\ActiveRecord
      */
     public function getExecutor()
     {
-        return $this->hasOne(People::class, ['id' => 'executor_id']);
+        return $this->hasOne(PeopleStamp::class, ['id' => 'executor_id']);
     }
 
     /**
@@ -138,6 +140,6 @@ class DocumentOrder extends \yii\db\ActiveRecord
      */
     public function getSigned()
     {
-        return $this->hasOne(People::class, ['id' => 'signed_id']);
+        return $this->hasOne(PeopleStamp::class, ['id' => 'signed_id']);
     }
 }

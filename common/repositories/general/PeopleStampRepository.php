@@ -24,7 +24,10 @@ class PeopleStampRepository
     {
         return PeopleStampWork::find()->where(['id' => $id])->one();
     }
-
+    public function getAll()
+    {
+        return PeopleStampWork::find()->all();
+    }
     public function getStamps(array $ids)
     {
         return PeopleStampWork::find()->where(['IN', 'id', $ids])->all();

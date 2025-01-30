@@ -2,6 +2,7 @@
 
 namespace frontend\models\search;
 
+use app\models\work\order\DocumentOrderWork;
 use common\helpers\DateFormatter;
 use app\models\work\order\OrderMainWork;
 use yii\base\Model;
@@ -9,17 +10,9 @@ use yii\data\ActiveDataProvider;
 
 class SearchOrderMain extends OrderMainWork
 {
-    const ORDER_TYPE = 1;
     public $fullNumber;
     public $Date;
     public $orderName;
-    public function rules(){
-        return [
-            [['id', 'order_copy_id', 'bring_id', 'signed_id', 'executor_id', 'creator_id'], 'integer'],
-            [['fullNumber'], 'string'],
-            [['Date', 'orderName'], 'safe'],
-        ];
-    }
 
     public function scenarios()
     {
@@ -38,7 +31,7 @@ class SearchOrderMain extends OrderMainWork
     {
         $this->load($params);
         $query = OrderMainWork::find()
-            ->where(['type' => self::ORDER_TYPE])
+            ->where(['type' => DocumentOrderWork::ORDER_MAIN])
             ->joinWith('bring');
         if ($this->Date !== '' && $this->Date !== null) {
             $dates = DateFormatter::splitDates($this->Date);

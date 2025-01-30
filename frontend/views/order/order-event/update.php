@@ -5,7 +5,6 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model \app\models\work\order\OrderEventWork */
 /* @var $people */
-/* @var $modelResponsiblePeople */
 /* @var $foreignEventTable */
 /* @var $scanFile */
 /* @var $docFiles */
@@ -17,6 +16,7 @@ use yii\helpers\Html;
 /* @var $modelActs */
 /* @var $actTable */
 /* @var $participants */
+/* @var $company */
 $this->title = 'Приказ об участии' . $model->order_number;
 $this->params['breadcrumbs'][] = ['label' => 'Приказ об участии', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
@@ -28,7 +28,6 @@ $this->params['breadcrumbs'][] = 'Редактирование';
     <?= $this->render('_form', [
             'model' => $model,
             'people' => $people,
-            'modelResponsiblePeople' => $modelResponsiblePeople,
             'scanFile' => $scanFile,
             'docFiles' => $docFiles,
             'foreignEventTable' => $foreignEventTable,
@@ -38,7 +37,8 @@ $this->params['breadcrumbs'][] = 'Редактирование';
             'teams' => $teams,
             'modelActs' => $modelActs,
             'actTable' => $actTable,
-            'participants' => $participants
+            'participants' => $participants,
+            'company' => $company,
         ]
     ) ?>
 </div>

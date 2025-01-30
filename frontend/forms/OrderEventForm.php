@@ -4,6 +4,7 @@ use app\models\work\event\ForeignEventWork;
 use app\models\work\order\OrderEventWork;
 use common\events\EventTrait;
 use common\models\scaffold\People;
+use common\models\scaffold\PeopleStamp;
 use yii\base\Model;
 
 class OrderEventForm extends Model {
@@ -84,11 +85,11 @@ class OrderEventForm extends Model {
             [['order_number', 'order_name'], 'string', 'max' => 64],
             [['key_words', 'keyEventWords'], 'string', 'max' => 512],
             [['eventName' ,'dateBegin', 'dateEnd', 'city'], 'string'],
-            [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['signed_id' => 'id']],
-            [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['bring_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['executor_id' => 'id']],
-            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['creator_id' => 'id']],
-            [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => People::class, 'targetAttribute' => ['last_edit_id' => 'id']],
+            [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['signed_id' => 'id']],
+            [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['bring_id' => 'id']],
+            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['executor_id' => 'id']],
+            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['creator_id' => 'id']],
+            [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['last_edit_id' => 'id']],
             [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
                 'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt']
         ];

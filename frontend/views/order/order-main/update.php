@@ -4,10 +4,11 @@ use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model \app\models\work\order\OrderMainWork */
-/* @var $bringPeople */
+/* @var $people */
+/* @var $users */
+/* @var $modelExpire */
 /* @var $orders */
 /* @var $regulations */
-/* @var $modelResponsiblePeople */
 /* @var $modelChangedDocuments */
 /* @var $scanFile */
 /* @var $docFiles */
@@ -24,10 +25,11 @@ $this->params['breadcrumbs'][] = 'Редактирование';
     <br>
     <?= $this->render('_form', [
         'model' => $model,
-        'bringPeople' => $bringPeople,
+        'people' => $people,
+        'users' => $users,
+        'modelExpire' => $modelExpire,
         'orders' => $orders,
         'regulations' => $regulations,
-        'modelResponsiblePeople' => $modelResponsiblePeople,
         'modelChangedDocuments' => $modelChangedDocuments,
         'scanFile' => $scanFile,
         'docFiles' => $docFiles,

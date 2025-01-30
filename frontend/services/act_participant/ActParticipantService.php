@@ -30,6 +30,7 @@ class ActParticipantService
     private SquadParticipantService $squadParticipantService;
     private SquadParticipantRepository $squadParticipantRepository;
     private PeopleRepository $peopleRepository;
+    private ActParticipantBranchService $actParticipantBranchService;
 
     public function __construct(
         TeamRepository $teamRepository,
@@ -39,7 +40,8 @@ class ActParticipantService
         FileService $fileService,
         SquadParticipantService $squadParticipantService,
         SquadParticipantRepository $squadParticipantRepository,
-        PeopleRepository $peopleRepository
+        PeopleRepository $peopleRepository,
+        ActParticipantBranchService $actParticipantBranchService
     )
     {
         $this->teamRepository = $teamRepository;
@@ -50,6 +52,7 @@ class ActParticipantService
         $this->squadParticipantService = $squadParticipantService;
         $this->squadParticipantRepository = $squadParticipantRepository;
         $this->peopleRepository = $peopleRepository;
+        $this->actParticipantBranchService = $actParticipantBranchService;
     }
     public function getFilesInstance(ActParticipantForm $modelActParticipant, $index)
     {
@@ -81,17 +84,25 @@ class ActParticipantService
     }
     public function addActParticipant($acts, $foreignEventId){
         $index = 0;
+
         foreach ($acts as $act){
             if(
-                $act["participant"] != NULL &&
+                ($act["participant"] != NULL || $act['personalParticipants']) != NULL &&
                 $act["nomination"] != NULL &&
                 $act["focus"] != NULL &&
                 $act["form"] != NULL &&
                 ($act["firstTeacher"] != NULL || $act["secondTeacher"] != NULL) &&
                 $act["type"] != NULL
             ) {
+
+                if($act["type"] == 0) {
+                    $participants = $act['personalParticipants'];
+                }
+                if($act["type"] == 1) {
+                    $participants = $act["participant"];
+                }
                 $modelActParticipantForm = ActParticipantForm::fill(
-                    $act["participant"],
+                    $participants,
                     $act["firstTeacher"],
                     $act["secondTeacher"],
                     $act["branch"],
@@ -115,7 +126,6 @@ class ActParticipantService
                     $modelActParticipantForm->secondTeacher,
                     $teamNameId,
                     $foreignEventId,
-                    $modelActParticipantForm->branch,
                     $modelActParticipantForm->focus,
                     $modelActParticipantForm->type,
                     $modelActParticipantForm->allowRemote,
@@ -129,7 +139,10 @@ class ActParticipantService
                 if ($modelAct->id != NULL) {
                     $this->saveFilesFromModel($modelAct, $index);
                     $modelAct->releaseEvents();
-                    $this->squadParticipantService->addSquadParticipantEvent($modelAct, $act["participant"], $modelAct->id);
+                    $this->squadParticipantService->addSquadParticipantEvent($modelAct, $participants, $modelAct->id);
+                    foreach($act["branch"] as $branch){
+                        $this->actParticipantBranchService->addActParticipantBranchEvent($modelAct->id, $branch);
+                    }
                 }
                 $index++;
             }
@@ -149,13 +162,13 @@ class ActParticipantService
                 $participants,
                 $act->teacher_id,
                 $act->teacher2_id,
-                $act->branch,
+                NULL,
                 $act->focus,
                 $act->type,
                 $act->allow_remote,
-                $act->nomination, // ?
+                $act->nomination,
                 $act->form,
-                $act->team_name_id // ?
+                $act->team_name_id
             );
             $form->actId = $act->id;
             $forms[] = $form;

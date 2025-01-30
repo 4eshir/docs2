@@ -5,15 +5,16 @@ namespace frontend\controllers\order;
 use app\components\DynamicWidget;
 use app\models\search\SearchOrderTraining;
 use app\models\work\order\OrderTrainingWork;
-use app\services\order\OrderMainService;
+use app\services\order\DocumentOrderService;
+use app\services\order\OrderPeopleService;
 use app\services\order\OrderTrainingService;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\controllers\DocumentController;
-use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\general\OrderPeopleRepository;
+use common\repositories\general\PeopleStampRepository;
 use common\repositories\order\OrderTrainingRepository;
 use common\services\general\files\FileService;
 use DomainException;
@@ -23,10 +24,11 @@ use yii\helpers\ArrayHelper;
 
 class OrderTrainingController extends DocumentController
 {
-    private PeopleRepository $peopleRepository;
-    private OrderMainService $orderMainService;
+    private PeopleStampRepository $peopleStampRepository;
+    private DocumentOrderService $documentOrderService;
     private OrderTrainingService $orderTrainingService;
     private OrderPeopleRepository $orderPeopleRepository;
+    private OrderPeopleService $orderPeopleService;
     private OrderTrainingRepository $orderTrainingRepository;
     private TrainingGroupRepository $trainingGroupRepository;
     private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
@@ -34,10 +36,11 @@ class OrderTrainingController extends DocumentController
     public function __construct(
         $id,
         $module,
-        PeopleRepository $peopleRepository,
-        OrderMainService $orderMainService,
+        PeopleStampRepository $peopleStampRepository,
+        DocumentOrderService $documentOrderService,
         OrderTrainingService $orderTrainingService,
         OrderPeopleRepository $orderPeopleRepository,
+        OrderPeopleService $orderPeopleService,
         OrderTrainingRepository $orderTrainingRepository,
         TrainingGroupRepository $trainingGroupRepository,
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
@@ -46,10 +49,11 @@ class OrderTrainingController extends DocumentController
         $config = []
     )
     {
-        $this->peopleRepository = $peopleRepository;
-        $this->orderMainService = $orderMainService;
+        $this->peopleStampRepository = $peopleStampRepository;
+        $this->documentOrderService = $documentOrderService;
         $this->orderTrainingService = $orderTrainingService;
         $this->orderPeopleRepository = $orderPeopleRepository;
+        $this->orderPeopleService = $orderPeopleService;
         $this->orderTrainingRepository = $orderTrainingRepository;
         $this->trainingGroupRepository = $trainingGroupRepository;
         $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
@@ -65,7 +69,7 @@ class OrderTrainingController extends DocumentController
     }
     public function actionView($id){
         $modelResponsiblePeople = implode('<br>',
-            $this->orderTrainingService->createOrderPeopleArray(
+            $this->documentOrderService->createOrderPeopleArray(
                 $this->orderPeopleRepository->getResponsiblePeople($id)
             )
         );
@@ -76,7 +80,7 @@ class OrderTrainingController extends DocumentController
     }
     public function actionCreate(){
         $model = new OrderTrainingWork();
-        $people = $this->peopleRepository->getOrderedList();
+        $people = $this->peopleStampRepository->getAll();
         $post = Yii::$app->request->post();
         $groups = $this->orderTrainingService->getGroupsEmptyDataProvider();
         $groupParticipant = $this->orderTrainingService->getParticipantEmptyDataProvider();;
@@ -85,15 +89,15 @@ class OrderTrainingController extends DocumentController
                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
             $respPeopleId = DynamicWidget::getData(basename(OrderTrainingWork::class), "responsible_id", $post);
-            $this->orderTrainingService->getFilesInstances($model);
+            $this->documentOrderService->getFilesInstances($model);
             $model->generateOrderNumber();
             $this->orderTrainingRepository->save($model);
             $status = $this->orderTrainingService->getStatus($model);
             //create
             $this->orderTrainingService->createOrderTrainingGroupParticipantEvent($model, $status, $post);
             //create
-            $this->orderTrainingService->saveFilesFromModel($model);
-            $this->orderMainService->addOrderPeopleEvent($respPeopleId, $model);
+            $this->documentOrderService->saveFilesFromModel($model);
+            $this->orderPeopleService->addOrderPeopleEvent($respPeopleId, $model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -108,23 +112,24 @@ class OrderTrainingController extends DocumentController
     {
         $model = $this->orderTrainingRepository->get($id);
         $this->orderTrainingService->setBranch($model);
-        $people = $this->peopleRepository->getOrderedList();
+        $people = $this->peopleStampRepository->getAll();
         $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
         $post = Yii::$app->request->post();
         $number = $model->order_number;
         $groups = $this->orderTrainingService->getGroupsDataProvider($model);
         $groupParticipant = $this->orderTrainingService->getParticipantsDataProvider($model);
         $transferGroups = $this->trainingGroupRepository->getByBranchQuery($model->branch)->all();
+        $tables = $this->documentOrderService->getUploadedFilesTables($model);
         if ($model->load($post) && $model->validate()) {
-            $this->orderTrainingService->getFilesInstances($model);
+            $this->documentOrderService->getFilesInstances($model);
             $model->order_number = $number;
             $this->orderTrainingRepository->save($model);
             $status = $this->orderTrainingService->getStatus($model);
             //update
             $this->orderTrainingService->updateOrderTrainingGroupParticipantEvent($model, $status, $post);
             //update
-            $this->orderTrainingService->saveFilesFromModel($model);
-            $this->orderTrainingService->updateOrderPeopleEvent(
+            $this->documentOrderService->saveFilesFromModel($model);
+            $this->orderPeopleService->updateOrderPeopleEvent(
                 ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
                 $post["OrderTrainingWork"]["responsible_id"], $model);
             $model->releaseEvents();
@@ -135,7 +140,9 @@ class OrderTrainingController extends DocumentController
             'people' => $people,
             'groups' => $groups,
             'groupParticipant' => $groupParticipant,
-            'transferGroups' => $transferGroups
+            'transferGroups' => $transferGroups,
+            'scanFile' => $tables['scan'],
+            'docFiles' => $tables['docs'],
         ]);
     }
     public function actionGetListByBranch()
