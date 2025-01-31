@@ -3,7 +3,9 @@
 /* @var $model */
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use yii\grid\GridView;
-echo GridView::widget([
+?>
+<div class = "training-group">
+<?= GridView::widget([
     'dataProvider' => $dataProvider,
     'columns' => [
         [
@@ -26,3 +28,4 @@ echo GridView::widget([
     ],
 ]);
 ?>
+</div>

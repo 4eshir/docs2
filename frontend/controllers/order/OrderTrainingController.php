@@ -159,14 +159,15 @@ class OrderTrainingController extends DocumentController
             'query' => $groupsQuery,
         ]);
         return $this->asJson([
-            'gridHtml' => $this->renderPartial('_groups_grid', [
+            'gridHtml' => $this->renderPartial('@frontend/components/views/_groups_grid', [
                 'dataProvider' => $dataProvider,
                 'model' => $this->orderTrainingRepository->get($modelId)
             ]),
         ]);
     }
-    public function actionGetGroupParticipantsByBranch($groupIds)
+    public function actionGetGroupParticipantsByBranch()
     {
+        $groupIds = Yii::$app->request->get('groupIds');
         $modelId = Yii::$app->request->get('modelId');
 
         $groupIds = json_decode($groupIds);
@@ -212,7 +213,7 @@ class OrderTrainingController extends DocumentController
             }
         }
         return $this->asJson([
-            'gridHtml' => $this->renderPartial('_group-participant_grid', [
+            'gridHtml' => $this->renderPartial('@frontend/components/views/_group-participant_grid', [
                 'dataProvider' => $dataProvider,
                 'model' => $this->orderTrainingRepository->get($modelId),
                 'nomenclature' => $nomenclature,
