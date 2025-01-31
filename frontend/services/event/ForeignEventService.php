@@ -79,7 +79,7 @@ class ForeignEventService
 
             $model->recordEvent(
                 new FileCreateEvent(
-                    ForeignEventWork::tableName(),
+                    ActParticipantWork::tableName(),
                     $model->actParticipant->id,
                     FilesHelper::TYPE_MATERIAL,
                     $filename,

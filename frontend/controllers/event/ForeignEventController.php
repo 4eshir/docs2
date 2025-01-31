@@ -84,9 +84,9 @@ class ForeignEventController extends DocumentController
         ]);
     }
 
-    public function actionUpdateParticipant($actId)
+    public function actionUpdateParticipant($id, $modelId)
     {
-        $form = new EventParticipantForm($actId);
+        $form = new EventParticipantForm($id);
 
         if ($form->load(Yii::$app->request->post())) {
             if (!$form->validate()) {
@@ -98,7 +98,7 @@ class ForeignEventController extends DocumentController
             $form->save();
             $form->releaseEvents();
 
-            return $this->redirect(['update', 'id' => $actId]);
+            return $this->redirect(['update', 'id' => $modelId]);
         }
 
         return $this->render('update-participant', [
