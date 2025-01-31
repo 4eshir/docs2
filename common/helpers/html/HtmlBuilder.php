@@ -328,9 +328,9 @@ class HtmlBuilder
                 </div>";
     }
 
-    public static function createSVGLink($link)
+    public static function createSVGLink($url)
     {
-        preg_match('/href="([^"]+)"/', $link, $filePath);
+        preg_match('/href="([^"]+)"/', $url, $filePath);
         $svgFile = FilePaths::FILE_DOWNLOAD_SVG;
         if(empty($filePath[1]))
         {
