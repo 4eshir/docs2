@@ -182,11 +182,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const input = document.createElement('input');
         input.type = 'text';
         input.value = currentPage;
-        input.style.width = '2em';
-        input.style.textAlign = 'center';
+        const textNode = document.createTextNode(`/  ${totalPages} `);
 
         currentPageItem.innerHTML = '';
         currentPageItem.appendChild(input);
+        currentPageItem.appendChild(textNode);
 
         input.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {

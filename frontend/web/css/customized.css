@@ -428,3 +428,21 @@ body {
 .table tbody td:last-child div:not(:last-child) {
     margin-bottom: 0.1em;
 }
+
+.pagination .active {
+    font-weight: 400;
+    padding-right: 1em;
+    display: flex;
+    justify-content: space-between;
+    width: 5em;
+}
+
+.pagination .active input {
+    width: 1.5em;
+    text-align: center;
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+
+.pagination .active input:focus-visible {
+    outline: inherit;
+}

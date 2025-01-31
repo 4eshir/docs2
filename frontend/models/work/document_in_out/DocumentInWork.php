@@ -91,6 +91,24 @@ class DocumentInWork extends DocumentIn
         $entity->scan = $scan;
     }
 
+    public function getFullScan()
+    {
+        $result = HtmlBuilder::createSVGLink('#');
+        return $result;
+    }
+
+    public function getFullDoc()
+    {
+        $result = HtmlBuilder::createSVGLink('#');
+        return $result;
+    }
+
+    public function getFullApp()
+    {
+        $result = HtmlBuilder::createSVGLink('#');
+        return $result;
+    }
+
     public function getFullName()
     {
         return "Входящее № {$this->getFullNumber()} от {$this->getLocalDate()} из {$this->getCompanyShortName()} \"{$this->getDocumentTheme()}\"";

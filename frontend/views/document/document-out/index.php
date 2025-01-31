@@ -134,3 +134,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 
+<?php
+$this->registerJs(<<<JS
+            let totalPages = "{$dataProvider->pagination->pageCount}"; 
+        JS, $this::POS_HEAD);
+?>
+
+
