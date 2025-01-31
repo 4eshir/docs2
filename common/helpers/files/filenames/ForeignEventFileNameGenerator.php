@@ -8,6 +8,7 @@ use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\repositories\general\FilesRepository;
 use DomainException;
+use frontend\forms\event\EventParticipantForm;
 use frontend\forms\event\ForeignEventForm;
 use frontend\models\work\general\FilesWork;
 use InvalidArgumentException;
@@ -62,10 +63,13 @@ class ForeignEventFileNameGenerator implements FileNameGeneratorInterface
                 return $this->generateActFileName($object, $params);
             case FilesHelper::TYPE_DOC:
                 return $this->generateAchievementFileName($object, $params);
+            case FilesHelper::TYPE_MATERIAL:
+                return $this->generateMaterialFileName($object, $params);
             default:
                 throw new InvalidArgumentException('Неизвестный тип файла');
         }
     }
+
     private function generateActFileName($object, $params = [])
     {
         if (!array_key_exists('counter', $params)) {
@@ -95,5 +99,18 @@ class ForeignEventFileNameGenerator implements FileNameGeneratorInterface
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
         $res = StringFormatter::CutFilename($res);
         return $res . '.' . $object->doc->extension;
+    }
+
+    private function generateMaterialFileName($object, $params = [])
+    {
+        /** @var EventParticipantForm $object */
+        $date = $object->getEventStartDate();
+        $new_date = DateFormatter::format($date, DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator);
+        $filename =
+            $object->getParticipantSurname().'_'.$new_date.'_'.$object->getForeignEventName();
+        $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
+        $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
+        $res = StringFormatter::CutFilename($res);
+        return $res . '.' . $object->fileMaterial->extension;
     }
 }

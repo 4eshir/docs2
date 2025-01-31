@@ -175,7 +175,11 @@ class ForeignEventForm extends Model
                 HtmlBuilder::createButtonsArray(
                     'Редактировать',
                     Url::to('update-participant'),
-                    ['id' => ArrayHelper::getColumn($squads, 'id')])
+                    [
+                        'id' => ArrayHelper::getColumn($squads, 'act_participant_id'),
+                        'modelId' => ArrayHelper::getColumn($squads, 'actParticipantWork.foreign_event_id')
+                    ]
+                ),
             ]
         );
     }
@@ -264,10 +268,10 @@ class ForeignEventForm extends Model
     {
         /** @var OrderEventWork $order */
         $order = (Yii::createObject(OrderEventRepository::class))->get($this->addOrderParticipant);
-        return StringFormatter::stringAsLink(
+        return $order ? StringFormatter::stringAsLink(
             $order->getFullName(),
             Url::to(['/order/order-event/view', 'id' => $order->id])
-        );
+        ) : '';
     }
 
     /**

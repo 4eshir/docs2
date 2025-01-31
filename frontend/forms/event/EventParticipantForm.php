@@ -3,6 +3,8 @@
 namespace frontend\forms\event;
 
 use app\models\work\team\ActParticipantWork;
+use app\models\work\team\SquadParticipantWork;
+use common\components\dictionaries\base\BranchDictionary;
 use common\events\EventTrait;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
@@ -23,6 +25,7 @@ class EventParticipantForm extends Model
     public ActParticipantWork $actParticipant;
 
     public array $branches;
+    public $form;
     public $fileMaterial;
     public $fileMaterialTable;
 
@@ -44,8 +47,17 @@ class EventParticipantForm extends Model
 
         $this->actParticipant = $this->actParticipantRepository->get($actParticipantId);
         $this->branches = ArrayHelper::getColumn(
-            $this->actParticipantRepository->getParticipantBranches($actParticipantId), 'branches'
+            $this->actParticipantRepository->getParticipantBranches($actParticipantId), 'branch'
         );
+
+        $this->fileMaterialTable = $this->fillTable();
+    }
+
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            [['form'], 'integer']
+        ]);
     }
 
     public function fillTable()
@@ -59,13 +71,31 @@ class EventParticipantForm extends Model
                 HtmlBuilder::createButtonsArray(
                     'Удалить',
                     Url::to('delete-file'),
-                    ['modelId' => array_fill(0, count($materials), $this->actParticipant->id), 'fileId' => ArrayHelper::getColumn($materials, 'id')])
+                    ['modelId' => array_fill(0, count($materials), $this->actParticipant->foreign_event_id), 'fileId' => ArrayHelper::getColumn($materials, 'id')])
             ]
         );
     }
 
+    public function getParticipantSurname()
+    {
+        /** @var SquadParticipantWork[] $squad */
+        $squad = $this->squadParticipantRepository->getAllByActId($this->actParticipant->id);
+        return $squad[0]->participantWork->surname;
+    }
+
     public function save()
     {
+        $this->actParticipant->form = $this->form;
         $this->actParticipantRepository->save($this->actParticipant);
+    }
+
+    public function getEventStartDate()
+    {
+        return $this->actParticipant->foreignEventWork->begin_date;
+    }
+
+    public function getForeignEventName()
+    {
+        return $this->actParticipant->foreignEventWork->name;
     }
 }

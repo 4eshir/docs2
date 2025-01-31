@@ -2,23 +2,22 @@
 
 namespace app\models\work\team;
 
+use app\models\work\event\ForeignEventWork;
 use common\events\EventTrait;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
 use common\models\scaffold\ActParticipant;
-use common\models\scaffold\SquadParticipant;
-use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 use Yii;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 /**
  * @property PeopleStampWork $teacherWork
  * @property PeopleStampWork $teacher2Work
  * @property TeamNameWork $teamNameWork
+ * @property ForeignEventWork $foreignEventWork
  */
 class ActParticipantWork extends ActParticipant
 {
@@ -145,7 +144,7 @@ class ActParticipantWork extends ActParticipant
     }
 
     public function getFormName(){
-        return Yii::$app->eventWay->get($this->form);
+        return Yii::$app->allowRemote->get($this->form);
     }
 
     public function getFileLinks($filetype)
@@ -210,5 +209,10 @@ class ActParticipantWork extends ActParticipant
     public function getTeacher2Work()
     {
         return $this->hasOne(PeopleStampWork::class, ['id' => 'teacher2_id']);
+    }
+
+    public function getForeignEventWork()
+    {
+        return $this->hasOne(ForeignEventWork::class, ['id' => 'foreign_event_id']);
     }
 }

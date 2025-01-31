@@ -264,7 +264,7 @@ use yii\jui\DatePicker;
         ?>
     </div>
 
-    <?= $form->field($model, 'orderParticipant')->textInput(['readonly' => true, 'value' => $model->orderParticipant->names])->label('Приказ об участии'); ?>
+    <?= $form->field($model, 'orderParticipant')->textInput(['readonly' => true, 'value' => $model->orderParticipant->getFullName()])->label('Приказ об участии'); ?>
 
     <?= $form->field($model, 'addOrderParticipant')
         ->dropDownList(ArrayHelper::map($orders9,'id','fullName'), ['prompt' => '---']);
