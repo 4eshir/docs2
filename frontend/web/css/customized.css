@@ -155,6 +155,7 @@ table th a svg {
 
 .table-striped > tbody > tr:nth-of-type(odd) > * {
     --bs-table-accent-bg: white;
+    --bs-table-bg-type: white;
 }
 
 .grid-view tbody tr:hover {
