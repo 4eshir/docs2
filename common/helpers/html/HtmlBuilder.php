@@ -330,18 +330,18 @@ class HtmlBuilder
 
     public static function createSVGLink($url)
     {
-        preg_match('/href="([^"]+)"/', $url, $filePath);
+        $title = 'скачать файл';
         $svgFile = FilePaths::FILE_DOWNLOAD_SVG;
-        if(empty($filePath[1]))
+        if($url === '#')
         {
             $svgFile = FilePaths::FILE_NO_DOWNLOAD_SVG;
-            $filePath = '#';
+            $title = 'файл отсутствует';
         }
         $svgContent = file_get_contents($svgFile);
 
 
         $result = '<div class="fileIcon">';
-        $result .= '<a href="' . $filePath[1] .'" class="download">' . $svgContent . '</a>';
+        $result .= '<a href="' . $url .'" class="download" title="'. $title.'">' . $svgContent . '</a>';
         $result .= '</div>';
         return $result;
     }

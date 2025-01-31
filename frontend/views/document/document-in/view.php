@@ -152,15 +152,10 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="card-set">
                 <div class="card-head">Файлы</div>
-                <div class="flexx" style="justify-content: space-evenly;">
-                    <div style="width: 50px;"><?= $model->getFullScan(); ?></div>
-                    <div style="width: 50px;"><?= $model->getFullDoc(); ?></div>
-                    <div style="width: 50px;"><?= $model->getFullApp(); ?></div>
-                </div>
-                <div class="flexx" style="justify-content: space-evenly;">
-                    <div>Сканы</div>
-                    <div>Редактируемые</div>
-                    <div>Приложения</div>
+                <div class="flexx files-section space-around">
+                    <div class="file-block-center"><?= $model->getFullScan(); ?><div>Сканы</div></div>
+                    <div class="file-block-center"><?= $model->getFullDoc(); ?><div>Редактируемые</div></div>
+                    <div class="file-block-center"><?= $model->getFullApp(); ?><div>Приложения</div></div>
                 </div>
             </div>
             <div class="card-set">
