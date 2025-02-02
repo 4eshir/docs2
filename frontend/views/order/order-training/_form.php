@@ -89,6 +89,10 @@ use yii\widgets\Pjax;
         }
     ?>
     <?= GroupParticipantWidget::widget([
+        'config' => [
+            'groupUrl' => 'get-group-by-branch',
+            'participantUrl' => 'get-group-participants-by-branch'
+        ],
         'dataProviderGroup' => $groups,
         'model' => $model,
         'dataProviderParticipant' => $groupParticipant,
@@ -156,3 +160,23 @@ use yii\widgets\Pjax;
 
         <?php ActiveForm::end(); ?>
 </div>
+<?php
+    $this->registerJs("
+            $('#branch-dropdown').on('change', function() {
+                var branchId = $(this).val();
+                $.ajax({
+                    url: '" . Url::to(['order/order-training/get-list-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
+                    type: 'GET',
+                    data: { branch_id: branchId },
+                    success: function(data) {
+                        var options;
+                        options = '<option value=\"\">---</option>';
+                        $.each(data, function(index, value) {
+                            options += '<option value=\"' + index + '\">' + value + '</option>';
+                        });
+                        $('#order-number-dropdown').html(options); // Обновляем второй выпадающий список
+                    }
+                });
+            });
+        ");
+?>

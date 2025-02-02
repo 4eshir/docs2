@@ -175,17 +175,17 @@ class OrderTrainingController extends DocumentController
             $nomenclature = Yii::$app->request->get('nomenclature');
             $status = NomenclatureDictionary::getStatus($nomenclature);
             //create
-            if ($status == 1){
+            if ($status == NomenclatureDictionary::ORDER_ENROLL){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantsToEnrollCreate($groupIds)
                 ]);
             }
-            if ($status == 2){
+            if ($status == NomenclatureDictionary::ORDER_DEDUCT){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantsToDeductCreate($groupIds)
                 ]);
             }
-            if ($status == 3){
+            if ($status == NomenclatureDictionary::ORDER_TRANSFER){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantsToTransferCreate($groupIds)
                 ]);
@@ -196,17 +196,17 @@ class OrderTrainingController extends DocumentController
             $model = $this->orderTrainingRepository->get($modelId);
             $status = $this->orderTrainingService->getStatus($model);
             $nomenclature = $model->getNomenclature();
-            if ($status == 1){
+            if ($status == NomenclatureDictionary::ORDER_ENROLL){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToEnrollUpdate($groupIds, $modelId)
                 ]);
             }
-            if ($status == 2) {
+            if ($status == NomenclatureDictionary::ORDER_DEDUCT) {
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToDeductUpdate($groupIds, $modelId)
                 ]);
             }
-            if ($status == 3){
+            if ($status == NomenclatureDictionary::ORDER_TRANSFER){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToTransferUpdate($groupIds, $modelId)
                 ]);

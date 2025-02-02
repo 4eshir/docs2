@@ -1,5 +1,6 @@
 <?php
 
+use common\components\dictionaries\base\NomenclatureDictionary;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
@@ -13,7 +14,7 @@ use yii\helpers\Html;
 <div class = "training-group-participant">
 <?php
 if ($dataProvider != NULL) {
-    if ($nomenclature != '11-31') {
+    if ($nomenclature != NomenclatureDictionary::CDNTT_TRANSFER) {
         // зачисление и отчисление
         echo GridView::widget([
             'dataProvider' => $dataProvider,

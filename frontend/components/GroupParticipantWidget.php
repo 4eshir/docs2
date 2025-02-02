@@ -9,15 +9,24 @@ use yii\helpers\Url;
 
 class GroupParticipantWidget extends Widget
 {
+    public $config;
     public $model;
     public $dataProviderGroup;
     public $dataProviderParticipant;
     public $nomenclature;
     public $transferGroups;
-    public $config;
     public function init()
     {
-        //обработка config-а
+        parent::init();
+        if ($this->config == NULL) {
+            throw new \InvalidArgumentException('Config must be set.');
+        }
+        if ($this->config['participantUrl'] == NULL) {
+            throw new \InvalidArgumentException('Url participant must be set.');
+        }
+        if ($this->config['groupUrl'] == NULL) {
+            throw new \InvalidArgumentException('Url group must be set.');
+        }
     }
     public function run(){
         $this->script();
@@ -33,6 +42,30 @@ class GroupParticipantWidget extends Widget
 
     public function script()
     {
+        $this->groupParticipantScript($this->config['participantUrl']);
+        $this->groupScript($this->config['groupUrl']);
+    }
+    public function groupScript($groupUrl){
+        //группы 'order/order-training/get-group-by-branch'
+        $this->getView()->registerJs("$('#branch-dropdown').on('change', function() {
+        var branchId = $(this).val();
+        $.ajax({
+            url:'" . Url::to([$groupUrl]) . "',
+            type: 'GET',
+            data: { branch: branchId },
+            success: function(data) {
+                var gridView = $('.training-group .grid-view'); 
+                console.log(gridView);
+                gridView.html(data.gridHtml); // Обновляем HTML GridView
+            },
+            error: function() {
+                alert('Ошибка при загрузке данных.');
+            }
+        });
+    });");
+    }
+    public function groupParticipantScript($participantUrl){
+        //участники 'get-group-participants-by-branch'
         if($this->model->id != NULL){
             $modelId = $this->model->id;
         }
@@ -49,7 +82,7 @@ class GroupParticipantWidget extends Widget
                 groupIds.push($(this).data('id')); // Собираем ID всех выбранных чекбоксов
             });  
             $.ajax({
-                url: '" . Url::to(['get-group-participants-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
+                url: '" . Url::to([$participantUrl]) . "', // Укажите ваш правильный путь к контроллеру
                 type: 'GET',
                 data: { 
                     groupIds: JSON.stringify(groupIds), 
@@ -66,41 +99,6 @@ class GroupParticipantWidget extends Widget
             });
         });");
         $this->getView()->registerJs("
-            $('#branch-dropdown').on('change', function() {
-                var branchId = $(this).val();
-                $.ajax({
-                    url: '" . Url::to(['order/order-training/get-list-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
-                    type: 'GET',
-                    data: { branch_id: branchId },
-                    success: function(data) {
-                        var options;
-                        options = '<option value=\"\">---</option>';
-                        $.each(data, function(index, value) {
-                            options += '<option value=\"' + index + '\">' + value + '</option>';
-                        });
-                        $('#order-number-dropdown').html(options); // Обновляем второй выпадающий список
-                    }
-                });
-            });
-        ");
-    $this->getView()->registerJs("$('#branch-dropdown').on('change', function() {
-        var branchId = $(this).val();
-        $.ajax({
-            url:'" . Url::to(['order/order-training/get-group-by-branch']) . "',
-            type: 'GET',
-            data: { branch: branchId },
-            success: function(data) {
-               
-                var gridView = $('.training-group .grid-view'); 
-                console.log(gridView);
-                gridView.html(data.gridHtml); // Обновляем HTML GridView
-            },
-            error: function() {
-                alert('Ошибка при загрузке данных.');
-            }
-        });
-    });");
-    $this->getView()->registerJs("
         window.onload = function () {
             const checkedCheckboxes = $('.group-checkbox:checked'); 
             const groupIds = [];
@@ -110,7 +108,7 @@ class GroupParticipantWidget extends Widget
                 groupIds.push($(this).data('id')); // Собираем ID всех выбранных чекбоксов
             });  
             $.ajax({
-                url: '" . Url::to(['get-group-participants-by-branch']) . "', // Укажите ваш правильный путь к контроллеру
+                url: '" . Url::to([$participantUrl]) . "', // Укажите ваш правильный путь к контроллеру
                 type: 'GET',
                 data: { 
                     groupIds: JSON.stringify(groupIds), 
