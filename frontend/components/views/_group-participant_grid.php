@@ -10,11 +10,12 @@ use yii\helpers\Html;
 /* @var $model \app\models\work\order\OrderTrainingWork*/
 /* @var $nomenclature */
 /* @var $transferGroups */
+/* @var $groupParticipantOption */
 ?>
 <div class = "training-group-participant">
 <?php
 if ($dataProvider != NULL) {
-    if ($nomenclature != NomenclatureDictionary::CDNTT_TRANSFER) {
+    if (NomenclatureDictionary::getStatus($nomenclature) != NomenclatureDictionary::ORDER_TRANSFER) {
         // зачисление и отчисление
         echo GridView::widget([
             'dataProvider' => $dataProvider,
@@ -22,12 +23,14 @@ if ($dataProvider != NULL) {
                 [
                     'class' => 'yii\grid\CheckboxColumn',
                     'name' => 'group-participant-selection',
-                    'checkboxOptions' => function (TrainingGroupParticipantWork $participant) use ($model) {
+                    'checkboxOptions' => function (TrainingGroupParticipantWork $participant) use ($model, $groupParticipantOption) {
+                        var_dump($groupParticipantOption[0], $groupParticipantOption[1]);
                         return [
                             'class' => 'group-participant-checkbox',
                             'training-group-id' => $participant->training_group_id,
                             'data-id' => $participant->id, // Добавляем ID группы для передачи в JS
-                            'checked' => $participant->getActivity($participant->id, $model->id) == 1
+                            /* 'checked' => $participant->getActivity($model->id) == 1 */
+                            'checked' => call_user_func_array([$participant, $groupParticipantOption[0]], $groupParticipantOption[1]) == 1
                         ];
                     },
                 ],
@@ -61,12 +64,13 @@ if ($dataProvider != NULL) {
                 [
                     'class' => 'yii\grid\CheckboxColumn',
                     'name' => 'group-participant-selection',
-                    'checkboxOptions' => function (TrainingGroupParticipantWork $participant) use ($model) {
+                    'checkboxOptions' => function (TrainingGroupParticipantWork $participant) use ($model, $groupParticipantOption) {
                         return [
                             'class' => 'group-participant-checkbox',
                             'training-group-id' => $participant->training_group_id,
                             'data-id' => $participant->id, // Добавляем ID группы для передачи в JS
-                            'checked' => $participant->getActivity($participant->id, $model->id) == 1,
+                            //'checked' => $participant->getActivity($participant->id, $model->id) == 1,
+                            'checked' => call_user_func_array([$participant, $groupParticipantOption[0]], $groupParticipantOption[1]) == 1
                         ];
                     },
                 ],

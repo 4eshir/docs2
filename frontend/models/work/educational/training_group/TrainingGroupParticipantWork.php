@@ -57,15 +57,15 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
     {
         $this->status = $status;
     }
-    public function getActivity($id, $orderId){
-        if($id != NULL && $orderId != NULL) {
+    public function getActivity($orderId){
+        if($this->id != NULL && $orderId != NULL) {
             if (
                 OrderTrainingGroupParticipantWork::find()
-                    ->andWhere(['training_group_participant_in_id' => $id])
+                    ->andWhere(['training_group_participant_in_id' => $this->id])
                     ->andWhere(['order_id' => $orderId])
                     ->count() +
                 OrderTrainingGroupParticipantWork::find()
-                    ->andWhere(['training_group_participant_out_id' => $id])
+                    ->andWhere(['training_group_participant_out_id' => $this->id])
                     ->andWhere(['order_id' => $orderId])
                     ->count() > 0
             ) {

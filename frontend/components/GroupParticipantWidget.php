@@ -4,17 +4,23 @@ namespace app\components;
 
 
 
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
 use yii\base\Widget;
 use yii\helpers\Url;
 
 class GroupParticipantWidget extends Widget
 {
+    public const GROUP_VIEW = '@frontend/components/views/_groups_grid';
+    public const GROUP_PARTICIPANT_VIEW = '@frontend/components/views/_group-participant_grid';
     public $config;
     public $model;
     public $dataProviderGroup;
     public $dataProviderParticipant;
     public $nomenclature;
     public $transferGroups;
+    public $groupCheckOption;
+    public $groupParticipantOption;
     public function init()
     {
         parent::init();
@@ -27,6 +33,12 @@ class GroupParticipantWidget extends Widget
         if ($this->config['groupUrl'] == NULL) {
             throw new \InvalidArgumentException('Url group must be set.');
         }
+        if (!method_exists(TrainingGroupParticipantWork::class, $this->groupParticipantOption[0])) {
+            throw new \InvalidArgumentException("Method {$this->groupParticipantOption[0]} does not exist.");
+        }
+        if (!method_exists(TrainingGroupWork::class, $this->groupCheckOption[0])) {
+            throw new \InvalidArgumentException("Method {$this->groupCheckOption[0]} does not exist.");
+        }
     }
     public function run(){
         $this->script();
@@ -37,9 +49,10 @@ class GroupParticipantWidget extends Widget
             'dataProviderParticipant' => $this->dataProviderParticipant,
             'nomenclature' => $this->nomenclature,
             'transferGroups' => $this->transferGroups,
+            'groupCheckOption' => $this->groupCheckOption,
+            'groupParticipantOption' => $this->groupParticipantOption,
         ]);
     }
-
     public function script()
     {
         $this->groupParticipantScript($this->config['participantUrl']);
@@ -52,7 +65,10 @@ class GroupParticipantWidget extends Widget
         $.ajax({
             url:'" . Url::to([$groupUrl]) . "',
             type: 'GET',
-            data: { branch: branchId },
+            data: { 
+                branch: branchId ,
+                groupCheckOption: JSON.stringify({$this->groupCheckOption})
+            },
             success: function(data) {
                 var gridView = $('.training-group .grid-view'); 
                 console.log(gridView);
@@ -87,7 +103,8 @@ class GroupParticipantWidget extends Widget
                 data: { 
                     groupIds: JSON.stringify(groupIds), 
                     modelId: modelId, 
-                    nomenclature: number
+                    nomenclature: number, 
+                    groupParticipantOption:  JSON.stringify({$this->groupParticipantOption}),
                 }, // Отправляем массив ID
                 success: function (data) {
                     var gridView = $('.training-group-participant .grid-view');
@@ -113,7 +130,8 @@ class GroupParticipantWidget extends Widget
                 data: { 
                     groupIds: JSON.stringify(groupIds), 
                     modelId: modelId, 
-                    nomenclature:  number
+                    nomenclature:  number,
+                    groupParticipantOption:  JSON.stringify({$this->groupParticipantOption}),
                 }, // Отправляем массив ID
                 success: function (data) {
                     var gridView = $('.training-group-participant .grid-view');

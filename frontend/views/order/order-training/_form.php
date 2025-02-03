@@ -98,6 +98,8 @@ use yii\widgets\Pjax;
         'dataProviderParticipant' => $groupParticipant,
         'nomenclature' => $model->getNomenclature(),
         'transferGroups' => $transferGroups,
+        'groupCheckOption' => ["getActivity", [$model->id]],
+        'groupParticipantOption' => ["getActivity" , [$model->id]],
     ]);
     ?>
 
