@@ -5,6 +5,7 @@ namespace frontend\models\work\document_in_out;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\models\scaffold\DocumentOut;
 use common\repositories\document_in_out\DocumentInRepository;
@@ -76,6 +77,25 @@ class DocumentOutWork extends DocumentOut
             [['appFile'], 'file', 'skipOnEmpty' => true,  'maxFiles' => 10,
                 'extensions' => 'ppt, pptx, xls, xlsx, pdf, png, jpg, doc, docx, zip, rar, 7z, tag, txt'],
         ]);
+    }
+
+
+    public function getFullScan()
+    {
+        $result = HtmlBuilder::createSVGLink('1#');
+        return $result;
+    }
+
+    public function getFullDoc()
+    {
+        $result = HtmlBuilder::createSVGLink('#');
+        return $result;
+    }
+
+    public function getFullApp()
+    {
+        $result = HtmlBuilder::createSVGLink('#');
+        return $result;
     }
 
     public function setValuesForUpdate()

@@ -3,6 +3,7 @@
 namespace frontend\controllers\order;
 
 use app\components\DynamicWidget;
+use app\components\GroupParticipantWidget;
 use app\models\search\SearchOrderTraining;
 use app\models\work\order\OrderTrainingWork;
 use app\services\order\DocumentOrderService;
@@ -153,38 +154,41 @@ class OrderTrainingController extends DocumentController
     }
     public function actionGetGroupByBranch($branch)
     {
+        $groupCheckOption = json_decode(Yii::$app->request->get('groupCheckOption'));
         $modelId = Yii::$app->request->get('modelId');
         $groupsQuery = $this->trainingGroupRepository->getByBranchQuery($branch);
         $dataProvider = new ActiveDataProvider([
             'query' => $groupsQuery,
         ]);
         return $this->asJson([
-            'gridHtml' => $this->renderPartial('_groups_grid', [
+            'gridHtml' => $this->renderPartial(GroupParticipantWidget::GROUP_VIEW, [
                 'dataProvider' => $dataProvider,
-                'model' => $this->orderTrainingRepository->get($modelId)
+                'model' => $this->orderTrainingRepository->get($modelId),
+                'groupCheckOption' => $groupCheckOption,
             ]),
         ]);
     }
-    public function actionGetGroupParticipantsByBranch($groupIds)
+    public function actionGetGroupParticipantsByBranch()
     {
+        $groupIds = Yii::$app->request->get('groupIds');
         $modelId = Yii::$app->request->get('modelId');
-
+        $groupParticipantOption = json_decode(Yii::$app->request->get('groupParticipantOption'));
         $groupIds = json_decode($groupIds);
         if ($modelId == 0){
             $nomenclature = Yii::$app->request->get('nomenclature');
             $status = NomenclatureDictionary::getStatus($nomenclature);
             //create
-            if ($status == 1){
+            if ($status == NomenclatureDictionary::ORDER_ENROLL){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantsToEnrollCreate($groupIds)
                 ]);
             }
-            if ($status == 2){
+            if ($status == NomenclatureDictionary::ORDER_DEDUCT){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantsToDeductCreate($groupIds)
                 ]);
             }
-            if ($status == 3){
+            if ($status == NomenclatureDictionary::ORDER_TRANSFER){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantsToTransferCreate($groupIds)
                 ]);
@@ -195,28 +199,29 @@ class OrderTrainingController extends DocumentController
             $model = $this->orderTrainingRepository->get($modelId);
             $status = $this->orderTrainingService->getStatus($model);
             $nomenclature = $model->getNomenclature();
-            if ($status == 1){
+            if ($status == NomenclatureDictionary::ORDER_ENROLL){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToEnrollUpdate($groupIds, $modelId)
                 ]);
             }
-            if ($status == 2) {
+            if ($status == NomenclatureDictionary::ORDER_DEDUCT) {
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToDeductUpdate($groupIds, $modelId)
                 ]);
             }
-            if ($status == 3){
+            if ($status == NomenclatureDictionary::ORDER_TRANSFER){
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToTransferUpdate($groupIds, $modelId)
                 ]);
             }
         }
         return $this->asJson([
-            'gridHtml' => $this->renderPartial('_group-participant_grid', [
+            'gridHtml' => $this->renderPartial(GroupParticipantWidget::GROUP_PARTICIPANT_VIEW, [
                 'dataProvider' => $dataProvider,
                 'model' => $this->orderTrainingRepository->get($modelId),
                 'nomenclature' => $nomenclature,
-                'transferGroups' => $this->trainingGroupRepository->getById($groupIds)
+                'transferGroups' => $this->trainingGroupRepository->getById($groupIds),
+                'groupParticipantOption' => $groupParticipantOption,
             ]),
         ]);
     }
