@@ -4,6 +4,8 @@
 namespace common\repositories\event;
 
 
+use DomainException;
+use frontend\forms\event\ParticipantAchievementForm;
 use frontend\models\work\event\ParticipantAchievementWork;
 use Yii;
 
@@ -27,5 +29,19 @@ class ParticipantAchievementRepository
         $command = Yii::$app->db->createCommand();
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
+    }
+
+    public function save(ParticipantAchievementWork $achievement)
+    {
+        if (!$achievement->save()) {
+            throw new DomainException('Ошибка сохранения положения. Проблемы: '.json_encode($achievement->getErrors()));
+        }
+
+        return $achievement->id;
+    }
+
+    public function delete(ParticipantAchievementWork $achievement)
+    {
+        return $achievement->delete();
     }
 }

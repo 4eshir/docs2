@@ -33,7 +33,8 @@ class EventParticipantForm extends Model
         $actParticipantId,
         ActParticipantRepository $actParticipantRepository = null,
         SquadParticipantRepository $squadParticipantRepository = null,
-        $config = [])
+        $config = []
+    )
     {
         parent::__construct($config);
         if (!$actParticipantRepository) {

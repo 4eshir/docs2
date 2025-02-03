@@ -165,7 +165,7 @@ class ActParticipantWork extends ActParticipant
     public function getString()
     {
         return 'Направленность: ' . Yii::$app->focus->get($this->focus) . '; Номинация: ' .
-            (is_null($this->nomination) ? $this->nomination : 'нет') . '; ' .
+            (!is_null($this->nomination) ? $this->nomination : 'нет') . '; ' .
             ($this->team_name_id ? 'Командное участие' : 'Индивидуальное участие');
     }
 
@@ -184,6 +184,19 @@ class ActParticipantWork extends ActParticipant
         }
 
         return $result;
+    }
+
+    public function getActString()
+    {
+        $name = $this->team_name_id ? "Команда: {$this->teamNameWork->name}" : $this->squadParticipants[0]->participantWork->getFullFio();
+        return $name. ' (' . $this->getString(). ')';
+    }
+
+    public function getSquadName()
+    {
+        return 'Редактировать: ' . $this->team_name_id ?
+            'Команда ' . $this->teamNameWork->name :
+            $this->getParticipants()[0]->participantWork->getFIO(PeopleWork::FIO_FULL);
     }
 
     public function getBranches()

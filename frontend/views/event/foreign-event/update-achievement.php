@@ -1,22 +1,54 @@
 <?php
 
-use app\models\work\team\ActParticipantWork;
+use frontend\forms\event\ParticipantAchievementForm;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use app\models\work\TeacherParticipantBranchWork;
-use yii\jui\DatePicker;
 
 /* @var $this yii\web\View */
-/* @var $model ActParticipantWork */
+/* @var $model ParticipantAchievementForm */
 
-$tPart = \app\models\work\TeacherParticipantWork::find()->where(['id' => $model->teacher_participant_id])->one();
 
-$this->title = 'Редактировать: ' . $tPart->actString;
-$this->params['breadcrumbs'][] = ['label' => 'Учет достижений в мероприятиях', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => mb_substr($tPart->foreignEventWork->name, 0, 25, 'UTF-8').'...', 'url' => ['foreign-event/update', 'id' => $tPart->foreignEventWork->id]];
-$this->params['breadcrumbs'][] = ['label' => $tPart->participantWork->fullName, 'url' => ['foreign-event-participants/view', 'id' => $tPart->participant_id]];
-$this->params['breadcrumbs'][] = 'Редактирование';
+$this->title = $model->entity->actParticipantWork->getSquadName();
+
+$this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<div class="teacher-participant-update">
+
+    <h1><?= Html::encode($this->title) ?></h1>
+
+    <?php $form = ActiveForm::begin(); ?>
+
+    <?= $form->field($model, 'achievement')->textInput()->label('Достижение'); ?>
+    <?= $form->field($model, 'certNumber')->textInput()->label('Номер наградного документа'); ?>
+    <?= $form->field($model, 'date')->textInput([
+        'type' => 'date',
+        'class' => 'form-control'
+    ])->label('Дата наградного документа'); ?>
+
+    <div class="toggle-wrapper form-group field-participantachievementwork-type">
+        <input type="hidden" name="ParticipantAchievementWork[type]" value="0">
+        <input
+            type="checkbox"
+            value="1"
+            id="participantachievementwork-type"
+            class="toggle-checkbox"
+            name="ParticipantAchievementWork[type]" <?= $model->type == 1 ? "checked" : "" ?>>
+        <span class="toggle-icon off">Призер</span>
+        <div class="toggle-container">
+            <div class="toggle-button"></div>
+        </div>
+        <span class="toggle-icon on">Победитель</span>
+        <div class="help-block"></div>
+    </div>
+
+    <div class="form-group">
+        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
+    </div>
+
+    <?php ActiveForm::end(); ?>
+
+</div>
 
 <style type="text/css">
     .toggle-wrapper {
@@ -90,63 +122,3 @@ $this->params['breadcrumbs'][] = 'Редактирование';
      }
     }
 </style>
-
-<div class="teacher-participant-update">
-
-    <h1 style="margin-bottom: 50px;"><?= Html::encode($this->title) ?></h1>
-
-    <?php $form = ActiveForm::begin(); ?>
-
-
-    <?php
-
-    echo $form->field($model, 'achievment')->textInput();
-
-    ?>
-
-    <?php
-
-    echo $form->field($model, 'cert_number')->textInput();
-
-    ?>
-
-    <?= $form->field($model, 'date')->widget(DatePicker::class, [
-        'dateFormat' => 'php:Y-m-d',
-        'language' => 'ru',
-        'options' => [
-            'placeholder' => 'Дата',
-            'class'=> 'form-control date_achieve',
-            'autocomplete'=>'off'
-
-        ],
-        'clientOptions' => [
-            'changeMonth' => true,
-            'changeYear' => true,
-            'yearRange' => '2000:2050',
-        ]]) ?>
-
-    <?php
-    $checked = $model->winner == 1 ? 'checked' : '';
-    echo '<div class="toggle-wrapper form-group field-participantachievementwork-winner">
-                <input type="hidden" name="ParticipantAchievementWork[winner]" value="0">
-                <input type="checkbox" value="1" id="participantachievementwork-winner" class="toggle-checkbox" name="ParticipantAchievementWork[winner]" '.$checked.'>
-                <span class="toggle-icon off">Призер</span>
-                <div class="toggle-container">
-                    <div class="toggle-button"></div>
-                </div>
-                <span class="toggle-icon on">Победитель</span>
-                <div class="help-block"></div>
-           </div>';
-
-    ?>
-
-    <div class="form-group">
-        <div class="button">
-
-            <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
-        </div>
-    </div>
-
-    <?php ActiveForm::end(); ?>
-
-</div>

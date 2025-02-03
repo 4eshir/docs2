@@ -24,7 +24,7 @@ class SquadParticipantWork extends SquadParticipant
 
     public function getActString()
     {
-        return $this->participantWork->getFullFio() . '(' . $this->actParticipantWork->getString(). ')';
+        return $this->participantWork->getFullFio() . ' (' . $this->actParticipantWork->getString(). ')';
     }
 
     public function getActParticipantWork()

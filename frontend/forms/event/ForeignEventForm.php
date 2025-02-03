@@ -67,8 +67,10 @@ class ForeignEventForm extends Model
     /**
      * @var SquadParticipantWork[] $squadParticipantsModel
      * @var ParticipantAchievementWork[] $oldAchievementsModel
+     * @var ActParticipantWork[] $oldAchievementsModel
      */
     public array $squadParticipantsModel;
+    public array $actsParticipantModel;
     public array $oldAchievementsModel;
     public string $oldAchievements;
 
@@ -84,6 +86,7 @@ class ForeignEventForm extends Model
     /** @var ParticipantAchievementWork[] $newAchievements */
     public array $newAchievements;
 
+    private ActParticipantRepository $actParticipantRepository;
     private ParticipantAchievementRepository $achievementRepository;
     private OrderEventRepository $orderEventRepository;
     private ForeignEventRepository $foreignEventRepository;
@@ -91,6 +94,7 @@ class ForeignEventForm extends Model
 
     public function __construct(
         $foreignEventId,
+        ActParticipantRepository $actParticipantRepository = null,
         ParticipantAchievementRepository $achievementRepository = null,
         OrderEventRepository $orderEventRepository = null,
         ForeignEventRepository $foreignEventRepository = null,
@@ -98,6 +102,9 @@ class ForeignEventForm extends Model
         $config = [])
     {
         parent::__construct($config);
+        if (is_null($actParticipantRepository)) {
+            $actParticipantRepository = Yii::createObject(ActParticipantRepository::class);
+        }
         if (is_null($achievementRepository)) {
             $achievementRepository = Yii::createObject(ParticipantAchievementRepository::class);
         }
@@ -110,6 +117,7 @@ class ForeignEventForm extends Model
         if (is_null($squadParticipantRepository)) {
             $squadParticipantRepository = Yii::createObject(SquadParticipantRepository::class);
         }
+        $this->actParticipantRepository = $actParticipantRepository;
         $this->achievementRepository = $achievementRepository;
         $this->orderEventRepository = $orderEventRepository;
         $this->foreignEventRepository = $foreignEventRepository;
@@ -132,6 +140,7 @@ class ForeignEventForm extends Model
         $this->minAge = $event->min_age;
         $this->maxAge = $event->max_age;
         $this->orderParticipant = $order;
+        $this->actsParticipantModel = $this->actParticipantRepository->getByForeignEventId($foreignEventId);
         $this->squadParticipantsModel = $this->squadParticipantRepository->getAllFromEvent($foreignEventId);
         $this->squadParticipants = $this->fillActParticipants($foreignEventId);
         $this->oldAchievements = $this->fillOldAchievements($foreignEventId);
@@ -207,11 +216,19 @@ class ForeignEventForm extends Model
                 HtmlBuilder::createButtonsArray(
                     'Редактировать',
                     Url::to('update-achievement'),
-                    ['id' => ArrayHelper::getColumn($achievements, 'id')]),
+                    [
+                        'id' => ArrayHelper::getColumn($achievements, 'id'),
+                        'modelId' => ArrayHelper::getColumn($achievements, 'actParticipantWork.foreign_event_id')
+                    ]
+                ),
                 HtmlBuilder::createButtonsArray(
                     'Удалить',
                     Url::to('delete-achievement'),
-                    ['id' => ArrayHelper::getColumn($achievements, 'id')])
+                    [
+                        'id' => ArrayHelper::getColumn($achievements, 'id'),
+                        'modelId' => ArrayHelper::getColumn($achievements, 'actParticipantWork.foreign_event_id')
+                    ]
+                )
             ]
         );
     }

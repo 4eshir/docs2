@@ -37,7 +37,8 @@
         "wbraganca/yii2-dynamicform": "*",
         "kartik-v/yii2-widget-select2": "dev-master",
         "unclead/yii2-multiple-input": "~2.0",
-        "kidzen/yii2-dynamicform": "*"
+        "kidzen/yii2-dynamicform": "*",
+        "hidehalo/nanoid-php": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

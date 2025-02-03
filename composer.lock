@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e927cb71636855f42e69ada715d92b04",
+    "content-hash": "9bc9257169cd2db1b22fa3f27ab31f29",
     "packages": [
         {
             "name": "arhitector/yandex",
@@ -727,6 +727,63 @@
                 }
             ],
             "time": "2024-07-18T11:15:46+00:00"
+        },
+        {
+            "name": "hidehalo/nanoid-php",
+            "version": "2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hidehalo/nanoid-php.git",
+                "reference": "3aa4f874d36e2368a57b2ad4c9ca1abe13514e66"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hidehalo/nanoid-php/zipball/3aa4f874d36e2368a57b2ad4c9ca1abe13514e66",
+                "reference": "3aa4f874d36e2368a57b2ad4c9ca1abe13514e66",
+                "shasum": ""
+            },
+            "require": {
+                "paragonie/random_compat": ">=2.0",
+                "php": "~7.1|~8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=5.6",
+                "squizlabs/php_codesniffer": "^2.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Hidehalo\\Nanoid\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "hidehalo",
+                    "email": "tianchen_cc@yeah.net",
+                    "homepage": "https://github.com/hidehalo",
+                    "role": "Owner"
+                }
+            ],
+            "description": "A copy of nanoid in PHP",
+            "homepage": "https://github.com/hidehalo/nanoid-php",
+            "keywords": [
+                "hidehalo",
+                "nanoid-php"
+            ],
+            "support": {
+                "issues": "https://github.com/hidehalo/nanoid-php/issues",
+                "source": "https://github.com/hidehalo/nanoid-php/tree/2.0"
+            },
+            "time": "2024-11-04T03:00:05+00:00"
         },
         {
             "name": "kartik-v/yii2-bootstrap4-dropdown",
@@ -8521,18 +8578,18 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "arhitector/yandex": 20,
+        "kartik-v/yii2-export": 20,
+        "yiisoft/yii2-bootstrap4": 20,
         "kartik-v/yii2-bootstrap4-dropdown": 20,
         "kartik-v/yii2-date-range": 20,
-        "kartik-v/yii2-export": 20,
-        "kartik-v/yii2-widget-select2": 20,
-        "yiisoft/yii2-bootstrap4": 20
+        "arhitector/yandex": 20,
+        "kartik-v/yii2-widget-select2": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.4.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

@@ -5,12 +5,14 @@ namespace frontend\controllers\event;
 use common\controllers\DocumentController;
 use common\Model;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\event\ParticipantAchievementRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\order\OrderEventRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\forms\event\EventParticipantForm;
 use frontend\forms\event\ForeignEventForm;
+use frontend\forms\event\ParticipantAchievementForm;
 use frontend\models\search\SearchForeignEvent;
 use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\general\PeopleWork;
@@ -23,6 +25,7 @@ class ForeignEventController extends DocumentController
     private ForeignEventService $service;
     private OrderEventRepository $orderEventRepository;
     private PeopleRepository $peopleRepository;
+    private ParticipantAchievementRepository $achievementRepository;
 
     public function __construct(
         $id,
@@ -30,12 +33,14 @@ class ForeignEventController extends DocumentController
         ForeignEventService $service,
         OrderEventRepository $orderEventRepository,
         PeopleRepository $peopleRepository,
+        ParticipantAchievementRepository $achievementRepository,
         $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->service = $service;
         $this->orderEventRepository = $orderEventRepository;
         $this->peopleRepository = $peopleRepository;
+        $this->achievementRepository = $achievementRepository;
     }
 
     public function actionIndex()
@@ -56,9 +61,10 @@ class ForeignEventController extends DocumentController
         if ($form->load(Yii::$app->request->post())) {
             $modelAchievements = Model::createMultiple(ParticipantAchievementWork::classname());
             Model::loadMultiple($modelAchievements, Yii::$app->request->post());
-            if (Model::validateMultiple($modelAchievements, ['act_participant_id', 'achievement', 'cert_number', 'date'])) {
+            if (Model::validateMultiple($modelAchievements, ['act_participant_id', 'achievement', 'cert_number', 'date', 'type'])) {
                 $form->newAchievements = $modelAchievements;
             }
+
             $this->service->attachAchievement($form);
             $this->service->getFilesInstances($form);
             $this->service->saveAchievementFileFromModel($form);
@@ -104,5 +110,38 @@ class ForeignEventController extends DocumentController
         return $this->render('update-participant', [
             'model' => $form
         ]);
+    }
+
+    public function actionUpdateAchievement($id, $modelId)
+    {
+        $form = new ParticipantAchievementForm($id);
+
+        if ($form->load(Yii::$app->request->post())) {
+            if (!$form->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($form->getErrors()));
+            }
+
+            $form->save();
+            return $this->redirect(['update', 'id' => $modelId]);
+        }
+
+        return $this->render('update-achievement', [
+            'model' => $form
+        ]);
+    }
+
+    public function actionDeleteAchievement($id, $modelId)
+    {
+        /** @var ParticipantAchievementWork $model */
+        $model = $this->achievementRepository->get($id);
+        $result = $this->achievementRepository->delete($model);
+        if ($result) {
+            Yii::$app->session->setFlash('success', 'Достижение успешно удалено');
+        }
+        else {
+            Yii::$app->session->setFlash('danger', 'Возникла ошибка при удалении достижения');
+        }
+
+        return $this->redirect(['update', 'id' => $modelId]);
     }
 }

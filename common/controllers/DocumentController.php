@@ -9,8 +9,10 @@ use DomainException;
 use frontend\events\general\FileDeleteEvent;
 use frontend\helpers\HeaderWizard;
 use frontend\models\work\general\FilesWork;
+use Hidehalo\Nanoid\Client;
 use Yii;
 use yii\web\Controller;
+use ZipArchive;
 
 /**
  * Контроллер, хранящий в себе общий для всего документооборота функционал
@@ -45,6 +47,39 @@ class DocumentController extends Controller
             $data['obj']->file->download($fp);
             fseek($fp, 0);
         }
+    }
+
+    public function actionGetFiles(array $filepaths)
+    {
+        $zipFileName = 'files.zip';
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'zip_' . (Yii::createObject(Client::class))->generateId(21));
+        if ($tempFile === false) {
+            throw new \RuntimeException('Не удалось создать временный файл.');
+        }
+
+        $zip = new ZipArchive();
+        if ($zip->open($tempFile, ZipArchive::CREATE) !== true) {
+            unlink($tempFile);
+            throw new \RuntimeException('Не удалось создать архив.');
+        }
+
+        foreach ($filepaths as $path) {
+            $fileData = $this->fileService->downloadFile($path);
+
+            if ($fileData['type'] == FilesHelper::FILE_SERVER) {
+                $filename = FilesHelper::getFilenameFromPath($path);
+                $zip->addFile($fileData['obj']->file, $filename);
+            } else {
+                $filename = FilesHelper::getFilenameFromPath($fileData['obj']->filepath);
+                $content = file_get_contents($fileData['obj']->file);
+                $zip->addFromString($filename, $content);
+            }
+        }
+
+        $zip->close();
+        Yii::$app->response->sendFile($tempFile, $zipFileName);
+        unlink($tempFile);
     }
 
     public function actionDeleteFile($modelId, $fileId)

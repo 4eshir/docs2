@@ -93,7 +93,7 @@ class DocumentInWork extends DocumentIn
 
     public function getFullScan()
     {
-        $result = HtmlBuilder::createSVGLink('1#');
+        $result = HtmlBuilder::createSVGLink('#');
         return $result;
     }
 

@@ -121,6 +121,7 @@ class ForeignEventService
     {
         foreach ($form->newAchievements as $participantAchievement) {
             $participantAchievement->date = DateFormatter::format($participantAchievement->date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
+            var_dump($participantAchievement->attributes);
             $form->recordEvent(
                 new ParticipantAchievementEvent($participantAchievement),
                 get_class($participantAchievement)

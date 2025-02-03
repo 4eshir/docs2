@@ -10,9 +10,7 @@ use yii\widgets\ActiveForm;
 /* @var $model EventParticipantForm */
 
 
-$this->title = 'Редактировать: ' . $model->actParticipant->team_name_id ?
-    'Команда ' . $model->actParticipant->teamNameWork->name :
-    $model->actParticipant->getParticipants()[0]->participantWork->getFIO(PeopleWork::FIO_FULL);
+$this->title = $model->actParticipant->getSquadName();
 
 $this->params['breadcrumbs'][] = $this->title;
 ?>

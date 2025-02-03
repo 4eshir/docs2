@@ -202,7 +202,7 @@ use yii\jui\DatePicker;
                             <div>
                                 <div class="col-xs-6">
                                     <?= $form->field($modelAchievement, "[{$i}]act_participant_id")
-                                        ->dropDownList(ArrayHelper::map($model->squadParticipantsModel, 'id', 'actString'), ['prompt' => '---'])
+                                        ->dropDownList(ArrayHelper::map($model->actsParticipantModel, 'id', 'actString'), ['prompt' => '---'])
                                         ->label('Акт участия');
                                     ?>
                                 </div>
@@ -224,9 +224,9 @@ use yii\jui\DatePicker;
                                 <div class="col-xs-4" style="margin-top: 30px;">
                                     <?php
 
-                                    echo '<div class="toggle-wrapper form-group field-participantsachievementextended-'.$i.'-winner">
-                                            <input type="hidden" value="0" id="participantsachievementextended-'.$i.'-winner" name="ParticipantsAchievementExtended['.$i.'][winner]">
-                                            <input type="checkbox" value="1" id="participantsachievementextended-'.$i.'-winner" class="toggle-checkbox" name="ParticipantsAchievementExtended['.$i.'][winner]">
+                                    echo '<div class="toggle-wrapper form-group field-participantachievementwork-'.$i.'-type">
+                                            <input type="hidden" value="0" id="participantachievementwork-'.$i.'-type" name="ParticipantAchievementWork['.$i.'][type]">
+                                            <input type="checkbox" value="1" id="participantachievementwork-'.$i.'-type" class="toggle-checkbox" name="ParticipantAchievementWork['.$i.'][type]">
                                             <span class="toggle-icon off">Призер</span>
                                             <div class="toggle-container">
                                                 <div class="toggle-button"></div>
