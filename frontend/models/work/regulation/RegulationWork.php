@@ -2,24 +2,29 @@
 
 namespace frontend\models\work\regulation;
 
+use app\models\work\order\OrderMainWork;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
-use common\helpers\StringFormatter;
+use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\Regulation;
-use common\repositories\general\FilesRepository;
-use frontend\models\work\general\FilesWork;
+use frontend\models\work\general\UserWork;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\helpers\Url;
+
+/**
+ * @property UserWork $creatorWork
+ * @property UserWork $lastEditorWork
+ * @property OrderMainWork $orderWork
+ */
 
 class RegulationWork extends Regulation
 {
     use EventTrait;
     const STATE_ACTIVE = 1;
-    const STATE_EXPIRE = 2;
+    const STATE_EXPIRE = 0;
 
     public $expires; //документ, отменяющий текущее положение
 
@@ -56,16 +61,28 @@ class RegulationWork extends Regulation
                 'extensions' => 'png, jpg, pdf, zip, rar, 7z, tag, txt'],
         ]);
     }
+
+    public function getShortName()
+    {
+        return $this->short_name;
+    }
+
     public function getName()
     {
         return $this->name;
     }
+
     public static function states()
     {
         return [
             self::STATE_ACTIVE => 'Актуально',
             self::STATE_EXPIRE => 'Утратило силу',
         ];
+    }
+
+    public function getDate()
+    {
+        return $this->date;
     }
 
     public function getStates()
@@ -76,6 +93,45 @@ class RegulationWork extends Regulation
         }
 
         return $statuses[$this->state];
+    }
+
+    public function getFullScan()
+    {
+        $result = HtmlBuilder::createSVGLink('#');
+        return $result;
+    }
+
+    public function getOrderName()
+    {
+        $order = $this->orderWork;
+        return $order ? $order->getFullName() : '---';
+    }
+
+    public function getCreatorName()
+    {
+        $creator = $this->creatorWork;
+        return $creator ? $creator->getFullName() : '---';
+    }
+
+    public function getLastEditorName()
+    {
+        $editor = $this->lastEditorWork;
+        return $editor ? $editor->getFullName() : '---';
+    }
+
+    public function getCreatorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
+    }
+
+    public function getLastEditorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
+    }
+
+    public function getOrderWork()
+    {
+        return $this->hasOne(OrderMainWork::class, ['id' => 'order_id']);
     }
 
     /**
@@ -115,7 +171,6 @@ class RegulationWork extends Regulation
     // ТОЛЬКО для предварительной обработки полей. Остальные действия - через Event
     public function beforeValidate()
     {
-        $this->creator_id = 1/*Yii::$app->user->identity->getId()*/;
         $this->state = RegulationWork::STATE_ACTIVE;
         $this->date = DateFormatter::format($this->date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         $this->ped_council_date = DateFormatter::format($this->ped_council_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);

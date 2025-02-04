@@ -2,6 +2,8 @@
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use frontend\models\work\regulation\RegulationWork;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
@@ -34,6 +36,23 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
     <?php
+
+    $orders = \app\models\work\order\OrderMainWork::find()->where(['!=', 'order_name', 'Резерв'])->all();
+    $params = [
+        'prompt' => '---'
+    ];
+
+    echo $form->field($model, 'order_id')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map($orders, 'id','fullName'),
+        'size' => Select2::LARGE,
+        'options' => $params,
+        'pluginOptions' => [
+            'allowClear' => true,
+            'multiple' => false,
+        ],
+    ])->label('Приказ');
+
+
     /*$orders = \app\models\work\DocumentOrderWork::find()->where(['!=', 'order_name', 'Резерв'])->all();
     $items = \yii\helpers\ArrayHelper::map($orders,'id','fullName');*/
     $params = [

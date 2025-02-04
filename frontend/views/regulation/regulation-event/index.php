@@ -15,7 +15,7 @@ $this->title = Yii::$app->regulationType->get(RegulationTypeDictionary::TYPE_EVE
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="document-in-index">
+<div class="regulation-event-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -38,18 +38,6 @@ $this->params['breadcrumbs'][] = $this->title;
             return 'Приказ №'.$doc_num.' "'.$order->order_name.'"';*/
             return 'Coming soon';
         }],
-        ['attribute' => 'ped_council_number', 'label' => '№ пед.<br>совета', 'encodeLabel' => false, 'format' => 'raw'],
-        ['attribute' => 'ped_council_date', 'label' => 'Дата пед.<br>совета', 'encodeLabel' => false, 'format' => 'raw',
-            'value' => function (RegulationWork $model) {
-                return 'DateFormatter::format($model->ped_council_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot)';
-            }
-        ],
-        ['attribute' => 'par_council_number', 'label' => '№ совета<br>род.', 'encodeLabel' => false, 'format' => 'raw'],
-        ['attribute' => 'par_council_date', 'label' => 'Дата совета<br>род.', 'encodeLabel' => false, 'format' => 'raw',
-            'value' => function (RegulationWork $model) {
-                return DateFormatter::format($model->par_council_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
-            }
-        ],
         ['attribute' => 'state', 'label' => 'Состояние', 'value' => function($model){
             /*if ($model->state == 1)
                 return 'Актуально';
@@ -112,18 +100,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     return 'Приказ №'.$doc_num.' "'.$order->order_name.'"';*/
                     return 'Coming soon';
                 }],
-                ['attribute' => 'ped_council_number', 'label' => '№ пед.<br>совета', 'encodeLabel' => false, 'format' => 'raw'],
-                ['attribute' => 'ped_council_date', 'label' => 'Дата пед.<br>совета', 'encodeLabel' => false, 'format' => 'raw',
-                    'value' => function (RegulationWork $model) {
-                        return DateFormatter::format($model->ped_council_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
-                    }
-                ],
-                ['attribute' => 'par_council_number', 'label' => '№ совета<br>род.', 'encodeLabel' => false, 'format' => 'raw'],
-                ['attribute' => 'par_council_date', 'label' => 'Дата совета<br>род.', 'encodeLabel' => false, 'format' => 'raw',
-                    'value' => function (RegulationWork $model) {
-                        return DateFormatter::format($model->par_council_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
-                    }
-                ],
                 ['attribute' => 'state', 'label' => 'Состояние', 'value' => function(RegulationWork $model){
                     return $model->getStates();
                 }, 'format' => 'raw', 'filter' => [1 => "Актуально", 2 => "Утратило силу"]],
