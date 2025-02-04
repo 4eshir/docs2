@@ -97,4 +97,18 @@ class FilesHelper
 
         return $links;
     }
+
+    public static function createFilePaths($object, $filetype, $addPath)
+    {
+        $files = (Yii::createObject(FilesRepository::class))->get($object::tableName(), $object->id, $filetype);
+        $links = [];
+        if (count($files) > 0) {
+            foreach ($files as $file) {
+                /** @var FilesWork $file */
+                $links[] = $addPath . $file->filepath;
+            }
+        }
+
+        return $links;
+    }
 }

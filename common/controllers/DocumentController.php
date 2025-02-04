@@ -2,6 +2,8 @@
 
 namespace common\controllers;
 
+use common\components\interfaces\FileInterface;
+use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
@@ -10,8 +12,15 @@ use frontend\events\general\FileDeleteEvent;
 use frontend\helpers\HeaderWizard;
 use frontend\models\work\general\FilesWork;
 use Hidehalo\Nanoid\Client;
+use ReflectionClass;
+use ReflectionException;
+use RuntimeException;
+use Throwable;
 use Yii;
+use yii\base\Exception;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 use ZipArchive;
 
 /**
@@ -49,20 +58,42 @@ class DocumentController extends Controller
         }
     }
 
-    public function actionGetFiles(array $filepaths)
+    public function actionGetFiles(string $classname, string $filetype, int $id)
     {
+        try {
+            if (!class_exists($classname)) {
+                throw new NotFoundHttpException("Класс '$classname' не найден.");
+            }
+            $reflectionClass = new ReflectionClass($classname);
+            if (!$reflectionClass->implementsInterface(FileInterface::class)) {
+                throw new NotFoundHttpException("Класс '$classname' должен реализовывать интерфейс " . FileInterface::class);
+            }
+            if (!$reflectionClass->hasMethod('tableName') || !$reflectionClass->getMethod('tableName')->isStatic()) {
+                throw new NotFoundHttpException("В классе '$classname' отсутствует статический метод 'tableName'.");
+            }
+            /** @var FileInterface $model */
+            $model = Yii::createObject($classname);
+            $model->id = $id;
+        } catch (NotFoundHttpException $e) {
+            Yii::error($e->getMessage(), __METHOD__);
+        } catch (Throwable $e) {
+            Yii::error($e->getMessage(), __METHOD__);
+        }
+
         $zipFileName = 'files.zip';
 
-        $tempFile = tempnam(sys_get_temp_dir(), 'zip_' . (Yii::createObject(Client::class))->generateId(21));
+        $tempFile = tempnam(sys_get_temp_dir(), FilePaths::TEMP_FILEPATH . 'zip_' . (Yii::createObject(Client::class))->generateId(21));
         if ($tempFile === false) {
-            throw new \RuntimeException('Не удалось создать временный файл.');
+            throw new RuntimeException('Не удалось создать временный файл.');
         }
 
         $zip = new ZipArchive();
         if ($zip->open($tempFile, ZipArchive::CREATE) !== true) {
             unlink($tempFile);
-            throw new \RuntimeException('Не удалось создать архив.');
+            throw new RuntimeException('Не удалось создать архив.');
         }
+
+        $filepaths = $model->getFilePaths($filetype);
 
         foreach ($filepaths as $path) {
             $fileData = $this->fileService->downloadFile($path);
@@ -72,6 +103,7 @@ class DocumentController extends Controller
                 $zip->addFile($fileData['obj']->file, $filename);
             } else {
                 $filename = FilesHelper::getFilenameFromPath($fileData['obj']->filepath);
+                var_dump($path);
                 $content = file_get_contents($fileData['obj']->file);
                 $zip->addFromString($filename, $content);
             }

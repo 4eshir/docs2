@@ -90,8 +90,12 @@ class DocumentInController extends DocumentController
         $links = ButtonsFormatter::UpdateDeleteLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
+        /** @var DocumentInWork $model */
+        $model = $this->repository->get($id);
+        $model->checkFilesExist();
+
         return $this->render('view', [
-            'model' => $this->repository->get($id),
+            'model' => $model,
             'buttonsAct' => $buttonHtml,
         ]);
     }

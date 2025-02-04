@@ -7,7 +7,7 @@ use common\services\general\files\YandexDiskContext;
 
 class FileDownloadYandexDisk extends AbstractFileDownload
 {
-    const ADDITIONAL_PATH = 'DSSD'; //дополнительный путь к папке на яндекс диске
+    const ADDITIONAL_PATH = 'DSSD/'; //дополнительный путь к папке на яндекс диске
 
     function __construct($tFilepath)
     {

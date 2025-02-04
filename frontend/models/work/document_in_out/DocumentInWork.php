@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\document_in_out;
 
+use common\components\interfaces\FileInterface;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -31,16 +32,16 @@ use yii\web\User;
  * @property UserWork $creatorWork
  * @property UserWork $lastEditorWork
  */
-class DocumentInWork extends DocumentIn
+class DocumentInWork extends DocumentIn implements FileInterface
 {
     use EventTrait;
 
     /**
      * Имена файлов для сохранения в БД
      */
-    public $scanName;
-    public $docName;
-    public $appName;
+    public $scanExist;
+    public $docExist;
+    public $appExist;
 
     /**
      * Переменные для input-file в форме
@@ -91,22 +92,41 @@ class DocumentInWork extends DocumentIn
         $entity->scan = $scan;
     }
 
+    public function checkFilesExist()
+    {
+        $this->scanExist = count($this->getFileLinks(FilesHelper::TYPE_SCAN)) > 0;
+        $this->docExist = count($this->getFileLinks(FilesHelper::TYPE_DOC)) > 0;
+        $this->appExist = count($this->getFileLinks(FilesHelper::TYPE_APP)) > 0;
+    }
+
     public function getFullScan()
     {
-        $result = HtmlBuilder::createSVGLink('#');
-        return $result;
+        $link = '#';
+        if ($this->scanExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_SCAN, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
     }
 
     public function getFullDoc()
     {
-        $result = HtmlBuilder::createSVGLink('#');
-        return $result;
+        $link = '#';
+        if ($this->docExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_DOC, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
     }
 
     public function getFullApp()
     {
-        $result = HtmlBuilder::createSVGLink('#');
-        return $result;
+        $link = '#';
+        if ($this->appExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_APP, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
     }
 
     public function getFullName()
@@ -200,15 +220,7 @@ class DocumentInWork extends DocumentIn
         return $editor ? $editor->getFullName() : '---';
     }
 
-    /**
-     * Возвращает массив
-     * link => форматированная ссылка на документ
-     * id => ID записи в таблице files
-     * @param $filetype
-     * @return array
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function getFileLinks($filetype)
+    private function createAddPaths($filetype)
     {
         if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
             throw new InvalidArgumentException('Неизвестный тип файла');
@@ -227,7 +239,25 @@ class DocumentInWork extends DocumentIn
                 break;
         }
 
-        return FilesHelper::createFileLinks($this, $filetype, $addPath);
+        return $addPath;
+    }
+
+    /**
+     * Возвращает массив
+     * link => форматированная ссылка на документ
+     * id => ID записи в таблице files
+     * @param $filetype
+     * @return array
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getFileLinks($filetype) : array
+    {
+        return FilesHelper::createFileLinks($this, $filetype, $this->createAddPaths($filetype));
+    }
+
+    public function getFilePaths($filetype): array
+    {
+        return FilesHelper::createFilePaths($this, $filetype, $this->createAddPaths($filetype));
     }
 
     public function getAnswerNotEmpty()

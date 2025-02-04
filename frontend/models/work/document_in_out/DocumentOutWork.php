@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\document_in_out;
 
+use common\components\interfaces\FileInterface;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -30,15 +31,15 @@ use yii\helpers\Url;
  * @property UserWork $lastEditorWork
  * @property PeopleStampWork $executorWork
  */
-class DocumentOutWork extends DocumentOut
+class DocumentOutWork extends DocumentOut implements FileInterface
 {
     use EventTrait;
     /**
      * Имена файлов для сохранения в БД
      */
-    public $scanName;
-    public $docName;
-    public $appName;
+    public $scanExist;
+    public $docExist;
+    public $appExist;
 
     /**
      * Переменные для input-file в форме
@@ -79,23 +80,42 @@ class DocumentOutWork extends DocumentOut
         ]);
     }
 
+    public function checkFilesExist()
+    {
+        $this->scanExist = count($this->getFileLinks(FilesHelper::TYPE_SCAN)) > 0;
+        $this->docExist = count($this->getFileLinks(FilesHelper::TYPE_DOC)) > 0;
+        $this->appExist = count($this->getFileLinks(FilesHelper::TYPE_APP)) > 0;
+    }
+
 
     public function getFullScan()
     {
-        $result = HtmlBuilder::createSVGLink('1#');
-        return $result;
+        $link = '#';
+        if ($this->scanExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_SCAN, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
     }
 
     public function getFullDoc()
     {
-        $result = HtmlBuilder::createSVGLink('#');
-        return $result;
+        $link = '#';
+        if ($this->docExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_DOC, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
     }
 
     public function getFullApp()
     {
-        $result = HtmlBuilder::createSVGLink('#');
-        return $result;
+        $link = '#';
+        if ($this->appExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_APP, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
     }
 
     public function setValuesForUpdate()
@@ -128,7 +148,8 @@ class DocumentOutWork extends DocumentOut
     public function getAnswer(){
         return $this->is_answer;
     }
-    public function getFileLinks($filetype)
+
+    private function createAddPaths($filetype)
     {
         if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
             throw new InvalidArgumentException('Неизвестный тип файла');
@@ -137,23 +158,40 @@ class DocumentOutWork extends DocumentOut
         $addPath = '';
         switch ($filetype) {
             case FilesHelper::TYPE_SCAN:
-                $addPath = FilesHelper::createAdditionalPath(DocumentOutWork::tableName(), FilesHelper::TYPE_SCAN);
+                $addPath = FilesHelper::createAdditionalPath(DocumentInWork::tableName(), FilesHelper::TYPE_SCAN);
                 break;
             case FilesHelper::TYPE_DOC:
-                $addPath = FilesHelper::createAdditionalPath(DocumentOutWork::tableName(), FilesHelper::TYPE_DOC);
+                $addPath = FilesHelper::createAdditionalPath(DocumentInWork::tableName(), FilesHelper::TYPE_DOC);
                 break;
             case FilesHelper::TYPE_APP:
-                $addPath = FilesHelper::createAdditionalPath(DocumentOutWork::tableName(), FilesHelper::TYPE_APP);
+                $addPath = FilesHelper::createAdditionalPath(DocumentInWork::tableName(), FilesHelper::TYPE_APP);
                 break;
         }
 
-        return FilesHelper::createFileLinks($this, $filetype, $addPath);
+        return $addPath;
+    }
+
+    /**
+     * Возвращает массив
+     * link => форматированная ссылка на документ
+     * id => ID записи в таблице files
+     * @param $filetype
+     * @return array
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getFileLinks($filetype) : array
+    {
+        return FilesHelper::createFileLinks($this, $filetype, $this->createAddPaths($filetype));
+    }
+
+    public function getFilePaths($filetype): array
+    {
+        return FilesHelper::createFilePaths($this, $filetype, $this->createAddPaths($filetype));
     }
 
     public function getFilesAnswer()
     {
         $repository = Yii::createObject(DocumentOutRepository::class);
-        //var_dump($repository->getDocumentInWithoutAnswer());
 
         return $repository->getDocumentInWithoutAnswer();
     }
