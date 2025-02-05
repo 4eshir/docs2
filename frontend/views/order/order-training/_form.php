@@ -23,6 +23,8 @@ use yii\widgets\Pjax;
 /* @var $groups */
 /* @var $groupParticipant */
 /* @var $transferGroups */
+/* @var $groupCheckOption */
+/* @var $groupParticipantOption */
 ?>
 <style>
     .bordered-div {
@@ -98,8 +100,8 @@ use yii\widgets\Pjax;
         'dataProviderParticipant' => $groupParticipant,
         'nomenclature' => $model->getNomenclature(),
         'transferGroups' => $transferGroups,
-        'groupCheckOption' => ["getActivity", [$model->id]],
-        'groupParticipantOption' => ["getActivity" , [$model->id]],
+        'groupCheckOption' => $groupCheckOption,
+        'groupParticipantOption' => $groupParticipantOption,
     ]);
     ?>
 

@@ -11,6 +11,7 @@ use app\services\order\OrderPeopleService;
 use app\services\order\OrderTrainingService;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\controllers\DocumentController;
+use common\repositories\educational\OrderTrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\general\FilesRepository;
@@ -45,6 +46,7 @@ class OrderTrainingController extends DocumentController
         OrderTrainingRepository $orderTrainingRepository,
         TrainingGroupRepository $trainingGroupRepository,
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
+
         FileService $fileService,
         FilesRepository $filesRepository,
         $config = []
@@ -106,7 +108,10 @@ class OrderTrainingController extends DocumentController
             'model' => $model,
             'people' => $people,
             'groups' => $groups,
-            'groupParticipant' => $groupParticipant
+            'groupParticipant' => $groupParticipant,
+            'groupCheckOption' => [],
+            'groupParticipantOption' => [],
+
         ]);
     }
     public function actionUpdate($id)
@@ -121,11 +126,14 @@ class OrderTrainingController extends DocumentController
         $groupParticipant = $this->orderTrainingService->getParticipantsDataProvider($model);
         $transferGroups = $this->trainingGroupRepository->getByBranchQuery($model->branch)->all();
         $tables = $this->documentOrderService->getUploadedFilesTables($model);
+        $status = $this->orderTrainingService->getStatus($model);
+        $groupCheckOption = $this->trainingGroupRepository->getAttachedGroupsByOrder($id, $status);
+        $groupParticipantOption = $this->trainingGroupParticipantRepository->getAttachedParticipantByOrder($id, $status);
         if ($model->load($post) && $model->validate()) {
             $this->documentOrderService->getFilesInstances($model);
             $model->order_number = $number;
             $this->orderTrainingRepository->save($model);
-            $status = $this->orderTrainingService->getStatus($model);
+            //$status = $this->orderTrainingService->getStatus($model);
             //update
             $this->orderTrainingService->updateOrderTrainingGroupParticipantEvent($model, $status, $post);
             //update
@@ -144,6 +152,8 @@ class OrderTrainingController extends DocumentController
             'transferGroups' => $transferGroups,
             'scanFile' => $tables['scan'],
             'docFiles' => $tables['docs'],
+            'groupCheckOption' => $groupCheckOption,
+            'groupParticipantOption' => $groupParticipantOption,
         ]);
     }
     public function actionGetListByBranch()
@@ -172,9 +182,10 @@ class OrderTrainingController extends DocumentController
     {
         $groupIds = Yii::$app->request->get('groupIds');
         $modelId = Yii::$app->request->get('modelId');
-        $groupParticipantOption = json_decode(Yii::$app->request->get('groupParticipantOption'));
         $groupIds = json_decode($groupIds);
         if ($modelId == 0){
+            $groupCheckOption = [];
+            $groupParticipantOption = [];
             $nomenclature = Yii::$app->request->get('nomenclature');
             $status = NomenclatureDictionary::getStatus($nomenclature);
             //create
@@ -196,23 +207,35 @@ class OrderTrainingController extends DocumentController
         }
         else {
             //update
+
+
             $model = $this->orderTrainingRepository->get($modelId);
             $status = $this->orderTrainingService->getStatus($model);
+
             $nomenclature = $model->getNomenclature();
             if ($status == NomenclatureDictionary::ORDER_ENROLL){
+                $groupCheckOption = $this->trainingGroupRepository->getAttachedGroupsByOrder($modelId,  $status);
+                $groupParticipantOption = $this->trainingGroupParticipantRepository->getAttachedParticipantByOrder($modelId, $status);
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToEnrollUpdate($groupIds, $modelId)
                 ]);
             }
-            if ($status == NomenclatureDictionary::ORDER_DEDUCT) {
+            else if ($status == NomenclatureDictionary::ORDER_DEDUCT) {
+                $groupCheckOption = $this->trainingGroupRepository->getAttachedGroupsByOrder($modelId,  $status);
+                $groupParticipantOption = $this->trainingGroupParticipantRepository->getAttachedParticipantByOrder($modelId, $status);
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToDeductUpdate($groupIds, $modelId)
                 ]);
             }
-            if ($status == NomenclatureDictionary::ORDER_TRANSFER){
+            else if ($status == NomenclatureDictionary::ORDER_TRANSFER){
+                $groupCheckOption = $this->trainingGroupRepository->getAttachedGroupsByOrder($modelId,  $status);
+                $groupParticipantOption = $this->trainingGroupParticipantRepository->getAttachedParticipantByOrder($modelId, $status);
                 $dataProvider = new ActiveDataProvider([
                     'query' => $this->trainingGroupParticipantRepository->getParticipantToTransferUpdate($groupIds, $modelId)
                 ]);
+            }
+            else {
+                $groupCheckOption = [];
             }
         }
         return $this->asJson([
@@ -221,6 +244,7 @@ class OrderTrainingController extends DocumentController
                 'model' => $this->orderTrainingRepository->get($modelId),
                 'nomenclature' => $nomenclature,
                 'transferGroups' => $this->trainingGroupRepository->getById($groupIds),
+                'groupCheckOption' => $groupCheckOption,
                 'groupParticipantOption' => $groupParticipantOption,
             ]),
         ]);

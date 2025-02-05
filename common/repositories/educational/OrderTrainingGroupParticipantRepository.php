@@ -45,4 +45,8 @@ class OrderTrainingGroupParticipantRepository
     public function countByTrainingGroupParticipantOutId($trainingGroupParticipantOutId){
         return OrderTrainingGroupParticipantWork::find()->where(['training_group_participant_out_id' => $trainingGroupParticipantOutId])->count();
     }
+    public function getByOrderIds($id){
+        return OrderTrainingGroupParticipantWork::find()->where(['order_id' => $id])->all();
+    }
+
 }

@@ -9,6 +9,8 @@ use yii\helpers\Html;
 /* @var $transferGroups */
 /* @var $scanFile */
 /* @var $docFiles */
+/* @var $groupCheckOption */
+/* @var $groupParticipantOption */
 $this->title = 'Изменить приказ об образовательной деятельности № '. $model->order_number;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об образовательной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -25,6 +27,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'transferGroups' => $transferGroups,
         'scanFile' => $scanFile,
         'docFiles' => $docFiles,
+        'groupCheckOption' => $groupCheckOption,
+        'groupParticipantOption' => $groupParticipantOption,
     ]) ?>
 </div>
 

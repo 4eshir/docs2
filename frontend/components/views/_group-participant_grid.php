@@ -24,13 +24,25 @@ if ($dataProvider != NULL) {
                     'class' => 'yii\grid\CheckboxColumn',
                     'name' => 'group-participant-selection',
                     'checkboxOptions' => function (TrainingGroupParticipantWork $participant) use ($model, $groupParticipantOption) {
-                        var_dump($groupParticipantOption[0], $groupParticipantOption[1]);
+                        if ($groupParticipantOption == NULL) {
+                            $condition = false;
+                        }
+                        else {
+                            if (in_array($participant->id, $groupParticipantOption)){
+                                $condition = true;
+                            }
+                            else {
+                                $condition = false;
+                            }
+                        }
                         return [
                             'class' => 'group-participant-checkbox',
                             'training-group-id' => $participant->training_group_id,
                             'data-id' => $participant->id, // Добавляем ID группы для передачи в JS
-                            /* 'checked' => $participant->getActivity($model->id) == 1 */
-                            'checked' => call_user_func_array([$participant, $groupParticipantOption[0]], $groupParticipantOption[1]) == 1
+                            'checked' => $condition
+                             //'checked' => $participant->getActivity($model->id) == 1
+                            //'checked' => in_array($participant->id, $groupParticipantOption),
+                             //'checked' => call_user_func_array([$participant, $groupParticipantOption[0]], $groupParticipantOption[1]) == 1
                         ];
                     },
                 ],
@@ -65,12 +77,26 @@ if ($dataProvider != NULL) {
                     'class' => 'yii\grid\CheckboxColumn',
                     'name' => 'group-participant-selection',
                     'checkboxOptions' => function (TrainingGroupParticipantWork $participant) use ($model, $groupParticipantOption) {
+                        if ($groupParticipantOption == NULL) {
+                            $condition = false;
+                        }
+                        else {
+                            if (in_array($participant->id, $groupParticipantOption)){
+                                $condition = true;
+                            }
+                            else {
+                                $condition = false;
+                            }
+                        }
                         return [
                             'class' => 'group-participant-checkbox',
                             'training-group-id' => $participant->training_group_id,
                             'data-id' => $participant->id, // Добавляем ID группы для передачи в JS
+                            'checked' => $condition,
+                            //'checked' => in_array($participant->id, $groupParticipantOption),
+
                             //'checked' => $participant->getActivity($participant->id, $model->id) == 1,
-                            'checked' => call_user_func_array([$participant, $groupParticipantOption[0]], $groupParticipantOption[1]) == 1
+                            //'checked' => call_user_func_array([$participant, $groupParticipantOption[0]], $groupParticipantOption[1]) == 1
                         ];
                     },
                 ],

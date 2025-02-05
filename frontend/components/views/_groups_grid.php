@@ -13,11 +13,22 @@ use yii\grid\GridView;
             'class' => 'yii\grid\CheckboxColumn',
             'name' => 'group-selection',
             'checkboxOptions' => function (TrainingGroupWork $group) use ($model, $groupCheckOption) {
+                if ($groupCheckOption == NULL) {
+                    $condition = false;
+                }
+                else {
+                    if (in_array($group->id, $groupCheckOption)){
+                        $condition = true;
+                    }
+                    else {
+                        $condition = false;
+                    }
+                }
                 return [
                     'class' => 'group-checkbox',
                     'data-id' => $group->id,
-                     /*'checked' => $group->getActivity($model->id) == 1,*/
-                    'checked' => call_user_func_array([$group, $groupCheckOption[0]], $groupCheckOption[1]) == 1,
+                    //'checked' => $group->getActivity($model->id) == 1,
+                    'checked' => $condition
                 ];
             },
         ],
