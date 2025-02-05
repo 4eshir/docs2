@@ -2,21 +2,26 @@
 
 namespace common\repositories\educational;
 
+use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\traits\CommonDatabaseFunctions;
 use common\repositories\providers\training_group\TrainingGroupProvider;
 use common\repositories\providers\training_group\TrainingGroupProviderInterface;
 use DomainException;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class TrainingGroupRepository
 {
     use CommonDatabaseFunctions;
 
     private $provider;
-
+    private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
+    private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
     public function __construct(
-        TrainingGroupProviderInterface $provider = null
+        TrainingGroupProviderInterface $provider = null,
+        OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository,
+        TrainingGroupParticipantRepository $trainingGroupParticipantRepository
     )
     {
         if (!$provider) {
@@ -24,6 +29,8 @@ class TrainingGroupRepository
         }
 
         $this->provider = $provider;
+        $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
+        $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
     }
 
     public function get($id)
@@ -103,5 +110,20 @@ class TrainingGroupRepository
     public function getById($id)
     {
         return TrainingGroupWork::findAll(['id' => $id]);
+    }
+    public function getAttachedGroupsByOrder($orderId, $status){
+        if ($status == NomenclatureDictionary::ORDER_ENROLL){
+            $participants = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($orderId), 'training_group_participant_in_id');
+            $groups = array_unique(ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll($participants), 'training_group_id'));
+        }
+        else if ($status == NomenclatureDictionary::ORDER_DEDUCT) {
+            $participants = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($orderId), 'training_group_participant_out_id');
+            $groups = array_unique(ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll($participants), 'training_group_id'));
+        }
+        else if ($status == NomenclatureDictionary::ORDER_TRANSFER) {
+            $participants = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($orderId), 'training_group_participant_in_id');
+            $groups = array_unique(ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll($participants), 'training_group_id'));
+        }
+        return $groups;
     }
 }

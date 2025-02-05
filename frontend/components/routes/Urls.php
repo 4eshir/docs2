@@ -13,4 +13,6 @@ class Urls
     const DOC_OUT_CREATE = "document/document-out/create";
     const DOC_OUT_RESERVE = "document/document-out/reserve";
     const DOC_OUT_INDEX = "document/document-out/index";
+
+    //const REG_EVENT_
 }

@@ -25,19 +25,13 @@ class GroupParticipantWidget extends Widget
     {
         parent::init();
         if ($this->config == NULL) {
-            throw new \InvalidArgumentException('Config must be set.');
+            throw new \InvalidArgumentException('Attribute config must be set.');
         }
         if ($this->config['participantUrl'] == NULL) {
-            throw new \InvalidArgumentException('Url participant must be set.');
+            throw new \InvalidArgumentException('Attribute participantUrl must be set.');
         }
         if ($this->config['groupUrl'] == NULL) {
-            throw new \InvalidArgumentException('Url group must be set.');
-        }
-        if (!method_exists(TrainingGroupParticipantWork::class, $this->groupParticipantOption[0])) {
-            throw new \InvalidArgumentException("Method {$this->groupParticipantOption[0]} does not exist.");
-        }
-        if (!method_exists(TrainingGroupWork::class, $this->groupCheckOption[0])) {
-            throw new \InvalidArgumentException("Method {$this->groupCheckOption[0]} does not exist.");
+            throw new \InvalidArgumentException('Attribute groupUrl must be set.');
         }
     }
     public function run(){
@@ -67,7 +61,6 @@ class GroupParticipantWidget extends Widget
             type: 'GET',
             data: { 
                 branch: branchId ,
-                groupCheckOption: JSON.stringify({$this->groupCheckOption})
             },
             success: function(data) {
                 var gridView = $('.training-group .grid-view'); 
@@ -104,7 +97,6 @@ class GroupParticipantWidget extends Widget
                     groupIds: JSON.stringify(groupIds), 
                     modelId: modelId, 
                     nomenclature: number, 
-                    groupParticipantOption:  JSON.stringify({$this->groupParticipantOption}),
                 }, // Отправляем массив ID
                 success: function (data) {
                     var gridView = $('.training-group-participant .grid-view');
@@ -131,7 +123,6 @@ class GroupParticipantWidget extends Widget
                     groupIds: JSON.stringify(groupIds), 
                     modelId: modelId, 
                     nomenclature:  number,
-                    groupParticipantOption:  JSON.stringify({$this->groupParticipantOption}),
                 }, // Отправляем массив ID
                 success: function (data) {
                     var gridView = $('.training-group-participant .grid-view');

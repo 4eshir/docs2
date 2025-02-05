@@ -3,7 +3,9 @@
 namespace frontend\controllers\regulation;
 
 use common\controllers\DocumentController;
+use common\helpers\ButtonsFormatter;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\repositories\general\FilesRepository;
 use common\repositories\regulation\RegulationRepository;
 use common\services\general\files\FileService;
@@ -43,8 +45,12 @@ class RegulationEventController extends DocumentController
 
     public function actionView($id)
     {
+        $links = ButtonsFormatter::UpdateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('view', [
-            'model' => $this->repository->get($id)
+            'model' => $this->repository->get($id),
+            'buttonsAct' => $buttonHtml,
         ]);
     }
 

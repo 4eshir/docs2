@@ -17,9 +17,10 @@ use yii\helpers\ArrayHelper;
 class TrainingGroupParticipantRepository
 {
     private $provider;
-
+    private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
     public function __construct(
-        TrainingGroupParticipantProviderInterface $provider = null
+        TrainingGroupParticipantProviderInterface $provider = null,
+        OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository = null
     )
     {
         if (!$provider) {
@@ -27,6 +28,7 @@ class TrainingGroupParticipantRepository
         }
 
         $this->provider = $provider;
+        $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
     }
 
     public function get($id)
@@ -154,5 +156,17 @@ class TrainingGroupParticipantRepository
             ->andWhere(['training_group_id' => $groupId])
             ->andWhere(['status' => NomenclatureDictionary::ORDER_ENROLL])
             ->exists();
+    }
+    public function getAttachedParticipantByOrder($orderId, $status){
+        if ($status == NomenclatureDictionary::ORDER_ENROLL){
+            $participants = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($orderId), 'training_group_participant_in_id');
+        }
+        else if ($status == NomenclatureDictionary::ORDER_DEDUCT) {
+            $participants = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($orderId), 'training_group_participant_out_id');
+        }
+        else if ($status == NomenclatureDictionary::ORDER_TRANSFER) {
+            $participants = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($orderId), 'training_group_participant_out_id');
+        }
+        return $participants;
     }
 }
