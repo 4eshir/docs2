@@ -71,15 +71,6 @@ class OurEventController extends DocumentController
         $searchModel = new SearchEvent();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        /*
-         * Тут вроде как нужен PBAC для проверки отдела
-         * if (array_key_exists("SearchEvent", Yii::$app->request->queryParams))
-        {
-            if (Yii::$app->request->queryParams["SearchEvent"]["eventBranchs"] != null) {
-                $searchModel->eventBranchs = Yii::$app->request->queryParams["SearchEvent"]["eventBranchs"];
-            }
-        }*/
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

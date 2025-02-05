@@ -1,5 +1,7 @@
 <?php
 
+use common\components\wizards\AlertMessageWizard;
+use common\models\scaffold\DocumentOut;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -16,8 +18,12 @@ $this->title = 'Исходящий документ №' . $model->fullNumber;
 $this->params['breadcrumbs'][] = ['label' => 'Исходящая документация', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Редактирование';
+
+$this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
     <div class="document-out-create">
+
+        <?= AlertMessageWizard::showRedisConnectMessage() ?>
 
         <h3><?= Html::encode($this->title) ?></h3>
         <br>
@@ -36,4 +42,13 @@ $this->params['breadcrumbs'][] = 'Редактирование';
         ]) ?>
 
     </div>
-<?php
+
+<script>
+    window.onload = function() {
+        initObjectData(<?= $model->id ?>, '<?= DocumentOut::tableName() ?>', 'index.php?r=document/document-out/view&id=<?= $model->id ?>');
+    }
+
+    const intervalId = setInterval(() => {
+        refreshLock();
+    }, 600000);
+</script>

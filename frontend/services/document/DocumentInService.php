@@ -154,7 +154,7 @@ class DocumentInService implements DatabaseService
             ]
         );
 
-        return ['scan' => $scanFile, 'docs' => $docFiles, 'app' => $appFiles];
+        return ['scan' => $scanFile, 'doc' => $docFiles, 'app' => $appFiles];
     }
 
     public function isAvailableDelete($id)
