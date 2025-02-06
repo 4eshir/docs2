@@ -2,7 +2,7 @@
 
 namespace common\repositories\educational;
 
-use app\models\work\order\OrderTrainingWork;
+use frontend\models\work\order\OrderTrainingWork;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\repositories\providers\group_participant\TrainingGroupParticipantProvider;
 use common\repositories\providers\group_participant\TrainingGroupParticipantProviderInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models\work\team;
+namespace frontend\models\work\team;
 
 use common\models\scaffold\SquadParticipant;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;

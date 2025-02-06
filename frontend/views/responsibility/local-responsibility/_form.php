@@ -1,6 +1,6 @@
 <?php
 
-use app\models\work\order\OrderMainWork;
+use frontend\models\work\order\OrderMainWork;
 use frontend\forms\ResponsibilityForm;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\responsibility\LocalResponsibilityWork;

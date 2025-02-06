@@ -1,9 +1,9 @@
 <?php
 
-namespace app\services\order;
+namespace frontend\services\order;
 
-use app\models\work\general\OrderPeopleWork;
-use app\models\work\order\DocumentOrderWork;
+use frontend\models\work\general\OrderPeopleWork;
+use frontend\models\work\order\DocumentOrderWork;
 use common\helpers\files\filenames\DocumentOrderFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;

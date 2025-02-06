@@ -154,7 +154,7 @@ class DocumentInController extends DocumentController
             $mainCompanyWorkers = $this->peopleRepository->getPeopleFromMainCompany();
             $tables = $this->service->getUploadedFilesTables($model);
             if ($model->load(Yii::$app->request->post())) {
-                $this->lockWizard->unlockObject($id, StringFormatter::getLastSegmentBySlash($this->id));
+                $this->lockWizard->unlockObject($id, DocumentInWork::tableName());
                 $this->service->getPeopleStamps($model);
 
                 if (!$model->validate()) {

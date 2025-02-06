@@ -2,7 +2,7 @@
 
 namespace common\helpers\files\filenames;
 
-use app\models\work\order\OrderMainWork;
+use frontend\models\work\order\OrderMainWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;

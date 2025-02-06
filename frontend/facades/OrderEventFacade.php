@@ -2,12 +2,12 @@
 
 namespace frontend\facades;
 
-use app\models\work\event\ForeignEventWork;
-use app\models\work\order\OrderEventWork;
-use app\services\act_participant\ActParticipantService;
-use app\services\order\DocumentOrderService;
-use app\services\order\OrderMainService;
-use app\services\team\TeamService;
+use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\order\OrderEventWork;
+use frontend\services\act_participant\ActParticipantService;
+use frontend\services\order\DocumentOrderService;
+use frontend\services\order\OrderMainService;
+use frontend\services\team\TeamService;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\event\ForeignEventRepository;

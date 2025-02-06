@@ -2,8 +2,7 @@
 
 namespace common\repositories\general;
 
-use app\models\work\general\OrderPeopleWork;
-use common\models\scaffold\OrderPeople;
+use frontend\models\work\general\OrderPeopleWork;
 use Yii;
 
 class OrderPeopleRepository

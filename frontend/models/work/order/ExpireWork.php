@@ -1,10 +1,8 @@
 <?php
 
-namespace app\models\work\order;
+namespace frontend\models\work\order;
 
 use common\models\scaffold\Expire;
-use common\repositories\order\OrderMainRepository;
-use common\repositories\regulation\RegulationRepository;
 use frontend\models\work\regulation\RegulationWork;
 
 class ExpireWork extends Expire

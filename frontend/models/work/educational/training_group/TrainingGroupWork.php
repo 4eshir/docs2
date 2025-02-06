@@ -2,7 +2,7 @@
 
 namespace frontend\models\work\educational\training_group;
 
-use app\models\work\order\OrderTrainingWork;
+use frontend\models\work\order\OrderTrainingWork;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;

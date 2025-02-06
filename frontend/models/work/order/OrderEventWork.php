@@ -1,8 +1,8 @@
 <?php
 
-namespace app\models\work\order;
+namespace frontend\models\work\order;
 
-use app\services\order\OrderMainService;
+use frontend\services\order\OrderMainService;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\models\scaffold\DocumentOrder;

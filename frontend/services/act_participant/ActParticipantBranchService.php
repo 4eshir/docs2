@@ -1,10 +1,10 @@
 <?php
 
-namespace app\services\act_participant;
+namespace frontend\services\act_participant;
 
-use app\events\act_participant\SquadParticipantCreateEvent;
-use app\models\work\team\ActParticipantBranchWork;
-use app\models\work\team\ActParticipantWork;
+use frontend\events\act_participant\SquadParticipantCreateEvent;
+use frontend\models\work\team\ActParticipantBranchWork;
+use frontend\models\work\team\ActParticipantWork;
 use common\models\scaffold\ActParticipantBranch;
 use common\repositories\act_participant\ActParticipantBranchRepository;
 

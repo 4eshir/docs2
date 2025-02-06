@@ -1,9 +1,9 @@
 <?php
 
-namespace app\services\team;
+namespace frontend\services\team;
 
-use app\events\team\TeamNameCreateEvent;
-use app\models\work\team\TeamNameWork;
+use frontend\events\team\TeamNameCreateEvent;
+use frontend\models\work\team\TeamNameWork;
 use common\repositories\team\TeamRepository;
 use yii\helpers\ArrayHelper;
 

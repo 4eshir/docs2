@@ -3,8 +3,8 @@
 namespace frontend\controllers\dictionaries;
 
 use app\components\DynamicWidget;
-use app\events\dictionaries\PeopleEventCreate;
-use app\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
+use frontend\events\dictionaries\PeopleEventCreate;
+use frontend\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
 use common\components\dictionaries\base\BranchDictionary;
 use common\repositories\dictionaries\CompanyRepository;
 use common\repositories\dictionaries\PeopleRepository;

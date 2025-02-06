@@ -2,7 +2,7 @@
 
 namespace frontend\forms;
 
-use app\models\work\order\OrderMainWork;
+use frontend\models\work\order\OrderMainWork;
 use common\helpers\files\FilesHelper;
 use frontend\models\work\dictionaries\AuditoriumWork;
 use frontend\models\work\general\PeopleStampWork;

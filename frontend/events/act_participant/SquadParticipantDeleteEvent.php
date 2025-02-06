@@ -1,6 +1,6 @@
 <?php
 
-namespace app\events\act_participant;
+namespace frontend\events\act_participant;
 
 use common\events\EventInterface;
 use common\repositories\act_participant\SquadParticipantRepository;

@@ -1,6 +1,6 @@
 <?php
 
-use app\models\work\event\ForeignEventWork;
+use frontend\models\work\event\ForeignEventWork;
 use frontend\models\search\SearchForeignEvent;
 use kartik\export\ExportMenu;
 use yii\helpers\Html;

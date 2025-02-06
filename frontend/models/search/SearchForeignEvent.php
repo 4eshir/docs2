@@ -2,7 +2,7 @@
 
 namespace frontend\models\search;
 
-use app\models\work\event\ForeignEventWork;
+use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\dictionaries\AuditoriumWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;

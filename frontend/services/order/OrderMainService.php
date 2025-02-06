@@ -1,14 +1,14 @@
 <?php
-namespace app\services\order;
-use app\models\work\general\OrderPeopleWork;
-use app\models\work\order\ExpireWork;
-use app\models\work\order\OrderEventWork;
-use app\models\work\order\OrderMainWork;
+
+namespace frontend\services\order;
+
+use frontend\models\work\general\OrderPeopleWork;
+use frontend\models\work\order\ExpireWork;
+use frontend\models\work\order\OrderMainWork;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\OrderNumberHelper;
-use common\models\scaffold\OrderMain;
 use common\repositories\expire\ExpireRepository;
 use common\repositories\general\OrderPeopleRepository;
 use common\repositories\order\OrderMainRepository;
@@ -122,7 +122,7 @@ class OrderMainService {
     public function createArrayNumber($records, $array_number)
     {
         foreach ($records as $record) {
-            /* @var \app\models\work\order\OrderMainWork $record */
+            /* @var OrderMainWork $record */
             if($record->order_postfix == NULL) {
                 $array_number[] = [
                     $record->order_date,

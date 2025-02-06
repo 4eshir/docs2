@@ -1,10 +1,8 @@
 <?php
 
 
-namespace app\models\strategies\FileUploadStrategy;
+namespace common\services\general\files\upload;
 
-
-use yii\db\ActiveRecord;
 
 abstract class AbstractFileUpload
 {

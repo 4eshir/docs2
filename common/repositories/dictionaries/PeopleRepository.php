@@ -2,7 +2,7 @@
 
 namespace common\repositories\dictionaries;
 
-use app\events\dictionaries\PeoplePositionCompanyBranchEventDelete;
+use frontend\events\dictionaries\PeoplePositionCompanyBranchEventDelete;
 use common\components\traits\CommonDatabaseFunctions;
 use common\helpers\SortHelper;
 use common\repositories\general\PeoplePositionCompanyBranchRepository;

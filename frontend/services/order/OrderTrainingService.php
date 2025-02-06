@@ -1,11 +1,11 @@
 <?php
 
-namespace app\services\order;
+namespace frontend\services\order;
 
-use app\events\educational\training_group\CreateOrderTrainingGroupParticipantEvent;
-use app\events\educational\training_group\DeleteOrderTrainingGroupParticipantEvent;
-use app\models\work\general\OrderPeopleWork;
-use app\models\work\order\OrderTrainingWork;
+use frontend\events\educational\training_group\CreateOrderTrainingGroupParticipantEvent;
+use frontend\events\educational\training_group\DeleteOrderTrainingGroupParticipantEvent;
+use frontend\models\work\general\OrderPeopleWork;
+use frontend\models\work\order\OrderTrainingWork;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
 use common\helpers\files\FilesHelper;

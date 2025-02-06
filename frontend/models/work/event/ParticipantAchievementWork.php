@@ -2,7 +2,7 @@
 
 namespace frontend\models\work\event;
 
-use app\models\work\team\ActParticipantWork;
+use frontend\models\work\team\ActParticipantWork;
 use common\models\scaffold\ParticipantAchievement;
 
 /** @property ActParticipantWork $actParticipantWork */

@@ -1,20 +1,13 @@
 <?php
-namespace app\models\work\order;
-use app\models\work\general\OrderPeopleWork;
-use app\services\order\OrderMainService;
+
+namespace frontend\models\work\order;
+
+use frontend\services\order\OrderMainService;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
-use common\helpers\files\FilesHelper;
-use common\helpers\OrderNumberHelper;
-use common\models\scaffold\DocumentOrder;
-use common\models\scaffold\OrderMain;
-use common\models\scaffold\People;
-use common\models\scaffold\PeopleStamp;
 use common\repositories\order\OrderMainRepository;
-use frontend\models\work\general\PeopleStampWork;
-use frontend\models\work\general\PeopleWork;
-use InvalidArgumentException;
 use Yii;
+
 class OrderMainWork extends DocumentOrderWork
 {
     use EventTrait;

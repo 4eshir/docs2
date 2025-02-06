@@ -2,8 +2,8 @@
 
 namespace common\repositories\expire;
 
-use app\models\work\order\ExpireWork;
-use app\models\work\order\OrderMainWork;
+use frontend\models\work\order\ExpireWork;
+use frontend\models\work\order\OrderMainWork;
 use common\models\scaffold\Expire;
 use common\repositories\order\OrderMainRepository;
 use common\repositories\regulation\RegulationRepository;

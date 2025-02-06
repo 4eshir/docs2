@@ -2,8 +2,8 @@
 
 namespace common\helpers\files\filenames;
 
-use app\models\work\event\ForeignEventWork;
-use app\models\work\team\ActParticipantWork;
+use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\team\ActParticipantWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;

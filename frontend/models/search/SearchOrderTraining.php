@@ -1,14 +1,15 @@
 <?php
 
-namespace app\models\search;
+namespace frontend\models\search;
 
-use app\models\work\order\DocumentOrderWork;
-use app\models\work\order\OrderTrainingWork;
+use frontend\models\work\order\DocumentOrderWork;
+use frontend\models\work\order\OrderTrainingWork;
 use frontend\models\search\SearchOrderMain;
-use app\models\work\order\OrderEventWork;
+use frontend\models\work\order\OrderEventWork;
 use common\helpers\DateFormatter;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+
 class SearchOrderTraining extends OrderTrainingWork
 {
     const ORDER_TYPE = 3;

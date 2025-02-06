@@ -2,7 +2,7 @@
 
 namespace common\repositories\team;
 
-use app\models\work\team\TeamNameWork;
+use frontend\models\work\team\TeamNameWork;
 use Yii;
 
 class TeamRepository

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\events\dictionaries;
+namespace frontend\events\dictionaries;
 
 use common\events\EventInterface;
 use common\models\scaffold\PeoplePositionCompanyBranch;

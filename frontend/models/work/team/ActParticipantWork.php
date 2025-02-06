@@ -1,8 +1,9 @@
 <?php
 
-namespace app\models\work\team;
+namespace frontend\models\work\team;
 
-use app\models\work\event\ForeignEventWork;
+use frontend\models\work\team\TeamNameWork;
+use frontend\models\work\event\ForeignEventWork;
 use common\events\EventTrait;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;

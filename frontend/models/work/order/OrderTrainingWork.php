@@ -1,14 +1,13 @@
 <?php
 
-namespace app\models\work\order;
+namespace frontend\models\work\order;
 
-use app\services\order\OrderMainService;
+use frontend\services\order\OrderMainService;
 use common\components\dictionaries\base\BranchDictionary;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
-use common\models\scaffold\OrderMain;
 use common\repositories\order\OrderMainRepository;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;

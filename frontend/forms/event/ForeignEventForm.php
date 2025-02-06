@@ -2,10 +2,10 @@
 
 namespace frontend\forms\event;
 
-use app\models\work\event\ForeignEventWork;
-use app\models\work\order\OrderEventWork;
-use app\models\work\team\ActParticipantWork;
-use app\models\work\team\SquadParticipantWork;
+use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\order\OrderEventWork;
+use frontend\models\work\team\ActParticipantWork;
+use frontend\models\work\team\SquadParticipantWork;
 use common\events\EventTrait;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\event;
 
+use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\files\FilesHelper;
 use common\helpers\SortHelper;
@@ -15,6 +16,7 @@ use frontend\events\event\CreateEventBranchEvent;
 use frontend\events\event\CreateEventScopeEvent;
 use frontend\models\search\SearchEvent;
 use frontend\models\work\event\EventWork;
+use frontend\models\work\event\ForeignEventWork;
 use frontend\services\event\EventService;
 use Yii;
 use yii\filters\VerbFilter;
@@ -30,6 +32,7 @@ class OurEventController extends DocumentController
     private EventService $service;
     private PeopleRepository $peopleRepository;
     private RegulationRepository $regulationRepository;
+    private LockWizard $lockWizard;
 
     public function __construct(
         $id,
@@ -38,6 +41,7 @@ class OurEventController extends DocumentController
         EventService $service,
         PeopleRepository $peopleRepository,
         RegulationRepository $regulationRepository,
+        LockWizard $lockWizard,
         $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
@@ -45,6 +49,7 @@ class OurEventController extends DocumentController
         $this->service = $service;
         $this->peopleRepository = $peopleRepository;
         $this->regulationRepository = $regulationRepository;
+        $this->lockWizard = $lockWizard;
     }
 
     /**
@@ -136,40 +141,48 @@ class OurEventController extends DocumentController
      */
     public function actionUpdate($id)
     {
-        /** @var EventWork $model */
-        $model = $this->repository->get($id);
-        $model->fillSecondaryFields();
-        $model->setValuesForUpdate();
+        if ($this->lockWizard->lockObject($id, ForeignEventWork::tableName(), Yii::$app->user->id)) {
+            /** @var EventWork $model */
+            $model = $this->repository->get($id);
+            $model->fillSecondaryFields();
+            $model->setValuesForUpdate();
 
-        $tables = $this->service->getUploadedFilesTables($model);
+            $tables = $this->service->getUploadedFilesTables($model);
 
-        if ($model->load(Yii::$app->request->post())) {
-            if (!$model->validate()) {
-                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            if ($model->load(Yii::$app->request->post())) {
+                $this->lockWizard->unlockObject($id, ForeignEventWork::tableName());
+                if (!$model->validate()) {
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                }
+
+                $this->service->getFilesInstances($model);
+
+                $this->repository->save($model);
+                $this->service->saveFilesFromModel($model);
+
+                $model->recordEvent(new CreateEventBranchEvent($model->id, $model->branches), get_class($model));
+                $model->recordEvent(new CreateEventScopeEvent($model->id, $model->scopes), get_class($model));
+                $model->releaseEvents();
+
+                return $this->redirect(['view', 'id' => $model->id]);
             }
 
-            $this->service->getFilesInstances($model);
-
-            $this->repository->save($model);
-            $this->service->saveFilesFromModel($model);
-
-            $model->recordEvent(new CreateEventBranchEvent($model->id, $model->branches), get_class($model));
-            $model->recordEvent(new CreateEventScopeEvent($model->id, $model->scopes), get_class($model));
-            $model->releaseEvents();
-
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->render('update', [
+                'model' => $model,
+                'people' => $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO, SORT_ASC),
+                'regulations' => $this->regulationRepository->getOrderedList(),
+                'branches' => ArrayHelper::getColumn($this->repository->getBranches($model->id), 'branch'),
+                'protocolFiles' => $tables['protocol'],
+                'photoFiles' => $tables['photo'],
+                'reportingFiles' => $tables['report'],
+                'otherFiles' => $tables['other'],
+            ]);
         }
-
-        return $this->render('update', [
-            'model' => $model,
-            'people' => $this->peopleRepository->getOrderedList(SortHelper::ORDER_TYPE_FIO, SORT_ASC),
-            'regulations' => $this->regulationRepository->getOrderedList(),
-            'branches' => ArrayHelper::getColumn($this->repository->getBranches($model->id), 'branch'),
-            'protocolFiles' => $tables['protocol'],
-            'photoFiles' => $tables['photo'],
-            'reportingFiles' => $tables['report'],
-            'otherFiles' => $tables['other'],
-        ]);
+        else {
+            Yii::$app->session->setFlash
+            ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, ForeignEventWork::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace frontend\models\work\responsibility;
 
-use app\models\work\order\OrderMainWork;
+use frontend\models\work\order\OrderMainWork;
 use common\helpers\DateFormatter;
 use common\models\scaffold\LegacyResponsible;
 use common\models\scaffold\LocalResponsibility;

@@ -2,10 +2,10 @@
 
 namespace common\repositories\act_participant;
 
-use app\models\work\event\ForeignEventWork;
-use app\models\work\team\ActParticipantBranchWork;
-use app\models\work\team\ActParticipantWork;
-use app\models\work\team\SquadParticipantWork;
+use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\team\ActParticipantBranchWork;
+use frontend\models\work\team\ActParticipantWork;
+use frontend\models\work\team\SquadParticipantWork;
 use common\models\scaffold\ActParticipant;
 use common\repositories\event\ForeignEventRepository;
 use common\repositories\order\OrderEventRepository;

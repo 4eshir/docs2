@@ -2,8 +2,8 @@
 
 namespace frontend\facades;
 
-use app\services\act_participant\ActParticipantService;
-use app\services\team\TeamService;
+use frontend\services\act_participant\ActParticipantService;
+use frontend\services\team\TeamService;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\team\TeamRepository;

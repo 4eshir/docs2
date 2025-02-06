@@ -1,5 +1,5 @@
 <?php
-namespace app\events\educational\training_group;
+namespace frontend\events\educational\training_group;
 use common\events\EventInterface;
 use common\repositories\educational\OrderTrainingGroupParticipantRepository;
 use Yii;

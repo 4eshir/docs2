@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models\work\general;
+namespace frontend\models\work\general;
 
 use common\models\scaffold\OrderPeople;
 

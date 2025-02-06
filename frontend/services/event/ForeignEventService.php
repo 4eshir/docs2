@@ -2,8 +2,8 @@
 
 namespace frontend\services\event;
 
-use app\models\work\event\ForeignEventWork;
-use app\models\work\team\ActParticipantWork;
+use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\team\ActParticipantWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\filenames\ForeignEventFileNameGenerator;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;
@@ -121,7 +121,6 @@ class ForeignEventService
     {
         foreach ($form->newAchievements as $participantAchievement) {
             $participantAchievement->date = DateFormatter::format($participantAchievement->date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
-            var_dump($participantAchievement->attributes);
             $form->recordEvent(
                 new ParticipantAchievementEvent($participantAchievement),
                 get_class($participantAchievement)

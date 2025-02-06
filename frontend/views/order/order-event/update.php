@@ -1,9 +1,12 @@
 <?php
 
+use frontend\models\work\order\OrderEventWork;
+use common\components\wizards\AlertMessageWizard;
+use common\models\scaffold\DocumentOrder;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model \app\models\work\order\OrderEventWork */
+/* @var $model OrderEventWork */
 /* @var $people */
 /* @var $foreignEventTable */
 /* @var $scanFile */
@@ -17,12 +20,18 @@ use yii\helpers\Html;
 /* @var $actTable */
 /* @var $participants */
 /* @var $company */
-$this->title = 'Приказ об участии' . $model->order_number;
+
+$this->title = 'Изменить приказ об участии деятельности № ' . $model->order_number;
 $this->params['breadcrumbs'][] = ['label' => 'Приказ об участии', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Редактирование';
+
+$this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <div class="order-main-update">
+
+    <?= AlertMessageWizard::showRedisConnectMessage() ?>
+
     <h3><?= Html::encode($this->title) ?></h3>
     <br>
     <?= $this->render('_form', [
@@ -42,3 +51,13 @@ $this->params['breadcrumbs'][] = 'Редактирование';
         ]
     ) ?>
 </div>
+
+<script>
+    window.onload = function() {
+        initObjectData(<?= $model->id ?>, '<?= DocumentOrder::tableName() ?>', 'index.php?r=order/order-event/view&id=<?= $model->id ?>');
+    }
+
+    const intervalId = setInterval(() => {
+        refreshLock();
+    }, 600000);
+</script>
