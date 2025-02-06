@@ -103,7 +103,9 @@ class HtmlBuilder
         $result = '<div class="filter-panel" id="filterPanel">
                         '.HtmlCreator::filterHeaderForm().'
                         <div class="filter-date">';
+
         $counter = 0;
+        $count = count($searchFields);
         foreach ($searchFields as $attribute => $field) {
             if ($counter % $valueInRow == 0) {
                 $result .= '<div class="flexx">';
@@ -129,14 +131,15 @@ class HtmlBuilder
             } elseif ($field['type'] === 'dropdown') {
                 $options['prompt'] = $field['prompt'];
                 $options['options'] = $field['options'];
-                //$options['options'] = [$searchModel->$attribute => ['Selected' => true]];
                 $result .= $form->field($searchModel, $attribute)->dropDownList($field['data'], $options)->label(false);
             }
             $result .= '</div>';
-            if ($counter % $valueInRow == 0) {
+
+            if ($counter % $valueInRow == 0 || $counter === $count) {
                 $result .= '</div>';
             }
         }
+
         $result .= self::filterButton($resetUrl) . '</div>
             </div>';
         return $result;

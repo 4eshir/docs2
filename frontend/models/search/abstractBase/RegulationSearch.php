@@ -64,9 +64,9 @@ class RegulationSearch extends Model
             'desc' => ['name' => SORT_DESC],
         ];
 
-        $dataProvider->sort->attributes['orderString'] = [
-            'asc' => ['orderMain.order_name' => SORT_ASC],
-            'desc' => ['orderMain.order_name' => SORT_DESC],
+        $dataProvider->sort->attributes['orderName'] = [
+            'asc' => ['documentOrder.order_name' => SORT_ASC],
+            'desc' => ['documentOrder.order_name' => SORT_DESC],
         ];
 
         $dataProvider->sort->attributes['state'] = [

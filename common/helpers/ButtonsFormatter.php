@@ -53,4 +53,14 @@ class ButtonsFormatter
             ],
         ];
     }
+
+    public static function PrimaryCreateLink ($nameObjectOnButton)
+    {
+        return [
+            'Добавить ' . $nameObjectOnButton => [
+                'url' => ['create'],
+                'class' => 'btn-primary',
+            ]
+        ];
+    }
 }

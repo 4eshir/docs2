@@ -92,4 +92,9 @@ class Regulation extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::class, ['id' => 'last_edit_id']);
     }
+
+    public function getDocumentOrder()
+    {
+        return $this->hasOne(DocumentOrder::class, ['id' => 'order_id']);
+    }
 }
