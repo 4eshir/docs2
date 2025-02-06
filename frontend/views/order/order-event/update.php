@@ -52,8 +52,6 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
     ) ?>
 </div>
 
-<?= var_dump($model->id) ?>
-
 <script>
     window.onload = function() {
         initObjectData(<?= $model->id ?>, '<?= DocumentOrder::tableName() ?>', 'index.php?r=order/order-event/view&id=<?= $model->id ?>');

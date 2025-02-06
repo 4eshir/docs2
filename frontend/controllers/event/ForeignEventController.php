@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\event;
 
+use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\Model;
 use common\repositories\dictionaries\PeopleRepository;
@@ -26,6 +27,7 @@ class ForeignEventController extends DocumentController
     private OrderEventRepository $orderEventRepository;
     private PeopleRepository $peopleRepository;
     private ParticipantAchievementRepository $achievementRepository;
+    private LockWizard $lockWizard;
 
     public function __construct(
         $id,
@@ -34,6 +36,7 @@ class ForeignEventController extends DocumentController
         OrderEventRepository $orderEventRepository,
         PeopleRepository $peopleRepository,
         ParticipantAchievementRepository $achievementRepository,
+        LockWizard $lockWizard,
         $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);

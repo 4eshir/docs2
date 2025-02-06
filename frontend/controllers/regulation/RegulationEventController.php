@@ -2,11 +2,13 @@
 
 namespace frontend\controllers\regulation;
 
+use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\ButtonsFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\repositories\general\FilesRepository;
+use common\repositories\order\OrderMainRepository;
 use common\repositories\regulation\RegulationRepository;
 use common\services\general\files\FileService;
 use DomainException;
@@ -18,18 +20,24 @@ use Yii;
 class RegulationEventController extends DocumentController
 {
     private RegulationRepository $repository;
+    private OrderMainRepository $orderMainRepository;
     private RegulationService $service;
+    private LockWizard $lockWizard;
 
     public function __construct(
                              $id,
                              $module,
         RegulationRepository $repository,
+        OrderMainRepository  $orderMainRepository,
         RegulationService    $service,
+        LockWizard           $lockWizard,
                              $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;
         $this->service = $service;
+        $this->lockWizard = $lockWizard;
+        $this->orderMainRepository = $orderMainRepository;
     }
 
     public function actionIndex()
@@ -57,6 +65,7 @@ class RegulationEventController extends DocumentController
     public function actionCreate()
     {
         $model = new RegulationWork();
+        $ordersList = $this->orderMainRepository->getAll();
 
         if ($model->load(Yii::$app->request->post())) {
             if (!$model->validate()) {
@@ -74,34 +83,45 @@ class RegulationEventController extends DocumentController
 
         return $this->render('create', [
             'model' => $model,
+            'ordersList' => $ordersList
         ]);
     }
 
     //
     public function actionUpdate($id)
     {
-        $model = $this->repository->get($id);
-        /** @var RegulationWork $model */
-        $fileTables = $this->service->getUploadedFilesTables($model);
+        if ($this->lockWizard->lockObject($id, RegulationWork::tableName(), Yii::$app->user->id)) {
+            $model = $this->repository->get($id);
+            $ordersList = $this->orderMainRepository->getAll();
+            /** @var RegulationWork $model */
+            $fileTables = $this->service->getUploadedFilesTables($model);
 
-        if ($model->load(Yii::$app->request->post())) {
-            if (!$model->validate()) {
-                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            if ($model->load(Yii::$app->request->post())) {
+                $this->lockWizard->unlockObject($id, RegulationWork::tableName());
+                if (!$model->validate()) {
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                }
+
+                $this->service->getFilesInstances($model);
+                $this->repository->save($model);
+
+                $this->service->saveFilesFromModel($model);
+                $model->releaseEvents();
+
+                return $this->redirect(['view', 'id' => $model->id]);
             }
 
-            $this->service->getFilesInstances($model);
-            $this->repository->save($model);
-
-            $this->service->saveFilesFromModel($model);
-            $model->releaseEvents();
-
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->render('update', [
+                'model' => $model,
+                'ordersList' => $ordersList,
+                'scanFile' => $fileTables['scan'],
+            ]);
         }
-
-        return $this->render('update', [
-            'model' => $model,
-            'scanFile' => $fileTables['scan'],
-        ]);
+        else {
+            Yii::$app->session->setFlash
+            ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, RegulationWork::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
 
     public function actionDelete($id)

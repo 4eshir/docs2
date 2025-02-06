@@ -11,6 +11,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model RegulationWork */
 /* @var $form yii\widgets\ActiveForm */
+/* @var $ordersList */
 /* @var $scanFile */
 ?>
 
@@ -35,31 +36,15 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
-    <?php
-
-    $orders = \app\models\work\order\OrderMainWork::find()->where(['!=', 'order_name', 'Резерв'])->all();
-    $params = [
-        'prompt' => '---'
-    ];
-
-    echo $form->field($model, 'order_id')->widget(Select2::classname(), [
-        'data' => ArrayHelper::map($orders, 'id','fullName'),
+    <?= $form->field($model, 'order_id')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map($ordersList, 'id','fullName'),
         'size' => Select2::LARGE,
-        'options' => $params,
+        'options' => ['prompt' => '---'],
         'pluginOptions' => [
             'allowClear' => true,
             'multiple' => false,
         ],
     ])->label('Приказ');
-
-
-    /*$orders = \app\models\work\DocumentOrderWork::find()->where(['!=', 'order_name', 'Резерв'])->all();
-    $items = \yii\helpers\ArrayHelper::map($orders,'id','fullName');*/
-    $params = [
-        'prompt' => '---'
-    ];
-
-    echo $form->field($model, "order_id")->dropDownList([1 => 'boobs'],$params)->label('Приказ');
 
     ?>
 
