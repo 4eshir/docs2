@@ -1,8 +1,11 @@
 <?php
-namespace app\events\dictionaries;
+
+namespace frontend\events\dictionaries;
+
 use common\events\EventInterface;
 use common\repositories\dictionaries\PeopleRepository;
 use Yii;
+
 class PeopleEventCreate implements EventInterface {
     private $name;
     private $surname;

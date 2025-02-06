@@ -2,8 +2,8 @@
 
 namespace frontend\forms\event;
 
-use app\models\work\team\ActParticipantWork;
-use app\models\work\team\SquadParticipantWork;
+use frontend\models\work\team\ActParticipantWork;
+use frontend\models\work\team\SquadParticipantWork;
 use common\components\dictionaries\base\BranchDictionary;
 use common\events\EventTrait;
 use common\helpers\files\FilesHelper;

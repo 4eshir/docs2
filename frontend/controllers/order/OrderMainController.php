@@ -1,9 +1,11 @@
 <?php
+
 namespace frontend\controllers\order;
-use app\models\work\order\OrderMainWork;
-use app\services\order\DocumentOrderService;
-use app\services\order\OrderMainService;
-use app\services\order\OrderPeopleService;
+
+use frontend\models\work\order\OrderMainWork;
+use frontend\services\order\DocumentOrderService;
+use frontend\services\order\OrderMainService;
+use frontend\services\order\OrderPeopleService;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\files\FilesHelper;

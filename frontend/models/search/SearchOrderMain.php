@@ -2,9 +2,9 @@
 
 namespace frontend\models\search;
 
-use app\models\work\order\DocumentOrderWork;
+use frontend\models\work\order\DocumentOrderWork;
 use common\helpers\DateFormatter;
-use app\models\work\order\OrderMainWork;
+use frontend\models\work\order\OrderMainWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 

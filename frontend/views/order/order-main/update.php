@@ -5,7 +5,7 @@ use common\models\scaffold\DocumentOrder;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model \app\models\work\order\OrderMainWork */
+/* @var $model \frontend\models\work\order\OrderMainWork */
 /* @var $people */
 /* @var $users */
 /* @var $modelExpire */
@@ -40,7 +40,7 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
         'docFiles' => $docFiles,
     ]) ?>
 </div>
-
+<?= var_dump($model->id) ?>
 <script>
     window.onload = function() {
         initObjectData(<?= $model->id ?>, '<?= DocumentOrder::tableName() ?>', 'index.php?r=order/order-main/view&id=<?= $model->id ?>');

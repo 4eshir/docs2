@@ -1,11 +1,8 @@
 <?php
 
+namespace common\services\general\files\upload;
 
-namespace app\models\strategies\FileUploadStrategy;
-
-use app\models\strategies\FileUploadStrategy\AbstractFileUpload;
 use Yii;
-use yii\db\ActiveRecord;
 
 
 class FileUploadServer extends AbstractFileUpload

@@ -2,7 +2,7 @@
 
 namespace common\repositories\order;
 
-use app\models\work\order\DocumentOrderWork;
+use frontend\models\work\order\DocumentOrderWork;
 
 class DocumentOrderRepository
 {

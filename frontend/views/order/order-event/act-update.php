@@ -9,7 +9,7 @@
 /* @var $act */
 /* @var $tables */
 
-use app\models\work\team\ActParticipantWork;
+use frontend\models\work\team\ActParticipantWork;
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;

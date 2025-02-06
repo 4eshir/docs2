@@ -2,7 +2,7 @@
 
 namespace common\repositories\act_participant;
 
-use app\models\work\team\SquadParticipantWork;
+use frontend\models\work\team\SquadParticipantWork;
 use common\models\scaffold\SquadParticipant;
 use Yii;
 use function PHPUnit\Framework\throwException;

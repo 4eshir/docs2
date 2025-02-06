@@ -2,8 +2,8 @@
 
 namespace frontend\models\search;
 
-use app\models\work\order\DocumentOrderWork;
-use app\models\work\order\OrderEventWork;
+use frontend\models\work\order\DocumentOrderWork;
+use frontend\models\work\order\OrderEventWork;
 use common\helpers\DateFormatter;
 use frontend\models\search\SearchOrderMain;
 use yii\base\Model;

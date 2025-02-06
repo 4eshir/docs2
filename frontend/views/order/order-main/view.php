@@ -1,6 +1,6 @@
 <?php
 
-use app\models\work\order\OrderMainWork;
+use frontend\models\work\order\OrderMainWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\StringFormatter;
@@ -10,7 +10,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model \app\models\work\order\OrderMainWork */
+/* @var $model \frontend\models\work\order\OrderMainWork */
 /* @var $modelResponsiblePeople */
 /* @var $modelChangedDocuments */
 $this->title = $model->order_name;

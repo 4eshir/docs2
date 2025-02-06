@@ -1,12 +1,12 @@
 <?php
 
-namespace app\services\act_participant;
+namespace frontend\services\act_participant;
 
-use app\events\act_participant\SquadParticipantCreateEvent;
-use app\events\act_participant\SquadParticipantDeleteEvent;
-use app\models\work\team\ActParticipantWork;
-use app\models\work\team\SquadParticipantWork;
-use app\models\work\team\TeamNameWork;
+use frontend\events\act_participant\SquadParticipantCreateEvent;
+use frontend\events\act_participant\SquadParticipantDeleteEvent;
+use frontend\models\work\team\ActParticipantWork;
+use frontend\models\work\team\SquadParticipantWork;
+use frontend\models\work\team\TeamNameWork;
 use common\Model;
 use common\models\scaffold\SquadParticipant;
 use common\repositories\act_participant\ActParticipantRepository;

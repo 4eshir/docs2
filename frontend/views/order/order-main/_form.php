@@ -3,7 +3,7 @@
 use app\components\DropDownDocument;
 use app\components\DropDownResponsiblePeopleWidget;
 use app\components\DynamicWidget;
-use app\models\work\order\OrderMainWork;
+use frontend\models\work\order\OrderMainWork;
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;

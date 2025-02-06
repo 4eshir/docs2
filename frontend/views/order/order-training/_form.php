@@ -1,7 +1,7 @@
 <?php
 
-use app\components\GroupParticipantWidget;
-use app\models\work\order\OrderTrainingWork;
+use frontend\components\GroupParticipantWidget;
+use frontend\models\work\order\OrderTrainingWork;
 use common\helpers\DateFormatter;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;

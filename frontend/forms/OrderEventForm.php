@@ -1,7 +1,9 @@
 <?php
+
 namespace frontend\forms;
-use app\models\work\event\ForeignEventWork;
-use app\models\work\order\OrderEventWork;
+
+use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\order\OrderEventWork;
 use common\events\EventTrait;
 use common\models\scaffold\People;
 use common\models\scaffold\PeopleStamp;

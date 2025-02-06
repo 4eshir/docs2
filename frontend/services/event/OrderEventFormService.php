@@ -1,6 +1,6 @@
 <?php
 
-namespace app\services\event;
+namespace frontend\services\event;
 
 use frontend\forms\OrderEventForm;
 use yii\web\UploadedFile;

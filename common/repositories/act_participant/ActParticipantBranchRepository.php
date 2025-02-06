@@ -2,9 +2,7 @@
 
 namespace common\repositories\act_participant;
 
-use app\models\work\team\ActParticipantBranchWork;
-use common\models\scaffold\ActParticipantBranch;
-use Yii;
+use frontend\models\work\team\ActParticipantBranchWork;
 use yii\helpers\ArrayHelper;
 
 class ActParticipantBranchRepository

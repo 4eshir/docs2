@@ -1,6 +1,6 @@
 <?php
 
-use app\models\work\order\OrderEventWork;
+use frontend\models\work\order\OrderEventWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use frontend\models\work\general\PeopleWork;
@@ -9,7 +9,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model \app\models\work\order\OrderEventWork */
+/* @var $model \frontend\models\work\order\OrderEventWork */
 /* @var $modelResponsiblePeople */
 $this->title = $model->order_name;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы о мероприятиях'];

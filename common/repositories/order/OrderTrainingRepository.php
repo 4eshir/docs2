@@ -1,8 +1,8 @@
 <?php
 
 namespace common\repositories\order;
-use app\models\work\order\OrderTrainingWork;
-use app\services\order\OrderTrainingService;
+use frontend\models\work\order\OrderTrainingWork;
+use frontend\services\order\OrderTrainingService;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;

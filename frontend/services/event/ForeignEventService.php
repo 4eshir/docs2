@@ -2,8 +2,8 @@
 
 namespace frontend\services\event;
 
-use app\models\work\event\ForeignEventWork;
-use app\models\work\team\ActParticipantWork;
+use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\team\ActParticipantWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\filenames\ForeignEventFileNameGenerator;
 use common\helpers\files\filenames\OrderMainFileNameGenerator;

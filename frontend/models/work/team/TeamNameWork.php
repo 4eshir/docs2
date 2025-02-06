@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models\work\team;
+namespace frontend\models\work\team;
 
 use common\events\EventTrait;
 use common\models\scaffold\TeamName;

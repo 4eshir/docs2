@@ -3,13 +3,15 @@
 namespace frontend\controllers\order;
 
 use app\components\DynamicWidget;
-use app\components\GroupParticipantWidget;
-use app\models\search\SearchOrderTraining;
-use app\models\work\order\OrderTrainingWork;
-use app\services\order\DocumentOrderService;
-use app\services\order\OrderPeopleService;
-use app\services\order\OrderTrainingService;
+use frontend\components\GroupParticipantWidget;
+use frontend\models\search\SearchOrderTraining;
+use frontend\models\work\order\DocumentOrderWork;
+use frontend\models\work\order\OrderTrainingWork;
+use frontend\services\order\DocumentOrderService;
+use frontend\services\order\OrderPeopleService;
+use frontend\services\order\OrderTrainingService;
 use common\components\dictionaries\base\NomenclatureDictionary;
+use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\repositories\educational\OrderTrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
@@ -33,6 +35,7 @@ class OrderTrainingController extends DocumentController
     private OrderPeopleService $orderPeopleService;
     private OrderTrainingRepository $orderTrainingRepository;
     private TrainingGroupRepository $trainingGroupRepository;
+    private LockWizard $lockWizard;
     private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
 
     public function __construct(
@@ -46,6 +49,7 @@ class OrderTrainingController extends DocumentController
         OrderTrainingRepository $orderTrainingRepository,
         TrainingGroupRepository $trainingGroupRepository,
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
+        LockWizard $lockWizard,
 
         FileService $fileService,
         FilesRepository $filesRepository,
@@ -59,6 +63,7 @@ class OrderTrainingController extends DocumentController
         $this->orderPeopleService = $orderPeopleService;
         $this->orderTrainingRepository = $orderTrainingRepository;
         $this->trainingGroupRepository = $trainingGroupRepository;
+        $this->lockWizard = $lockWizard;
         $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
     }
@@ -116,45 +121,57 @@ class OrderTrainingController extends DocumentController
     }
     public function actionUpdate($id)
     {
-        $model = $this->orderTrainingRepository->get($id);
-        $this->orderTrainingService->setBranch($model);
-        $people = $this->peopleStampRepository->getAll();
-        $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
-        $post = Yii::$app->request->post();
-        $number = $model->order_number;
-        $groups = $this->orderTrainingService->getGroupsDataProvider($model);
-        $groupParticipant = $this->orderTrainingService->getParticipantsDataProvider($model);
-        $transferGroups = $this->trainingGroupRepository->getByBranchQuery($model->branch)->all();
-        $tables = $this->documentOrderService->getUploadedFilesTables($model);
-        $status = $this->orderTrainingService->getStatus($model);
-        $groupCheckOption = $this->trainingGroupRepository->getAttachedGroupsByOrder($id, $status);
-        $groupParticipantOption = $this->trainingGroupParticipantRepository->getAttachedParticipantByOrder($id, $status);
-        if ($model->load($post) && $model->validate()) {
-            $this->documentOrderService->getFilesInstances($model);
-            $model->order_number = $number;
-            $this->orderTrainingRepository->save($model);
-            //$status = $this->orderTrainingService->getStatus($model);
-            //update
-            $this->orderTrainingService->updateOrderTrainingGroupParticipantEvent($model, $status, $post);
-            //update
-            $this->documentOrderService->saveFilesFromModel($model);
-            $this->orderPeopleService->updateOrderPeopleEvent(
-                ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
-                $post["OrderTrainingWork"]["responsible_id"], $model);
-            $model->releaseEvents();
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
+            $model = $this->orderTrainingRepository->get($id);
+            $this->orderTrainingService->setBranch($model);
+            $people = $this->peopleStampRepository->getAll();
+            $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
+            $post = Yii::$app->request->post();
+            $number = $model->order_number;
+            $groups = $this->orderTrainingService->getGroupsDataProvider($model);
+            $groupParticipant = $this->orderTrainingService->getParticipantsDataProvider($model);
+            $transferGroups = $this->trainingGroupRepository->getByBranchQuery($model->branch)->all();
+            $tables = $this->documentOrderService->getUploadedFilesTables($model);
+            $status = $this->orderTrainingService->getStatus($model);
+            $groupCheckOption = $this->trainingGroupRepository->getAttachedGroupsByOrder($id, $status);
+            $groupParticipantOption = $this->trainingGroupParticipantRepository->getAttachedParticipantByOrder($id, $status);
+            if ($model->load($post)) {
+                $this->lockWizard->unlockObject($id, DocumentOrderWork::tableName());
+                if (!$model->validate()) {
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                }
+
+                $this->documentOrderService->getFilesInstances($model);
+                $model->order_number = $number;
+                $this->orderTrainingRepository->save($model);
+                //$status = $this->orderTrainingService->getStatus($model);
+                //update
+                $this->orderTrainingService->updateOrderTrainingGroupParticipantEvent($model, $status, $post);
+                //update
+                $this->documentOrderService->saveFilesFromModel($model);
+                $this->orderPeopleService->updateOrderPeopleEvent(
+                    ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
+                    $post["OrderTrainingWork"]["responsible_id"], $model);
+                $model->releaseEvents();
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+            return $this->render('update', [
+                'model' => $model,
+                'people' => $people,
+                'groups' => $groups,
+                'groupParticipant' => $groupParticipant,
+                'transferGroups' => $transferGroups,
+                'scanFile' => $tables['scan'],
+                'docFiles' => $tables['docs'],
+                'groupCheckOption' => $groupCheckOption,
+                'groupParticipantOption' => $groupParticipantOption,
+            ]);
         }
-        return $this->render('update', [
-            'model' => $model,
-            'people' => $people,
-            'groups' => $groups,
-            'groupParticipant' => $groupParticipant,
-            'transferGroups' => $transferGroups,
-            'scanFile' => $tables['scan'],
-            'docFiles' => $tables['docs'],
-            'groupCheckOption' => $groupCheckOption,
-            'groupParticipantOption' => $groupParticipantOption,
-        ]);
+        else {
+            Yii::$app->session->setFlash
+            ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, DocumentOrderWork::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
     public function actionGetListByBranch()
     {

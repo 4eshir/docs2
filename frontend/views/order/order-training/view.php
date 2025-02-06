@@ -1,5 +1,5 @@
 <?php
-use app\models\work\order\OrderTrainingWork;
+use frontend\models\work\order\OrderTrainingWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use frontend\models\work\general\PeopleWork;
@@ -7,7 +7,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 /* @var $this yii\web\View */
-/* @var $model \app\models\work\order\OrderTrainingWork */
+/* @var $model \frontend\models\work\order\OrderTrainingWork */
 /* @var $modelResponsiblePeople */
 $this->title = $model->order_name;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об образовательной деятельности', 'url' => ['index']];

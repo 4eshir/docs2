@@ -4,7 +4,7 @@ namespace frontend\models\forms;
 
 
 
-use app\models\work\order\ExpireWork;
+use frontend\models\work\order\ExpireWork;
 use yii\base\Model;
 
 class ExpireForm extends Model

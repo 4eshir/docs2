@@ -2,9 +2,8 @@
 
 namespace common\repositories\event;
 
-use app\models\work\event\ForeignEventWork;
+use frontend\models\work\event\ForeignEventWork;
 use DomainException;
-use PhpOffice\PhpSpreadsheet\Calculation\Statistical\Distributions\F;
 
 class ForeignEventRepository
 {

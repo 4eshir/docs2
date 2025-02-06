@@ -2,7 +2,7 @@
 
 namespace frontend\services\dictionaries;
 
-use app\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
+use frontend\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\DocumentIn;

@@ -2,7 +2,7 @@
 
 namespace common\repositories\providers\people;
 
-use app\events\dictionaries\PeoplePositionCompanyBranchEventDelete;
+use frontend\events\dictionaries\PeoplePositionCompanyBranchEventDelete;
 use common\helpers\SortHelper;
 use common\repositories\general\PeoplePositionCompanyBranchRepository;
 use DomainException;

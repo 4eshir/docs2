@@ -1,8 +1,12 @@
 <?php
-namespace app\services\act_participant;
-use app\events\act_participant\ActParticipantCreateEvent;
-use app\models\work\team\ActParticipantWork;
-use app\services\team\TeamService;
+
+namespace frontend\services\act_participant;
+
+use frontend\services\act_participant\ActParticipantBranchService;
+use frontend\services\act_participant\SquadParticipantService;
+use frontend\events\act_participant\ActParticipantCreateEvent;
+use frontend\models\work\team\ActParticipantWork;
+use frontend\services\team\TeamService;
 use common\helpers\files\filenames\ActParticipantFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
@@ -20,6 +24,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
+
 class ActParticipantService
 {
     public TeamRepository $teamRepository;

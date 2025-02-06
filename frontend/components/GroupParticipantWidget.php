@@ -1,8 +1,6 @@
 <?php
 
-namespace app\components;
-
-
+namespace frontend\components;
 
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;

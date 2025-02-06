@@ -1,5 +1,7 @@
 <?php
-namespace app\models\work\event;
+
+namespace frontend\models\work\event;
+
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;

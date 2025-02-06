@@ -1,8 +1,8 @@
 <?php
 
-namespace app\events\team;
+namespace frontend\events\team;
 
-use app\models\work\event\ForeignEventWork;
+use frontend\models\work\event\ForeignEventWork;
 use common\events\EventInterface;
 use common\repositories\team\TeamRepository;
 use Yii;

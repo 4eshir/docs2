@@ -2,7 +2,7 @@
 
 namespace common\repositories\order;
 
-use app\models\work\order\OrderMainWork;
+use frontend\models\work\order\OrderMainWork;
 use DomainException;
 use setasign\Fpdi\PdfParser\Filter\Ascii85;
 
