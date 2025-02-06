@@ -4,7 +4,11 @@ use app\models\work\order\OrderMainWork;
 use app\services\order\DocumentOrderService;
 use app\services\order\OrderMainService;
 use app\services\order\OrderPeopleService;
+use common\components\wizards\LockWizard;
+use common\controllers\DocumentController;
 use common\helpers\files\FilesHelper;
+use common\helpers\StringFormatter;
+use common\models\scaffold\DocumentOrder;
 use common\repositories\expire\ExpireRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\general\OrderPeopleRepository;
@@ -24,7 +28,7 @@ use yii;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
-class OrderMainController extends Controller
+class OrderMainController extends DocumentController
 {
     private OrderMainRepository $repository;
     private DocumentOrderRepository $documentOrderRepository;
@@ -35,8 +39,7 @@ class OrderMainController extends Controller
     private OrderPeopleRepository $orderPeopleRepository;
     private UserRepository $userRepository;
     private RegulationRepository $regulationRepository;
-    private FileService $fileService;
-    private FilesRepository $filesRepository;
+    private LockWizard $lockWizard;
     private OrderPeopleService $orderPeopleService;
 
     public function __construct(
@@ -46,27 +49,26 @@ class OrderMainController extends Controller
         DocumentOrderRepository $documentOrderRepository,
         OrderMainService $service,
         DocumentOrderService $documentOrderService,
-        FileService $fileService,
         ExpireRepository $expireRepository,
-        FilesRepository $filesRepository,
         PeopleStampRepository $peopleStampRepository,
         OrderPeopleRepository $orderPeopleRepository,
         UserRepository $userRepository,
         RegulationRepository $regulationRepository,
+        LockWizard $lockWizard,
         OrderPeopleService $orderPeopleService,
-        $config = [])
+        $config = []
+    )
     {
-        parent::__construct($id, $module, $config);
+        parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->service = $service;
         $this->documentOrderService = $documentOrderService;
         $this->documentOrderRepository = $documentOrderRepository;
         $this->expireRepository = $expireRepository;
-        $this->filesRepository = $filesRepository;
-        $this->fileService = $fileService;
         $this->peopleStampRepository = $peopleStampRepository;
         $this->orderPeopleRepository = $orderPeopleRepository;
         $this->userRepository = $userRepository;
         $this->regulationRepository = $regulationRepository;
+        $this->lockWizard = $lockWizard;
         $this->repository = $repository;
         $this->orderPeopleService = $orderPeopleService;
 
@@ -111,41 +113,49 @@ class OrderMainController extends Controller
     }
     public function actionUpdate($id)
     {
-        /* @var OrderMainWork $model */
-        $model = $this->repository->get($id);
-        $people = $this->peopleStampRepository->getAll();
-        $post = Yii::$app->request->post();
-        $orders = $this->documentOrderRepository->getAll();
-        $regulations = $this->regulationRepository->getOrderedList();
-        $users = $this->userRepository->getAll();
-        $modelExpire = [new ExpireForm()];
-        $modelChangedDocuments = $this->service->getChangedDocumentsTable($model->id);
-        $tables = $this->documentOrderService->getUploadedFilesTables($model);
-        $model->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'));
-        if($model->load($post)){
-            if(!$model->validate()){
-                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+        if ($this->lockWizard->lockObject($id, DocumentOrder::tableName(), Yii::$app->user->id)) {
+            /* @var OrderMainWork $model */
+            $model = $this->repository->get($id);
+            $people = $this->peopleStampRepository->getAll();
+            $post = Yii::$app->request->post();
+            $orders = $this->documentOrderRepository->getAll();
+            $regulations = $this->regulationRepository->getOrderedList();
+            $users = $this->userRepository->getAll();
+            $modelExpire = [new ExpireForm()];
+            $modelChangedDocuments = $this->service->getChangedDocumentsTable($model->id);
+            $tables = $this->documentOrderService->getUploadedFilesTables($model);
+            $model->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'));
+            if ($model->load($post)) {
+                $this->lockWizard->unlockObject($id, DocumentOrder::tableName());
+                if (!$model->validate()) {
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                }
+                $this->repository->save($model);
+                $this->documentOrderService->getFilesInstances($model);
+                $this->orderPeopleService->updateOrderPeopleEvent(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
+                    $post["OrderMainWork"]["responsiblePeople"], $model);
+                $this->service->addExpireEvent($post["ExpireForm"], $model);
+                $this->documentOrderService->saveFilesFromModel($model);
+                $model->releaseEvents();
+                return $this->redirect(['view', 'id' => $model->id]);
             }
-            $this->repository->save($model);
-            $this->documentOrderService->getFilesInstances($model);
-            $this->orderPeopleService->updateOrderPeopleEvent(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
-                $post["OrderMainWork"]["responsiblePeople"], $model);
-            $this->service->addExpireEvent($post["ExpireForm"], $model);
-            $this->documentOrderService->saveFilesFromModel($model);
-            $model->releaseEvents();
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->render('update', [
+                'orders' => $orders,
+                'model' => $model,
+                'people' => $people,
+                'users' => $users,
+                'modelExpire' => $modelExpire,
+                'regulations' => $regulations,
+                'modelChangedDocuments' => $modelChangedDocuments,
+                'scanFile' => $tables['scan'],
+                'docFiles' => $tables['docs'],
+            ]);
         }
-        return $this->render('update', [
-            'orders' => $orders,
-            'model' => $model,
-            'people' => $people,
-            'users' => $users,
-            'modelExpire' => $modelExpire,
-            'regulations' => $regulations,
-            'modelChangedDocuments' => $modelChangedDocuments,
-            'scanFile' => $tables['scan'],
-            'docFiles' => $tables['docs'],
-        ]);
+        else {
+            Yii::$app->session->setFlash
+            ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, DocumentOrder::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
     public function actionDelete($id){
         $model = $this->repository->get($id);
@@ -176,35 +186,7 @@ class OrderMainController extends Controller
             'modelChangedDocuments' => $modelChangedDocuments
         ]);
     }
-    public function actionGetFile($filepath)
-    {
-        $data = $this->fileService->downloadFile($filepath);
-        if ($data['type'] == FilesHelper::FILE_SERVER) {
-            Yii::$app->response->sendFile($data['obj']->file);
-        }
-        else {
-            $fp = fopen('php://output', 'r');
-            HeaderWizard::setFileHeaders(FilesHelper::getFilenameFromPath($data['obj']->filepath), $data['obj']->file->size);
-            $data['obj']->file->download($fp);
-            fseek($fp, 0);
-        }
-    }
-    public function actionDeleteFile($modelId, $fileId)
-    {
-        try {
-            $file = $this->filesRepository->getById($fileId);
-            /** @var FilesWork $file */
-            $filepath = $file ? basename($file->filepath) : '';
-            $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
-            $file->recordEvent(new FileDeleteEvent($file->id), get_class($file));
-            $file->releaseEvents();
-            Yii::$app->session->setFlash('success', "Файл $filepath успешно удален");
-            return $this->redirect(['update', 'id' => $modelId]);
-        }
-        catch (DomainException $e) {
-            return 'Oops! Something wrong';
-        }
-    }
+
     public function actionDeleteDocument($id, $modelId)
     {
         $this->expireRepository->deleteByActiveRegulationId($id);

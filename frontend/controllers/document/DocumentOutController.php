@@ -154,7 +154,7 @@ class DocumentOutController extends Controller
             $tables = $this->service->getUploadedFilesTables($model);
             $filesAnswer = $this->repository->getDocumentInWithoutAnswer();
             if ($model->load(Yii::$app->request->post())) {
-                $this->lockWizard->unlockObject($id, StringFormatter::getLastSegmentBySlash($this->id));
+                $this->lockWizard->unlockObject($id, DocumentOutWork::tableName());
                 $local_id = $model->getAnswer();
                 $this->service->getPeopleStamps($model);
 
