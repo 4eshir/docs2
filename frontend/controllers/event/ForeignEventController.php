@@ -15,6 +15,7 @@ use frontend\forms\event\EventParticipantForm;
 use frontend\forms\event\ForeignEventForm;
 use frontend\forms\event\ParticipantAchievementForm;
 use frontend\models\search\SearchForeignEvent;
+use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\services\event\ForeignEventService;
@@ -41,6 +42,7 @@ class ForeignEventController extends DocumentController
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->service = $service;
+        $this->lockWizard = $lockWizard;
         $this->orderEventRepository = $orderEventRepository;
         $this->peopleRepository = $peopleRepository;
         $this->achievementRepository = $achievementRepository;
@@ -59,30 +61,38 @@ class ForeignEventController extends DocumentController
 
     public function actionUpdate($id)
     {
-        $form = new ForeignEventForm($id);
+        if ($this->lockWizard->lockObject($id, ForeignEventWork::tableName(), Yii::$app->user->id)) {
+            $form = new ForeignEventForm($id);
 
-        if ($form->load(Yii::$app->request->post())) {
-            $modelAchievements = Model::createMultiple(ParticipantAchievementWork::classname());
-            Model::loadMultiple($modelAchievements, Yii::$app->request->post());
-            if (Model::validateMultiple($modelAchievements, ['act_participant_id', 'achievement', 'cert_number', 'date', 'type'])) {
-                $form->newAchievements = $modelAchievements;
+            if ($form->load(Yii::$app->request->post())) {
+                $this->lockWizard->unlockObject($id, ForeignEventWork::tableName());
+                $modelAchievements = Model::createMultiple(ParticipantAchievementWork::classname());
+                Model::loadMultiple($modelAchievements, Yii::$app->request->post());
+                if (Model::validateMultiple($modelAchievements, ['act_participant_id', 'achievement', 'cert_number', 'date', 'type'])) {
+                    $form->newAchievements = $modelAchievements;
+                }
+
+                $this->service->attachAchievement($form);
+                $this->service->getFilesInstances($form);
+                $this->service->saveAchievementFileFromModel($form);
+                $form->save();
+                $form->releaseEvents();
+                return $this->redirect(['view', 'id' => $id]);
             }
 
-            $this->service->attachAchievement($form);
-            $this->service->getFilesInstances($form);
-            $this->service->saveAchievementFileFromModel($form);
-            $form->save();
-            $form->releaseEvents();
-            return $this->redirect(['view', 'id' => $id]);
+            return $this->render('update', [
+                'model' => $form,
+                'peoples' => $this->peopleRepository->getAll(),
+                'orders6' => $this->orderEventRepository->getEventOrdersByLastTime(date('Y-m-d', strtotime($form->startDate . '-6 month'))),
+                'orders9' => $this->orderEventRepository->getEventOrdersByLastTime(date('Y-m-d', strtotime($form->startDate . '-9 month'))),
+                'modelAchievements' => [new ParticipantAchievementWork],
+            ]);
         }
-
-        return $this->render('update', [
-            'model' => $form,
-            'peoples' => $this->peopleRepository->getAll(),
-            'orders6' => $this->orderEventRepository->getEventOrdersByLastTime(date('Y-m-d', strtotime($form->startDate . '-6 month'))),
-            'orders9' => $this->orderEventRepository->getEventOrdersByLastTime(date('Y-m-d', strtotime($form->startDate . '-9 month'))),
-            'modelAchievements' => [new ParticipantAchievementWork],
-        ]);
+        else {
+            Yii::$app->session->setFlash
+            ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, ForeignEventWork::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
 
     public function actionView($id)

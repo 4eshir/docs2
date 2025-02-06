@@ -1,5 +1,7 @@
 <?php
 
+use common\components\wizards\AlertMessageWizard;
+use common\models\scaffold\ForeignEvent;
 use frontend\models\work\event\EventWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\regulation\RegulationWork;
@@ -19,8 +21,12 @@ $this->title = 'Редактировать мероприятие: ' . $model->n
 $this->params['breadcrumbs'][] = ['label' => 'Мероприятия', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Редактирование';
+
+$this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <div class="event-update">
+
+    <?= AlertMessageWizard::showRedisConnectMessage() ?>
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -36,3 +42,13 @@ $this->params['breadcrumbs'][] = 'Редактирование';
     ]) ?>
 
 </div>
+
+<script>
+    window.onload = function() {
+        initObjectData(<?= $model->id ?>, '<?= ForeignEvent::tableName() ?>', 'index.php?r=event/foreign-event/view&id=<?= $model->id ?>');
+    }
+
+    const intervalId = setInterval(() => {
+        refreshLock();
+    }, 600000);
+</script>
