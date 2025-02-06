@@ -21,6 +21,10 @@ class UserPermissionFunctionRepository
 
     public function attachTemplatePermissionsToUser($templateName, $userId, $branch)
     {
+        if ($branch == "") {
+            $branch = null;
+        }
+
         if (array_key_exists($templateName, PermissionTemplateWork::getTemplateNames()) &&
             (array_key_exists($branch, Yii::$app->branches->getList()) || $branch == null)) {
             $functions = $this->permissionFunctionRepository->getTemplateLinkedPermissions($templateName);

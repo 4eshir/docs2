@@ -1,5 +1,7 @@
 <?php
 
+use common\components\wizards\AlertMessageWizard;
+use common\models\scaffold\TrainingGroup;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
@@ -17,9 +19,13 @@ $this->title = 'Редактирование';
 $this->params['breadcrumbs'][] = ['label' => 'Учебные группы', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => "Группа {$model->number}", 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = $this->title;
+
+$this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 
-    <div class="event-create">
+<div class="event-create">
+
+    <?= AlertMessageWizard::showRedisConnectMessage() ?>
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -88,3 +94,13 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 <?php ActiveForm::end(); ?>
+
+<script>
+    window.onload = function() {
+        initObjectData(<?= $model->id ?>, '<?= TrainingGroup::tableName() ?>', 'index.php?r=educational/training-group/view&id=<?= $model->id ?>');
+    }
+
+    const intervalId = setInterval(() => {
+        refreshLock();
+    }, 600000);
+</script>

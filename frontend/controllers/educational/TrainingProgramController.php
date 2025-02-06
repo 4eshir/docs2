@@ -3,6 +3,7 @@
 namespace frontend\controllers\educational;
 
 use app\components\DynamicWidget;
+use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\educational\TrainingProgramRepository;
@@ -26,6 +27,7 @@ class TrainingProgramController extends DocumentController
     private TrainingProgramService $service;
     private TrainingProgramRepository $repository;
     private PeopleRepository $peopleRepository;
+    private LockWizard $lockWizard;
 
     public function __construct(
         $id,
@@ -33,6 +35,7 @@ class TrainingProgramController extends DocumentController
         TrainingProgramService $service,
         TrainingProgramRepository $repository,
         PeopleRepository $peopleRepository,
+        LockWizard $lockWizard,
         $config = []
     )
     {
@@ -40,6 +43,7 @@ class TrainingProgramController extends DocumentController
         $this->service = $service;
         $this->repository = $repository;
         $this->peopleRepository = $peopleRepository;
+        $this->lockWizard = $lockWizard;
     }
 
     /**
@@ -135,46 +139,54 @@ class TrainingProgramController extends DocumentController
      */
     public function actionUpdate($id)
     {
-        /** @var TrainingProgramWork $model */
-        $model = $this->repository->get($id);
-        $authors = $this->repository->getAuthors($id);
-        $themes = $this->repository->getThematicPlan($id);
-        $fileTables = $this->service->getUploadedFilesTables($model);
-        $depTables = $this->service->getDependencyTables($authors, $themes);
-        $ourPeople = $this->peopleRepository->getPeopleFromMainCompany();
+        if ($this->lockWizard->lockObject($id, TrainingProgramWork::tableName(), Yii::$app->user->id)) {
+            /** @var TrainingProgramWork $model */
+            $model = $this->repository->get($id);
+            $authors = $this->repository->getAuthors($id);
+            $themes = $this->repository->getThematicPlan($id);
+            $fileTables = $this->service->getUploadedFilesTables($model);
+            $depTables = $this->service->getDependencyTables($authors, $themes);
+            $ourPeople = $this->peopleRepository->getPeopleFromMainCompany();
 
-        $post = Yii::$app->request->post();
-        if ($model->load($post)) {
-            if (!$model->validate()) {
-                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            $post = Yii::$app->request->post();
+            if ($model->load($post)) {
+                $this->lockWizard->unlockObject($id, TrainingProgramWork::tableName());
+                if (!$model->validate()) {
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                }
+
+                $postThemes = DynamicWidget::getData(basename(TrainingProgramWork::class), 'themes', $post);
+                $postControls = DynamicWidget::getData(basename(TrainingProgramWork::class), 'controls', $post);
+                $postAuthors = DynamicWidget::getData(basename(TrainingProgramWork::class), 'authors', $post);
+                $this->service->getFilesInstances($model);
+                $this->repository->save($model);
+
+                $this->service->attachUtp($model, $postThemes, $postControls);
+                $this->service->saveFilesFromModel($model);
+                $this->service->saveUtpFromFile($model);
+                $this->service->attachAuthors($model, $postAuthors);
+
+                $model->recordEvent(new CreateTrainingProgramBranchEvent($model->id, $model->branches), TrainingProgramWork::class);
+                $model->releaseEvents();
+
+                return $this->redirect(['view', 'id' => $model->id]);
             }
 
-            $postThemes = DynamicWidget::getData(basename(TrainingProgramWork::class), 'themes', $post);
-            $postControls = DynamicWidget::getData(basename(TrainingProgramWork::class), 'controls', $post);
-            $postAuthors = DynamicWidget::getData(basename(TrainingProgramWork::class), 'authors', $post);
-            $this->service->getFilesInstances($model);
-            $this->repository->save($model);
-
-            $this->service->attachUtp($model, $postThemes, $postControls);
-            $this->service->saveFilesFromModel($model);
-            $this->service->saveUtpFromFile($model);
-            $this->service->attachAuthors($model, $postAuthors);
-
-            $model->recordEvent(new CreateTrainingProgramBranchEvent($model->id, $model->branches), TrainingProgramWork::class);
-            $model->releaseEvents();
-
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->render('update', [
+                'model' => $model,
+                'ourPeople' => $ourPeople,
+                'modelAuthor' => $depTables['authors'],
+                'modelThematicPlan' => $depTables['themes'],
+                'mainFile' => $fileTables['main'],
+                'docFiles' => $fileTables['doc'],
+                'contractFile' => $fileTables['contract'],
+            ]);
         }
-
-        return $this->render('update', [
-            'model' => $model,
-            'ourPeople' => $ourPeople,
-            'modelAuthor' => $depTables['authors'],
-            'modelThematicPlan' => $depTables['themes'],
-            'mainFile' => $fileTables['main'],
-            'docFiles' => $fileTables['doc'],
-            'contractFile' => $fileTables['contract'],
-        ]);
+        else {
+            Yii::$app->session->setFlash
+            ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, TrainingProgramWork::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
 
     /**

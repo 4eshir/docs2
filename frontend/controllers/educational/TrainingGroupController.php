@@ -4,6 +4,7 @@ namespace frontend\controllers\educational;
 
 use common\components\access\pbac\data\PbacGroupData;
 use common\components\access\pbac\PbacGroupAccess;
+use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\common\RequestHelper;
 use common\helpers\html\HtmlBuilder;
@@ -53,6 +54,7 @@ class TrainingGroupController extends DocumentController
     private TrainingGroupLessonRepository $groupLessonRepository;
     private ForeignEventParticipantsRepository $participantsRepository;
     private PeopleRepository $peopleRepository;
+    private LockWizard $lockWizard;
 
     public function __construct(
         $id,
@@ -66,6 +68,7 @@ class TrainingGroupController extends DocumentController
         TrainingGroupLessonRepository $groupLessonRepository,
         ForeignEventParticipantsRepository $participantsRepository,
         PeopleRepository $peopleRepository,
+        LockWizard $lockWizard,
         $config = [])
     {
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
@@ -76,6 +79,7 @@ class TrainingGroupController extends DocumentController
         $this->groupLessonRepository = $groupLessonRepository;
         $this->participantsRepository = $participantsRepository;
         $this->peopleRepository = $peopleRepository;
+        $this->lockWizard = $lockWizard;
     }
 
 
@@ -134,141 +138,172 @@ class TrainingGroupController extends DocumentController
 
     public function actionBaseForm($id)
     {
-        $formBase = new TrainingGroupBaseForm($id);
-        $programs = $this->trainingProgramRepository->getAll();
-        $people = $this->peopleRepository->getPeopleFromMainCompany();
-        $tables = $this->service->getUploadedFilesTables($formBase);
+        if ($this->lockWizard->lockObject($id, TrainingGroupWork::tableName(), Yii::$app->user->id)) {
+            $formBase = new TrainingGroupBaseForm($id);
+            $programs = $this->trainingProgramRepository->getAll();
+            $people = $this->peopleRepository->getPeopleFromMainCompany();
+            $tables = $this->service->getUploadedFilesTables($formBase);
 
-        if ($formBase->load(Yii::$app->request->post())) {
-            if (!$formBase->validate()) {
-                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($formBase->getErrors()));
+            if ($formBase->load(Yii::$app->request->post())) {
+                $this->lockWizard->unlockObject($id, TrainingGroupWork::tableName());
+                if (!$formBase->validate()) {
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($formBase->getErrors()));
+                }
+                $groupModel = $this->service->convertBaseFormToModel($formBase);
+
+                $modelTeachers = Model::createMultiple(TeacherGroupWork::classname());
+                Model::loadMultiple($modelTeachers, Yii::$app->request->post());
+                if (Model::validateMultiple($modelTeachers, ['peopleId'])) {
+                    $formBase->teachers = $modelTeachers;
+                    $groupModel->generateNumber($this->peopleRepository->get($formBase->teachers[0]->peopleId));
+                } else {
+                    $groupModel->generateNumber('');
+                }
+
+                $formBase->id = $this->trainingGroupRepository->save($groupModel);
+                $this->service->attachTeachers($formBase, $formBase->teachers);
+
+                $this->service->getFilesInstances($formBase);
+                $this->service->saveFilesFromModel($formBase);
+                $formBase->releaseEvents();
+
+                return $this->redirect(['view', 'id' => $groupModel->id]);
             }
-            $groupModel = $this->service->convertBaseFormToModel($formBase);
 
-            $modelTeachers = Model::createMultiple(TeacherGroupWork::classname());
-            Model::loadMultiple($modelTeachers, Yii::$app->request->post());
-            if (Model::validateMultiple($modelTeachers, ['peopleId'])) {
-                $formBase->teachers = $modelTeachers;
-                $groupModel->generateNumber($this->peopleRepository->get($formBase->teachers[0]->peopleId));
-            }
-            else {
-                $groupModel->generateNumber('');
-            }
-
-            $formBase->id = $this->trainingGroupRepository->save($groupModel);
-            $this->service->attachTeachers($formBase, $formBase->teachers);
-
-            $this->service->getFilesInstances($formBase);
-            $this->service->saveFilesFromModel($formBase);
-            $formBase->releaseEvents();
-
-            return $this->redirect(['view', 'id' => $groupModel->id]);
+            return $this->render('_form-base', [
+                'model' => $formBase,
+                'modelTeachers' => count($formBase->teachers) > 0 ? $formBase->teachers : [new TeacherGroupWork],
+                'trainingPrograms' => $programs,
+                'people' => $people,
+                'photos' => $tables['photos'],
+                'presentations' => $tables['presentations'],
+                'workMaterials' => $tables['workMaterials'],
+            ]);
         }
-
-        return $this->render('_form-base', [
-            'model' => $formBase,
-            'modelTeachers' => count($formBase->teachers) > 0 ? $formBase->teachers : [new TeacherGroupWork],
-            'trainingPrograms' => $programs,
-            'people' => $people,
-            'photos' => $tables['photos'],
-            'presentations' => $tables['presentations'],
-            'workMaterials' => $tables['workMaterials'],
-        ]);
+        else {
+            Yii::$app->session->setFlash
+            ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, TrainingGroupWork::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
 
     public function actionParticipantForm($id)
     {
-        $formParticipant = new TrainingGroupParticipantForm($id);
-        $childs = $this->participantsRepository->getSortedList(ForeignEventParticipantsRepository::SORT_FIO);
+        if ($this->lockWizard->lockObject($id, TrainingGroupWork::tableName(), Yii::$app->user->id)) {
+            $formParticipant = new TrainingGroupParticipantForm($id);
+            $childs = $this->participantsRepository->getSortedList(ForeignEventParticipantsRepository::SORT_FIO);
 
-        if (count(Yii::$app->request->post()) > 0) {
-            $modelChilds = Model::createMultiple(TrainingGroupParticipantWork::classname());
-            Model::loadMultiple($modelChilds, Yii::$app->request->post());
-            if (Model::validateMultiple($modelChilds, ['id', 'participant_id', 'send_method'])) {
-                $formParticipant->participants = $modelChilds;
+            if (count(Yii::$app->request->post()) > 0) {
+                $this->lockWizard->unlockObject($id, TrainingGroupWork::tableName());
+                $modelChilds = Model::createMultiple(TrainingGroupParticipantWork::classname());
+                Model::loadMultiple($modelChilds, Yii::$app->request->post());
+                if (Model::validateMultiple($modelChilds, ['id', 'participant_id', 'send_method'])) {
+                    $formParticipant->participants = $modelChilds;
+                }
+
+                $this->service->attachParticipants($formParticipant);
+                $formParticipant->releaseEvents();
+
+                return $this->redirect(['view', 'id' => $formParticipant->id]);
             }
 
-            $this->service->attachParticipants($formParticipant);
-            $formParticipant->releaseEvents();
-
-            return $this->redirect(['view', 'id' => $formParticipant->id]);
+            return $this->render('_form-participant', [
+                'model' => $formParticipant,
+                'modelChilds' => count($formParticipant->participants) > 0 ? $formParticipant->participants : [new TrainingGroupParticipantWork],
+                'childs' => $childs
+            ]);
         }
-
-        return $this->render('_form-participant', [
-            'model' => $formParticipant,
-            'modelChilds' => count($formParticipant->participants) > 0 ? $formParticipant->participants : [new TrainingGroupParticipantWork],
-            'childs' => $childs
-        ]);
+        else {
+            Yii::$app->session->setFlash
+            ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, TrainingGroupWork::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
 
     public function actionScheduleForm($id)
     {
-        $formData = $this->service->prepareFormScheduleData($id);
-        $formSchedule = $formData['formSchedule'];
-        $modelLessons = $formData['modelLessons'];
-        $auditoriums = $formData['auditoriums'];
-        $scheduleTable = $formData['scheduleTable'];
+        if ($this->lockWizard->lockObject($id, TrainingGroupWork::tableName(), Yii::$app->user->id)) {
+            $formData = $this->service->prepareFormScheduleData($id);
+            $formSchedule = $formData['formSchedule'];
+            $modelLessons = $formData['modelLessons'];
+            $auditoriums = $formData['auditoriums'];
+            $scheduleTable = $formData['scheduleTable'];
 
-        if ($formSchedule->load(Yii::$app->request->post())) {
-            $modelLessons = Model::createMultiple(TrainingGroupLessonWork::classname());
-            Model::loadMultiple($modelLessons, Yii::$app->request->post());
-            if (Model::validateMultiple($modelLessons, ['lesson_date', 'lesson_start_time', 'branch', 'auditorium_id', 'autoDate'])) {
-                $formSchedule->lessons = $modelLessons;
+            if ($formSchedule->load(Yii::$app->request->post())) {
+                $this->lockWizard->unlockObject($id, TrainingGroupWork::tableName());
+                $modelLessons = Model::createMultiple(TrainingGroupLessonWork::classname());
+                Model::loadMultiple($modelLessons, Yii::$app->request->post());
+                if (Model::validateMultiple($modelLessons, ['lesson_date', 'lesson_start_time', 'branch', 'auditorium_id', 'autoDate'])) {
+                    $formSchedule->lessons = $modelLessons;
+                }
+
+                if (!$formSchedule->isManual()) {
+                    $formSchedule->convertPeriodToLessons();
+                }
+
+                $this->service->preprocessingLessons($formSchedule);
+                $this->service->attachLessons($formSchedule);
+                $formSchedule->releaseEvents();
+
+                return $this->redirect(['view', 'id' => $formSchedule->id]);
             }
 
-            if (!$formSchedule->isManual()) {
-                $formSchedule->convertPeriodToLessons();
-            }
-
-            $this->service->preprocessingLessons($formSchedule);
-            $this->service->attachLessons($formSchedule);
-            $formSchedule->releaseEvents();
-
-            return $this->redirect(['view', 'id' => $formSchedule->id]);
+            return $this->render('_form-schedule', [
+                'model' => $formSchedule,
+                'modelLessons' => count($modelLessons) > 0 ? $modelLessons : [new TrainingGroupParticipantWork],
+                'auditoriums' => $auditoriums,
+                'scheduleTable' => $scheduleTable
+            ]);
         }
-
-        return $this->render('_form-schedule', [
-            'model' => $formSchedule,
-            'modelLessons' => count($modelLessons) > 0 ? $modelLessons : [new TrainingGroupParticipantWork],
-            'auditoriums' => $auditoriums,
-            'scheduleTable' => $scheduleTable
-        ]);
+        else {
+            Yii::$app->session->setFlash
+            ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, TrainingGroupWork::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
 
     public function actionPitchForm($id)
     {
-        $formPitch = new PitchGroupForm($id);
-        $peoples = $this->peopleRepository->getPeopleFromMainCompany();
+        if ($this->lockWizard->lockObject($id, TrainingGroupWork::tableName(), Yii::$app->user->id)) {
+            $formPitch = new PitchGroupForm($id);
+            $peoples = $this->peopleRepository->getPeopleFromMainCompany();
 
-        if ($formPitch->load(Yii::$app->request->post())) {
-            if (!$formPitch->validate()) {
-                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($formPitch->getErrors()));
+            if ($formPitch->load(Yii::$app->request->post())) {
+                $this->lockWizard->unlockObject($id, TrainingGroupWork::tableName());
+                if (!$formPitch->validate()) {
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($formPitch->getErrors()));
+                }
+
+                $modelThemes = Model::createMultiple(ProjectThemeWork::classname());
+                Model::loadMultiple($modelThemes, Yii::$app->request->post());
+                if (Model::validateMultiple($modelThemes, ['id', 'name', 'project_type', 'description'])) {
+                    $formPitch->themes = $modelThemes;
+                }
+
+                $modelExperts = Model::createMultiple(TrainingGroupExpertWork::classname());
+                Model::loadMultiple($modelExperts, Yii::$app->request->post());
+                if (Model::validateMultiple($modelExperts, ['id', 'expertId', 'expert_type'])) {
+                    $formPitch->experts = $modelExperts;
+                }
+
+                $this->service->createNewThemes($formPitch);
+                $this->service->attachThemes($formPitch);
+                $this->service->attachExperts($formPitch);
+                $formPitch->releaseEvents();
+
+                return $this->redirect(['view', 'id' => $formPitch->id]);
             }
 
-            $modelThemes = Model::createMultiple(ProjectThemeWork::classname());
-            Model::loadMultiple($modelThemes, Yii::$app->request->post());
-            if (Model::validateMultiple($modelThemes, ['id', 'name', 'project_type', 'description'])) {
-                $formPitch->themes = $modelThemes;
-            }
-
-            $modelExperts = Model::createMultiple(TrainingGroupExpertWork::classname());
-            Model::loadMultiple($modelExperts, Yii::$app->request->post());
-            if (Model::validateMultiple($modelExperts, ['id', 'expertId', 'expert_type'])) {
-                $formPitch->experts = $modelExperts;
-            }
-
-            $this->service->createNewThemes($formPitch);
-            $this->service->attachThemes($formPitch);
-            $this->service->attachExperts($formPitch);
-            $formPitch->releaseEvents();
-
-            return $this->redirect(['view', 'id' => $formPitch->id]);
+            return $this->render('_form-pitch', [
+                'model' => $formPitch,
+                'peoples' => $peoples
+            ]);
         }
-
-        return $this->render('_form-pitch', [
-            'model' => $formPitch,
-            'peoples' => $peoples
-        ]);
+        else {
+            Yii::$app->session->setFlash
+            ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, TrainingGroupWork::tableName())}. Попробуйте повторить попытку позднее");
+            return $this->redirect(Yii::$app->request->referrer ?: ['index']);
+        }
     }
 
     public function actionDeleteLesson($groupId, $entityId)
