@@ -1,14 +1,12 @@
 <?php
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
-use common\helpers\files\FilesHelper;
 use frontend\models\work\regulation\RegulationWork;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model RegulationWork */
+/* @var $buttonsAct */
 
 $this->title = $model->name;
 
@@ -18,42 +16,124 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="regulation-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="substrate">
+        <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Вы уверены, что хотите удалить положение?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+        <div class="flexx space">
+            <div class="flexx">
+                <?= $buttonsAct; ?>
+            </div>
+        </div>
+    </div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'date',
-            'name',
-            ['attribute' => 'order_id', 'label' => 'Приказ', 'value' => function(RegulationWork $model){
-                /*$order = \app\models\work\DocumentOrderWork::find()->where(['id' => $model->order_id])->one();
-                return Html::a($order->fullName, \yii\helpers\Url::to(['document-order/view', 'id' => $order->id]));*/
-                return 'Coming soon';
-            }, 'format' => 'raw'],
-            ['attribute' => 'ped_council_number'],
-            ['attribute' => 'ped_council_date'],
-            ['attribute' => 'par_council_number'],
-            ['attribute' => 'par_council_date'],
-            ['label' => 'Состояние', 'attribute' => 'state', 'value' => function(RegulationWork $model){
-                return $model->getStates();
-            }, 'format' => 'raw'],
-            ['label' => 'Скан положения', 'attribute' => 'scan', 'value' => function (RegulationWork $model) {
-                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
-            }, 'format' => 'raw'],
-            'creatorString',
-            'editorString',
-        ],
-    ]) ?>
+    <div class="card">
+        <div class="card-block-1">
+            <div class="card-set">
+                <div class="card-head">Основное</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Дата
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getDate(); ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Состояние
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getStates(); ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Краткое наименование
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getShortName(); ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Полное наименование
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getName(); ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Документ</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Приказ
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getOrderName(); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-2">
+            <div class="card-set">
+                <div class="card-head">Педагогический совет</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Номер совета
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getPedCouncilNumber(); ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Дата совета
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getPedCouncilDate(); ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Родительский совет</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Дата совета
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getParCouncilDate(); ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Файл</div>
+                <div class="flexx files-section space-around">
+                    <div class="file-block-center"><?= $model->getFullScan(); ?><div>Скан</div></div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Свойства</div>
+                <div class="flexx">
+                    <div class="card-field flexx">
+                        <div class="field-title field-option">
+                            Создатель карточки
+                        </div>
+                        <div class="field-date">
+                            <?= $model->getCreatorName(); ?>
+                        </div>
+                    </div>
+                    <div class="card-field flexx">
+                        <div class="field-title field-option">
+                            Последний редактор
+                        </div>
+                        <div class="field-date">
+                            <?= $model->getLastEditorName(); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>

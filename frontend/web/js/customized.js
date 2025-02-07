@@ -158,6 +158,8 @@ $(document).ready(function() {
             window.location.href = url;
         }
     });
+
+    $('.table tr[data-href]').addClass('tr-link');
 });
 
 /**

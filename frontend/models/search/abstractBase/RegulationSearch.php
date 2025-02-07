@@ -22,7 +22,7 @@ class RegulationSearch extends Model
             [['id'], 'integer'],
             [['nameRegulation', 'orderName'], 'string'],
             [['startDateSearch', 'finishDateSearch'], 'date', 'format' => 'dd.MM.yyyy'],
-            [['status'], 'safe'],
+            [['startDateSearch', 'finishDateSearch', 'status'], 'safe'],
         ];
     }
 
@@ -38,7 +38,7 @@ class RegulationSearch extends Model
         $this->finishDateSearch = $finishDateSearch;
         $this->nameRegulation = $nameRegulation;
         $this->orderName = $orderName;
-        $this->status = $status == null ? RegulationWork::STATE_ACTIVE : $status;
+        $this->status = $status;
     }
 
     public function scenarios()
@@ -65,8 +65,8 @@ class RegulationSearch extends Model
         ];
 
         $dataProvider->sort->attributes['orderName'] = [
-            'asc' => ['documentOrder.order_name' => SORT_ASC],
-            'desc' => ['documentOrder.order_name' => SORT_DESC],
+            'asc' => ['orderMain.order_name' => SORT_ASC],
+            'desc' => ['orderMain.order_name' => SORT_DESC],
         ];
 
         $dataProvider->sort->attributes['state'] = [
@@ -83,6 +83,9 @@ class RegulationSearch extends Model
      */
     public function filterAbstractQueryParams(ActiveQuery $query) {
         $this->filterDate($query);
+        $this->filterName($query);
+        $this->filterOrderName($query);
+        $this->filterStatus($query);
     }
 
     /**
@@ -99,5 +102,41 @@ class RegulationSearch extends Model
 
             $query->andWhere(['between', 'date', $dateFrom, $dateTo]);
         }
+    }
+
+    /**
+     * Фильтрация положений по наименованию или крткому наименованию
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterName(ActiveQuery $query) {
+        $query->andFilterWhere(['or',
+            ['like', 'LOWER(name)', mb_strtolower($this->nameRegulation)],
+            ['like', 'LOWER(short_name)', mb_strtolower($this->nameRegulation)],
+        ]);
+    }
+
+    /**
+     * Фильтрация положений по наименованию приказа
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterOrderName(ActiveQuery $query) {
+        $query->andFilterWhere(['or',
+            ['like', 'LOWER(order_name)', mb_strtolower($this->orderName)],
+            ['like', "CONCAT(order_number, '/', order_postfix)", $this->orderName],
+        ]);
+    }
+
+    /**
+     * Фильтрация статуса: актуально/утратило силу
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterStatus(ActiveQuery $query) {
+        $query->andFilterWhere(['like', 'regulation.state', $this->status]);
     }
 }

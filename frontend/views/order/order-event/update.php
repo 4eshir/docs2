@@ -20,6 +20,7 @@ use yii\helpers\Html;
 /* @var $actTable */
 /* @var $participants */
 /* @var $company */
+/* @var $id */
 
 $this->title = 'Изменить приказ об участии деятельности № ' . $model->order_number;
 $this->params['breadcrumbs'][] = ['label' => 'Приказ об участии', 'url' => ['index']];
@@ -48,6 +49,7 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
             'actTable' => $actTable,
             'participants' => $participants,
             'company' => $company,
+            'id' => $id
         ]
     ) ?>
 </div>

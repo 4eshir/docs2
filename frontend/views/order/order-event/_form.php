@@ -22,6 +22,7 @@ use yii\jui\DatePicker;
 /* @var $actTable */
 /* @var $participants */
 /* @var $company */
+/* @var $id */
 ?>
 
 <style>

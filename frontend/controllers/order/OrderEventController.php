@@ -274,7 +274,8 @@ class OrderEventController extends DocumentController
                 'modelActs' => $modelActForms,
                 'actTable' => $actTable,
                 'participants' => $participants,
-                'company' => $company
+                'company' => $company,
+                'id' => $id
             ]);
         }
         else {
