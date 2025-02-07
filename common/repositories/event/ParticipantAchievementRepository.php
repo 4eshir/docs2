@@ -16,6 +16,13 @@ class ParticipantAchievementRepository
         return ParticipantAchievementWork::find()->where(['id' => $id])->one();
     }
 
+    public function getByParticipantId($participantId)
+    {
+        return ParticipantAchievementWork::find()
+            ->joinWith(['actParticipantWork actParticipantWork'])
+            ->where(['actParticipantWork.foreign_event_id' => $foreignEventId])->all();
+    }
+
     public function getByForeignEvent($foreignEventId)
     {
         return ParticipantAchievementWork::find()

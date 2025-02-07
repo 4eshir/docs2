@@ -9,14 +9,16 @@ use function PHPUnit\Framework\throwException;
 
 class SquadParticipantRepository
 {
-    public function prepareCreate($actParticipantId, $participantId){
+    public function prepareCreate($actParticipantId, $participantId)
+    {
         $model = SquadParticipantWork::fill($actParticipantId, $participantId);
         $command = Yii::$app->db->createCommand();
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
 
-    public function prepareDelete($actParticipantId, $participantId){
+    public function prepareDelete($actParticipantId, $participantId)
+    {
         $model = SquadParticipantWork::find()
             ->andWhere(['act_participant_id' => $actParticipantId])
             ->andWhere(['participant_id' => $participantId])
@@ -26,15 +28,23 @@ class SquadParticipantRepository
         return $command->getRawSql();
     }
 
-    public function getCountByActAndParticipantId($actId, $participantId){
+    public function getAllByParticipantId($participantId)
+    {
+        return SquadParticipantWork::find()->where(['participant_id' => $participantId])->all();
+    }
+
+    public function getCountByActAndParticipantId($actId, $participantId)
+    {
         return count(SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId, 'participant_id' => $participantId])->all());
     }
 
-    public function getAllByActId($actId){
+    public function getAllByActId($actId)
+    {
         return SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId])->all();
     }
 
-    public function getAllByActIds(array $actIds){
+    public function getAllByActIds(array $actIds)
+    {
         return SquadParticipantWork::find()->andWhere(['IN', 'act_participant_id', $actIds])->all();
     }
 

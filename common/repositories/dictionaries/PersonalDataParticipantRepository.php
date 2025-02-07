@@ -12,7 +12,7 @@ class PersonalDataParticipantRepository
 {
     use CommonDatabaseFunctions;
 
-    public function getPersonalDataByParticipant($participantId)
+    public function getPersonalDataByParticipantId($participantId)
     {
         return PersonalDataParticipantWork::find()->where(['participant_id' => $participantId])->all();
     }
@@ -25,7 +25,7 @@ class PersonalDataParticipantRepository
     public function prepareDeleteAllPersonalDataByParticipant($participantId)
     {
         $commands = [];
-        $pds = $this->getPersonalDataByParticipant($participantId);
+        $pds = $this->getPersonalDataByParticipantId($participantId);
 
         foreach ($pds as $pd) {
             $command = Yii::$app->db->createCommand();
@@ -57,7 +57,7 @@ class PersonalDataParticipantRepository
     public function prepareResetAllPersonalData($participantId)
     {
         $commands = [];
-        $pds = $this->getPersonalDataByParticipant($participantId);
+        $pds = $this->getPersonalDataByParticipantId($participantId);
         if (count($pds) < count(Yii::$app->personalData->getList())) {
             $commands = array_merge($commands, $this->prepareDeleteAllPersonalDataByParticipant($participantId));
             $commands = array_merge($commands, $this->prepareCreateNewPersonalData($participantId));
@@ -96,7 +96,7 @@ class PersonalDataParticipantRepository
 
     public function prepareDetachPersonalData($participantId)
     {
-        $pds = $this->getPersonalDataByParticipant($participantId);
+        $pds = $this->getPersonalDataByParticipantId($participantId);
 
         $commands = [];
         foreach ($pds as $one) {

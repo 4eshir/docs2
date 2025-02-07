@@ -1,5 +1,6 @@
 <?php
 
+use frontend\forms\participants\MergeParticipantForm;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\JsExpression;
@@ -9,7 +10,7 @@ use yii\jui\AutoComplete;
 use yii\jui\DatePicker;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\ForeignEventParticipantsWork */
+/* @var $model MergeParticipantForm */
 
 $this->title = 'Слияние участников деятельности';
 $this->params['breadcrumbs'][] = ['label' => 'Участники деятельности', 'url' => ['index']];
@@ -63,12 +64,12 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
 
         <?php
 
-        $people = \app\models\work\ForeignEventParticipantsWork::find()->select(['CONCAT(secondname, \' \', firstname, \' \', patronymic, \' \', birthdate, \' (id: \', id, \')\') as value', "CONCAT(secondname, ' ', firstname, ' ', patronymic, ' ', birthdate, ' (id: ', id, ')') as label", 'id as id'])->asArray()->all();
+        //$people = \app\models\work\ForeignEventParticipantsWork::find()->select(['CONCAT(secondname, \' \', firstname, \' \', patronymic, \' \', birthdate, \' (id: \', id, \')\') as value', "CONCAT(secondname, ' ', firstname, ' ', patronymic, ' ', birthdate, ' (id: ', id, ')') as label", 'id as id'])->asArray()->all();
 
         echo $form->field($model, 'fio1')->widget(
             AutoComplete::className(), [
             'clientOptions' => [
-                'source' => $people,
+                'source' => $model->data->participants,
 
                 'select' => new JsExpression("function( event, ui ) {
                     $('#participant_id1').val(ui.item.id); //#memberssearch-family_name_id is the id of hiddenInput.
@@ -91,12 +92,12 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
     <div class="col-xs-6 block-report">
         <?php
 
-        $people = \app\models\work\ForeignEventParticipantsWork::find()->select(['CONCAT(secondname, \' \', firstname, \' \', patronymic, \' \', birthdate, \' (id: \', id, \')\') as value', "CONCAT(secondname, ' ', firstname, ' ', patronymic, ' ', birthdate, ' (id: ', id, ')') as label", 'id as id'])->asArray()->all();
+        //$people = \app\models\work\ForeignEventParticipantsWork::find()->select(['CONCAT(secondname, \' \', firstname, \' \', patronymic, \' \', birthdate, \' (id: \', id, \')\') as value', "CONCAT(secondname, ' ', firstname, ' ', patronymic, ' ', birthdate, ' (id: ', id, ')') as label", 'id as id'])->asArray()->all();
 
         echo $form->field($model, 'fio2')->widget(
             AutoComplete::className(), [
             'clientOptions' => [
-                'source' => $people,
+                'source' => $model->data->participants,
                 'select' => new JsExpression("function( event, ui ) {
                     let e1 = document.getElementById('participant_id1');
                     let e2 = document.getElementById('participant_id2');
@@ -130,16 +131,13 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
     </div>
     
     <div id="editBlock" style="display: none; width: 91%;">
-        <?= $form->field($model->edit_model, 'secondname')->textInput() ?>
+        <?= $form->field($model->editModel, 'surname')->textInput() ?>
+        <?= $form->field($model->editModel, 'firstname')->textInput() ?>
+        <?= $form->field($model->editModel, 'patronymic')->textInput() ?>
 
-        <?= $form->field($model->edit_model, 'firstname')->textInput() ?>
-
-        <?= $form->field($model->edit_model, 'patronymic')->textInput() ?>
-
-        <?= $form->field($model->edit_model, 'birthdate')->widget(DatePicker::class, [
-            'dateFormat' => 'php:Y-m-d',
+        <?= $form->field($model->editModel, 'birthdate')->widget(DatePicker::class, [
+            'dateFormat' => 'php:d.m.Y',
             'language' => 'ru',
-            //'dateFormat' => 'dd.MM.yyyy,
             'options' => [
                 'placeholder' => 'Дата',
                 'class'=> 'form-control',
@@ -148,20 +146,18 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
             'clientOptions' => [
                 'changeMonth' => true,
                 'changeYear' => true,
-                'yearRange' => '1980:2050',
-                //'showOn' => 'button',
-                //'buttonText' => 'Выбрать дату',
-                //'buttonImageOnly' => true,
-                //'buttonImage' => 'images/calendar.gif'
+                'yearRange' => '1980:2100',
             ]]) ?>
         <div>
-            <?= $form->field($model->edit_model, 'sex')->radioList(array('Мужской' => 'Мужской',
+            <?= $form->field($model->editModel, 'sex')->radioList(array('Мужской' => 'Мужской',
                 'Женский' => 'Женский', 'Другое' => 'Другое'), ['value' => $model->sex, 'class' => 'i-checks',
                     'item' => function($index, $label, $name, $checked, $value) {
-                        if ($checked == true)
+                        if ($checked) {
                             $checkedStr = 'checked=""';
-                        else
+                        }
+                        else {
                             $checkedStr = '';
+                        }
                         $return = '<label class="modal-radio">';
                         $return .= '<input id="rl'.$index.'" type="radio" name="' . $name . '" value="' . $value . '" tabindex="3" style="margin-right: 5px" '.$checkedStr.'>';
                         $return .= '<i></i>';
@@ -175,19 +171,19 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
 
 
         <?php
-        $data = \app\models\work\PersonalDataWork::find()->all();
-        $arr = \yii\helpers\ArrayHelper::map($data, 'id', 'name');
-        if (\app\models\components\RoleBaseAccess::CheckSingleAccess(Yii::$app->user->identity->getId(), 22) )
-            echo $form->field($model->edit_model, 'pd')->checkboxList($arr, ['item' => function ($index, $label, $name, $checked, $value) {
-                if ($checked == 1) $checked = 'checked';
-                return
-                    '<div class="checkbox" style="font-size: 16px; font-family: Arial; color: black;">
-                            <label for="branch-'. $index .'">
-                                <input class="eb1" id="branch-'. $index .'" name="'. $name .'" type="checkbox" '. $checked .' value="'. $value .'">
-                                '. $label .'
-                            </label>
-                        </div>';
-            }])->label('Запретить разглашение персональных данных:');
+        //if (\app\models\components\RoleBaseAccess::CheckSingleAccess(Yii::$app->user->identity->getId(), 22) )
+        echo $form->field($model->editModel, 'pd')->checkboxList(Yii::$app->personalData->getList(), ['item' => function ($index, $label, $name, $checked, $value) {
+            if ($checked == 1) {
+                $checked = 'checked';
+            }
+            return
+                '<div class="checkbox" style="font-size: 16px; font-family: Arial; color: black;">
+                        <label for="branch-'. $index .'">
+                            <input class="eb1" id="branch-'. $index .'" name="'. $name .'" type="checkbox" '. $checked .' value="'. $value .'">
+                            '. $label .'
+                        </label>
+                    </div>';
+        }])->label('Запретить разглашение персональных данных:');
         ?>
 
         <?= $form->field($model, 'id1')->hiddenInput()->label(false); ?>
