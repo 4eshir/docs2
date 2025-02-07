@@ -11,6 +11,7 @@ use common\repositories\event\ForeignEventRepository;
 use common\repositories\order\OrderEventRepository;
 use DomainException;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class ActParticipantRepository
 {
@@ -27,8 +28,15 @@ class ActParticipantRepository
         $this->foreignEventRepository = $foreignEventRepository;
     }
 
-    public function getByForeignEventId($foreignEventId){
+    public function getByForeignEventId($foreignEventId)
+    {
         return ActParticipantWork::find()->where(['foreign_event_id' => $foreignEventId])->all();
+    }
+
+    public function getByParticipantId($participantId)
+    {
+        $squads = ArrayHelper::getColumn($this->squadParticipantRepository->getAllByParticipantId($participantId), 'act_participant_id');
+        return ActParticipantWork::find()->where(['IN', 'id', $squads])->all();
     }
 
     public function prepareCreate($modelAct, $teamNameId, $foreignEventId)

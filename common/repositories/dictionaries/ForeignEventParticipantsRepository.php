@@ -38,6 +38,15 @@ class ForeignEventParticipantsRepository
         return $this->provider->getParticipants($ids);
     }
 
+    public function getParticipantsForMerge()
+    {
+        if (get_class($this->provider) == ParticipantProvider::class) {
+            return $this->provider->getParticipantsForMerge();
+        } else {
+            throw new DomainException('Mock-провайдер не имеет реализации метода getSortedList');
+        }
+    }
+
     public function getSortedList($sort = self::SORT_ID)
     {
         if (get_class($this->provider) == ParticipantProvider::class) {

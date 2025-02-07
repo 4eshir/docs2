@@ -4,7 +4,9 @@ namespace frontend\controllers\regulation;
 
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
+use common\helpers\ButtonsFormatter;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\repositories\general\FilesRepository;
 use common\repositories\regulation\RegulationRepository;
 use common\services\general\files\FileService;
@@ -39,16 +41,28 @@ class RegulationController extends DocumentController
         $searchModel = new SearchRegulation();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $links = ButtonsFormatter::PrimaryCreateLink('положение');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml,
         ]);
     }
 
     public function actionView($id)
     {
+        $links = ButtonsFormatter::UpdateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
+        /** @var RegulationWork $model */
+        $model = $this->repository->get($id);
+        $model->checkFilesExist();
+
         return $this->render('view', [
-            'model' => $this->repository->get($id)
+            'model' => $model,
+            'buttonsAct' => $buttonHtml,
         ]);
     }
 

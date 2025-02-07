@@ -3,9 +3,16 @@
 namespace common\helpers\html;
 
 use common\helpers\common\BaseFunctions;
+use common\helpers\DateFormatter;
 use common\helpers\files\FilePaths;
+use common\helpers\StringFormatter;
 use DomainException;
 use DOMDocument;
+use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
+use frontend\models\work\dictionaries\PersonalDataParticipantWork;
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use frontend\models\work\event\ParticipantAchievementWork;
+use frontend\models\work\team\SquadParticipantWork;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -335,17 +342,89 @@ class HtmlBuilder
     {
         $title = 'скачать файл';
         $svgFile = FilePaths::FILE_DOWNLOAD_SVG;
-        if($url === '#')
-        {
+        if ($url === '#') {
             $svgFile = FilePaths::FILE_NO_DOWNLOAD_SVG;
             $title = 'файл отсутствует';
         }
         $svgContent = file_get_contents($svgFile);
 
-
         $result = '<div class="fileIcon">';
         $result .= '<a href="' . $url .'" class="download" title="'. $title.'">' . $svgContent . '</a>';
         $result .= '</div>';
         return $result;
+    }
+
+    /**
+     * @param ForeignEventParticipantsWork $participant1
+     * @param ForeignEventParticipantsWork $participant2
+     * @param TrainingGroupParticipantWork[] $groups1
+     * @param TrainingGroupParticipantWork[] $groups2
+     * @param SquadParticipantWork[] $events1
+     * @param SquadParticipantWork[] $events2
+     * @param ParticipantAchievementWork[] $achieves1
+     * @param ParticipantAchievementWork[] $achieves2
+     * @param PersonalDataParticipantWork[] $personalData1
+     * @param PersonalDataParticipantWork[] $personalData2
+     * @return string
+     */
+    public static function createMergeParticipantsTable(
+        ForeignEventParticipantsWork $participant1,
+        ForeignEventParticipantsWork $participant2,
+        array $groups1,
+        array $groups2,
+        array $events1,
+        array $events2,
+        array $achieves1,
+        array $achieves2,
+        array $personalData1,
+        array $personalData2
+    )
+    {
+        $result = '<table class="table table-striped table-bordered detail-view" style="width: 91%">
+            <tr><td><b>Фамилия</b></td><td id="td-secondname-1" style="width: 45%">'.$participant1->surname.'</td><td><b>Фамилия</b></td><td style="width: 45%">'.$participant2->surname.'</td></tr>
+            <tr><td><b>Имя</b></td><td id="td-firstname-1" style="width: 45%">'.$participant1->firstname.'</td><td><b>Имя</b></td><td style="width: 45%">'.$participant2->firstname.'</td></tr>
+            <tr><td><b>Отчество</b></td><td id="td-patronymic-1" style="width: 45%">'.$participant1->patronymic.'</td><td><b>Отчество</b></td><td style="width: 45%">'.$participant2->patronymic.'</td></tr>
+            <tr><td><b>Пол</b></td><td id="td-sex-1" style="width: 45%">'.$participant1->sex.'</td><td><b>Пол</b></td><td style="width: 45%">'.$participant2->sex.'</td></tr>
+            <tr><td><b>Дата рождения</b></td><td id="td-birthdate-1" style="width: 45%">'.$participant1->birthdate.'</td><td><b>Дата рождения</b></td><td style="width: 45%">'.$participant2->birthdate.'</td></tr>';
+
+        $links1 = '';
+        foreach ($groups1 as $group) {
+            $links1 .= self::createGroupParticipantBlock($group);
+        }
+
+        $links2 = '';
+        foreach ($groups2 as $group) {
+            $links2 .= self::createGroupParticipantBlock($group);
+        }
+
+        $result .= '<tr><td><b>Группы</b></td><td style="width: 45%">'.$links1.'</td><td><b>Группы</b></td><td style="width: 45%">'.$links2.'</td></tr>';
+
+        return $result;
+    }
+
+    public static function createGroupParticipantBlock(TrainingGroupParticipantWork $groupParticipant)
+    {
+        return DateFormatter::format($groupParticipant->trainingGroupWork->start_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot) . ' - ' .
+            DateFormatter::format($groupParticipant->trainingGroupWork->finish_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot) . ' | ' .
+            StringFormatter::stringAsLink(
+                "Группа {$groupParticipant->trainingGroupWork->number}",
+                Url::to(['training-group/view', 'id' => $groupParticipant->training_group_id])
+            ) .
+            ($groupParticipant->trainingGroupWork->finish_date < date("Y-m-d") ?
+                ' (группа завершила обучение)' :
+                ' <div style="background-color: green; display: inline"><font color="white"> (проходит обучение)</font></div>') .
+            ($groupParticipant->status == 'stub' ?
+                ' | Переведен' :
+                ' | Отчислен') . '<br>';
+
+        /*if ($event->status === 2)
+            $eventsLink1 .= ' | Переведен';
+
+        if ($event->status === 1)
+            $eventsLink1 .= ' | Отчислен';
+
+        $eventsLink1 .= '<br>';
+
+        return $eventsLink1;*/
     }
 }

@@ -22,8 +22,8 @@ use yii\widgets\ActiveForm;
         SearchFieldHelper::dateField('startDateSearch', 'Дата положения с', 'Дата положения с'),
         SearchFieldHelper::dateField('finishDateSearch', 'Дата положения по', 'Дата положения по'),
         SearchFieldHelper::textField('nameRegulation' , 'Наименование документа', 'Наименование документа'),
-        SearchFieldHelper::textField('orderName', 'Наименование приказа', 'Наименование приказа'),
-        SearchFieldHelper::dropdownField('status', 'Статус положения', RegulationWork::states(), null, RegulationWork::STATE_ACTIVE)
+        SearchFieldHelper::textField('orderName', 'Номер или наименование приказа', 'Наименование приказа'),
+        SearchFieldHelper::dropdownField('status', 'Статус положения', RegulationWork::states(), 'Состояние положения')
     );
 
     echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::REG_EVENT_INDEX); ?>

@@ -5,6 +5,7 @@ use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use kartik\export\ExportMenu;
 use yii\grid\GridView;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel SearchForeignEventParticipants */
@@ -80,8 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]); ?>
     <div class="form-group">
-        <!--<a class="btn btn-danger" href="/index.php?r=training-group%2Findex&archive=">Сохранить архив</a>-->
-        <?php echo Html::a("Слияние участников деятельности", \yii\helpers\Url::to(['foreign-event-participants/merge-participant']), ['class'=>'btn btn-success']); ?>
+        <?= Html::a("Слияние участников деятельности", Url::to(['dictionaries/foreign-event-participants/merge-participant']), ['class'=>'btn btn-success']); ?>
     </div>
 
 </div>

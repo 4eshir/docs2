@@ -3,26 +3,34 @@
 namespace frontend\models\search;
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
+use common\components\interfaces\SearchInterfaces;
+use frontend\models\search\abstractBase\RegulationSearch;
 use frontend\models\work\regulation\RegulationWork;
-use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 
 
-class SearchRegulationEvent extends SearchRegulation
+class SearchRegulationEvent extends RegulationSearch implements SearchInterfaces
 {
     public function rules()
     {
         return parent::rules();
     }
 
+    /**
+     * Создает экземпляр DataProvider с учетом поискового запроса (фильтров или сортировки)
+     *
+     * @param $params
+     * @return ActiveDataProvider
+     */
     public function search($params)
     {
         $this->load($params);
         $query = RegulationWork::find()
                 ->joinWith([
-                    'documentOrder'/*=> function ($query) {
+                    'documentOrder' => function ($query) {
                         $query->alias('orderMain');
-                    }*/,
+                    },
                 ])
                 ->where(['regulation_type' => RegulationTypeDictionary::TYPE_EVENT]);
 
@@ -31,6 +39,31 @@ class SearchRegulationEvent extends SearchRegulation
             'sort' => ['defaultOrder' => ['id' => SORT_DESC]]
         ]);
 
+        $this->sortAttributes($dataProvider);
+        $this->filterQueryParams($query);
+
         return $dataProvider;
+    }
+
+    /**
+     * Сортировка по полям таблицы
+     *
+     * @param ActiveDataProvider $dataProvider
+     * @return void
+     */
+    public function sortAttributes(ActiveDataProvider $dataProvider)
+    {
+        parent::sortAttributes($dataProvider);
+    }
+
+    /**
+     * Вызов функций фильтров по параметрам запроса
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterQueryParams(ActiveQuery $query)
+    {
+        parent::filterAbstractQueryParams($query);
     }
 }

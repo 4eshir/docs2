@@ -24,6 +24,17 @@ class ParticipantProvider implements ParticipantProviderInterface
         return ForeignEventParticipantsWork::find()->where(['IN', 'id', $ids])->all();
     }
 
+    public function getParticipantsForMerge()
+    {
+        return ForeignEventParticipantsWork::find()
+            ->select([
+                'CONCAT(surname, \' \', firstname, \' \', patronymic, \' \', birthdate, \' (id: \', id, \')\') as value',
+                "CONCAT(surname, ' ', firstname, ' ', patronymic, ' ', birthdate, ' (id: ', id, ')') as label", 'id as id'
+            ])
+            ->asArray()
+            ->all();
+    }
+
     public function getSortedList($sort = ForeignEventParticipantsRepository::SORT_ID)
     {
         $participants = ForeignEventParticipantsWork::find();
