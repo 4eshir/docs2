@@ -1,11 +1,8 @@
 <?php
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
-use common\helpers\files\FilesHelper;
 use frontend\models\work\regulation\RegulationWork;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model RegulationWork */

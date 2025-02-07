@@ -13,6 +13,7 @@ use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\Url;
 
 /**
  * @property UserWork $creatorWork
@@ -27,6 +28,7 @@ class RegulationWork extends Regulation
     const STATE_EXPIRE = 0;
 
     public $expires; //документ, отменяющий текущее положение
+    public $scanExist;  // существование файлов
 
     /**
      * Переменные для input-file в форме
@@ -62,6 +64,20 @@ class RegulationWork extends Regulation
         ]);
     }
 
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'date' => 'Дата положения',
+            'name' => 'Наименование',
+            'orderName' => 'Приказ',
+            'state' => 'Состояние',
+            'ped_council_number' => '№ пед.<br>совета',
+            'ped_council_date' => 'Дата пед.<br>совета',
+            'par_council_number' => '№ совета<br>род.',
+            'par_council_date' => 'Дата совета<br>род.',
+        ]);
+    }
+
     public function getShortName()
     {
         return $this->short_name;
@@ -85,6 +101,21 @@ class RegulationWork extends Regulation
         return $this->date;
     }
 
+    public function getPedCouncilNumber()
+    {
+        return $this->ped_council_number;
+    }
+
+    public function getPedCouncilDate()
+    {
+        return $this->ped_council_date;
+    }
+
+    public function getParCouncilDate()
+    {
+        return $this->par_council_date;
+    }
+
     public function getStates()
     {
         $statuses = self::states();
@@ -95,10 +126,19 @@ class RegulationWork extends Regulation
         return $statuses[$this->state];
     }
 
+    public function checkFilesExist()
+    {
+        $this->scanExist = count($this->getFileLinks(FilesHelper::TYPE_SCAN)) > 0;
+    }
+
     public function getFullScan()
     {
-        $result = HtmlBuilder::createSVGLink('#');
-        return $result;
+        $link = '#';
+        if ($this->scanExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_SCAN, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
     }
 
     public function getOrderName()
@@ -144,6 +184,11 @@ class RegulationWork extends Regulation
      */
     public function getFileLinks($filetype)
     {
+        return FilesHelper::createFileLinks($this, $filetype, $this->createAddPaths($filetype));
+    }
+
+    private function createAddPaths($filetype)
+    {
         if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
             throw new InvalidArgumentException('Неизвестный тип файла');
         }
@@ -155,7 +200,7 @@ class RegulationWork extends Regulation
                 break;
         }
 
-        return FilesHelper::createFileLinks($this, $filetype, $addPath);
+        return $addPath;
     }
 
     public function beforeSave($insert)

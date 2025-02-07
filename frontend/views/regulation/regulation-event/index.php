@@ -1,6 +1,5 @@
 <?php
 
-use app\components\VerticalActionColumn;
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\helpers\DateFormatter;
 use common\helpers\html\HtmlCreator;
@@ -12,7 +11,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 
 /* @var $this yii\web\View */
-/* @var $searchModel \frontend\models\search\SearchRegulation */
+/* @var $searchModel \frontend\models\search\SearchRegulationEvent */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 /* @var $buttonsAct */
 
@@ -34,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $gridColumns = [
                         ['attribute' => 'date', 'label' => 'Дата положения'],
                         ['attribute' => 'name', 'label' => 'Наименование'],
-                        ['attribute' => 'orderName'],
+                        ['attribute' => 'orderName', 'label' => 'Приказ'],
                         ['attribute' => 'state', 'label' => 'Состояние'],
                     ];
 
@@ -63,16 +62,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'dataProvider' => $dataProvider,
             'summary' => false,
             'columns' => [
-                ['attribute' => 'date', 'label' => 'Дата положения',
+                ['attribute' => 'date',
                     'value' => function (RegulationWork $model) {
                         return DateFormatter::format($model->getDate(), DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
                     }
                 ],
-                ['attribute' => 'name', 'label' => 'Наименование'],
-                ['attribute' => 'orderName', 'label' => 'Приказ'],
-                ['attribute' => 'state', 'label' => 'Состояние', 'value' => function(RegulationWork $model){
+                ['attribute' => 'name'],
+                ['attribute' => 'orderName'],
+                ['attribute' => 'state', 'value' => function(RegulationWork $model){
                     return $model->getStates();
-                }, 'format' => 'raw', 'filter' => [1 => "Актуально", 2 => "Утратило силу"]],
+                }, 'format' => 'raw'],
 
                 ['class' => ActionColumn::class],
             ],
