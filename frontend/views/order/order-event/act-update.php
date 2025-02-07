@@ -183,7 +183,7 @@ use yii\widgets\DetailView;
                                         }],
 
                                         ['label' => 'Форма реализации', 'value' => function (ActParticipantWork $model) {
-                                            return $model->getFormName();
+                                            return 1;
                                         }],
                                         ['label' => 'Номинация', 'value' => function (ActParticipantWork $model) {
                                             return $model->nomination;

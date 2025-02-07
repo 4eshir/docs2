@@ -120,7 +120,7 @@ class OrderMainController extends DocumentController
             $model = $this->repository->get($id);
             $people = $this->peopleStampRepository->getAll();
             $post = Yii::$app->request->post();
-            $orders = $this->documentOrderRepository->getAll();
+            $orders = $this->documentOrderRepository->getEcxeptById($id);
             $regulations = $this->regulationRepository->getOrderedList();
             $users = $this->userRepository->getAll();
             $modelExpire = [new ExpireForm()];

@@ -10,4 +10,7 @@ class DocumentOrderRepository
     {
         return DocumentOrderWork::find()->all();
     }
+    public function getEcxeptById($id){
+        return DocumentOrderWork::find()->where(['<>', 'id', $id])->all();
+    }
 }

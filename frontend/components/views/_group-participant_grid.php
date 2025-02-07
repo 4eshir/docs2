@@ -7,7 +7,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /* @var $dataProvider \yii\data\ActiveDataProvider */
-/* @var $model \app\models\work\order\OrderTrainingWork*/
+/* @var $model \frontend\models\work\order\OrderTrainingWork*/
 /* @var $nomenclature */
 /* @var $transferGroups */
 /* @var $groupParticipantOption */
@@ -55,7 +55,6 @@ if ($dataProvider != NULL) {
                         return $participant->trainingGroupWork->number;
                     },
                 ],
-                'id'
             ],
             'rowOptions' => function ($model, $key, $index) {
                 return ['id' => 'row-' . $model->id, 'class' => 'row-class-' . $index, 'name' => 'row-' . $model->training_group_id];
