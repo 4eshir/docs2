@@ -2,7 +2,10 @@
 
 namespace frontend\forms;
 
+use app\models\work\order\OrderEventGenerateWork;
+use common\components\dictionaries\base\NomenclatureDictionary;
 use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderEventWork;
 use common\events\EventTrait;
 use common\models\scaffold\People;
@@ -164,5 +167,16 @@ class OrderEventForm extends Model {
         $entity->actFiles;
         */
         return $entity;
+    }
+    public function fillExtraInfo(OrderEventGenerateWork $model){
+        $this->purpose = $model->purpose;
+        $this->docEvent = $model->doc_event;
+        $this->respPeopleInfo = $model->resp_people_info_id;
+        $this->timeProvisionDay = $model->time_provision_day;
+        $this->extraRespInsert = $model->extra_resp_insert_id;
+        $this->timeInsertDay = $model->time_insert_day;
+        $this->extraRespMethod = $model->extra_resp_method_id;
+        $this->extraRespInfoStuff = $model->extra_resp_info_stuff_id;
+
     }
 }

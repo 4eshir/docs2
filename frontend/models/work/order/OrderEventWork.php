@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\order;
 
+use common\components\dictionaries\base\NomenclatureDictionary;
 use frontend\services\order\OrderMainService;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
@@ -97,6 +98,7 @@ class OrderEventWork extends DocumentOrderWork
     public function beforeValidate()
     {
         $this->order_copy_id = 1;
+        $this->order_name = 'Об участии в мероприятии';
         $this->type = DocumentOrderWork::ORDER_EVENT;
         $this->order_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         return parent::beforeValidate();

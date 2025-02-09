@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\order;
 
+use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderMainWork;
 use frontend\services\order\DocumentOrderService;
 use frontend\services\order\OrderMainService;
@@ -87,7 +88,7 @@ class OrderMainController extends DocumentController
         $model = new OrderMainWork();
         $people = $this->peopleStampRepository->getAll();
         $users = $this->userRepository->getAll();
-        $orders = $this->documentOrderRepository->getAll();
+        $orders = $this->documentOrderRepository->getAllByType(DocumentOrderWork::ORDER_MAIN);
         $regulations = $this->regulationRepository->getOrderedList();
         $modelExpire = [new ExpireForm()];
         $post = Yii::$app->request->post();
@@ -120,7 +121,7 @@ class OrderMainController extends DocumentController
             $model = $this->repository->get($id);
             $people = $this->peopleStampRepository->getAll();
             $post = Yii::$app->request->post();
-            $orders = $this->documentOrderRepository->getEcxeptById($id);
+            $orders = $this->documentOrderRepository->getExceptByIdAndStatus($id, DocumentOrderWork::ORDER_MAIN);
             $regulations = $this->regulationRepository->getOrderedList();
             $users = $this->userRepository->getAll();
             $modelExpire = [new ExpireForm()];

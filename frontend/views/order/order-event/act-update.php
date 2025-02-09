@@ -8,7 +8,7 @@
 /* @var $defaultTeam */
 /* @var $act */
 /* @var $tables */
-
+/* @var $participants */
 use frontend\models\work\team\ActParticipantWork;
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
@@ -195,7 +195,7 @@ use yii\widgets\DetailView;
                                 ]) ?>
                                 <div>
                                     <?= $form->field($modelAct, "[{$i}]participant")->widget(Select2::classname(), [
-                                        'data' => ArrayHelper::map($people,'id','fullFio'),
+                                        'data' => ArrayHelper::map($participants,'id','fullFio'),
                                         'size' => Select2::LARGE,
                                         'options' => [
                                             'prompt' => 'Выберите участника' ,

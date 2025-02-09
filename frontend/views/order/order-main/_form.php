@@ -3,6 +3,7 @@
 use app\components\DropDownDocument;
 use app\components\DropDownResponsiblePeopleWidget;
 use app\components\DynamicWidget;
+use common\components\dictionaries\base\NomenclatureDictionary;
 use frontend\models\work\order\OrderMainWork;
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
@@ -12,6 +13,8 @@ use yii\web\View;
 use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\jui\DatePicker;
+use yii\widgets\DetailView;
+
 /* @var $this yii\web\View */
 /* @var $model OrderMainWork */
 /* @var $form yii\widgets\ActiveForm */
@@ -50,12 +53,22 @@ use yii\jui\DatePicker;
         ]])->label('Дата приказа') ?>
 
     <div id="archive-2" class="col-xs-4">
-        <?= $form->field($model, 'order_number')->dropDownList(Yii::$app->nomenclature->getList(), ['prompt' => '---'])->label('Код и описание номенклатуры') ?>
+        <?=
+        DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                ['label' => 'Код и номенклатура приказа', 'value' =>
+                    NomenclatureDictionary::ADMIN_ORDER . ' Приказы директора по основной деятельности'
+                ],
+            ]
+        ]);?>
     </div>
+    <?php   if($model->id == NULL){?>
     <?= $form->field($model, 'archive')->checkbox(['id' => 'study_type', 'onchange' => 'checkArchive()']) ?>
     <div id="archive" class="col-xs-4"<?= $model->study_type == 0 ? 'hidden' : '' ?>>
         <?= $form->field($model, 'order_number')->textInput()->label('Архивный номер') ?>
     </div>
+    <?php  } ?>
     <?= $form->field($model, 'order_name')->textInput()->label('Наименование приказа') ?>
     <div id="bring">
         <?php
