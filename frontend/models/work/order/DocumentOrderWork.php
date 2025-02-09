@@ -4,6 +4,7 @@ namespace frontend\models\work\order;
 
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\DocumentOrder;
+use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;

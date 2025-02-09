@@ -2,6 +2,7 @@
 
 namespace frontend\services\order;
 
+use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use frontend\events\educational\training_group\CreateOrderTrainingGroupParticipantEvent;
 use frontend\events\educational\training_group\DeleteOrderTrainingGroupParticipantEvent;
 use frontend\models\work\general\OrderPeopleWork;
@@ -29,12 +30,14 @@ class OrderTrainingService
     private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
     private TrainingGroupRepository $trainingGroupRepository;
     private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
+    private ForeignEventParticipantsRepository $foreignEventParticipantsRepository;
     public function __construct(
         FileService $fileService,
         OrderMainFileNameGenerator $filenameGenerator,
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
         TrainingGroupRepository $trainingGroupRepository,
-        OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository
+        OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository,
+        ForeignEventParticipantsRepository $foreignEventParticipantsRepository
 
     )
     {
@@ -43,6 +46,7 @@ class OrderTrainingService
         $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
         $this->trainingGroupRepository = $trainingGroupRepository;
         $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
+        $this->foreignEventParticipantsRepository = $foreignEventParticipantsRepository;
 
     }
     public function setBranch(OrderTrainingWork $model)
@@ -58,6 +62,23 @@ class OrderTrainingService
         $parts = explode("/", $number);
         $nomenclature = $parts[0];
         return NomenclatureDictionary::getStatus($nomenclature);
+    }
+    public function getGroupTable(OrderTrainingWork $model) {
+        /* @var $order OrderTrainingGroupParticipantWork */
+        $inId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id), 'training_group_participant_in_id');
+        $outId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id), 'training_group_participant_out_id');
+        $groupIds = array_unique(ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll(ArrayHelper::merge($inId, $outId)), 'training_group_id'));
+        $groups = $this->trainingGroupRepository->getById($groupIds);
+        return implode("\n", ArrayHelper::getColumn($groups, 'number'));
+    }
+    public function getGroupParticipantTable(OrderTrainingWork $model, $status)
+    {
+        /* @var $order OrderTrainingGroupParticipantWork */
+        $inId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id), 'training_group_participant_in_id');
+        $outId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id), 'training_group_participant_out_id');
+        $participantIds = array_unique(ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll(ArrayHelper::merge($inId, $outId)), 'participant_id'));
+        $participants = $this->foreignEventParticipantsRepository->getParticipants($participantIds);
+        return implode("\n", ArrayHelper::getColumn($participants, 'fullFio'));
     }
     public function getGroupsEmptyDataProvider()
     {

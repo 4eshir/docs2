@@ -104,8 +104,10 @@ use yii\widgets\Pjax;
         'groupParticipantOption' => $groupParticipantOption,
     ]);
     ?>
-
-    <?= $form->field($model, 'order_name')->textInput()->label('Наименование приказа') ;?>
+    <?= $form->field($model, 'order_name')->textInput([
+            'readonly' => true,
+            'id' => 'order-name-label'
+    ])->label('Наименование приказа'); ?>
     <div id="bring_id">
         <?php
         $params = [
@@ -183,4 +185,20 @@ use yii\widgets\Pjax;
                 });
             });
         ");
+    $this->registerJs("
+                $('#order-number-dropdown').on('change', function() {
+                    var nomenclature = $('#order-number-dropdown').val();
+                    $.ajax({
+                        url: '" . Url::to(['order/order-training/set-name-order']) . "', // Укажите ваш правильный путь к контроллеру
+                        type: 'GET',
+                        data: { 
+                            nomenclature: nomenclature
+                        },
+                        success: function(data) {
+                            console.log($('#order-name-label'));
+                            $('#order-name-label').val(data);
+                        }
+                    });
+                });
+            ");
 ?>

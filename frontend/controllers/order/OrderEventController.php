@@ -214,7 +214,7 @@ class OrderEventController extends DocumentController
     }
     public function actionUpdate($id)
     {
-        if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), 1)) {
+        if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
             $data = $this->orderEventFacade->prepareOrderEventUpdateFacade($id);
             $people = $data['people'];
             $tables = $data['tables'];

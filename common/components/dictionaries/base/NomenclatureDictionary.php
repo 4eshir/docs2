@@ -38,8 +38,8 @@ class NomenclatureDictionary extends BaseDictionary
             self::TECHNOPARK_DEL_BUDGET => '09-23 Приказы об отчислении обучающихся (по внебюджетной деятельности)',
             self::QUANTORIUM_ADD => '10-01 Приказы о зачислении обучающихся',
             self::QUANTORIUM_DEL => '10-02 Приказы об отчислении обучающихся',
-            self::QUANTORIUM_ADD_BUDGET => '10-26 Приказы об отчислении обучающихся',
-            self::QUANTORIUM_DEL_BUDGET => '10-27 Приказы об отчислении обучающихся',
+            self::QUANTORIUM_ADD_BUDGET => '10-26 Приказы об зачислении обучающихся (по внебюджетной деятельности)',
+            self::QUANTORIUM_DEL_BUDGET => '10-27 Приказы об отчислении обучающихся (по внебюджетной деятельности)',
             self::CDNTT_ADD => '11-01 Приказы о зачислении обучающихся',
             self::CDNTT_DEL => '11-02 Приказы об отчислении обучающихся',
             self::CDNTT_ADD_BUDGET => '11-26 Приказы о зачислении обучающихся (по внебюджетной деятельности)',
@@ -176,5 +176,19 @@ class NomenclatureDictionary extends BaseDictionary
             return self::ORDER_TRANSFER;
         }
         return self::ORDER_INIT;
+    }
+    public static function getOrderName($status){
+        if($status == self::ORDER_ENROLL){
+            return 'О зачислении';
+        }
+        else if($status == self::ORDER_DEDUCT){
+            return 'Об отчислении';
+        }
+        else if($status == self::ORDER_TRANSFER){
+            return 'О переводе';
+        }
+        else {
+            return 'ERROR ORDER NAME';
+        }
     }
 }

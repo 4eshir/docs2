@@ -76,14 +76,20 @@ class OrderTrainingController extends DocumentController
         ]);
     }
     public function actionView($id){
+        $model = $this->orderTrainingRepository->get($id);
         $modelResponsiblePeople = implode('<br>',
             $this->documentOrderService->createOrderPeopleArray(
                 $this->orderPeopleRepository->getResponsiblePeople($id)
             )
         );
+        $status = $this->orderTrainingService->getStatus($model);
+        $groups = $this->orderTrainingService->getGroupTable($model) ;
+        $participants = $this->orderTrainingService->getGroupParticipantTable($model, $status);
         return $this->render('view', [
-            'model' => $this->orderTrainingRepository->get($id),
+            'model' => $model,
             'modelResponsiblePeople' => $modelResponsiblePeople,
+            'groups' => $groups,
+            'participants' => $participants,
         ]);
     }
     public function actionCreate(){
@@ -121,7 +127,7 @@ class OrderTrainingController extends DocumentController
     }
     public function actionUpdate($id)
     {
-        if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
+        if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), 1)) {
             $model = $this->orderTrainingRepository->get($id);
             $this->orderTrainingService->setBranch($model);
             $people = $this->peopleStampRepository->getAll();
@@ -178,6 +184,12 @@ class OrderTrainingController extends DocumentController
         $branchId = Yii::$app->request->get('branch_id');
         $nomenclatureList = Yii::$app->nomenclature->getListByBranch($branchId); // Получаем список по номеру отдела
         return $this->asJson($nomenclatureList); // Возвращаем список в формате JSON
+    }
+    public function actionSetNameOrder()
+    {
+        $nomenclature = Yii::$app->request->get('nomenclature');
+        $status = NomenclatureDictionary::getStatus($nomenclature);
+        return NomenclatureDictionary::getOrderName($status);
     }
     public function actionGetGroupByBranch($branch)
     {

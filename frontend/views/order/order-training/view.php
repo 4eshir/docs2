@@ -9,6 +9,8 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model \frontend\models\work\order\OrderTrainingWork */
 /* @var $modelResponsiblePeople */
+/* @var $groups */
+/* @var $participants */
 $this->title = $model->order_name;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об образовательной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -59,4 +61,20 @@ $this->params['breadcrumbs'][] = $this->title;
             }],
         ],
     ]) ?>
+    <br>
+    <br>
+    <div>
+        <h3> Данные о приказе</h3>
+    </div>
+    <?=
+        DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                ['label' => 'Группы в приказе', 'value' => $groups],
+                ['label' => 'Обучающиеся', 'value' => $participants],
+            ]
+
+
+        ]);
+    ?>
 </div>

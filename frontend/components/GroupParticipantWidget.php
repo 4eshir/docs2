@@ -62,7 +62,6 @@ class GroupParticipantWidget extends Widget
             },
             success: function(data) {
                 var gridView = $('.training-group .grid-view'); 
-                console.log(gridView);
                 gridView.html(data.gridHtml); // Обновляем HTML GridView
             },
             error: function() {

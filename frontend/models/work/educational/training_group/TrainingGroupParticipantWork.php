@@ -15,7 +15,8 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
         $groupId,
         $participantId,
         $sendMethod,
-        $id = null
+        $id = null,
+        $status = 0
     )
     {
         $entity = new static();
@@ -23,6 +24,7 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
         $entity->training_group_id = $groupId;
         $entity->participant_id = $participantId;
         $entity->send_method = $sendMethod;
+        $entity->status = $status;
 
         return $entity;
     }
