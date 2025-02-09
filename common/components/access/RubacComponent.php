@@ -8,7 +8,7 @@ use frontend\models\work\rac\PermissionFunctionWork;
 use Yii;
 use yii\helpers\ArrayHelper;
 
-class RacComponent
+class RubacComponent
 {
     private UserPermissionFunctionRepository $userPermissionFunctionRepository;
     private UserRepository $userRepository;

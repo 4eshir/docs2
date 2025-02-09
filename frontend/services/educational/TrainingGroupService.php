@@ -18,7 +18,7 @@ use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\educational\ProjectThemeRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupRepository;
-use common\services\DatabaseService;
+use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use DateTime;
@@ -54,7 +54,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
-class TrainingGroupService implements DatabaseService
+class TrainingGroupService implements DatabaseServiceInterface
 {
     use CommonDatabaseFunctions, Math;
 

@@ -25,13 +25,13 @@ class RegulationEventController extends DocumentController
     private LockWizard $lockWizard;
 
     public function __construct(
-                             $id,
-                             $module,
+        $id,
+        $module,
         RegulationRepository $repository,
         OrderMainRepository  $orderMainRepository,
         RegulationService    $service,
         LockWizard           $lockWizard,
-                             $config = [])
+        $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;

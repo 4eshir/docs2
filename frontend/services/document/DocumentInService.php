@@ -5,7 +5,7 @@ namespace frontend\services\document;
 use common\helpers\files\filenames\DocumentInFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
-use common\services\DatabaseService;
+use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use frontend\events\general\FileCreateEvent;
@@ -14,7 +14,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
-class DocumentInService implements DatabaseService
+class DocumentInService implements DatabaseServiceInterface
 {
     private FileService $fileService;
     private PeopleStampService $peopleStampService;

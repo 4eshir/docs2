@@ -1,6 +1,6 @@
 <?php
 
-use common\components\access\RacComponent;
+use common\components\access\RubacComponent;
 use common\components\access\RulesConfig;
 use common\components\dictionaries\base\AllowRemoteDictionary;
 use common\components\dictionaries\base\AuditoriumTypeDictionary;
@@ -77,7 +77,7 @@ class Yii {
  * @property AuditoriumTypeDictionary $auditoriumType
  * @property ResponsibilityTypeDictionary $responsibilityType
  * @property ProjectTypeDictionary $projectType
- * @property RacComponent $rac
+ * @property RubacComponent $rubac
  * @property Urls $frontUrls
  */
 class __Application {

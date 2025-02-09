@@ -5,7 +5,7 @@ namespace frontend\services\regulation;
 use common\helpers\files\filenames\RegulationFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
-use common\services\DatabaseService;
+use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\regulation\RegulationWork;
@@ -13,7 +13,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
-class RegulationService implements DatabaseService
+class RegulationService implements DatabaseServiceInterface
 {
     private FileService $fileService;
     private RegulationFileNameGenerator $filenameGenerator;

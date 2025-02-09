@@ -2,7 +2,7 @@
 
 namespace common\services;
 
-interface DatabaseService
+interface DatabaseServiceInterface
 {
     /**
      * Проверка возможности удаления записи с идентификатором $id

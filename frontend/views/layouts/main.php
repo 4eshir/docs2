@@ -30,7 +30,7 @@ AppAsset::register($this);
 
 <header>
     <?php
-    if (Yii::$app->rac->isGuest()) {
+    if (Yii::$app->rubac->isGuest()) {
         $menuItems[] = ['label' => 'Войти', 'url' => ['/auth/login']];
     }
     else {

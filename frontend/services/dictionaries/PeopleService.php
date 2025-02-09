@@ -15,7 +15,7 @@ use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\general\UserRepository;
 use common\repositories\regulation\RegulationRepository;
-use common\services\DatabaseService;
+use common\services\DatabaseServiceInterface;
 use DomainException;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\general\PeopleWork;
@@ -24,7 +24,7 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
-class PeopleService implements DatabaseService
+class PeopleService implements DatabaseServiceInterface
 {
     private DocumentInRepository $documentInRepository;
     private DocumentOutRepository $documentOutRepository;

@@ -38,15 +38,15 @@ class LocalResponsibilityController extends Controller
     private PeopleStampService $peopleStampService;
 
     public function __construct($id, $module,
-        LocalResponsibilityRepository $responsibilityRepository,
-        LegacyResponsibleRepository $legacyRepository,
-        AuditoriumRepository $auditoriumRepository,
-        PeopleRepository $peopleRepository,
-        OrderMainRepository $orderRepository,
-        RegulationRepository $regulationRepository,
-        LocalResponsibilityService $service,
-        PeopleStampService $peopleStampService,
-        $config = [])
+                                LocalResponsibilityRepository $responsibilityRepository,
+                                LegacyResponsibleRepository $legacyRepository,
+                                AuditoriumRepository $auditoriumRepository,
+                                PeopleRepository $peopleRepository,
+                                OrderMainRepository $orderRepository,
+                                RegulationRepository $regulationRepository,
+                                LocalResponsibilityService $service,
+                                PeopleStampService $peopleStampService,
+                                $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->responsibilityRepository = $responsibilityRepository;
@@ -304,7 +304,7 @@ class LocalResponsibilityController extends Controller
     //Проверка на права доступа к CRUD-операциям
     public function beforeAction($action)
     {
-        if (Yii::$app->rac->isGuest() || !Yii::$app->rac->checkUserAccess(Yii::$app->rac->authId(), get_class(Yii::$app->controller), $action)) {
+        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
             Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
             $this->redirect(Yii::$app->request->referrer);
             return false;

@@ -23,12 +23,12 @@ class RegulationController extends DocumentController
     private LockWizard $lockWizard;
 
     public function __construct(
-                             $id,
-                             $module,
+        $id,
+        $module,
         RegulationRepository $repository,
         RegulationService    $service,
         LockWizard           $lockWizard,
-                             $config = [])
+        $config = [])
     {
         parent::__construct($id, $module, Yii::createObject(FileService::class), Yii::createObject(FilesRepository::class), $config);
         $this->repository = $repository;
@@ -140,7 +140,7 @@ class RegulationController extends DocumentController
 
     public function beforeAction($action)
     {
-        if (Yii::$app->rac->isGuest() || !Yii::$app->rac->checkUserAccess(Yii::$app->rac->authId(), get_class(Yii::$app->controller), $action)) {
+        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
             Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
             $this->redirect(Yii::$app->request->referrer);
             return false;

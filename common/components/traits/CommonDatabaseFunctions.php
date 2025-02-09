@@ -42,7 +42,6 @@ trait CommonDatabaseFunctions
         return $errorStrings;
     }
 
-
     public function findDuplicates(ActiveRecord $model, array $fields)
     {
         if (!$model instanceof ActiveRecord || empty($fields)) {
