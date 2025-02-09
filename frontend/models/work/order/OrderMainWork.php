@@ -2,27 +2,24 @@
 
 namespace frontend\models\work\order;
 
+use common\components\dictionaries\base\NomenclatureDictionary;
+use DomainException;
 use frontend\services\order\OrderMainService;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\repositories\order\OrderMainRepository;
 use Yii;
+use function PHPUnit\Framework\throwException;
 
 class OrderMainWork extends DocumentOrderWork
 {
     use EventTrait;
-    /**
-     * Имена файлов для сохранения в БД
-     */
     public $responsiblePeople;
     public $names;
     public $orders;
     public $status;
     public $regulations;
     public $archive;
-    /**
-     * Переменные для input-file в форме
-     */
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
@@ -71,8 +68,13 @@ class OrderMainWork extends DocumentOrderWork
     }
     public function beforeValidate()
     {
+        $post = Yii::$app->request->post();
         $this->order_copy_id = 1;
         $this->type = DocumentOrderWork::ORDER_MAIN;
+        if ($post['OrderMainWork']['archive'] == '0') {
+            $this->order_number = NomenclatureDictionary::ADMIN_ORDER;
+            $this->generateOrderNumber();
+        }
         $this->order_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         return parent::beforeValidate();
     }

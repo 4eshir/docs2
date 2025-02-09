@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\team;
 
+use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\team\TeamNameWork;
 use frontend\models\work\event\ForeignEventWork;
 use common\events\EventTrait;
@@ -93,7 +94,7 @@ class ActParticipantWork extends ActParticipant
 
     public function getParticipants(){
         $participants = [];
-        $squadParticipants = SquadParticipantWork::findAll(['act_participant' => $this->id]);
+        $squadParticipants = SquadParticipantWork::findAll(['act_participant_id' => $this->id]);
         foreach($squadParticipants as $squadParticipant){
             $person = PeopleWork::findOne($squadParticipant["participant_id"]);
             $participants[] = $person['surname'] . ' ' . $person['firstname'] . ' ' . $person['patronymic']. "\n";
@@ -101,7 +102,17 @@ class ActParticipantWork extends ActParticipant
         }
         return $participants;
     }
-
+    public function getParticipantString(){
+        $participants = '';
+        $squadParticipants = SquadParticipantWork::findAll(['act_participant_id' => $this->id]);
+        foreach($squadParticipants as $squadParticipant){
+            $persons = ForeignEventParticipantsWork::findAll($squadParticipant["participant_id"]);
+            foreach($persons as $person){
+                $participants = $participants . $person->firstname . ' ' . $person->surname . ' ' . $person->patronymic ."\n" ;
+            }
+        }
+        return $participants;
+    }
     public function getFormattedLinkedParticipants()
     {
         $squadParticipants = SquadParticipantWork::findAll(['act_participant_id' => $this->id]);

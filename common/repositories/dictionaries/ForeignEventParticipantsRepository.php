@@ -2,6 +2,7 @@
 
 namespace common\repositories\dictionaries;
 
+use common\models\scaffold\ForeignEventParticipants;
 use common\repositories\providers\participant\ParticipantProvider;
 use common\repositories\providers\participant\ParticipantProviderInterface;
 use DomainException;
@@ -73,7 +74,10 @@ class ForeignEventParticipantsRepository
             throw new DomainException('Mock-провайдер не имеет реализации метода getSexByName');
         }
     }
-
+    public function getAll()
+    {
+        return ForeignEventParticipantsWork::find()->all();
+    }
     public function delete(ForeignEventParticipantsWork $participant)
     {
         return $this->provider->delete($participant);

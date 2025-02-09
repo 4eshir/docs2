@@ -10,7 +10,11 @@ class DocumentOrderRepository
     {
         return DocumentOrderWork::find()->all();
     }
-    public function getEcxeptById($id){
-        return DocumentOrderWork::find()->where(['<>', 'id', $id])->all();
+    public function getAllByType($type)
+    {
+        return DocumentOrderWork::find()->where(['type' => $type])->all();
+    }
+    public function getExceptByIdAndStatus($id, $type){
+        return DocumentOrderWork::find()->andWhere(['<>', 'id', $id])->andWhere(['type' => $type])->all();
     }
 }

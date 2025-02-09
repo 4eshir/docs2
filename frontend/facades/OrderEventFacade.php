@@ -2,6 +2,7 @@
 
 namespace frontend\facades;
 
+use common\repositories\order\OrderEventGenerateRepository;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\order\OrderEventWork;
 use frontend\services\act_participant\ActParticipantService;
@@ -30,6 +31,7 @@ class OrderEventFacade
     private ActParticipantRepository $actParticipantRepository;
     private OrderPeopleRepository $orderPeopleRepository;
     private DocumentOrderService $documentOrderService;
+    private OrderEventGenerateRepository $orderEventGenerateRepository;
     public function __construct(
         OrderEventRepository $orderEventRepository,
         PeopleRepository $peopleRepository,
@@ -40,7 +42,8 @@ class OrderEventFacade
         TeamService $teamService,
         ActParticipantRepository $actParticipantRepository,
         OrderPeopleRepository $orderPeopleRepository,
-        DocumentOrderService $documentOrderService
+        DocumentOrderService $documentOrderService,
+        OrderEventGenerateRepository $orderEventGenerateRepository
     ){
         $this->orderEventRepository = $orderEventRepository;
         $this->peopleRepository = $peopleRepository;
@@ -52,6 +55,7 @@ class OrderEventFacade
         $this->actParticipantRepository = $actParticipantRepository;
         $this->orderPeopleRepository = $orderPeopleRepository;
         $this->documentOrderService = $documentOrderService;
+        $this->orderEventGenerateRepository = $orderEventGenerateRepository;
     }
     public function prepareOrderEventUpdateFacade($id){
         /* @var OrderEventWork $modelOrderEvent */
@@ -62,6 +66,7 @@ class OrderEventFacade
         $modelForeignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
         $modelActForms = [new ActParticipantForm];
         $model = OrderEventForm::fill($modelOrderEvent, $modelForeignEvent);
+        $model->fillExtraInfo($this->orderEventGenerateRepository->getByOrderId($id));
         $tables = $this->documentOrderService->getUploadedFilesTables($modelOrderEvent);
         $actTable = $this->actParticipantService->createActTable($modelForeignEvent->id);
         $nominations = array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($modelForeignEvent->id), 'nomination'));

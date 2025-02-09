@@ -1,11 +1,14 @@
 <?php
 use app\components\DynamicWidget;
+use common\components\dictionaries\base\NomenclatureDictionary;
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\jui\DatePicker;
+use yii\widgets\DetailView;
+
 /* @var $this yii\web\View */
 /* @var $model */
 /* @var $people */
@@ -452,7 +455,15 @@ use yii\jui\DatePicker;
             'changeYear' => true,
             'yearRange' => '2000:2100',
         ]])->label('Дата приказа') ?>
-    <?= $form->field($model, 'order_number')->dropDownList(Yii::$app->nomenclature->getList(), ['prompt' => '---'])->label('Код и описание номенклатуры') ?>
+    <?=
+    DetailView::widget([
+        'model' => $model,
+        'attributes' => [
+            ['label' => 'Код и номенклатура приказа', 'value' =>
+                NomenclatureDictionary::ADMIN_ORDER . ' Приказы директора по основной деятельности'
+            ],
+        ]
+    ]);?>
     <div class="bordered-div">
         <h4>
             Информация для создания карточки учета достижений
@@ -507,7 +518,13 @@ use yii\jui\DatePicker;
         <?= $form->field($model, 'maxAge')->textInput()->label('Макс. возраст участников (лет)') ?>
         <?= $form->field($model, 'keyEventWords')->textInput()->label('Ключевые слова') ?>
     </div>
-    <?= $form->field($model, 'order_name')->textInput()->label('Наименование приказа') ?>
+    <?=
+    DetailView::widget([
+        'model' => $model,
+        'attributes' => [
+            ['label' => 'Наименование приказа', 'value' => 'Об участии в мероприятии'],
+        ]
+    ]);?>
     <div id="bring_id">
         <?php
         $params = [

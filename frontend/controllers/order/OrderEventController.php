@@ -3,6 +3,10 @@
 namespace frontend\controllers\order;
 
 use app\components\DynamicWidget;
+use app\models\work\order\OrderEventGenerateWork;
+use common\components\dictionaries\base\NomenclatureDictionary;
+use common\models\scaffold\OrderEventGenerate;
+use common\repositories\order\OrderEventGenerateRepository;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderEventWork;
@@ -50,6 +54,7 @@ class OrderEventController extends DocumentController
     private ForeignEventParticipantsRepository $foreignEventParticipantsRepository;
     private CompanyRepository $companyRepository;
     private LockWizard $lockWizard;
+    private OrderEventGenerateRepository $orderEventGenerateRepository;
 
     public function __construct(
         $id, $module,
@@ -71,6 +76,7 @@ class OrderEventController extends DocumentController
         ForeignEventParticipantsRepository $foreignEventParticipantsRepository,
         CompanyRepository $companyRepository,
         LockWizard $lockWizard,
+        OrderEventGenerateRepository $orderEventGenerateRepository,
         $config = []
     )
     {
@@ -89,6 +95,7 @@ class OrderEventController extends DocumentController
         $this->foreignEventParticipantsRepository = $foreignEventParticipantsRepository;
         $this->companyRepository = $companyRepository;
         $this->lockWizard = $lockWizard;
+        $this->orderEventGenerateRepository = $orderEventGenerateRepository;
         parent::__construct($id, $module, $fileService, $fileRepository, $config);
     }
     public function actionIndex() {
@@ -118,7 +125,7 @@ class OrderEventController extends DocumentController
             $respPeopleId = DynamicWidget::getData(basename(OrderEventForm::class), "responsible_id", $post);
             $modelOrderEvent = OrderEventWork::fill(
                 $model->order_copy_id,
-                $model->order_number,
+                NomenclatureDictionary::ADMIN_ORDER,
                 $model->order_postfix,
                 $model->order_date,
                 $model->order_name,
@@ -139,6 +146,18 @@ class OrderEventController extends DocumentController
             $modelOrderEvent->generateOrderNumber();
             $number = $modelOrderEvent->getNumberPostfix();
             $this->orderEventRepository->save($modelOrderEvent);
+            $generateInfo = OrderEventGenerateWork::fill(
+                $modelOrderEvent->id,
+                $model->purpose,
+                $model->docEvent,
+                $model->respPeopleInfo,
+                $model->timeProvisionDay,
+                $model->extraRespInsert,
+                $model->timeInsertDay,
+                $model->extraRespMethod,
+                $model->extraRespInfoStuff
+            );
+            $this->orderEventGenerateRepository->save($generateInfo);
             $this->documentOrderService->saveFilesFromModel($modelOrderEvent);
             $modelForeignEvent = ForeignEventWork::fill(
                 $model->eventName,
@@ -195,7 +214,7 @@ class OrderEventController extends DocumentController
     }
     public function actionUpdate($id)
     {
-        if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
+        if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), 1)) {
             $data = $this->orderEventFacade->prepareOrderEventUpdateFacade($id);
             $people = $data['people'];
             $tables = $data['tables'];
@@ -240,6 +259,19 @@ class OrderEventController extends DocumentController
                     $model->docFiles,
                 );
                 $this->orderEventRepository->save($modelOrderEvent);
+                $generateInfo = $this->orderEventGenerateRepository->getByOrderId($id);
+                $generateInfo->fillUpdate(
+                    $modelOrderEvent->id,
+                    $model->purpose,
+                    $model->docEvent,
+                    $model->respPeopleInfo,
+                    $model->timeProvisionDay,
+                    $model->extraRespInsert,
+                    $model->timeInsertDay,
+                    $model->extraRespMethod,
+                    $model->extraRespInfoStuff
+                );
+                $this->orderEventGenerateRepository->save($generateInfo);
                 $this->documentOrderService->saveFilesFromModel($modelOrderEvent);
                 $this->orderPeopleService->updateOrderPeopleEvent(
                     ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
@@ -298,6 +330,7 @@ class OrderEventController extends DocumentController
         $teams = $data['teams'];
         $defaultTeam = $data['defaultTeam'];
         $tables = $data['tables'];
+        $participants = $data['participants'];
         $post = Yii::$app->request->post();
         if($post != NULL){
             $post = $post["ActParticipantForm"];
@@ -329,6 +362,7 @@ class OrderEventController extends DocumentController
             'teams' => $teams,
             'defaultTeam' => $defaultTeam['name'],
             'tables' => $tables,
+            'participants' => $participants,
         ]);
     }
     public function actionDeletePeople($id, $modelId)

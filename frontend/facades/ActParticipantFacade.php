@@ -2,6 +2,7 @@
 
 namespace frontend\facades;
 
+use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use frontend\services\act_participant\ActParticipantService;
 use frontend\services\team\TeamService;
 use common\repositories\act_participant\ActParticipantRepository;
@@ -16,12 +17,14 @@ class ActParticipantFacade
     private TeamService $teamService;
     private TeamRepository $teamRepository;
     private PeopleRepository $peopleRepository;
+    private ForeignEventParticipantsRepository $foreignEventParticipantsRepository;
     public function __construct(
         ActParticipantService $actParticipantService,
         ActParticipantRepository $actParticipantRepository,
         TeamService $teamService,
         TeamRepository $teamRepository,
-        PeopleRepository $peopleRepository
+        PeopleRepository $peopleRepository,
+        ForeignEventParticipantsRepository $foreignEventParticipantsRepository
     )
     {
         $this->actParticipantService = $actParticipantService;
@@ -29,11 +32,13 @@ class ActParticipantFacade
         $this->teamService = $teamService;
         $this->teamRepository = $teamRepository;
         $this->peopleRepository = $peopleRepository;
+        $this->foreignEventParticipantsRepository = $foreignEventParticipantsRepository;
     }
 
     public function prepareActFacade($act){
         $modelAct = $this->actParticipantService->createForms($act);
         $people = $this->peopleRepository->getOrderedList();
+        $participants = $this->foreignEventParticipantsRepository->getAll();
         $nominations = array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($act[0]->foreign_event_id), 'nomination'));
         $teams = $this->teamService->getNamesByForeignEventId($act[0]->foreign_event_id);
         $defaultTeam = $this->teamRepository->getById($act[0]->team_name_id);
@@ -45,6 +50,7 @@ class ActParticipantFacade
             'teams' => $teams,
             'defaultTeam' => $defaultTeam,
             'tables' => $tables,
+            'participants' => $participants,
         ];
     }
 }
