@@ -127,7 +127,7 @@ class OrderTrainingController extends DocumentController
     }
     public function actionUpdate($id)
     {
-        if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), 1)) {
+        if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
             $model = $this->orderTrainingRepository->get($id);
             $this->orderTrainingService->setBranch($model);
             $people = $this->peopleStampRepository->getAll();
