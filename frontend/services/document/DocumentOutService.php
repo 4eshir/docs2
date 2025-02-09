@@ -5,7 +5,7 @@ namespace frontend\services\document;
 use common\helpers\files\filenames\DocumentOutFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
-use common\services\DatabaseService;
+use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use frontend\controllers\document\DocumentOutController;
@@ -16,7 +16,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
-class DocumentOutService implements DatabaseService
+class DocumentOutService implements DatabaseServiceInterface
 {
     private FileService $fileService;
     private PeopleStampService $peopleStampService;

@@ -88,8 +88,8 @@ return [
         'responsibilityType' => [
             'class' => 'common\\components\\dictionaries\\base\\ResponsibilityTypeDictionary',
         ],
-        'rac' => [
-            'class' => 'common\\components\\access\\RacComponent',
+        'rubac' => [
+            'class' => 'common\\components\\access\\RubacComponent',
         ],
         'nomenclature' => [
             'class' => 'common\\components\\dictionaries\\base\\NomenclatureDictionary',
@@ -99,6 +99,6 @@ return [
         ],
         'frontUrls' => [
             'class' => 'frontend\\components\\routes\\Urls',
-        ]
+        ],
     ],
 ];

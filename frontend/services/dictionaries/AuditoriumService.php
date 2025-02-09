@@ -5,7 +5,7 @@ namespace frontend\services\dictionaries;
 use common\helpers\files\filenames\AuditoriumFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
-use common\services\DatabaseService;
+use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\dictionaries\AuditoriumWork;
@@ -14,7 +14,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
-class AuditoriumService implements DatabaseService
+class AuditoriumService implements DatabaseServiceInterface
 {
     private FileService $fileService;
     private AuditoriumFileNameGenerator $filenameGenerator;

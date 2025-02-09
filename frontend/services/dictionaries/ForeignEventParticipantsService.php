@@ -12,13 +12,13 @@ use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PersonalDataParticipantRepository;
 use common\repositories\general\PeoplePositionCompanyBranchRepository;
 use common\repositories\general\PeopleStampRepository;
-use common\services\DatabaseService;
+use common\services\DatabaseServiceInterface;
 use DateTime;
 use frontend\events\foreign_event_participants\DropCorrectEvent;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use PhpOffice\PhpSpreadsheet\Calculation\Engineering\Compare;
 
-class ForeignEventParticipantsService implements DatabaseService
+class ForeignEventParticipantsService implements DatabaseServiceInterface
 {
     private int $levenshteinAccuracy = 2;
     private string $thresholdYear1996 = '1996-01-01';

@@ -5,7 +5,7 @@ namespace frontend\services\event;
 use common\helpers\files\filenames\EventNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
-use common\services\DatabaseService;
+use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use frontend\events\general\FileCreateEvent;
@@ -15,7 +15,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
-class EventService implements DatabaseService
+class EventService implements DatabaseServiceInterface
 {
     private FileService $fileService;
     private PeopleStampService $peopleStampService;

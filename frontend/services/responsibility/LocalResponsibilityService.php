@@ -7,14 +7,14 @@ use common\helpers\files\filenames\ResponsibilityFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\repositories\responsibility\LegacyResponsibleRepository;
 use common\repositories\responsibility\LocalResponsibilityRepository;
-use common\services\DatabaseService;
+use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\responsibility\LegacyResponsibleWork;
 use frontend\models\work\responsibility\LocalResponsibilityWork;
 use yii\web\UploadedFile;
 
-class LocalResponsibilityService implements DatabaseService
+class LocalResponsibilityService implements DatabaseServiceInterface
 {
     private FileService $fileService;
     private ResponsibilityFileNameGenerator $filenameGenerator;

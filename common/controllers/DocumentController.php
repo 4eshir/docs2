@@ -44,7 +44,7 @@ class DocumentController extends Controller
         $this->filesRepository = $filesRepository;
     }
 
-    public function actionGetFile($filepath)
+    public function actionGetFile(string $filepath)
     {
         $data = $this->fileService->downloadFile($filepath);
         if ($data['type'] == FilesHelper::FILE_SERVER) {

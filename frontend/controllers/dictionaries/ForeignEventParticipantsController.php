@@ -39,8 +39,8 @@ class ForeignEventParticipantsController extends Controller
     private LockWizard $lockWizard;
 
     public function __construct(
-                                           $id,
-                                           $module,
+        $id,
+        $module,
         ForeignEventParticipantsRepository $repository,
         TrainingGroupParticipantRepository $groupParticipantRepository,
         SquadParticipantRepository         $squadParticipantRepository,
@@ -48,7 +48,7 @@ class ForeignEventParticipantsController extends Controller
         PersonalDataParticipantRepository  $personalDataRepository,
         ForeignEventParticipantsService    $service,
         LockWizard                         $lockWizard,
-                                           $config = [])
+        $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->repository = $repository;

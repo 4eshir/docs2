@@ -20,7 +20,7 @@ class AuthController extends Controller
 
     public function actionLogin()
     {
-        if (!Yii::$app->rac->isGuest()) {
+        if (!Yii::$app->rubac->isGuest()) {
             return $this->redirect(['site/index']);
         }
 

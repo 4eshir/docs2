@@ -9,7 +9,7 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\repositories\educational\TrainingProgramRepository;
-use common\services\DatabaseService;
+use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use DomainException;
@@ -25,7 +25,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
-class TrainingProgramService implements DatabaseService
+class TrainingProgramService implements DatabaseServiceInterface
 {
     private FileService $fileService;
     private PeopleStampService $peopleStampService;
