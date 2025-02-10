@@ -5,6 +5,7 @@ namespace frontend\models\work\general;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\models\scaffold\People;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use InvalidArgumentException;
 use Yii;
@@ -15,13 +16,9 @@ use yii\db\ActiveRecord;
  * @property PeoplePositionCompanyBranchWork $positionWork
  * */
 
-class PeopleWork extends People
+class PeopleWork extends People implements PersonInterface
 {
     use EventTrait;
-    const FIO_FULL = 1;
-    const FIO_SURNAME_INITIALS = 2;
-    const FIO_WITH_POSITION = 3;
-    const FIO_SURNAME_INITIALS_WITH_POSITION = 4;
 
     public $branches;
     public $positions;
@@ -42,6 +39,7 @@ class PeopleWork extends People
             ],
         ];
     }
+
     public static function fill(
         $name,
         $surname,
@@ -54,6 +52,7 @@ class PeopleWork extends People
         $entity->patronymic = $patronymic;
         return $entity;
     }
+
     public static function getFioTypes()
     {
         return [
@@ -63,7 +62,8 @@ class PeopleWork extends People
             self::FIO_SURNAME_INITIALS_WITH_POSITION => 'Должность и Фамилия c инициалами',
         ];
     }
-    public function getFIO($type)
+
+    public function getFIO(int $type) : string
     {
         switch ($type) {
             case self::FIO_FULL:

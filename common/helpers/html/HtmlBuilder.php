@@ -384,7 +384,7 @@ class HtmlBuilder
             <tr><td><b>Фамилия</b></td><td id="td-secondname-1" style="width: 45%">'.$participant1->surname.'</td><td><b>Фамилия</b></td><td style="width: 45%">'.$participant2->surname.'</td></tr>
             <tr><td><b>Имя</b></td><td id="td-firstname-1" style="width: 45%">'.$participant1->firstname.'</td><td><b>Имя</b></td><td style="width: 45%">'.$participant2->firstname.'</td></tr>
             <tr><td><b>Отчество</b></td><td id="td-patronymic-1" style="width: 45%">'.$participant1->patronymic.'</td><td><b>Отчество</b></td><td style="width: 45%">'.$participant2->patronymic.'</td></tr>
-            <tr><td><b>Пол</b></td><td id="td-sex-1" style="width: 45%">'.$participant1->sex.'</td><td><b>Пол</b></td><td style="width: 45%">'.$participant2->sex.'</td></tr>
+            <tr><td><b>Пол</b></td><td id="td-sex-1" style="width: 45%">'.$participant1->getSexString().'</td><td><b>Пол</b></td><td style="width: 45%">'.$participant2->getSexString().'</td></tr>
             <tr><td><b>Дата рождения</b></td><td id="td-birthdate-1" style="width: 45%">'.$participant1->birthdate.'</td><td><b>Дата рождения</b></td><td style="width: 45%">'.$participant2->birthdate.'</td></tr>';
 
         $links1 = '';
@@ -398,6 +398,46 @@ class HtmlBuilder
         }
 
         $result .= '<tr><td><b>Группы</b></td><td style="width: 45%">'.$links1.'</td><td><b>Группы</b></td><td style="width: 45%">'.$links2.'</td></tr>';
+
+        $eventsLink1 = '';
+        foreach ($events1 as $event) {
+            $eventsLink1 .= self::createActParticipantBlock($event);
+        }
+
+        $eventsLink2 = '';
+        foreach ($events2 as $event) {
+            $eventsLink2 .= self::createActParticipantBlock($event);
+        }
+
+        $result .= '<tr><td><b>Мепроприятия</b></td><td style="width: 45%">'.$eventsLink1.'</td><td><b>Мепроприятия</b></td><td style="width: 45%">'.$eventsLink2.'</td></tr>';
+
+        $achievesLink1 = '';
+        foreach ($achieves1 as $achievement) {
+            $achievesLink1 .= self::createAchievementBlock($achievement);
+        }
+
+        $achievesLink2 = '';
+        foreach ($achieves2 as $achievement) {
+            $achievesLink2 .= self::createAchievementBlock($achievement);
+        }
+
+        $result .= '<tr><td><b>Достижения</b></td><td style="width: 45%">'.$achievesLink1.'</td><td><b>Достижения</b></td><td style="width: 45%">'.$achievesLink2.'</td></tr>';
+
+        $resultN = "<table class='table table-bordered'>";
+        foreach ($personalData1 as $pd) {
+            $resultN .= self::createPersonalDataBlock($pd);
+        }
+        $resultN .= "</table>";
+
+        $resultN1 = "<table class='table table-bordered'>";
+        foreach ($personalData2 as $pd) {
+            $resultN1 .= self::createPersonalDataBlock($pd);
+        }
+        $resultN1 .= "</table>";
+
+        $result .= '<tr><td><b>Разглашение ПД</b></td><td style="width: 45%">'.$resultN.'</td><td><b>Разглашение ПД</b></td><td style="width: 45%">'.$resultN1.'</td></tr>';
+        $result .= '</table><br>';
+        $result .= '<a id="fill1" style="display: block; width: 91%" onclick="FillEditForm()" class="btn btn-primary">Открыть форму редактирования</a>';
 
         return $result;
     }
@@ -416,15 +456,37 @@ class HtmlBuilder
             ($groupParticipant->status == 'stub' ?
                 ' | Переведен' :
                 ' | Отчислен') . '<br>';
+    }
 
-        /*if ($event->status === 2)
-            $eventsLink1 .= ' | Переведен';
+    public static function createActParticipantBlock(SquadParticipantWork $squad)
+    {
+        return StringFormatter::stringAsLink(
+            $squad->actParticipantWork->foreignEventWork->name,
+            Url::to(['event/foreign-event/view', 'id' => $squad->actParticipantWork->foreign_event_id])
+        ).'<br>';
+    }
 
-        if ($event->status === 1)
-            $eventsLink1 .= ' | Отчислен';
+    public static function createAchievementBlock(ParticipantAchievementWork $achievement)
+    {
+        return $achievement->achievement.' &mdash; '.
+            StringFormatter::stringAsLink(
+                $achievement->actParticipantWork->foreignEventWork->name,
+                Url::to(['foreign-event/view', 'id' => $achievement->actParticipantWork->foreign_event_id])
+            ).
+            ' ('.$achievement->actParticipantWork->foreignEventWork->begin_date.')'.'<br>';
+    }
 
-        $eventsLink1 .= '<br>';
+    public static function createPersonalDataBlock(PersonalDataParticipantWork $pd)
+    {
+        $result = '<tr><td style="width: 350px">'.Yii::$app->personalData->get($pd->personal_data);
+        if ($pd->status == PersonalDataParticipantWork::STATUS_FREE) {
+            $result .= '</td><td style="width: 250px"><span class="badge badge-success b1">Разрешено</span></td>';
+        }
+        else {
+            $result .= '</td><td style="width: 250px"><span class="badge badge-error b1">Запрещено</span></td>';
+        }
+        $result .= '</td></tr>';
 
-        return $eventsLink1;*/
+        return $result;
     }
 }

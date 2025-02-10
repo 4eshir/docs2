@@ -12,7 +12,7 @@ use InvalidArgumentException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
-class ForeignEventParticipantsWork extends ForeignEventParticipants
+class ForeignEventParticipantsWork extends ForeignEventParticipants implements PersonInterface
 {
     use EventTrait;
 
@@ -22,9 +22,6 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants
      */
     const DROP_CORRECT_HARD = 0;
     const DROP_CORRECT_SOFT = 1;
-
-    const FIO_FULL = 1;
-    const FIO_SURNAME_INITIALS = 2;
 
     // Список запрещенных к разглашению ПД
     public $pd;
@@ -90,7 +87,7 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants
         ]);
     }
 
-    public function getFIO($type)
+    public function getFIO(int $type) : string
     {
         switch ($type) {
             case self::FIO_FULL:

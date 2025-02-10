@@ -1,6 +1,8 @@
 <?php
 
 use frontend\forms\participants\MergeParticipantForm;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\JsExpression;
@@ -62,11 +64,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
 
         <?php $form = ActiveForm::begin(); ?>
 
-        <?php
-
-        //$people = \app\models\work\ForeignEventParticipantsWork::find()->select(['CONCAT(secondname, \' \', firstname, \' \', patronymic, \' \', birthdate, \' (id: \', id, \')\') as value', "CONCAT(secondname, ' ', firstname, ' ', patronymic, ' ', birthdate, ' (id: ', id, ')') as label", 'id as id'])->asArray()->all();
-
-        echo $form->field($model, 'fio1')->widget(
+        <?php /*= $form->field($model, 'fio1')->widget(
             AutoComplete::className(), [
             'clientOptions' => [
                 'source' => $model->data->participants,
@@ -79,30 +77,59 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
             'options'=>[
                 'class'=>'form-control on',
             ]
-        ])->label('ФИО участника деятельности №1');
+        ])->label('ФИО участника деятельности №1'); */?>
 
-        echo $form->field($model, 'id1')->hiddenInput(['class' => 'part', 'id' => 'participant_id1', 'name' => 'participant1'])->label(false);
+        <?= $form->field($model, 'fio1')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($model->data->participants, 'id', 'label'),
+            'size' => Select2::LARGE,
+            'pluginOptions' => [
+                'allowClear' => true,
+                'templateSelection' => new JsExpression("function( state ) {
+                    $('#participant_id1').val(state.id);
+                    CheckFieldsFill();
+                    return state.text;
+                 }"),
+            ],
+            'options' => [
+                'prompt' => '---',
+                'class'=>'form-control on',
 
-        ?>
+            ],
+        ])->label('ФИО участника деятельности №1'); ?>
 
-
-        <!--<input class="part" type="hidden" id="participant_id1" name="participant1">-->
+        <?= $form->field($model, 'id1')->hiddenInput(['class' => 'part', 'id' => 'participant_id1', 'name' => 'participant1'])->label(false); ?>
     </div>
 
     <div class="col-xs-6 block-report">
-        <?php
-
-        //$people = \app\models\work\ForeignEventParticipantsWork::find()->select(['CONCAT(secondname, \' \', firstname, \' \', patronymic, \' \', birthdate, \' (id: \', id, \')\') as value', "CONCAT(secondname, ' ', firstname, ' ', patronymic, ' ', birthdate, ' (id: ', id, ')') as label", 'id as id'])->asArray()->all();
-
-        echo $form->field($model, 'fio2')->widget(
+        <?php /*= $form->field($model, 'fio2')->widget(
             AutoComplete::className(), [
             'clientOptions' => [
                 'source' => $model->data->participants,
                 'select' => new JsExpression("function( event, ui ) {
                     let e1 = document.getElementById('participant_id1');
                     let e2 = document.getElementById('participant_id2');
+                    console.log(e1);
+                    console.log(e2);
 
-                    $('#participant_id2').val(ui.item.id);
+                    
+                 }"),
+
+            ],
+            'options'=>[
+                'class'=>'form-control on',
+            ]
+        ])->label('ФИО участника деятельности №2'); */?>
+
+        <?= $form->field($model, 'fio2')->widget(Select2::classname(), [
+            'data' => ArrayHelper::map($model->data->participants, 'id', 'label'),
+            'size' => Select2::LARGE,
+            'pluginOptions' => [
+                'allowClear' => true,
+                'templateSelection' => new JsExpression("function( state ) {
+                    let e1 = document.getElementById('participant_id1');
+                    let e2 = document.getElementById('participant_id2');
+
+                    $('#participant_id2').val(state.id);
                     $.get(
                             \"" . Url::toRoute('info') . "\", 
                             {id1: e1.value, id2: e2.value},
@@ -112,17 +139,16 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
                         }
                     );
                     CheckFieldsFill();
+                    return state.text;
                  }"),
-                
             ],
-            'options'=>[
+            'options' => [
+                'prompt' => '---',
                 'class'=>'form-control on',
-            ]
-        ])->label('ФИО участника деятельности №2');
+            ],
+        ])->label('ФИО участника деятельности №2'); ?>
 
-        echo $form->field($model, 'id2')->hiddenInput(['class' => 'part', 'id' => 'participant_id2', 'name' => 'participant2'])->label(false);
-
-        ?>
+        <?= $form->field($model, 'id2')->hiddenInput(['class' => 'part', 'id' => 'participant_id2', 'name' => 'participant2'])->label(false); ?>
 
     </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>
@@ -131,9 +157,9 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
     </div>
     
     <div id="editBlock" style="display: none; width: 91%;">
-        <?= $form->field($model->editModel, 'surname')->textInput() ?>
-        <?= $form->field($model->editModel, 'firstname')->textInput() ?>
-        <?= $form->field($model->editModel, 'patronymic')->textInput() ?>
+        <?= $form->field($model->editModel, 'surname')->textInput()->label('Фамилия') ?>
+        <?= $form->field($model->editModel, 'firstname')->textInput()->label('Имя') ?>
+        <?= $form->field($model->editModel, 'patronymic')->textInput()->label('Отчество') ?>
 
         <?= $form->field($model->editModel, 'birthdate')->widget(DatePicker::class, [
             'dateFormat' => 'php:d.m.Y',
@@ -147,7 +173,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
                 'changeMonth' => true,
                 'changeYear' => true,
                 'yearRange' => '1980:2100',
-            ]]) ?>
+            ]])->label('Дата рождения') ?>
         <div>
             <?= $form->field($model->editModel, 'sex')->radioList(array('Мужской' => 'Мужской',
                 'Женский' => 'Женский', 'Другое' => 'Другое'), ['value' => $model->sex, 'class' => 'i-checks',
@@ -166,13 +192,11 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
 
                         return $return;
                     }
-                ]) ?>
+                ])->label('Пол') ?>
         </div>
 
 
-        <?php
-        //if (\app\models\components\RoleBaseAccess::CheckSingleAccess(Yii::$app->user->identity->getId(), 22) )
-        echo $form->field($model->editModel, 'pd')->checkboxList(Yii::$app->personalData->getList(), ['item' => function ($index, $label, $name, $checked, $value) {
+        <?= $form->field($model->editModel, 'pd')->checkboxList(Yii::$app->personalData->getList(), ['item' => function ($index, $label, $name, $checked, $value) {
             if ($checked == 1) {
                 $checked = 'checked';
             }
@@ -183,8 +207,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
                             '. $label .'
                         </label>
                     </div>';
-        }])->label('Запретить разглашение персональных данных:');
-        ?>
+        }])->label('Запретить разглашение персональных данных:'); ?>
 
         <?= $form->field($model, 'id1')->hiddenInput()->label(false); ?>
         <?= $form->field($model, 'id2')->hiddenInput()->label(false); ?>
@@ -208,7 +231,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
         let elem1 = document.getElementById('participant_id1');
         let elem2 = document.getElementById('participant_id2');
 
-        if (elem1.value == elem2.value)
+        if ((elem1.value === null || elem2.value === null) && elem1.value === elem2.value)
         {
             alert('Выбраны одинаковые участники! Обновите страницу и выберите разных участников');
             return;
@@ -217,17 +240,25 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
         if (elem1.value && elem2.value)
         {
             let main = document.getElementById('commonBlock');
-            main.style.display = 'block';
-            //main = document.getElementById('fill1');
-            //main.style.display = 'block';
-            main = document.getElementById('sub');
-            main.removeAttribute('disabled');
-            main = document.getElementById('mergeparticipantmodel-fio1');
-            main.setAttribute('readonly', 'true');
-            main = document.getElementById('mergeparticipantmodel-fio2');
-            main.setAttribute('readonly', 'true');
+            if (main !== null) {
+                main.style.display = 'block';
+            }
 
-            
+            main = document.getElementById('sub');
+            if (main !== null) {
+                main.removeAttribute('disabled');
+            }
+
+            main = document.getElementById('mergeparticipantmodel-fio1');
+            console.log(main);
+            if (main !== null) {
+                main.setAttribute('readonly', 'true');
+            }
+
+            main = document.getElementById('mergeparticipantmodel-fio2');
+            if (main !== null) {
+                main.setAttribute('readonly', 'true');
+            }
         }
     }
 
