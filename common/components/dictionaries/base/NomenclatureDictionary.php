@@ -124,7 +124,7 @@ class NomenclatureDictionary extends BaseDictionary
                 return $this->list = [
                     self::QUANTORIUM_ADD => '10-01 Приказы о зачислении обучающихся',
                     self::QUANTORIUM_DEL => '10-02 Приказы об отчислении обучающихся',
-                    self::QUANTORIUM_ADD_BUDGET => '10-26 Приказы об отчислении обучающихся',
+                    self::QUANTORIUM_ADD_BUDGET => '10-26 Приказы об зачислении обучающихся',
                     self::QUANTORIUM_DEL_BUDGET => '10-27 Приказы об отчислении обучающихся',
                 ];
             case BranchDictionary::CDNTT:

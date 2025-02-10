@@ -23,6 +23,7 @@ use common\repositories\general\PeopleStampRepository;
  * @property int|null $state
  * @property int|null $nomenclature_id
  * @property int|null $study_type
+ * @property int|null $preamble
  *
  * @property PeopleStamp $bring
  * @property User $creator
@@ -47,7 +48,7 @@ class DocumentOrder extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['order_copy_id', 'order_postfix', 'signed_id', 'bring_id', 'executor_id', 'creator_id', 'last_edit_id', 'type', 'state', 'nomenclature_id', 'study_type'], 'integer'],
+            [['order_copy_id', 'order_postfix', 'signed_id', 'bring_id', 'executor_id', 'creator_id', 'last_edit_id', 'type', 'state', 'nomenclature_id', 'study_type', 'preamble'], 'integer'],
             [['order_date'], 'safe'],
             [['order_number', 'order_name', 'key_words'], 'string', 'max' => 255],
             [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['signed_id' => 'id']],
@@ -80,6 +81,7 @@ class DocumentOrder extends \yii\db\ActiveRecord
             'state' => 'State',
             'nomenclature_id' => 'Nomenclature ID',
             'study_type' => 'Study Type',
+            'preamble' => 'Preamble'
         ];
     }
 
