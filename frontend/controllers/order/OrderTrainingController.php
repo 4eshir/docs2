@@ -278,4 +278,10 @@ class OrderTrainingController extends DocumentController
             ]),
         ]);
     }
+    public function actionSetPreamble()
+    {
+        $nomenclature = Yii::$app->request->get('nomenclature');
+        $status = NomenclatureDictionary::getStatus($nomenclature);
+        return $status;
+    }
 }
