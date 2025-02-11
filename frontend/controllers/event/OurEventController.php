@@ -4,7 +4,9 @@ namespace frontend\controllers\event;
 
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
+use common\helpers\ButtonsFormatter;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\helpers\SortHelper;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\event\EventRepository;
@@ -76,9 +78,13 @@ class OurEventController extends DocumentController
         $searchModel = new SearchEvent();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $links = ButtonsFormatter::PrimaryCreateLink('мероприятие');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml,
         ]);
     }
 
@@ -90,10 +96,16 @@ class OurEventController extends DocumentController
      */
     public function actionView($id)
     {
+        $links = ButtonsFormatter::UpdateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         /** @var EventWork $model */
         $model = $this->repository->get($id);
+        //$model->checkFilesExist();
+
         return $this->render('view', [
             'model' => $model,
+            'buttonsAct' => $buttonHtml,
         ]);
     }
 

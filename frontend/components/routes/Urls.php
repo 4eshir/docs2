@@ -18,4 +18,7 @@ class Urls
     const REG_EVENT_VIEW = "regulation/regulation-event/view";
     const REG_INDEX = "regulation/regulation/index";
     const REG_VIEW = "regulation/regulation/view";
+
+    const OUR_EVENT_INDEX = "event/our-event/index";
+    const OUR_EVENT_VIEW = "event/our-event/view";
 }

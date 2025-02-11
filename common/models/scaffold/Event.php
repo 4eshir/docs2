@@ -160,4 +160,9 @@ class Event extends \yii\db\ActiveRecord
     {
         return $this->hasOne(PeopleStamp::class, ['id' => 'responsible2_id']);
     }
+
+    public function getDocumentOrder()
+    {
+        return $this->hasOne(DocumentOrder::class, ['id' => 'order_id']);
+    }
 }

@@ -15,6 +15,7 @@ use frontend\models\work\general\FilesWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\general\UserWork;
+use frontend\models\work\order\OrderMainWork;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -25,6 +26,7 @@ use yii\helpers\Url;
 /** @property UserWork $creatorWork */
 /** @property PeopleStampWork $responsible1Work */
 /** @property PeopleStampWork $responsible2Work */
+/** @property OrderMainWork $orderWork */
 
 class EventWork extends Event
 {
@@ -67,6 +69,66 @@ class EventWork extends Event
                 ['child_rst_participants_count', 'compare', 'compareAttribute' => 'child_participants_count', 'operator' => '<=', 'message' => 'Количество детей от РШТ не должно превышать общего количества детей'],
             ]
         );
+    }
+
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'name' => 'Название<br>мероприятия',
+            'datePeriod' => 'Период<br>проведения',
+            'eventType' => 'Тип<br>мероприятия',
+            'scopesSplitter' => 'Тематическая<br>направленность',
+            'responsibleString' => 'Ответственный(-ые)<br>работник(-и)',
+            'eventBranches' => 'Мероприятие проводит',
+            'regulationRaw' => 'Положение',
+            'address' => 'Адрес<br>проведения',
+            'eventLevel' => 'Уровень<br>мероприятия',
+            'participantCount' => 'Кол-во<br>участников',
+            'isFederal' => 'Входит<br>в ФП',
+            'orderName' => 'Приказ',
+            'eventWay' => 'Формат<br>проведения',
+        ]);
+    }
+
+    public function getDatePeriod() {
+        return DateFormatter::format($this->start_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot)
+            . ' - ' . DateFormatter::format($this->finish_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
+    }
+
+    public function getEventType()
+    {
+        return Yii::$app->eventType->get($this->event_type);
+    }
+
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    public function getEventLevel()
+    {
+        return Yii::$app->eventLevel->get($this->event_level);
+    }
+
+    public function getParticipantCount()
+    {
+        return $this->participant_count;
+    }
+
+    public function getOrderName()
+    {
+        $order = $this->orderWork;
+        return $order ? $order->getFullName() : '---';
+    }
+
+    public function getEventWay()
+    {
+        return Yii::$app->eventWay->get($this->event_way);
+    }
+
+    public function getIsFederal()
+    {
+        return $this->is_federal == 1 ? 'Да' : 'Нет';
     }
 
     public function getResponsible1Work()
@@ -198,5 +260,10 @@ class EventWork extends Event
     {
         $this->responsible1_id = $this->responsible1Work->people_id;
         $this->responsible2_id = $this->responsible2Work->people_id;
+    }
+
+    public function getOrderWork()
+    {
+        return $this->hasOne(OrderMainWork::class, ['id' => 'order_id']);
     }
 }
