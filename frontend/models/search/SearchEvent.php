@@ -2,51 +2,48 @@
 
 namespace frontend\models\search;
 
+use common\components\interfaces\SearchInterfaces;
 use frontend\models\work\event\EventWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 
 /**
  * SearchEvent represents the model behind the search form of `app\models\common\Event`.
  */
-class SearchEvent extends EventWork
+class SearchEvent extends Model implements SearchInterfaces
 {
-    public $eventBranchs;
+    public $startDateSearch;
+    public $finishDateSearch;
+    public $eventName;
 
-    public $responsibleString;
-    public $eventLevelString;
-    public $orderString;
-    public $regulationString;
-
-    public $start_date_search;
-    public $finish_date_search;
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
-        return [];
+        return [
+            [['id'], 'integer'],
+            [['fullNumber'], 'string'],
+            [['startDateSearch', 'finishDateSearch'], 'date', 'format' => 'dd.MM.yyyy'],
+            [['datePeriod'], 'safe'],
+        ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function scenarios()
     {
-        // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
-    /**
-     * Creates data provider instance with search query applied
-     *
-     * @param array $params
-     *
-     * @return ActiveDataProvider
-     */
     public function search($params)
     {
-        $query = EventWork::find();
+        $this->load($params);
+        $query = EventWork::find()
+                ->joinWith([
+                    'documentOrder' => function ($query) {
+                        $query->alias('orderMain');
+                    },
+                ])
+                ->joinWith([
+                    'regulation'
+                ]);
 
         /*if (array_key_exists("SearchEvent", $params))
         {
@@ -82,60 +79,60 @@ class SearchEvent extends EventWork
             'query' => $query,
         ]);
 
-        /*$dataProvider->sort->attributes['responsibleString'] = [
-            'asc' => ['responsible.short_name' => SORT_ASC],
-            'desc' => ['responsible.short_name' => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['eventLevelString'] = [
-            'asc' => ['eventLevel.Name' => SORT_ASC],
-            'desc' => ['eventLevel.Name' => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['orderString'] = [
-            'asc' => ['order.order_name' => SORT_ASC],
-            'desc' => ['order.order_name' => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['regulationString'] = [
-            'asc' => ['regulation.name' => SORT_ASC],
-            'desc' => ['regulation.name' => SORT_DESC],
-        ];*/
-
-        $this->load($params);
-
-        if (!$this->validate()) {
-            return $dataProvider;
-        }
-
-        /*// grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-            'start_date' => $this->start_date,
-            'finish_date' => $this->finish_date,
-            'event_type_id' => $this->event_type_id,
-            'event_form_id' => $this->event_form_id,
-            'event_level_id' => $this->event_level_id,
-            'participants_count' => $this->participants_count,
-            'is_federal' => $this->is_federal,
-            'responsible_id' => $this->responsible_id,
-            'event.order_id' => $this->order_id,
-            'regulation_id' => $this->regulation_id,
-        ]);
-
-        $query->andFilterWhere(['like', 'address', $this->address])
-            ->andFilterWhere(['like', 'event.name', $this->name])
-            ->andFilterWhere(['like', 'event.key_words', $this->key_words])
-            ->andFilterWhere(['like', 'comment', $this->comment])
-            ->andFilterWhere(['like', 'protocol', $this->protocol])
-            ->andFilterWhere(['like', 'photos', $this->photos])
-            ->andFilterWhere(['like', 'responsible.Secondname', $this->responsibleString])
-            ->andFilterWhere(['like', 'eventLevel.Name', $this->eventLevelString])
-            ->andFilterWhere(['like', 'order.order_name', $this->orderString])
-            ->andFilterWhere(['like', 'regulation.name', $this->regulationString])
-            ->andFilterWhere(['like', 'reporting_doc', $this->reporting_doc])
-            ->andFilterWhere(['like', 'other_files', $this->other_files]);*/
+        $this->sortAttributes($dataProvider);
 
         return $dataProvider;
+    }
+
+    public function sortAttributes(ActiveDataProvider $dataProvider)
+    {
+        $dataProvider->sort->attributes['eventName'] = [
+            'asc' => ['name' => SORT_ASC],
+            'desc' => ['name' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['datePeriod'] = [
+            'asc' => ['start_date' => SORT_ASC, 'finish_date' => SORT_ASC],
+            'desc' => ['start_date' => SORT_DESC, 'finish_date' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['eventType'] = [
+            'asc' => ['event_type' => SORT_ASC],
+            'desc' => ['event_type' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['address'] = [
+            'asc' => ['address' => SORT_ASC],
+            'desc' => ['address' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['eventLevel'] = [
+            'asc' => ['event_level' => SORT_ASC],
+            'desc' => ['event_level' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['participantCount'] = [
+            'asc' => ['participant_count' => SORT_ASC],
+            'desc' => ['participant_count' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['orderName'] = [
+            'asc' => ['orderMain.order_name' => SORT_ASC],
+            'desc' => ['orderMain.order_name' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['eventWay'] = [
+            'asc' => ['start_date' => SORT_ASC],
+            'desc' => ['start_date' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['regulationRaw'] = [
+            'asc' => ['regulation.name' => SORT_ASC],
+            'desc' => ['regulation.name' => SORT_DESC],
+        ];
+    }
+
+    public function filterQueryParams(ActiveQuery $query) {
+
     }
 }
