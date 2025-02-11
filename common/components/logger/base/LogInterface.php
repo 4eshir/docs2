@@ -1,6 +1,8 @@
 <?php
 
 
+use common\components\logger\search\SearchLog;
+use common\components\logger\search\SearchLogInterface;
 use common\models\work\LogWork;
 
 interface LogInterface
@@ -13,6 +15,9 @@ interface LogInterface
     const TYPE_METHOD = 1;
     const TYPE_CRUD = 2;
 
+    public function getSearchProvider() : SearchLogInterface;
+    public function setSearchProvider(SearchLogInterface $provider) : void;
+
     public function write(LogWork $log) : bool;
-    public function read(SearchLogData $searchData) : LogInterface;
+    public function read() : LogInterface;
 }

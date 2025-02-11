@@ -1,6 +1,9 @@
 <?php
 
 
+use common\components\logger\search\SearchLog;
+use common\components\logger\search\SearchLogInterface;
+use common\components\logger\search\SearchMethodLog;
 use common\models\work\LogWork;
 use common\repositories\log\LogRepository;
 
@@ -14,6 +17,8 @@ class MethodLog implements LogInterface
     public string $actionName;
     public int $callType;
 
+    private SearchLogInterface $searchProvider;
+
     // query-параметры url или параметры вызываемой функции
     public array $queryParams;
 
@@ -22,6 +27,16 @@ class MethodLog implements LogInterface
     public function __construct(LogRepository $repository)
     {
         $this->repository = $repository;
+    }
+
+    public function getSearchProvider(): SearchLogInterface
+    {
+        return $this->searchProvider;
+    }
+
+    public function setSearchProvider(SearchLogInterface $provider): void
+    {
+        $this->searchProvider = $provider;
     }
 
     public function write(LogWork $log): bool
@@ -33,7 +48,7 @@ class MethodLog implements LogInterface
         return false;
     }
 
-    public function read(SearchLogData $searchData): LogInterface
+    public function read(): LogInterface
     {
         // TODO: Implement read() method.
     }

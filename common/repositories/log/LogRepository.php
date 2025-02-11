@@ -7,6 +7,11 @@ use DomainException;
 
 class LogRepository
 {
+    public function query()
+    {
+        return LogWork::find();
+    }
+
     public function get($id)
     {
         return LogWork::find()->where(['id' => $id])->one();
