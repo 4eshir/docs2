@@ -94,4 +94,9 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
             return $this->training_group_id;
         }
     }
+
+    public function setParticipantId(int $participantId)
+    {
+        $this->participant_id = $participantId;
+    }
 }

@@ -89,7 +89,7 @@ class ActParticipantRepository
         return ActParticipantWork::findOne($id);
     }
 
-    public function save($model)
+    public function save(ActParticipantWork $model)
     {
         if (!$model->save()) {
             throw new DomainException('Ошибка сохранения. Проблемы: '.json_encode($model->getErrors()));

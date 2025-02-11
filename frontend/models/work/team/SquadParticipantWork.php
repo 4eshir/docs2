@@ -36,4 +36,9 @@ class SquadParticipantWork extends SquadParticipant
     {
         return $this->hasOne(ForeignEventParticipantsWork::class, ['id' => 'participant_id']);
     }
+
+    public function setParticipantId(int $participantId)
+    {
+        $this->participant_id = $participantId;
+    }
 }

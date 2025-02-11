@@ -52,8 +52,8 @@ class VisitProvider implements VisitProviderInterface
         return (Yii::createObject(TrainingGroupLessonRepository::class))->getByIds($lessonIds);
     }
 
-    public function getByTrainingGroupParticipant($trainingGroupParticipantId)
+    public function getByTrainingGroupParticipants(array $trainingGroupParticipantId)
     {
-        return VisitWork::find()->where(['training_group_participant_id' => $trainingGroupParticipantId])->one();
+        return VisitWork::find()->where(['IN', 'training_group_participant_id', $trainingGroupParticipantId])->one();
     }
 }

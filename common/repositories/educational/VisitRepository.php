@@ -40,9 +40,9 @@ class VisitRepository
         }
     }
 
-    public function getByTrainingGroupParticipant($trainingGroupParticipantId)
+    public function getByTrainingGroupParticipants(array $trainingGroupParticipantIds)
     {
-        return $this->provider->getByTrainingGroupParticipant($trainingGroupParticipantId);
+        return $this->provider->getByTrainingGroupParticipants($trainingGroupParticipantIds);
     }
 
     public function getByGroupAndParticipant($groupId, $participantId)

@@ -2,6 +2,7 @@
 
 namespace common\repositories\act_participant;
 
+use DomainException;
 use frontend\models\work\team\SquadParticipantWork;
 use common\models\scaffold\SquadParticipant;
 use Yii;
@@ -51,5 +52,13 @@ class SquadParticipantRepository
     public function getAllFromEvent($foreignEventId)
     {
         return SquadParticipantWork::find()->joinWith(['actParticipantWork actParticipantWork'])->where(['actParticipantWork.foreign_event_id' => $foreignEventId])->all();
+    }
+
+    public function save(SquadParticipantWork $model)
+    {
+        if (!$model->save()) {
+            throw new DomainException('Ошибка сохранения. Проблемы: '.json_encode($model->getErrors()));
+        }
+        return $model->id;
     }
 }

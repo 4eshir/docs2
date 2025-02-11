@@ -97,7 +97,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
             ],
         ])->label('ФИО участника деятельности №1'); ?>
 
-        <?= $form->field($model, 'id1')->hiddenInput(['class' => 'part', 'id' => 'participant_id1', 'name' => 'participant1'])->label(false); ?>
+        <?= $form->field($model, 'id1')->hiddenInput(['class' => 'part', 'id' => 'participant_id1', 'name' => 'MergeParticipantForm[id1]'])->label(false); ?>
     </div>
 
     <div class="col-xs-6 block-report">
@@ -148,7 +148,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
             ],
         ])->label('ФИО участника деятельности №2'); ?>
 
-        <?= $form->field($model, 'id2')->hiddenInput(['class' => 'part', 'id' => 'participant_id2', 'name' => 'participant2'])->label(false); ?>
+        <?= $form->field($model, 'id2')->hiddenInput(['class' => 'part', 'id' => 'participant_id2', 'name' => 'MergeParticipantForm[id2]'])->label(false); ?>
 
     </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>
@@ -175,8 +175,8 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
                 'yearRange' => '1980:2100',
             ]])->label('Дата рождения') ?>
         <div>
-            <?= $form->field($model->editModel, 'sex')->radioList(array('Мужской' => 'Мужской',
-                'Женский' => 'Женский', 'Другое' => 'Другое'), ['value' => $model->sex, 'class' => 'i-checks',
+            <?= $form->field($model->editModel, 'sex')->radioList(array(0 => 'Мужской',
+                1 => 'Женский', 2 => 'Другое'), ['value' => $model->sex, 'class' => 'i-checks',
                     'item' => function($index, $label, $name, $checked, $value) {
                         if ($checked) {
                             $checkedStr = 'checked=""';
@@ -195,6 +195,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
                 ])->label('Пол') ?>
         </div>
 
+        <?= $form->field($model->editModel, 'email')->textInput()->label('E-mail') ?>
 
         <?= $form->field($model->editModel, 'pd')->checkboxList(Yii::$app->personalData->getList(), ['item' => function ($index, $label, $name, $checked, $value) {
             if ($checked == 1) {
@@ -209,8 +210,6 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
                     </div>';
         }])->label('Запретить разглашение персональных данных:'); ?>
 
-        <?= $form->field($model, 'id1')->hiddenInput()->label(false); ?>
-        <?= $form->field($model, 'id2')->hiddenInput()->label(false); ?>
     </div>
 
     <div class="panel-body" style="padding: 0; margin: 0"></div>
@@ -231,7 +230,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Слияние', 'url' => ['merge-
         let elem1 = document.getElementById('participant_id1');
         let elem2 = document.getElementById('participant_id2');
 
-        if ((elem1.value === null || elem2.value === null) && elem1.value === elem2.value)
+        if (elem1.value !== '' && elem1.value === elem2.value)
         {
             alert('Выбраны одинаковые участники! Обновите страницу и выберите разных участников');
             return;

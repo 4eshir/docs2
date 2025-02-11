@@ -73,6 +73,25 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
         return $entity;
     }
 
+    public function setProperties(
+        $firstname,
+        $surname,
+        $birthdate,
+        $email,
+        $sex,
+        $patronymic = '',
+        $guaranteedTrue = 0
+    )
+    {
+        $this->firstname = $firstname;
+        $this->surname = $surname;
+        $this->birthdate = $birthdate;
+        $this->email = $email;
+        $this->sex = $sex;
+        $this->patronymic = $patronymic;
+        $this->guaranteed_true = $guaranteedTrue;
+    }
+
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [

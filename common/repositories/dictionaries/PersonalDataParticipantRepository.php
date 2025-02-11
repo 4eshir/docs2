@@ -111,12 +111,17 @@ class PersonalDataParticipantRepository
         return $commands;
     }
 
-    public function save(PersonalDataParticipantWork $personalData)
+    public function delete(PersonalDataParticipantWork $model)
     {
-        if (!$personalData->save()) {
-            throw new DomainException('Ошибка сохранения ограничения персональных данных. Проблемы: '.json_encode($personalData->getErrors()));
+        return $model->delete();
+    }
+
+    public function save(PersonalDataParticipantWork $model)
+    {
+        if (!$model->save()) {
+            throw new DomainException('Ошибка сохранения ограничения персональных данных. Проблемы: '.json_encode($model->getErrors()));
         }
 
-        return $personalData->id;
+        return $model->id;
     }
 }

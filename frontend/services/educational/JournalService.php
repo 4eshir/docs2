@@ -125,7 +125,7 @@ class JournalService
      */
     public function setVisitStatusSingle($trainingGroupParticipantId, $lessonId, $status)
     {
-        $visit = $this->visitRepository->getByTrainingGroupParticipant($trainingGroupParticipantId);
+        $visit = $this->visitRepository->getByTrainingGroupParticipants([$trainingGroupParticipantId]);
         if ($visit) {
             $allLessons = VisitLesson::fromString($visit->lessons);
             $newLessons = [];
@@ -153,7 +153,7 @@ class JournalService
     public function setVisitStatusParticipant($trainingGroupParticipantId, array $statuses)
     {
         /** @var VisitWork $visit */
-        $visit = $this->visitRepository->getByTrainingGroupParticipant($trainingGroupParticipantId);
+        $visit = $this->visitRepository->getByTrainingGroupParticipants([$trainingGroupParticipantId]);
         $lessons = VisitLesson::fromString($visit->lessons);
         $lessonsString = $visit->lessons;
         if (VisitLesson::equalArrays($lessons, $statuses)) {
