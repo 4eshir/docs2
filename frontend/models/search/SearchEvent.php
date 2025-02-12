@@ -3,6 +3,7 @@
 namespace frontend\models\search;
 
 use common\components\interfaces\SearchInterfaces;
+use common\helpers\DateFormatter;
 use frontend\models\work\event\EventWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -13,17 +14,21 @@ use yii\db\ActiveQuery;
  */
 class SearchEvent extends Model implements SearchInterfaces
 {
-    public $startDateSearch;
-    public $finishDateSearch;
-    public $eventName;
+    public string $startDateSearch;     // дата начала поиска в диапазоне дат
+    public string $finishDateSearch;    // дата окончания поиска в диапазоне дат
+    public string $eventName;           // наименование мероприятия или его части
+    public int $eventWay;               // формат проведения
+    public int $eventLevel;             // уровень мероприятия
+    public int $eventType;              // тип мероприятия
+
 
     public function rules()
     {
         return [
-            [['id'], 'integer'],
+            [['id', 'eventWay', 'eventLevel', 'eventType'], 'integer'],
             [['fullNumber'], 'string'],
             [['startDateSearch', 'finishDateSearch'], 'date', 'format' => 'dd.MM.yyyy'],
-            [['datePeriod'], 'safe'],
+            [['datePeriod', 'startDateSearch', 'finishDateSearch', 'eventName', 'eventWay', 'eventLevel', 'eventType'], 'safe'],
         ];
     }
 
@@ -32,9 +37,32 @@ class SearchEvent extends Model implements SearchInterfaces
         return Model::scenarios();
     }
 
+    public function __construct(
+        string $startDateSearch = '',
+        string $finishDateSearch = '',
+        int $eventLevel = -1,
+        string $eventName = '',
+        int $eventType = -1,
+        int $eventWay = -1,
+        $config = []
+    ) {
+        parent::__construct($config);
+        $this->startDateSearch = $startDateSearch;
+        $this->finishDateSearch = $finishDateSearch;
+        $this->eventLevel = $eventLevel;
+        $this->eventName = $eventName;
+        $this->eventWay = $eventWay;
+        $this->eventType = $eventType;
+    }
+
     public function search($params)
     {
+        $params['SearchEvent']['eventWay'] = (int) $params['SearchEvent']['eventWay'];
+        $params['SearchEvent']['eventType'] = (int) $params['SearchEvent']['eventType'];
+        $params['SearchEvent']['eventLevel'] = (int) $params['SearchEvent']['eventLevel'];
+
         $this->load($params);
+
         $query = EventWork::find()
                 ->joinWith([
                     'documentOrder' => function ($query) {
@@ -45,41 +73,12 @@ class SearchEvent extends Model implements SearchInterfaces
                     'regulation'
                 ]);
 
-        /*if (array_key_exists("SearchEvent", $params))
-        {
-            if ($params["SearchEvent"]["eventBranchs"] != null)
-            {
-                $ebs = EventBranchWork::find()->where(['branch_id' => $params["SearchEvent"]["eventBranchs"]])->all();
-                $eIds = [];
-                foreach ($ebs as $eb) $eIds[] = $eb->event_id;
-                $query = EventWork::find()->where(['IN', 'event.id', $eIds]);
-            }
-
-            if (strlen($params["SearchEvent"]["start_date_search"]) > 9 && strlen($params["SearchEvent"]["finish_date_search"]) > 9)
-            {
-                $query = $query->andWhere(['IN', 'event.id',
-                    (new Query())->select('event.id')->from('event')->where(['>=', 'start_date', $params["SearchEvent"]["start_date_search"]])
-                        ->andWhere(['<=', 'finish_date', $params["SearchEvent"]["finish_date_search"]])]);
-
-            }
-        }
-
-
-
-        //SELECT * FROM `event` WHERE `id` IN (SELECT `event_id` FROM `event_branch` WHERE `branch_id` = 2)
-
-        // add conditions that should always apply here
-
-        $query->joinWith(['responsible responsible']);
-        $query->joinWith(['eventLevel eventLevel']);
-        $query->joinWith(['order order']);
-        $query->joinWith(['regulation regulation']);*/
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
         $this->sortAttributes($dataProvider);
+        $this->filterQueryParams($query);
 
         return $dataProvider;
     }
@@ -96,19 +95,14 @@ class SearchEvent extends Model implements SearchInterfaces
             'desc' => ['start_date' => SORT_DESC, 'finish_date' => SORT_DESC],
         ];
 
-        $dataProvider->sort->attributes['eventType'] = [
-            'asc' => ['event_type' => SORT_ASC],
-            'desc' => ['event_type' => SORT_DESC],
+        $dataProvider->sort->attributes['eventLevelAndType'] = [
+            'asc' => ['event_level' => SORT_ASC, 'event_type' => SORT_ASC],
+            'desc' => ['event_level' => SORT_DESC, 'event_type' => SORT_DESC],
         ];
 
         $dataProvider->sort->attributes['address'] = [
             'asc' => ['address' => SORT_ASC],
             'desc' => ['address' => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['eventLevel'] = [
-            'asc' => ['event_level' => SORT_ASC],
-            'desc' => ['event_level' => SORT_DESC],
         ];
 
         $dataProvider->sort->attributes['participantCount'] = [
@@ -133,6 +127,77 @@ class SearchEvent extends Model implements SearchInterfaces
     }
 
     public function filterQueryParams(ActiveQuery $query) {
+        $this->filterDate($query);
+        $this->filterName($query);
+        $this->filterWay($query);
+        $this->filterType($query);
+        $this->filterLevel($query);
+    }
 
+    /**
+     * Фильтрация мероприятий по диапазону дат
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterDate(ActiveQuery $query) {
+        if (!empty($this->startDateSearch) || !empty($this->finishDateSearch))
+        {
+            $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
+            $dateTo =  $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
+
+            $query->andWhere(['or',
+                ['between', 'start_date', $dateFrom, $dateTo],
+                ['between', 'finish_date', $dateFrom, $dateTo],
+            ]);
+        }
+    }
+
+    /**
+     * Фильтрация мероприятий по названию
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterName(ActiveQuery $query) {
+        if (!empty($this->eventName)) {
+            $query->andWhere(['like', 'LOWER(event.name)', mb_strtolower($this->eventName)]);
+        }
+    }
+
+    /**
+     * Фильтрация мероприятий по формату проведения
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterWay(ActiveQuery $query) {
+        if ($this->eventWay !== -1) {
+            $query->andFilterWhere(['event_way' => $this->eventWay]);
+        }
+    }
+
+    /**
+     * Фильтрация мероприятий по типу мероприятия
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterType(ActiveQuery $query) {
+        if ($this->eventType !== -1) {
+            $query->andFilterWhere(['event_type' => $this->eventType]);
+        }
+    }
+
+    /**
+     * Фильтрация мероприятий по типу мероприятия
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterLevel(ActiveQuery $query) {
+        if ($this->eventLevel !== -1) {
+            $query->andFilterWhere(['event_level' => $this->eventLevel]);
+        }
     }
 }

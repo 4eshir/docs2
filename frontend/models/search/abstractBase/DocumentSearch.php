@@ -9,17 +9,17 @@ use yii\db\ActiveQuery;
 
 class DocumentSearch extends Model
 {
-    public $fullNumber;         // составной номер документа (может содержать символ '/' )
-    public $companyName;        // организация - отправитель или получатель письма
-    public $sendMethodName;     // способ отправки или получения письма
-    public $documentTheme;      // тема документа
-    public $startDateSearch;    // стартовая дата поиска документов
-    public $finishDateSearch;   // конечная дата поиска документов
-    public $executorName;       // исполнитель письма
-    public $status;             // статус документа (архивное, требуется ответ, отвеченное, и т.д.)
-    public $keyWords;           // ключевые слова
-    public $correspondentName;  // корреспондент (отправитель) фио или организация
-    public $number;             // номер документа (регистрационный или присвоенный нами)
+    public string $fullNumber;         // составной номер документа (может содержать символ '/' )
+    public string $companyName;        // организация - отправитель или получатель письма
+    public int $sendMethodName;     // способ отправки или получения письма
+    public string $documentTheme;      // тема документа
+    public string $startDateSearch;    // стартовая дата поиска документов
+    public string $finishDateSearch;   // конечная дата поиска документов
+    public string $executorName;       // исполнитель письма
+    public int $status;             // статус документа (архивное, требуется ответ, отвеченное, и т.д.)
+    public string $keyWords;           // ключевые слова
+    public string $correspondentName;  // корреспондент (отправитель) фио или организация
+    public string $number;             // номер документа (регистрационный или присвоенный нами)
 
     public function rules()
     {
@@ -32,17 +32,17 @@ class DocumentSearch extends Model
     }
 
     public function __construct(
-        string $fullNumber = null,
-        string $companyName = null,
-        int $sendMethodName = null,
-        string $documentTheme = null,
-        string $startDateSearch = null,
-        string $finishDateSearch = null,
-        string $executorName = null,
-        int $status = null,
-        string $keyWords = null,
-        string $correspondentName = null,
-        string $number = null
+        string $fullNumber = '',
+        string $companyName = '',
+        int $sendMethodName = -1,
+        string $documentTheme = '',
+        string $startDateSearch = '',
+        string $finishDateSearch = '',
+        string $executorName = '',
+        int $status = -1,
+        string $keyWords = '',
+        string $correspondentName = '',
+        string $number = ''
     ) {
         parent::__construct();
         $this->fullNumber = $fullNumber;
@@ -67,7 +67,7 @@ class DocumentSearch extends Model
     /**
      * Сортировка атрибутов запроса
      *
-     * @param $dataProvider
+     * @param ActiveDataProvider $dataProvider
      * @return void
      */
     public function sortAttributes(ActiveDataProvider $dataProvider) {
@@ -96,12 +96,13 @@ class DocumentSearch extends Model
      * Вызов функций фильтров по параметрам запроса
      *
      * @param ActiveQuery $query
-     * @param $documentTheme
-     * @param $keyWords
-     * @param $sendMethodName
+     * @param string $documentTheme
+     * @param string $keyWords
+     * @param int $sendMethodName
+     * @param string $correspondentName
      * @return void
      */
-    public function filterAbstractQueryParams(ActiveQuery $query, $documentTheme, $keyWords, $sendMethodName, $correspondentName) {
+    public function filterAbstractQueryParams(ActiveQuery $query, string $documentTheme, string $keyWords, int $sendMethodName, string $correspondentName) {
         $this->filterTheme($query, $documentTheme);
         $this->filterKeyWords($query, $keyWords);
         $this->filterSendMethodName($query, $sendMethodName);
@@ -112,48 +113,56 @@ class DocumentSearch extends Model
      * Фильтрует по теме документа
      *
      * @param ActiveQuery $query
-     * @param $documentTheme
+     * @param string $documentTheme
      * @return void
      */
-    private function filterTheme(ActiveQuery $query, $documentTheme) {
-        $query->andFilterWhere(['like', 'LOWER(document_theme)', mb_strtolower($documentTheme)]);
+    private function filterTheme(ActiveQuery $query, string $documentTheme) {
+        if (!empty($documentTheme)) {
+            $query->andFilterWhere(['like', 'LOWER(document_theme)', mb_strtolower($documentTheme)]);
+        }
     }
 
     /**
      * Фильтрует по ключевым словам
      *
      * @param ActiveQuery $query
-     * @param $keyWords
+     * @param string $keyWords
      * @return void
      */
-    private function filterKeyWords(ActiveQuery $query, $keyWords) {
-        $query->andFilterWhere(['like', 'LOWER(key_words)', mb_strtolower($keyWords)]);
+    private function filterKeyWords(ActiveQuery $query, string $keyWords) {
+        if (!empty($keyWords)) {
+            $query->andFilterWhere(['like', 'LOWER(key_words)', mb_strtolower($keyWords)]);
+        }
     }
 
     /**
      * Фильтрует по методу получения письма
      *
      * @param ActiveQuery $query
-     * @param $sendMethodName
+     * @param int $sendMethodName
      * @return void
      */
-    private function filterSendMethodName(ActiveQuery $query, $sendMethodName) {
-        $query->andFilterWhere(['like', 'send_method', $sendMethodName]);
+    private function filterSendMethodName(ActiveQuery $query, int $sendMethodName) {
+        if ($sendMethodName !== -1) {
+            $query->andFilterWhere(['send_method' => $sendMethodName]);
+        }
     }
 
     /**
      * Фильтрация документов любому из полей "Ф И О" корреспондента
      *
      * @param ActiveQuery $query
-     * @param $correspondentName
+     * @param string $correspondentName
      * @return void
      */
-    private function filterCorrespondentName(ActiveQuery $query, $correspondentName) {
-        $lowerCorrespondentName = mb_strtolower($correspondentName);
-        $query->andFilterWhere(['or',
-            ['like', 'LOWER(company.name)', $lowerCorrespondentName],
-            ['like', 'LOWER(company.short_name)', $lowerCorrespondentName],
-            ['like', 'LOWER(correspondentPeople.firstname)', $lowerCorrespondentName],
-        ]);
+    private function filterCorrespondentName(ActiveQuery $query, string $correspondentName) {
+        if (!empty($correspondentName)) {
+            $lowerCorrespondentName = mb_strtolower($correspondentName);
+            $query->andFilterWhere(['or',
+                ['like', 'LOWER(company.name)', $lowerCorrespondentName],
+                ['like', 'LOWER(company.short_name)', $lowerCorrespondentName],
+                ['like', 'LOWER(correspondentPeople.firstname)', $lowerCorrespondentName],
+            ]);
+        }
     }
 }

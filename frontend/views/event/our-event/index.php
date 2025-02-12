@@ -104,9 +104,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['attribute' => 'name', 'encodeLabel' => false],
             ['attribute' => 'datePeriod', 'encodeLabel' => false],
-            ['attribute' => 'eventType', 'encodeLabel' => false],
+            ['attribute' => 'eventLevelAndType', 'encodeLabel' => false, 'format' => 'raw'],
             ['attribute' => 'address', 'encodeLabel' => false],
-            ['attribute' => 'eventLevel', 'encodeLabel' => false],
             ['attribute' => 'participantCount', 'encodeLabel' => false],
             ['attribute' => 'orderName', 'encodeLabel' => false],
             ['attribute' => 'eventWay', 'encodeLabel' => false],

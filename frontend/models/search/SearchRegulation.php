@@ -12,7 +12,7 @@ use yii\db\ActiveQuery;
 
 class SearchRegulation extends RegulationSearch implements SearchInterfaces
 {
-    public $numberBoard;    // Номер совета
+    public int $numberBoard;    // Номер совета
 
     public function rules()
     {
@@ -101,7 +101,9 @@ class SearchRegulation extends RegulationSearch implements SearchInterfaces
      */
     public function filterNumberBoard(ActiveQuery $query)
     {
-        $query->andFilterWhere(['=', 'ped_council_number', $this->numberBoard]);
+        if (!empty($this->numberBoard)) {
+            $query->andFilterWhere(['=', 'ped_council_number', $this->numberBoard]);
+        }
     }
 
 }
