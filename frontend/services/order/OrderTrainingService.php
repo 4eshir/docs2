@@ -103,9 +103,9 @@ class OrderTrainingService
     {
         $status = $this->getStatus($model);
         if($status == NomenclatureDictionary::ORDER_ENROLL) {
-            $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $model->id])->all(),
+            $orderParticipantId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id),
                 'training_group_participant_in_id');
-            $groupId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['id' => $orderParticipantId])->all(),
+            $groupId = ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll($orderParticipantId),
                 'training_group_id'
             );
             $query = TrainingGroupParticipantWork::find()
@@ -113,9 +113,9 @@ class OrderTrainingService
                 ->orWhere(['and', ['training_group_id' => $groupId], ['status' => $status - 1]]);
         }
         if($status == NomenclatureDictionary::ORDER_DEDUCT) {
-            $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $model->id])->all(),
+            $orderParticipantId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id),
                 'training_group_participant_out_id');
-            $groupId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['id' => $orderParticipantId])->all(),
+            $groupId = ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll($orderParticipantId),
                 'training_group_id'
             );
             $query = TrainingGroupParticipantWork::find()
@@ -123,9 +123,9 @@ class OrderTrainingService
                 ->orWhere(['and', ['training_group_id' => $groupId], ['status' => $status - 1]]);
         }
         if($status == NomenclatureDictionary::ORDER_TRANSFER){
-            $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $model->id])->all(),
+            $orderParticipantId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id),
                 'training_group_participant_out_id');
-            $groupId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['id' => $orderParticipantId])->all(),
+            $groupId = ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll($orderParticipantId),
                 'training_group_id'
             );
             $exceptParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
