@@ -15,8 +15,8 @@ use yii\db\ActiveQuery;
  */
 class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
 {
-    public $localDate;              // дата поступления документа (используется для сортировки)
-    public $realDate;               // регистрационная дата документа (используется для сортировки)
+    public string $localDate;              // дата поступления документа (используется для сортировки)
+    public string $realDate;               // регистрационная дата документа (используется для сортировки)
 
 
     public function rules()
@@ -156,10 +156,13 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterNumber(ActiveQuery $query) {
-        $query->andFilterWhere(['or',
-            ['like', 'real_number', $this->number],
-            ['like', "CONCAT(local_number, '/', local_postfix)", $this->number],
-        ]);
+        if (!empty($this->number))
+        {
+            $query->andFilterWhere(['or',
+                ['like', 'real_number', $this->number],
+                ['like', "CONCAT(local_number, '/', local_postfix)", $this->number],
+            ]);
+        }
     }
 
     /**
@@ -169,6 +172,9 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterExecutorName(ActiveQuery $query) {
-        $query->andFilterWhere(['like', 'LOWER(responsiblePeople.firstname)', mb_strtolower($this->executorName)]);
+        if (!empty($this->executorName))
+        {
+            $query->andFilterWhere(['like', 'LOWER(responsiblePeople.firstname)', mb_strtolower($this->executorName)]);
+        }
     }
 }

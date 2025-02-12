@@ -12,8 +12,8 @@ use yii\db\ActiveQuery;
 
 class SearchDocumentOut extends DocumentSearch implements SearchInterfaces
 {
-    public $documentDate;       // дата документа
-    public $sentDate;           // дата отправки документа
+    public string $documentDate;       // дата документа
+    public string $sentDate;           // дата отправки документа
 
 
     /**
@@ -146,7 +146,10 @@ class SearchDocumentOut extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterNumber(ActiveQuery $query) {
-        $query->andFilterWhere(['like', "CONCAT(document_number, '/', document_postfix)", $this->number]);
+        if (!empty($this->number))
+        {
+            $query->andFilterWhere(['like', "CONCAT(document_number, '/', document_postfix)", $this->number]);
+        }
     }
 
     /**
@@ -172,11 +175,13 @@ class SearchDocumentOut extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterExecutorName(ActiveQuery $query) {
-        $query->andFilterWhere([
-            'OR',
-            ['like', 'LOWER(executorPeople.firstname)', mb_strtolower($this->executorName)],
-            ['like', 'LOWER(signedPeople.firstname)', mb_strtolower($this->executorName)],
-        ]);
-
+        if (!empty($this->executorName))
+        {
+            $query->andFilterWhere([
+                'OR',
+                ['like', 'LOWER(executorPeople.firstname)', mb_strtolower($this->executorName)],
+                ['like', 'LOWER(signedPeople.firstname)', mb_strtolower($this->executorName)],
+            ]);
+        }
     }
 }

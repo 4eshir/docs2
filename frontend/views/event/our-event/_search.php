@@ -23,8 +23,9 @@ use yii\widgets\ActiveForm;
         SearchFieldHelper::dateField('startDateSearch', 'Дата мероприятия с', 'Дата мероприятия с'),
         SearchFieldHelper::dateField('finishDateSearch', 'Дата мероприятия по', 'Дата мероприятия по'),
         SearchFieldHelper::textField('eventName' , 'Наименование мероприятия', 'Наименование мероприятия'),
-        SearchFieldHelper::textField('eventName' , 'Наименование мероприятия', 'Наименование мероприятия'),
-        //SearchFieldHelper::dropdownField('status', 'Статус положения', RegulationWork::states(), 'Состояние положения')
+        SearchFieldHelper::dropdownField('eventWay' , 'Формат проведения', Yii::$app->eventWay->getList(), 'Формат проведения'),
+        SearchFieldHelper::dropdownField('eventType' , 'Тип мероприятия', Yii::$app->eventType->getList(), 'Тип мероприятия'),
+        SearchFieldHelper::dropdownField('eventLevel' , 'Уровень мероприятия', Yii::$app->eventLevel->getList(), 'Уровень мероприятия'),
     );
 
     echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::OUR_EVENT_INDEX); ?>
