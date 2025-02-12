@@ -8,6 +8,189 @@ class RulesConfig
 {
     // основные связи правил с экшнами контроллеров
     private $permissionActionLinks = [
+        'add_group' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'create',
+                'generate-journal',
+                'delete-journal'
+            ]
+        ],
+
+        'view_self_groups' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'index',
+                'view',
+                'get-file',
+                'get-files'
+            ]
+        ],
+
+        'view_branch_groups' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'index',
+                'view',
+                'get-file',
+                'get-files'
+            ]
+        ],
+
+        'view_all_groups' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'index',
+                'view',
+                'get-file',
+                'get-files'
+            ]
+        ],
+
+        'edit_self_groups' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'base-form',
+                'participant-form',
+                'schedule-form',
+                'pitch-form',
+                'group-deletion',
+                'delete-file'
+            ]
+        ],
+
+        'edit_branch_groups' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'base-form',
+                'participant-form',
+                'schedule-form',
+                'pitch-form',
+                'group-deletion',
+                'delete-file'
+            ]
+        ],
+
+        'edit_all_groups' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'base-form',
+                'participant-form',
+                'schedule-form',
+                'pitch-form',
+                'group-deletion',
+                'delete-file'
+            ]
+        ],
+
+        'delete_branch_groups' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'delete'
+            ]
+        ],
+
+        'delete_all_groups' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'delete'
+            ]
+        ],
+
+        'archive_branch_groups' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'archive'
+            ]
+        ],
+
+        'archive_all_groups' => [
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'archive'
+            ]
+        ],
+
+        'forgive_study_errors' => [
+
+        ],
+
+        'forgive_base_errors' => [
+
+        ],
+
+        'delete_participants' => [
+            \frontend\controllers\dictionaries\ForeignEventParticipantsController::class => [
+                'delete'
+            ]
+        ],
+
+        'merge_participants' => [
+            \frontend\controllers\dictionaries\ForeignEventParticipantsController::class => [
+                'merge-participant',
+                'info'
+            ]
+        ],
+
+        'view_training_programs' => [
+            \frontend\controllers\educational\TrainingProgramController::class => [
+                'index',
+                'view',
+                'get-file',
+            ]
+        ],
+
+        'edit_training_programs' => [
+            \frontend\controllers\educational\TrainingProgramController::class => [
+                'create',
+                'update',
+                'delete',
+                'update-theme',
+                'delete-theme',
+                'delete-author',
+                'delete-file',
+            ]
+        ],
+
+        'view_study_orders' => [
+            \frontend\controllers\order\OrderTrainingController::class => [
+                'index',
+                'view',
+                'get-file',
+                'get-files'
+            ]
+        ],
+
+        'edit_study_orders' => [
+            \frontend\controllers\order\OrderTrainingController::class => [
+                'create',
+                'update',
+                'delete',
+                'delete-file',
+                'get-list-by-branch',
+                'set-name-order',
+                'get-group-by-branch',
+                'get-group-participants-by-branch',
+                'set-preamble'
+            ]
+        ],
+
+        'view_base_orders' => [
+            \frontend\controllers\order\OrderMainController::class => [
+                'index',
+                'view',
+                'get-file',
+                'get-files'
+            ]
+        ],
+
+        'edit_base_orders' => [
+            \frontend\controllers\order\OrderMainController::class => [
+                'create',
+                'update',
+                'delete',
+                'delete-file',
+                'delete-document'
+            ]
+        ],
+
+        'gen_report_query' => [
+
+        ],
+
+        'gen_report_forms' => [
+
+        ],
+
         'view_doc_in' => [
             \frontend\controllers\document\DocumentInController::class => [
                 'index',
@@ -46,23 +229,6 @@ class RulesConfig
             ],
         ],
 
-        'view_base_regulations' => [
-            \frontend\controllers\regulation\RegulationController::class => [
-                'index',
-                'view',
-                'get-file',
-            ],
-        ],
-
-        'edit_base_regulations' => [
-            \frontend\controllers\regulation\RegulationController::class => [
-                'create',
-                'update',
-                'delete',
-                'delete-file',
-            ],
-        ],
-
         'view_event_regulations' => [
             \frontend\controllers\regulation\RegulationEventController::class => [
                 'index',
@@ -80,23 +246,59 @@ class RulesConfig
             ],
         ],
 
-        'view_training_programs' => [
-            \frontend\controllers\educational\TrainingProgramController::class => [
+        'view_base_regulations' => [
+            \frontend\controllers\regulation\RegulationController::class => [
                 'index',
                 'view',
                 'get-file',
-            ]
+            ],
         ],
 
-        'edit_training_programs' => [
-            \frontend\controllers\educational\TrainingProgramController::class => [
+        'edit_base_regulations' => [
+            \frontend\controllers\regulation\RegulationController::class => [
                 'create',
                 'update',
                 'delete',
-                'update-theme',
-                'delete-theme',
-                'delete-author',
                 'delete-file',
+            ],
+        ],
+
+        'view_events' => [
+            \frontend\controllers\event\OurEventController::class => [
+                'index',
+                'view',
+                'get-file',
+                'get-files'
+            ]
+        ],
+
+        'edit_events' => [
+            \frontend\controllers\event\OurEventController::class => [
+                'create',
+                'update',
+                'delete',
+                'delete-file',
+            ]
+        ],
+
+        'view_foreign_events' => [
+            \frontend\controllers\event\ForeignEventController::class => [
+                'index',
+                'view',
+                'get-file',
+                'get-files'
+            ]
+        ],
+
+        'edit_foreign_events' => [
+            \frontend\controllers\event\ForeignEventController::class => [
+                'create',
+                'update',
+                'delete',
+                'delete-file',
+                'update-participant',
+                'update-achievement',
+                'delete-achievement'
             ]
         ],
 
@@ -105,6 +307,7 @@ class RulesConfig
                 'index',
                 'view',
                 'get-file',
+                'get-files',
             ]
         ],
 
@@ -116,6 +319,112 @@ class RulesConfig
                 'delete-file',
                 'get-auditorium',
             ]
+        ],
+
+        'view_users' => [
+            \frontend\controllers\user\UserController::class => [
+                'index'
+            ]
+        ],
+
+        'edit_users' => [
+
+        ],
+
+        'edit_permissions' => [
+
+        ],
+
+        'create_certificates' => [
+
+        ],
+
+        'delete_certificates' => [
+
+        ],
+
+        'allow_base_admin' => [
+
+        ],
+
+        'allow_extended_admin' => [
+
+        ],
+
+        'view_certificate_template' => [
+
+        ],
+
+        'edit_certificate_template' => [
+
+        ],
+
+        'view_material_obj' => [
+
+        ],
+
+        'edit_material_obj' => [
+
+        ],
+
+        'move_material_obj' => [
+
+        ],
+
+        'view_dictionaries' => [
+            \frontend\controllers\dictionaries\AuditoriumController::class => [
+                'index',
+                'view',
+                'get-file',
+                'get-files',
+            ],
+            \frontend\controllers\dictionaries\CompanyController::class => [
+                'index',
+                'view',
+            ],
+            \frontend\controllers\dictionaries\ForeignEventParticipantsController::class => [
+                'index',
+                'view',
+            ],
+            \frontend\controllers\dictionaries\PeopleController::class => [
+                'index',
+                'view',
+            ],
+            \frontend\controllers\dictionaries\PositionController::class => [
+                'index',
+                'view',
+            ],
+        ],
+
+        'edit_dictionaries' => [
+            \frontend\controllers\dictionaries\AuditoriumController::class => [
+                'create',
+                'update',
+                'delete',
+                'delete-file',
+            ],
+            \frontend\controllers\dictionaries\CompanyController::class => [
+                'create',
+                'update',
+                'delete'
+            ],
+            \frontend\controllers\dictionaries\ForeignEventParticipantsController::class => [
+                'create',
+                'update',
+                'delete',
+                'file-load',
+                'check-correct',
+            ],
+            \frontend\controllers\dictionaries\PeopleController::class => [
+                'create',
+                'update',
+                'delete'
+            ],
+            \frontend\controllers\dictionaries\PositionController::class => [
+                'create',
+                'update',
+                'delete'
+            ],
         ]
     ];
 
