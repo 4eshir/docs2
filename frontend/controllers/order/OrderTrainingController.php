@@ -125,7 +125,7 @@ class OrderTrainingController extends DocumentController
 
         ]);
     }
-    public function actionUpdate($id)
+    public function actionUpdate($id, $error = NULL)
     {
         if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
             $model = $this->orderTrainingRepository->get($id);
@@ -152,13 +152,16 @@ class OrderTrainingController extends DocumentController
                 $this->orderTrainingRepository->save($model);
                 //$status = $this->orderTrainingService->getStatus($model);
                 //update
-                $this->orderTrainingService->updateOrderTrainingGroupParticipantEvent($model, $status, $post);
+                $error = $this->orderTrainingService->updateOrderTrainingGroupParticipantEvent($model, $status, $post);
                 //update
                 $this->documentOrderService->saveFilesFromModel($model);
                 $this->orderPeopleService->updateOrderPeopleEvent(
                     ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
                     $post["OrderTrainingWork"]["responsible_id"], $model);
                 $model->releaseEvents();
+                if($error) {
+                    return $this->redirect(['update', 'id' => $id, 'error' => $error]);
+                }
                 return $this->redirect(['view', 'id' => $model->id]);
             }
             return $this->render('update', [
@@ -171,6 +174,7 @@ class OrderTrainingController extends DocumentController
                 'docFiles' => $tables['docs'],
                 'groupCheckOption' => $groupCheckOption,
                 'groupParticipantOption' => $groupParticipantOption,
+                'error' => $error
             ]);
         }
         else {
