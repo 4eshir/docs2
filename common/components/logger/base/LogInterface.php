@@ -1,9 +1,6 @@
 <?php
 
-
-use common\components\logger\search\SearchLog;
-use common\components\logger\search\SearchLogInterface;
-use common\models\work\LogWork;
+namespace common\components\logger\base;
 
 interface LogInterface
 {
@@ -15,9 +12,12 @@ interface LogInterface
     const TYPE_METHOD = 1;
     const TYPE_CRUD = 2;
 
-    public function getSearchProvider() : SearchLogInterface;
-    public function setSearchProvider(SearchLogInterface $provider) : void;
 
-    public function write(LogWork $log) : bool;
-    public function read() : LogInterface;
+    public function write() : int;
+
+    /**
+     * На основе дополнительных свойств наследники реализуют метод генерации строки данных
+     * @return string json-строка для поля add_data @see LogWork
+     */
+    public function createAddData() : string;
 }

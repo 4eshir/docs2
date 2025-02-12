@@ -1,13 +1,15 @@
 <?php
 
 
+use common\components\logger\base\BaseLog;
+use common\components\logger\base\LogInterface;
 use common\components\logger\search\SearchLog;
 use common\components\logger\search\SearchLogInterface;
 use common\components\logger\search\SearchMethodLog;
 use common\models\work\LogWork;
 use common\repositories\log\LogRepository;
 
-class MethodLog implements LogInterface
+class MethodLog extends BaseLog implements LogInterface
 {
     // Типы вызовов логируемого метода
     const CTYPE_ACTION = 0;
@@ -17,39 +19,52 @@ class MethodLog implements LogInterface
     public string $actionName;
     public int $callType;
 
-    private SearchLogInterface $searchProvider;
-
     // query-параметры url или параметры вызываемой функции
     public array $queryParams;
 
-    private LogRepository $repository;
-
-    public function __construct(LogRepository $repository)
+    public function __construct(
+        string $datetime,
+        int $level,
+        int $type,
+        int $userId,
+        string $text,
+        string $controllerName,
+        string $actionName,
+        int $callType,
+        LogRepository $repository = null
+    )
     {
-        $this->repository = $repository;
+        parent::__construct(
+            $datetime,
+            $level,
+            $type,
+            $userId,
+            $text,
+            $repository
+        );
+
+        $this->controllerName = $controllerName;
+        $this->actionName = $actionName;
+        $this->callType = $callType;
     }
 
-    public function getSearchProvider(): SearchLogInterface
+    /**
+     * @throws \yii\db\Exception
+     */
+    public function write(): int
     {
-        return $this->searchProvider;
+        $log = parent::createEntity();
+        $log->setAddData($this->createAddData());
+
+        return $this->repository->save($log);
     }
 
-    public function setSearchProvider(SearchLogInterface $provider): void
+    public function createAddData(): string
     {
-        $this->searchProvider = $provider;
-    }
-
-    public function write(LogWork $log): bool
-    {
-        if ($this->repository->save($log)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public function read(): LogInterface
-    {
-        // TODO: Implement read() method.
+        return json_encode([
+            'controllerName' => $this->controllerName,
+            'actionName' => $this->actionName,
+            'callType' => $this->callType,
+        ]);
     }
 }
