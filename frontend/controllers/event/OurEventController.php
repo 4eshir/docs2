@@ -221,7 +221,7 @@ class OurEventController extends DocumentController
         return $this->redirect(['index']);
     }
 
-    public function actionDeleteGroup($id, $modelId)
+    /*public function actionDeleteGroup($id, $modelId)
     {
         $group = EventTrainingGroupWork::find()->where(['id' => $id])->one();
         $group->delete();
@@ -240,7 +240,7 @@ class OurEventController extends DocumentController
         $errorsAmnesty = new EventErrorsWork();
         $errorsAmnesty->EventAmnesty($id);
         return $this->redirect('index?r=event/view&id='.$id);
-    }
+    }*/
 
     //Проверка на права доступа к CRUD-операциям
     public function beforeAction($action)

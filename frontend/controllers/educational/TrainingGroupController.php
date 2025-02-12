@@ -385,16 +385,8 @@ class TrainingGroupController extends DocumentController
         return $this->redirect(['schedule-form', 'id' => $id]);
     }
 
-    // DEBUG
-    public function actionTest($id)
+    public function actionArchive()
     {
-        $pbac = new PbacGroupAccess(
-            new PbacGroupData(
-                (Yii::createObject(UserRepository::class))->get(1), []
-            )
-        );
 
-        var_dump(ArrayHelper::getColumn($pbac->getAllowedGroups(), 'id'));
     }
-    // DEBUG
 }
