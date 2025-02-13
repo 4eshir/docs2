@@ -5,18 +5,16 @@ namespace frontend\models\search;
 use common\components\dictionaries\base\DocumentStatusDictionary;
 use common\components\interfaces\SearchInterfaces;
 use common\helpers\DateFormatter;
+use common\helpers\StringFormatter;
 use frontend\models\search\abstractBase\DocumentSearch;
 use frontend\models\work\document_in_out\DocumentInWork;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 
-/**
- * SearchDocumentIn represents the model behind the search form of `app\models\common\DocumentIn`.
- */
 class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
 {
-    public $localDate;              // дата поступления документа (используется для сортировки)
-    public $realDate;               // регистрационная дата документа (используется для сортировки)
+    public string $localDate;              // дата поступления документа (используется для сортировки)
+    public string $realDate;               // регистрационная дата документа (используется для сортировки)
 
 
     public function rules()
@@ -28,6 +26,54 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
         ]);
     }
 
+    public function __construct(
+        string $fullNumber = '',
+        string $companyName = '',
+        int $sendMethod = -1,
+        string $documentTheme = '',
+        string $startDateSearch = '',
+        string $finishDateSearch = '',
+        string $executorName = '',
+        int $status = -1,
+        string $keyWords = '',
+        string $correspondentName = '',
+        string $number = '',
+        string $localDate = '',
+        string $realDate = ''
+    ) {
+        parent::__construct(
+            $fullNumber,
+            $companyName,
+            $sendMethod,
+            $documentTheme,
+            $startDateSearch,
+            $finishDateSearch,
+            $executorName,
+            $status,
+            $keyWords,
+            $correspondentName,
+            $number
+        );
+        $this->localDate = $localDate;
+        $this->realDate = $realDate;
+    }
+
+    /**
+     * Определение параметров загрузки данных
+     *
+     * @param $params
+     * @return void
+     */
+    public function loadParams($params)
+    {
+        if (count($params) > 1) {
+            $params['SearchDocumentIn']['sendMethod'] = StringFormatter::stringAsInt($params['SearchDocumentIn']['sendMethod']);
+            $params['SearchDocumentIn']['status'] = StringFormatter::stringAsInt($params['SearchDocumentIn']['status']);
+        }
+
+        $this->load($params);
+    }
+
     /**
      * Создает экземпляр DataProvider с учетом поискового запроса (фильтров или сортировки)
      *
@@ -36,7 +82,8 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      */
     public function search($params)
     {
-        $this->load($params);
+        $this->loadParams($params);
+
         $query = DocumentInWork::find()
             ->joinWith([
                 'company',
@@ -105,7 +152,7 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
         $this->filterDate($query);
         $this->filterNumber($query);
         $this->filterExecutorName($query);
-        $this->filterAbstractQueryParams($query, $this->documentTheme, $this->keyWords, $this->sendMethodName, $this->correspondentName);
+        $this->filterAbstractQueryParams($query, $this->documentTheme, $this->keyWords, $this->sendMethod, $this->correspondentName);
     }
 
 
@@ -116,18 +163,20 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterStatus(ActiveQuery $query) {
-        $statusConditions = [
-            DocumentStatusDictionary::CURRENT => ['>=', 'local_date', date('Y') . '-01-01'],
-            DocumentStatusDictionary::ARCHIVE => ['<=', 'local_date', date('Y-m-d')],
-            DocumentStatusDictionary::EXPIRED => [
-                'AND',
-                ['<', 'date', date('Y-m-d')],
-                ['IS', 'document_out_id', null]
-            ],
-            DocumentStatusDictionary::NEEDANSWER => ['=', 'need_answer', 1],
-            DocumentStatusDictionary::RESERVED => ['like', 'LOWER(document_theme)', 'РЕЗЕРВ'],
-        ];
-        $query->andWhere($statusConditions[$this->status]);
+        if (!empty($this->status) && $this->status != -1) {
+            $statusConditions = [
+                DocumentStatusDictionary::CURRENT => ['>=', 'local_date', date('Y') . '-01-01'],
+                DocumentStatusDictionary::ARCHIVE => ['<=', 'local_date', date('Y-m-d')],
+                DocumentStatusDictionary::EXPIRED => [
+                    'AND',
+                    ['<', 'date', date('Y-m-d')],
+                    ['IS', 'document_out_id', null]
+                ],
+                DocumentStatusDictionary::NEEDANSWER => ['=', 'need_answer', 1],
+                DocumentStatusDictionary::RESERVED => ['like', 'LOWER(document_theme)', 'РЕЗЕРВ'],
+            ];
+            $query->andWhere($statusConditions[$this->status]);
+        }
     }
 
     /**
@@ -137,8 +186,7 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterDate(ActiveQuery $query) {
-        if ($this->startDateSearch != '' || $this->finishDateSearch != '')
-        {
+        if (!empty($this->startDateSearch) || !empty($this->finishDateSearch)) {
             $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
             $dateTo =  $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
 
@@ -156,10 +204,12 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterNumber(ActiveQuery $query) {
-        $query->andFilterWhere(['or',
-            ['like', 'real_number', $this->number],
-            ['like', "CONCAT(local_number, '/', local_postfix)", $this->number],
-        ]);
+        if (!empty($this->number)) {
+            $query->andFilterWhere(['or',
+                ['like', 'real_number', $this->number],
+                ['like', "CONCAT(local_number, '/', local_postfix)", $this->number],
+            ]);
+        }
     }
 
     /**
@@ -169,6 +219,8 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterExecutorName(ActiveQuery $query) {
-        $query->andFilterWhere(['like', 'LOWER(responsiblePeople.firstname)', mb_strtolower($this->executorName)]);
+        if (!empty($this->executorName)) {
+            $query->andFilterWhere(['like', 'LOWER(responsiblePeople.firstname)', mb_strtolower($this->executorName)]);
+        }
     }
 }

@@ -67,7 +67,6 @@ class OrderTrainingController extends DocumentController
         $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
     }
-
     public function actionIndex(){
         $searchModel = new SearchOrderTraining();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -76,7 +75,6 @@ class OrderTrainingController extends DocumentController
             'dataProvider' => $dataProvider,
         ]);
     }
-
     public function actionView($id){
         $model = $this->orderTrainingRepository->get($id);
         $modelResponsiblePeople = implode('<br>',
@@ -94,7 +92,6 @@ class OrderTrainingController extends DocumentController
             'participants' => $participants,
         ]);
     }
-
     public function actionCreate(){
         $model = new OrderTrainingWork();
         $people = $this->peopleStampRepository->getAll();
@@ -128,8 +125,7 @@ class OrderTrainingController extends DocumentController
 
         ]);
     }
-
-    public function actionUpdate($id)
+    public function actionUpdate($id, $error = NULL)
     {
         if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
             $model = $this->orderTrainingRepository->get($id);
@@ -156,13 +152,16 @@ class OrderTrainingController extends DocumentController
                 $this->orderTrainingRepository->save($model);
                 //$status = $this->orderTrainingService->getStatus($model);
                 //update
-                $this->orderTrainingService->updateOrderTrainingGroupParticipantEvent($model, $status, $post);
+                $error = $this->orderTrainingService->updateOrderTrainingGroupParticipantEvent($model, $status, $post);
                 //update
                 $this->documentOrderService->saveFilesFromModel($model);
                 $this->orderPeopleService->updateOrderPeopleEvent(
                     ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
                     $post["OrderTrainingWork"]["responsible_id"], $model);
                 $model->releaseEvents();
+                if($error) {
+                    return $this->redirect(['update', 'id' => $id, 'error' => $error]);
+                }
                 return $this->redirect(['view', 'id' => $model->id]);
             }
             return $this->render('update', [
@@ -175,6 +174,7 @@ class OrderTrainingController extends DocumentController
                 'docFiles' => $tables['docs'],
                 'groupCheckOption' => $groupCheckOption,
                 'groupParticipantOption' => $groupParticipantOption,
+                'error' => $error
             ]);
         }
         else {
@@ -183,21 +183,18 @@ class OrderTrainingController extends DocumentController
             return $this->redirect(Yii::$app->request->referrer ?: ['index']);
         }
     }
-
     public function actionGetListByBranch()
     {
         $branchId = Yii::$app->request->get('branch_id');
         $nomenclatureList = Yii::$app->nomenclature->getListByBranch($branchId); // Получаем список по номеру отдела
         return $this->asJson($nomenclatureList); // Возвращаем список в формате JSON
     }
-
     public function actionSetNameOrder()
     {
         $nomenclature = Yii::$app->request->get('nomenclature');
         $status = NomenclatureDictionary::getStatus($nomenclature);
         return NomenclatureDictionary::getOrderName($status);
     }
-
     public function actionGetGroupByBranch($branch)
     {
         $groupCheckOption = json_decode(Yii::$app->request->get('groupCheckOption'));
@@ -214,7 +211,6 @@ class OrderTrainingController extends DocumentController
             ]),
         ]);
     }
-
     public function actionGetGroupParticipantsByBranch()
     {
         $groupIds = Yii::$app->request->get('groupIds');

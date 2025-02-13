@@ -10,6 +10,7 @@ class StringFormatter
 {
     const FORMAT_RAW = 1;
     const FORMAT_LINK = 2;
+    const FORMAT_NUMBER = 3;
 
     const STYLE_CAMEL = 1; // camelCase
     const STYLE_PASCAL = 2; // PascalCase
@@ -24,7 +25,20 @@ class StringFormatter
         return [
             self::FORMAT_RAW => 'Обычная строка',
             self::FORMAT_LINK => 'Ссылка типа \<a\>',
+            self::FORMAT_NUMBER => 'Строку в число',
         ];
+    }
+
+    /**
+     * Преобразование пустой строки в -1, а всех остальных значений в числовые.
+     * Функция необходима для трансформации инпута фильтров в серчи
+     *
+     * @param $variable
+     * @return int
+     */
+    public static function stringAsInt($variable)
+    {
+        return $variable === "" ? -1 : (int) $variable;
     }
 
     public static function stringAsLink($name, $url)

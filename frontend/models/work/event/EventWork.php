@@ -84,6 +84,7 @@ class EventWork extends Event
             'isFederal' => 'Входит<br>в ФП',
             'orderName' => 'Приказ',
             'eventWay' => 'Формат<br>проведения',
+            'eventLevelAndType' => 'Уровень и Тип<br>мероприятия',
         ]);
     }
 
@@ -121,6 +122,11 @@ class EventWork extends Event
     public function getEventWay()
     {
         return Yii::$app->eventWay->get($this->event_way);
+    }
+
+    public function getEventLevelAndType()
+    {
+        return $this->getEventLevel() . '<br>' . $this->getEventType();
     }
 
     public function getIsFederal()

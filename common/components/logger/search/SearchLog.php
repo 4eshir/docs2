@@ -20,6 +20,7 @@ class SearchLog implements SearchLogInterface
     public array $types;
     public string $partText;
 
+
     /**
      * @param int[] $levels
      * @return static

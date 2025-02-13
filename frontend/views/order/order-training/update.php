@@ -1,11 +1,12 @@
 <?php
 
 use common\components\wizards\AlertMessageWizard;
+use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\DocumentOrder;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model \app\models\work\order\OrderTrainingWork */
+/* @var $model \frontend\models\work\order\OrderTrainingWork */
 /* @var $people */
 /* @var $groups */
 /* @var $groupParticipant */
@@ -14,6 +15,7 @@ use yii\helpers\Html;
 /* @var $docFiles */
 /* @var $groupCheckOption */
 /* @var $groupParticipantOption */
+/* @var $error */
 $this->title = 'Изменить приказ об образовательной деятельности № '. $model->order_number;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об образовательной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -21,7 +23,11 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <div class="order-training-update">
-
+    <?php
+        if ($error) {
+            echo HtmlBuilder::createInfoMessage('Невозможно отменить действие на учениках.');
+        }
+    ?>
     <?= AlertMessageWizard::showRedisConnectMessage() ?>
 
     <h3><?= Html::encode($this->title) ?></h3>

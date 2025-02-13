@@ -4,6 +4,7 @@ namespace frontend\models\search;
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\components\interfaces\SearchInterfaces;
+use common\helpers\StringFormatter;
 use frontend\models\search\abstractBase\RegulationSearch;
 use frontend\models\work\regulation\RegulationWork;
 use yii\data\ActiveDataProvider;
@@ -12,13 +13,47 @@ use yii\db\ActiveQuery;
 
 class SearchRegulation extends RegulationSearch implements SearchInterfaces
 {
-    public $numberBoard;    // Номер совета
+    public int $numberBoard;    // Номер совета
 
     public function rules()
     {
         return array_merge(parent::rules(), [
             [['numberBoard'], 'integer'],
         ]);
+    }
+
+    public function __construct(
+        string $startDateSearch = '',
+        string $finishDateSearch = '',
+        string $nameRegulation = '',
+        string $orderName = '',
+        int $status = -1,
+        int $numberBoard = -1
+    ) {
+        parent::__construct(
+            $startDateSearch,
+            $finishDateSearch,
+            $nameRegulation,
+            $orderName,
+            $status
+        );
+        $this->numberBoard = $numberBoard;
+    }
+
+    /**
+     * Определение параметров загрузки данных
+     *
+     * @param $params
+     * @return void
+     */
+    public function loadParams($params)
+    {
+        if (count($params) > 1) {
+            $params['SearchRegulation']['status'] = StringFormatter::stringAsInt($params['SearchRegulation']['status']);
+            $params['SearchRegulation']['numberBoard'] = StringFormatter::stringAsInt($params['SearchRegulation']['numberBoard']);
+        }
+
+        $this->load($params);
     }
 
     /**
@@ -29,7 +64,8 @@ class SearchRegulation extends RegulationSearch implements SearchInterfaces
      */
     public function search($params)
     {
-        $this->load($params);
+        $this->loadParams($params);
+
         $query = RegulationWork::find()
             ->joinWith([
                 'documentOrder' => function ($query) {
@@ -88,7 +124,7 @@ class SearchRegulation extends RegulationSearch implements SearchInterfaces
      */
     public function filterQueryParams(ActiveQuery $query)
     {
-        parent::filterAbstractQueryParams($query);
+        parent::filterAbstractQueryParams($query, $this->startDateSearch, $this->finishDateSearch, $this->nameRegulation, $this->orderName, $this->status);
 
         $this->filterNumberBoard($query);
     }
@@ -101,7 +137,9 @@ class SearchRegulation extends RegulationSearch implements SearchInterfaces
      */
     public function filterNumberBoard(ActiveQuery $query)
     {
-        $query->andFilterWhere(['=', 'ped_council_number', $this->numberBoard]);
+        if (!empty($this->numberBoard)) {
+            $query->andFilterWhere(['=', 'ped_council_number', $this->numberBoard]);
+        }
     }
 
 }

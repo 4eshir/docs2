@@ -133,8 +133,6 @@ class m241106_101447_change_people_to_stamp extends Migration
      */
     public function safeDown()
     {
-        echo "m241106_101447_change_people_to_stamp cannot be reverted.\n";
-
-        return false;
+        return true;
     }
 }

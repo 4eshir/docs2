@@ -10,11 +10,11 @@ use yii\db\ActiveQuery;
 
 class RegulationSearch extends Model
 {
-    public $startDateSearch;    // стартовая дата поиска положений
-    public $finishDateSearch;   // конечная дата поиска положений
-    public $nameRegulation;     // краткое или полное наименование положения
-    public $orderName;              // добавленный к положению приказ
-    public $status;             // статус положения
+    public string $startDateSearch;    // стартовая дата поиска положений
+    public string $finishDateSearch;   // конечная дата поиска положений
+    public string $nameRegulation;     // краткое или полное наименование положения
+    public string $orderName;          // добавленный к положению приказ
+    public int $status;                // статус положения
 
     public function rules()
     {
@@ -27,11 +27,11 @@ class RegulationSearch extends Model
     }
 
     public function __construct(
-        string $startDateSearch = null,
-        string $finishDateSearch = null,
-        string $nameRegulation = null,
-        string $orderName = null,
-        int $status = null
+        string $startDateSearch = '',
+        string $finishDateSearch = '',
+        string $nameRegulation = '',
+        string $orderName = '',
+        int $status = -1
     ) {
         parent::__construct();
         $this->startDateSearch = $startDateSearch;
@@ -50,7 +50,7 @@ class RegulationSearch extends Model
     /**
      * Сортировка атрибутов запроса
      *
-     * @param $dataProvider
+     * @param ActiveDataProvider $dataProvider
      * @return void
      */
     public function sortAttributes(ActiveDataProvider $dataProvider) {
@@ -79,26 +79,33 @@ class RegulationSearch extends Model
      * Вызов функций фильтров по параметрам запроса
      *
      * @param ActiveQuery $query
+     * @param string $startDateSearch
+     * @param string $finishDateSearch
+     * @param string $nameRegulation
+     * @param string $orderName
+     * @param int $status
      * @return void
      */
-    public function filterAbstractQueryParams(ActiveQuery $query) {
-        $this->filterDate($query);
-        $this->filterName($query);
-        $this->filterOrderName($query);
-        $this->filterStatus($query);
+    public function filterAbstractQueryParams(ActiveQuery $query, string $startDateSearch, string $finishDateSearch, string $nameRegulation, string $orderName, int $status) {
+        $this->filterDate($query, $startDateSearch, $finishDateSearch);
+        $this->filterName($query, $nameRegulation);
+        $this->filterOrderName($query, $orderName);
+        $this->filterStatus($query, $status);
     }
 
     /**
      * Фильтрация документов по диапазону дат
      *
      * @param ActiveQuery $query
+     * @param string $startDateSearch
+     * @param string $finishDateSearch
      * @return void
      */
-    private function filterDate(ActiveQuery $query) {
-        if ($this->startDateSearch != '' || $this->finishDateSearch != '')
+    private function filterDate(ActiveQuery $query, string $startDateSearch, string $finishDateSearch) {
+        if (!empty($startDateSearch) || !empty($finishDateSearch))
         {
-            $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
-            $dateTo =  $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
+            $dateFrom = $startDateSearch ? date('Y-m-d', strtotime($startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
+            $dateTo =  $finishDateSearch ? date('Y-m-d', strtotime($finishDateSearch)) : date('Y-m-d');
 
             $query->andWhere(['between', 'date', $dateFrom, $dateTo]);
         }
@@ -108,35 +115,45 @@ class RegulationSearch extends Model
      * Фильтрация положений по наименованию или крткому наименованию
      *
      * @param ActiveQuery $query
+     * @param string $nameRegulation
      * @return void
      */
-    private function filterName(ActiveQuery $query) {
-        $query->andFilterWhere(['or',
-            ['like', 'LOWER(name)', mb_strtolower($this->nameRegulation)],
-            ['like', 'LOWER(short_name)', mb_strtolower($this->nameRegulation)],
-        ]);
+    private function filterName(ActiveQuery $query, string $nameRegulation) {
+        if (!empty($nameRegulation)) {
+            $query->andFilterWhere(['or',
+                ['like', 'LOWER(name)', mb_strtolower($nameRegulation)],
+                ['like', 'LOWER(short_name)', mb_strtolower($nameRegulation)],
+            ]);
+        }
     }
 
     /**
      * Фильтрация положений по наименованию приказа
      *
      * @param ActiveQuery $query
+     * @param string $orderName
      * @return void
      */
-    private function filterOrderName(ActiveQuery $query) {
-        $query->andFilterWhere(['or',
-            ['like', 'LOWER(order_name)', mb_strtolower($this->orderName)],
-            ['like', "CONCAT(order_number, '/', order_postfix)", $this->orderName],
-        ]);
+    private function filterOrderName(ActiveQuery $query, string $orderName) {
+        if (!empty($orderName)) {
+            $query->andFilterWhere(['or',
+                ['like', 'LOWER(order_name)', mb_strtolower($orderName)],
+                ['like', "CONCAT(order_number, '/', order_postfix)", $orderName],
+            ]);
+        }
     }
 
     /**
      * Фильтрация статуса: актуально/утратило силу
      *
      * @param ActiveQuery $query
+     * @param int $status
      * @return void
      */
-    private function filterStatus(ActiveQuery $query) {
-        $query->andFilterWhere(['like', 'regulation.state', $this->status]);
+    private function filterStatus(ActiveQuery $query, int $status) {
+        if ($status !== RegulationWork::STATE_ACTIVE)
+        {
+            $query->andFilterWhere(['like', 'regulation.state', $status]);
+        }
     }
 }

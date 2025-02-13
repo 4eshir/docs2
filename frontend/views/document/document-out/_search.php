@@ -24,7 +24,7 @@ $searchFields = array_merge(
     SearchFieldHelper::textField('keyWords', 'Ключевые слова', 'Ключевые слова'),
     SearchFieldHelper::textField('correspondentName', 'Корреспондент', 'Корреспондент'),
     SearchFieldHelper::textField('executorName', 'Исполнитель/Кем подписан', 'Исполнитель/Кем подписан'),
-    SearchFieldHelper::dropdownField('sendMethodName', 'Способ получения', Yii::$app->sendMethods->getList(), 'Способ получения'),
+    SearchFieldHelper::dropdownField('sendMethod', 'Способ получения', Yii::$app->sendMethods->getList(), 'Способ получения'),
     SearchFieldHelper::dropdownField('status', 'Статус документа', Yii::$app->documentStatus->getListDocOut(), null, DocumentStatusDictionary::CURRENT)
 );
 
