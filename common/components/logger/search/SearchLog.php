@@ -2,6 +2,7 @@
 
 namespace common\components\logger\search;
 
+use common\models\work\LogWork;
 use common\repositories\log\LogRepository;
 use Yii;
 use yii\db\ActiveQuery;
@@ -20,6 +21,34 @@ class SearchLog implements SearchLogInterface
     public array $types;
     public string $partText;
 
+    public MethodSearchData $methodData;
+
+    private LogRepository $repository;
+
+    public function __construct(
+        MethodSearchData $methodData = null,
+        LogRepository $repository = null
+    )
+    {
+        if (is_null($methodData)) {
+            $methodData = new MethodSearchData();
+        }
+
+        if (is_null($methodData)) {
+            $repository = Yii::createObject(LogRepository::class);
+        }
+
+        /** @var MethodSearchData $methodData */
+        $this->methodData = $methodData;
+
+        /** @var LogRepository $repository */
+        $this->repository = $repository;
+    }
+
+    public function setMethodSearchData(MethodSearchData $data)
+    {
+        $this->methodData = $data;
+    }
 
     /**
      * @param int[] $levels
@@ -97,9 +126,14 @@ class SearchLog implements SearchLogInterface
         return $entity;
     }
 
+    /**
+     * Составляет ActiveQuery по основным полям таблицы
+     *
+     * @return ActiveQuery
+     */
     public function createQuery(): ActiveQuery
     {
-        $baseQuery = (Yii::createObject(LogRepository::class))->query();
+        $baseQuery = $this->repository->query();
         if (count($this->levels) > 0) {
             $baseQuery = $baseQuery->andWhere(['IN', 'level', $this->levels]);
         }
@@ -120,5 +154,34 @@ class SearchLog implements SearchLogInterface
         }
 
         return $baseQuery;
+    }
+
+    /**
+     * Организует поиск по add_data (json-строка)
+     *
+     * @param LogWork[] $logs
+     */
+    public function findByAddData(array $logs)
+    {
+        $result = [];
+        foreach ($logs as $log) {
+            if ($this->haveAddData($log->add_data)) {
+                $result[] = $log;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Метод проверки add_data по всем полям имплементирующим SearchDataInterface
+     *
+     * @param string $addData
+     * @return bool
+     */
+    private function haveAddData(string $addData)
+    {
+        return
+            $this->methodData->haveData($addData);
     }
 }

@@ -1,11 +1,12 @@
 <?php
 
+namespace common\components\logger\method;
 
 use common\components\logger\base\BaseLog;
 use common\components\logger\base\LogInterface;
 use common\components\logger\search\SearchLog;
 use common\components\logger\search\SearchLogInterface;
-use common\components\logger\search\SearchMethodLog;
+use common\components\logger\search\MethodSearchData;
 use common\models\work\LogWork;
 use common\repositories\log\LogRepository;
 

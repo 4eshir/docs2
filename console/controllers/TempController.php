@@ -2,6 +2,8 @@
 
 namespace console\controllers;
 
+use common\components\logger\base\LogInterface;
+use common\components\logger\LogFactory;
 use Yii;
 use yii\console\Controller;
 
@@ -9,7 +11,21 @@ class TempController extends Controller
 {
     public function actionCheck()
     {
-        var_dump(Yii::$app->basePath . '/upload/files/document-in/docs/Ред5_Вх.20240730_233_РШТ_.docx');
-        var_dump(file_exists(Yii::$app->basePath . '/upload/files/document-in/docs/Ред5_Вх.20240730_233_РШТ_.docx'));
+        LogFactory::createBaseLog(
+            '2025-02-13',
+            LogInterface::LVL_INFO,
+            1,
+            'TEST TEST'
+        );
+
+        LogFactory::createMethodLog(
+            '2025-02-13',
+            LogInterface::LVL_INFO,
+            1,
+            'METHOD METHOD',
+            'document-in-controller',
+            'index',
+            LogInterface::TYPE_METHOD
+        );
     }
 }
