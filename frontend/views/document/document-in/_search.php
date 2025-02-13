@@ -24,7 +24,7 @@ use yii\widgets\ActiveForm;
         SearchFieldHelper::textField('keyWords', 'Ключевые слова', 'Ключевые слова'),
         SearchFieldHelper::textField('correspondentName', 'Корреспондент', 'Корреспондент'),
         SearchFieldHelper::textField('executorName', 'Ответственный', 'Ответственный'),
-        SearchFieldHelper::dropdownField('sendMethodName', 'Способ получения', Yii::$app->sendMethods->getList(), 'Способ получения'),
+        SearchFieldHelper::dropdownField('sendMethod', 'Способ получения', Yii::$app->sendMethods->getList(), 'Способ получения'),
         SearchFieldHelper::dropdownField('status', 'Статус документа', Yii::$app->documentStatus->getListDocIn(), null, DocumentStatusDictionary::CURRENT)
     );
 

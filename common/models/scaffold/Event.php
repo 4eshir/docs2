@@ -165,4 +165,9 @@ class Event extends \yii\db\ActiveRecord
     {
         return $this->hasOne(DocumentOrder::class, ['id' => 'order_id']);
     }
+
+    public function getScopes()
+    {
+        return $this->hasMany(EventScope::class, ['event_id' => 'id']);
+    }
 }

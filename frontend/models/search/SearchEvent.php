@@ -4,6 +4,7 @@ namespace frontend\models\search;
 
 use common\components\interfaces\SearchInterfaces;
 use common\helpers\DateFormatter;
+use common\helpers\StringFormatter;
 use frontend\models\work\event\EventWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -20,16 +21,19 @@ class SearchEvent extends Model implements SearchInterfaces
     public int $eventWay;               // формат проведения
     public int $eventLevel;             // уровень мероприятия
     public int $eventType;              // тип мероприятия
-    
+    public int $eventForm;              // форма мероприятия
+    public int $eventScope;              // сфера участия
+    public string $responsible;          // ответственный за мероприятие
+    public int $branch;                  // отдел
 
 
     public function rules()
     {
         return [
-            [['id', 'eventWay', 'eventLevel', 'eventType'], 'integer'],
-            [['fullNumber'], 'string'],
+            [['id', 'eventWay', 'eventLevel', 'eventType', 'eventForm', 'eventScope', 'branch'], 'integer'],
+            [['eventName', 'responsible'], 'string'],
             [['startDateSearch', 'finishDateSearch'], 'date', 'format' => 'dd.MM.yyyy'],
-            [['datePeriod', 'startDateSearch', 'finishDateSearch', 'eventName', 'eventWay', 'eventLevel', 'eventType'], 'safe'],
+            [['datePeriod', 'startDateSearch', 'finishDateSearch', 'eventName', 'eventWay', 'eventLevel', 'eventType', 'eventForm'], 'safe'],
         ];
     }
 
@@ -41,28 +45,52 @@ class SearchEvent extends Model implements SearchInterfaces
     public function __construct(
         string $startDateSearch = '',
         string $finishDateSearch = '',
-        int $eventLevel = -1,
         string $eventName = '',
+        int $eventLevel = -1,
         int $eventType = -1,
         int $eventWay = -1,
+        int $eventForm = -1,
+        int $eventScope = -1,
+        string $responsible = '',
+        int $branch = -1,
         $config = []
     ) {
         parent::__construct($config);
         $this->startDateSearch = $startDateSearch;
         $this->finishDateSearch = $finishDateSearch;
-        $this->eventLevel = $eventLevel;
         $this->eventName = $eventName;
-        $this->eventWay = $eventWay;
+        $this->eventLevel = $eventLevel;
         $this->eventType = $eventType;
+        $this->eventWay = $eventWay;
+        $this->eventForm = $eventForm;
+        $this->eventScope = $eventScope;
+        $this->responsible = $responsible;
+        $this->branch = $branch;
+    }
+
+    /**
+     * Определение параметров загрузки данных
+     *
+     * @param $params
+     * @return void
+     */
+    public function loadParams($params)
+    {
+        if (count($params) > 1) {
+            $params['SearchEvent']['eventWay'] = StringFormatter::stringAsInt($params['SearchEvent']['eventWay']);
+            $params['SearchEvent']['eventType'] = StringFormatter::stringAsInt($params['SearchEvent']['eventType']);
+            $params['SearchEvent']['eventLevel'] = StringFormatter::stringAsInt($params['SearchEvent']['eventLevel']);
+            $params['SearchEvent']['eventForm'] = StringFormatter::stringAsInt($params['SearchEvent']['eventForm']);
+            $params['SearchEvent']['eventScope'] = StringFormatter::stringAsInt($params['SearchEvent']['eventScope']);
+            $params['SearchEvent']['branch'] = StringFormatter::stringAsInt($params['SearchEvent']['branch']);
+        }
+
+        $this->load($params);
     }
 
     public function search($params)
     {
-        $params['SearchEvent']['eventWay'] = empty($params['SearchEvent']['eventWay']) ? -1 : (int) $params['SearchEvent']['eventWay'];
-        $params['SearchEvent']['eventType'] = empty($params['SearchEvent']['eventType']) ? -1 : (int) $params['SearchEvent']['eventType'];
-        $params['SearchEvent']['eventLevel'] = empty($params['SearchEvent']['eventLevel']) ? -1 : (int) $params['SearchEvent']['eventLevel'];
-
-        $this->load($params);
+        $this->loadParams($params);
 
         $query = EventWork::find()
                 ->joinWith([
@@ -72,6 +100,9 @@ class SearchEvent extends Model implements SearchInterfaces
                 ])
                 ->joinWith([
                     'regulation'
+                ])
+                ->joinWith([
+                    'scopes'
                 ]);
 
         $dataProvider = new ActiveDataProvider([
@@ -133,6 +164,9 @@ class SearchEvent extends Model implements SearchInterfaces
         $this->filterWay($query);
         $this->filterType($query);
         $this->filterLevel($query);
+        $this->filterForm($query);
+        $this->filterScope($query);
+
     }
 
     /**
@@ -173,7 +207,7 @@ class SearchEvent extends Model implements SearchInterfaces
      * @return void
      */
     public function filterWay(ActiveQuery $query) {
-        if ($this->eventWay !== -1) {
+        if (!empty($this->eventWay) && $this->eventWay !== -1) {
             $query->andFilterWhere(['event_way' => $this->eventWay]);
         }
     }
@@ -185,7 +219,7 @@ class SearchEvent extends Model implements SearchInterfaces
      * @return void
      */
     public function filterType(ActiveQuery $query) {
-        if ($this->eventType !== -1) {
+        if (!empty($this->eventType) && $this->eventType !== -1) {
             $query->andFilterWhere(['event_type' => $this->eventType]);
         }
     }
@@ -197,8 +231,32 @@ class SearchEvent extends Model implements SearchInterfaces
      * @return void
      */
     public function filterLevel(ActiveQuery $query) {
-        if ($this->eventLevel !== -1) {
+        if (!empty($this->eventLevel) && $this->eventLevel !== -1) {
             $query->andFilterWhere(['event_level' => $this->eventLevel]);
+        }
+    }
+
+    /**
+     * Фильтрация мероприятий по форме мероприятия
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterForm(ActiveQuery $query) {
+        if (!empty($this->eventForm) && $this->eventForm !== -1) {
+            $query->andFilterWhere(['event_form' => $this->eventForm]);
+        }
+    }
+
+    /**
+     * Фильтрация сфере участия
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterScope(ActiveQuery $query) {
+        if (!empty($this->eventScope) && $this->eventScope !== -1) {
+            $query->andFilterWhere(['participation_scope' => $this->eventScope]);
         }
     }
 }

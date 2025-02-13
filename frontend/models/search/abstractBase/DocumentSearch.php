@@ -11,7 +11,7 @@ class DocumentSearch extends Model
 {
     public string $fullNumber;         // составной номер документа (может содержать символ '/' )
     public string $companyName;        // организация - отправитель или получатель письма
-    public int $sendMethodName;     // способ отправки или получения письма
+    public int $sendMethod;     // способ отправки или получения письма
     public string $documentTheme;      // тема документа
     public string $startDateSearch;    // стартовая дата поиска документов
     public string $finishDateSearch;   // конечная дата поиска документов
@@ -27,14 +27,14 @@ class DocumentSearch extends Model
             [['id', 'positionId', 'companyId', 'signedId', 'getId', 'creatorId'], 'integer'],
             [['fullNumber', 'keyWords'], 'string'],
             [['startDateSearch', 'finishDateSearch'], 'date', 'format' => 'dd.MM.yyyy'],
-            [['documentTheme', 'companyName', 'sendMethodName', 'executorName', 'status', 'correspondentName', 'number'], 'safe'],
+            [['documentTheme', 'companyName', 'sendMethod', 'executorName', 'status', 'correspondentName', 'number'], 'safe'],
         ];
     }
 
     public function __construct(
         string $fullNumber = '',
         string $companyName = '',
-        int $sendMethodName = -1,
+        int $sendMethod = -1,
         string $documentTheme = '',
         string $startDateSearch = '',
         string $finishDateSearch = '',
@@ -47,7 +47,7 @@ class DocumentSearch extends Model
         parent::__construct();
         $this->fullNumber = $fullNumber;
         $this->companyName = $companyName;
-        $this->sendMethodName = $sendMethodName;
+        $this->sendMethod = $sendMethod;
         $this->documentTheme = $documentTheme;
         $this->startDateSearch = $startDateSearch;
         $this->finishDateSearch = $finishDateSearch;
@@ -86,7 +86,7 @@ class DocumentSearch extends Model
             'desc' => ['document_theme' => SORT_DESC],
         ];
 
-        $dataProvider->sort->attributes['sendMethodName'] = [
+        $dataProvider->sort->attributes['sendMethod'] = [
             'asc' => ['send_method' => SORT_ASC],
             'desc' => ['send_method' => SORT_DESC],
         ];
@@ -98,14 +98,14 @@ class DocumentSearch extends Model
      * @param ActiveQuery $query
      * @param string $documentTheme
      * @param string $keyWords
-     * @param int $sendMethodName
+     * @param int $sendMethod
      * @param string $correspondentName
      * @return void
      */
-    public function filterAbstractQueryParams(ActiveQuery $query, string $documentTheme, string $keyWords, int $sendMethodName, string $correspondentName) {
+    public function filterAbstractQueryParams(ActiveQuery $query, string $documentTheme, string $keyWords, int $sendMethod, string $correspondentName) {
         $this->filterTheme($query, $documentTheme);
         $this->filterKeyWords($query, $keyWords);
-        $this->filterSendMethodName($query, $sendMethodName);
+        $this->filterSendMethod($query, $sendMethod);
         $this->filterCorrespondentName($query, $correspondentName);
     }
 
@@ -139,12 +139,12 @@ class DocumentSearch extends Model
      * Фильтрует по методу получения письма
      *
      * @param ActiveQuery $query
-     * @param int $sendMethodName
+     * @param int $sendMethod
      * @return void
      */
-    private function filterSendMethodName(ActiveQuery $query, int $sendMethodName) {
-        if ($sendMethodName !== -1) {
-            $query->andFilterWhere(['send_method' => $sendMethodName]);
+    private function filterSendMethod(ActiveQuery $query, int $sendMethod) {
+        if (!empty($sendMethod) && $sendMethod !== -1) {
+            $query->andFilterWhere(['send_method' => $sendMethod]);
         }
     }
 

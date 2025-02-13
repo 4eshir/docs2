@@ -4,6 +4,7 @@ namespace frontend\models\search;
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\components\interfaces\SearchInterfaces;
+use common\helpers\StringFormatter;
 use frontend\models\search\abstractBase\RegulationSearch;
 use frontend\models\work\regulation\RegulationWork;
 use yii\data\ActiveDataProvider;
@@ -21,6 +22,40 @@ class SearchRegulation extends RegulationSearch implements SearchInterfaces
         ]);
     }
 
+    public function __construct(
+        string $startDateSearch = '',
+        string $finishDateSearch = '',
+        string $nameRegulation = '',
+        string $orderName = '',
+        int $status = -1,
+        int $numberBoard = -1
+    ) {
+        parent::__construct(
+            $startDateSearch,
+            $finishDateSearch,
+            $nameRegulation,
+            $orderName,
+            $status
+        );
+        $this->numberBoard = $numberBoard;
+    }
+
+    /**
+     * Определение параметров загрузки данных
+     *
+     * @param $params
+     * @return void
+     */
+    public function loadParams($params)
+    {
+        if (count($params) > 1) {
+            $params['SearchRegulation']['status'] = StringFormatter::stringAsInt($params['SearchRegulation']['status']);
+            $params['SearchRegulation']['numberBoard'] = StringFormatter::stringAsInt($params['SearchRegulation']['numberBoard']);
+        }
+
+        $this->load($params);
+    }
+
     /**
      * Создает экземпляр DataProvider с учетом поискового запроса (фильтров или сортировки)
      *
@@ -29,7 +64,8 @@ class SearchRegulation extends RegulationSearch implements SearchInterfaces
      */
     public function search($params)
     {
-        $this->load($params);
+        $this->loadParams($params);
+
         $query = RegulationWork::find()
             ->joinWith([
                 'documentOrder' => function ($query) {

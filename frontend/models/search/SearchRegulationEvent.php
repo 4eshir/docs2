@@ -4,6 +4,7 @@ namespace frontend\models\search;
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\components\interfaces\SearchInterfaces;
+use common\helpers\StringFormatter;
 use frontend\models\search\abstractBase\RegulationSearch;
 use frontend\models\work\regulation\RegulationWork;
 use yii\data\ActiveDataProvider;
@@ -15,6 +16,30 @@ class SearchRegulationEvent extends RegulationSearch implements SearchInterfaces
     public function rules()
     {
         return parent::rules();
+    }
+
+    public function __construct(string $startDateSearch = '',
+                                string $finishDateSearch = '',
+                                string $nameRegulation = '',
+                                string $orderName = '',
+                                int $status = -1)
+    {
+        parent::__construct($startDateSearch, $finishDateSearch, $nameRegulation, $orderName, $status);
+    }
+
+    /**
+     * Определение параметров загрузки данных
+     *
+     * @param $params
+     * @return void
+     */
+    public function loadParams($params)
+    {
+        if (count($params) > 1) {
+            $params['SearchRegulation']['status'] = StringFormatter::stringAsInt($params['SearchRegulation']['status']);
+        }
+
+        $this->load($params);
     }
 
     /**

@@ -29,7 +29,7 @@ class StringFormatter
      */
     public static function stringAsInt($variable)
     {
-        return empty($variable) ? -1 : (int) $variable;
+        return $variable === "" ? -1 : (int) $variable;
     }
 
     public static function stringAsLink($name, $url)

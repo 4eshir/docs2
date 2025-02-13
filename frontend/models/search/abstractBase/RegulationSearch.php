@@ -13,8 +13,8 @@ class RegulationSearch extends Model
     public string $startDateSearch;    // стартовая дата поиска положений
     public string $finishDateSearch;   // конечная дата поиска положений
     public string $nameRegulation;     // краткое или полное наименование положения
-    public string $orderName;              // добавленный к положению приказ
-    public int $status;             // статус положения
+    public string $orderName;          // добавленный к положению приказ
+    public int $status;                // статус положения
 
     public function rules()
     {

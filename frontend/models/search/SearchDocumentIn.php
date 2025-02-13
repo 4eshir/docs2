@@ -5,14 +5,12 @@ namespace frontend\models\search;
 use common\components\dictionaries\base\DocumentStatusDictionary;
 use common\components\interfaces\SearchInterfaces;
 use common\helpers\DateFormatter;
+use common\helpers\StringFormatter;
 use frontend\models\search\abstractBase\DocumentSearch;
 use frontend\models\work\document_in_out\DocumentInWork;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 
-/**
- * SearchDocumentIn represents the model behind the search form of `app\models\common\DocumentIn`.
- */
 class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
 {
     public string $localDate;              // дата поступления документа (используется для сортировки)
@@ -28,6 +26,54 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
         ]);
     }
 
+    public function __construct(
+        string $fullNumber = '',
+        string $companyName = '',
+        int $sendMethod = -1,
+        string $documentTheme = '',
+        string $startDateSearch = '',
+        string $finishDateSearch = '',
+        string $executorName = '',
+        int $status = -1,
+        string $keyWords = '',
+        string $correspondentName = '',
+        string $number = '',
+        string $localDate = '',
+        string $realDate = ''
+    ) {
+        parent::__construct(
+            $fullNumber,
+            $companyName,
+            $sendMethod,
+            $documentTheme,
+            $startDateSearch,
+            $finishDateSearch,
+            $executorName,
+            $status,
+            $keyWords,
+            $correspondentName,
+            $number
+        );
+        $this->localDate = $localDate;
+        $this->realDate = $realDate;
+    }
+
+    /**
+     * Определение параметров загрузки данных
+     *
+     * @param $params
+     * @return void
+     */
+    public function loadParams($params)
+    {
+        if (count($params) > 1) {
+            $params['SearchDocumentIn']['sendMethod'] = StringFormatter::stringAsInt($params['SearchDocumentIn']['sendMethod']);
+            $params['SearchDocumentIn']['status'] = StringFormatter::stringAsInt($params['SearchDocumentIn']['status']);
+        }
+
+        $this->load($params);
+    }
+
     /**
      * Создает экземпляр DataProvider с учетом поискового запроса (фильтров или сортировки)
      *
@@ -36,7 +82,8 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      */
     public function search($params)
     {
-        $this->load($params);
+        $this->loadParams($params);
+
         $query = DocumentInWork::find()
             ->joinWith([
                 'company',
@@ -105,7 +152,7 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
         $this->filterDate($query);
         $this->filterNumber($query);
         $this->filterExecutorName($query);
-        $this->filterAbstractQueryParams($query, $this->documentTheme, $this->keyWords, $this->sendMethodName, $this->correspondentName);
+        $this->filterAbstractQueryParams($query, $this->documentTheme, $this->keyWords, $this->sendMethod, $this->correspondentName);
     }
 
 
@@ -116,7 +163,7 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterStatus(ActiveQuery $query) {
-        if ($this->status != -1) {
+        if (!empty($this->status) && $this->status != -1) {
             $statusConditions = [
                 DocumentStatusDictionary::CURRENT => ['>=', 'local_date', date('Y') . '-01-01'],
                 DocumentStatusDictionary::ARCHIVE => ['<=', 'local_date', date('Y-m-d')],

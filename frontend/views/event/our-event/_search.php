@@ -22,10 +22,12 @@ use yii\widgets\ActiveForm;
     $searchFields = array_merge(
         SearchFieldHelper::dateField('startDateSearch', 'Дата мероприятия с', 'Дата мероприятия с'),
         SearchFieldHelper::dateField('finishDateSearch', 'Дата мероприятия по', 'Дата мероприятия по'),
-        SearchFieldHelper::textField('eventName' , 'Наименование мероприятия', 'Наименование мероприятия'),
-        SearchFieldHelper::dropdownField('eventWay' , 'Формат проведения', Yii::$app->eventWay->getList(), 'Формат проведения'),
-        SearchFieldHelper::dropdownField('eventType' , 'Тип мероприятия', Yii::$app->eventType->getList(), 'Тип мероприятия'),
-        SearchFieldHelper::dropdownField('eventLevel' , 'Уровень мероприятия', Yii::$app->eventLevel->getList(), 'Уровень мероприятия'),
+        SearchFieldHelper::textField('eventName', 'Наименование мероприятия', 'Наименование мероприятия'),
+        SearchFieldHelper::dropdownField('eventWay', 'Формат проведения', Yii::$app->eventWay->getList(), 'Формат проведения'),
+        SearchFieldHelper::dropdownField('eventType', 'Тип мероприятия', Yii::$app->eventType->getList(), 'Тип мероприятия'),
+        SearchFieldHelper::dropdownField('eventLevel', 'Уровень мероприятия', Yii::$app->eventLevel->getList(), 'Уровень мероприятия'),
+        SearchFieldHelper::dropdownField('eventForm', 'Форма мероприятия', Yii::$app->eventForm->getList(), 'Форма мероприятия'),
+        SearchFieldHelper::dropdownField('eventScope', 'Сферы участия', Yii::$app->participationScope->getList(), 'Сферы участия'),
     );
 
     echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::OUR_EVENT_INDEX); ?>
