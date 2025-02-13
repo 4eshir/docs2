@@ -89,7 +89,7 @@ AppAsset::register($this);
         'options' => ['class' => 'navbar-nav me-auto mb-2 mb-md-0'],
         'items' => $menuItems,
     ]);
-    /*if (Yii::$app->rac->isGuest()) {
+    /*if (Yii::$app->rubac->isGuest()) {
         echo Html::tag('div',Html::a('Войти',['/auth/login'],['class' => ['btn btn-link login text-decoration-none']]),['class' => ['d-flex']]);
     } else {
         echo Html::beginForm(['/auth/logout'], 'post', ['class' => 'd-flex'])

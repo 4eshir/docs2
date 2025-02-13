@@ -2,6 +2,7 @@
 
 namespace common\helpers;
 
+use http\Exception\InvalidArgumentException;
 use PhpOffice\PhpSpreadsheet\Reader\Xls\MD5;
 use yii\helpers\Html;
 
@@ -9,6 +10,14 @@ class StringFormatter
 {
     const FORMAT_RAW = 1;
     const FORMAT_LINK = 2;
+
+    const STYLE_CAMEL = 1; // camelCase
+    const STYLE_PASCAL = 2; // PascalCase
+    const STYLE_SNAKE = 3; // snake_case
+    const STYLE_SCREAMING_SNAKE = 4; // SCREAMING_SNAKE_CASE
+    const STYLE_KEBAB = 5; // kebab-case
+    const STYLE_TRAIN = 6; // Train-Case
+    const STYLE_FLAT = 7; // flatcase
 
     public static function getFormats()
     {
@@ -69,5 +78,60 @@ class StringFormatter
     public static function createHash(string $str)
     {
         return MD5($str);
+    }
+
+    public static function formatStyle(string $str, int $from, int $to = self::STYLE_FLAT)
+    {
+        if ($from == $to) {
+            return $str;
+        }
+
+        if ($from == self::STYLE_FLAT) {
+            throw new InvalidArgumentException('Невозможно преобразовать строку из FlatCase');
+        }
+
+        // Разбиваем строку на слова в зависимости от исходного стиля
+        switch ($from) {
+            case self::STYLE_CAMEL:
+                $words = preg_split('/(?=[A-Z])/', lcfirst($str));
+                break;
+            case self::STYLE_PASCAL:
+                $words = preg_split('/(?=[A-Z])/', $str);
+                break;
+            case self::STYLE_SNAKE:
+                $words = explode('_', $str);
+                break;
+            case self::STYLE_SCREAMING_SNAKE:
+                $words = explode('_', strtoupper($str));
+                break;
+            case self::STYLE_KEBAB:
+                $words = explode('-', $str);
+                break;
+            case self::STYLE_TRAIN:
+                $words = explode('-', ucwords(strtolower($str), '-'));
+                break;
+            default:
+                $words = [$str];
+                break;
+        }
+
+        // Собираем строку в новом стиле
+        switch ($to) {
+            case self::STYLE_CAMEL:
+                return lcfirst(implode('', array_map('ucfirst', $words)));
+            case self::STYLE_PASCAL:
+                return implode('', array_map('ucfirst', $words));
+            case self::STYLE_SNAKE:
+                return implode('_', array_map('strtolower', $words));
+            case self::STYLE_SCREAMING_SNAKE:
+                return strtoupper(implode('_', array_map('strtoupper', $words)));
+            case self::STYLE_KEBAB:
+                return implode('-', array_map('strtolower', $words));
+            case self::STYLE_TRAIN:
+                return implode('-', array_map('ucfirst', $words));
+            case self::STYLE_FLAT:
+            default:
+                return strtolower(implode('', $words));
+        }
     }
 }

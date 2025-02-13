@@ -3,7 +3,7 @@
 namespace console\controllers;
 
 use common\components\access\AuthDataCache;
-use common\repositories\rac\UserPermissionFunctionRepository;
+use common\repositories\rubac\UserPermissionFunctionRepository;
 use Exception;
 use yii\console\Controller;
 

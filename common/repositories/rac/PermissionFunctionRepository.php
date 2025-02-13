@@ -1,11 +1,11 @@
 <?php
 
-namespace common\repositories\rac;
+namespace common\repositories\rubac;
 
 use DomainException;
-use frontend\models\work\rac\PermissionFunctionWork;
-use frontend\models\work\rac\PermissionTemplateFunctionWork;
-use frontend\models\work\rac\PermissionTemplateWork;
+use frontend\models\work\rubac\PermissionFunctionWork;
+use frontend\models\work\rubac\PermissionTemplateFunctionWork;
+use frontend\models\work\rubac\PermissionTemplateWork;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 

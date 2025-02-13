@@ -1,7 +1,7 @@
 <?php
 
+use common\models\work\UserWork;
 use frontend\forms\ChangePasswordForm;
-use frontend\models\work\general\UserWork;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 

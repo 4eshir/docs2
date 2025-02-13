@@ -265,7 +265,7 @@ class DocumentOutController extends Controller
         echo $response;
         exit;
     }
-
+    
     public function beforeAction($action)
     {
         if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
@@ -274,6 +274,6 @@ class DocumentOutController extends Controller
             return false;
         }
 
-        return parent::beforeAction($action); 
+        return parent::beforeAction($action);
     }
 }

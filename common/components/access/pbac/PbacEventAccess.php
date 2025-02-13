@@ -5,8 +5,6 @@ namespace common\components\access\pbac;
 use common\components\access\pbac\data\PbacEventData;
 use common\repositories\act_participant\ActParticipantBranchRepository;
 use common\repositories\event\ForeignEventRepository;
-use common\repositories\rac\UserPermissionFunctionRepository;
-use frontend\models\work\rac\PermissionFunctionWork;
 use Yii;
 
 class PbacEventAccess implements PbacComponentInterface

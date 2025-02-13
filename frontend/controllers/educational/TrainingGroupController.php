@@ -2,48 +2,32 @@
 
 namespace frontend\controllers\educational;
 
-use common\components\access\pbac\data\PbacGroupData;
-use common\components\access\pbac\PbacGroupAccess;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\common\RequestHelper;
-use common\helpers\html\HtmlBuilder;
 use common\Model;
-use common\models\scaffold\TrainingGroup;
-use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
-use common\repositories\event\ForeignEventRepository;
 use common\repositories\general\FilesRepository;
-use common\repositories\general\UserRepository;
 use common\services\general\files\FileService;
 use DomainException;
-use frontend\events\educational\training_group\AddTeachersToGroupEvent;
 use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
-use frontend\forms\training_group\TrainingGroupScheduleForm;
 use frontend\models\search\SearchTrainingGroup;
-use frontend\models\work\educational\journal\VisitLesson;
-use frontend\models\work\educational\journal\VisitWork;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
-use frontend\models\work\general\PeopleWork;
-use frontend\models\work\general\UserWork;
 use frontend\models\work\ProjectThemeWork;
 use frontend\services\educational\JournalService;
 use frontend\services\educational\TrainingGroupService;
-use frontend\services\educational\VisitService;
 use Yii;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
 
 class TrainingGroupController extends DocumentController
 {
@@ -388,5 +372,16 @@ class TrainingGroupController extends DocumentController
     public function actionArchive()
     {
 
+    }
+
+    public function beforeAction($action)
+    {
+        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
+            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
+            $this->redirect(Yii::$app->request->referrer);
+            return false;
+        }
+
+        return parent::beforeAction($action);
     }
 }

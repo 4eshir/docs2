@@ -1,8 +1,9 @@
 <?php
 
-namespace frontend\models\work\general;
+namespace common\models\work;
 
 use common\models\scaffold\User;
+use frontend\models\work\general\PeopleWork;
 use Yii;
 use yii\web\IdentityInterface;
 
@@ -79,5 +80,15 @@ class UserWork extends User implements IdentityInterface
     public function setPassword(string $passwordHash)
     {
         $this->password_hash = $passwordHash;
+    }
+
+    public function beforeSave($insert)
+    {
+        if ($this->creator_id == null) {
+            $this->creator_id = Yii::$app->user->identity->getId();
+        }
+        $this->last_edit_id = Yii::$app->user->identity->getId();
+
+        return parent::beforeSave($insert);
     }
 }

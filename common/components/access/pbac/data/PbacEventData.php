@@ -2,7 +2,7 @@
 
 namespace common\components\access\pbac\data;
 
-use frontend\models\work\general\UserWork;
+use common\models\work\UserWork;
 
 class PbacEventData extends PbacData
 {

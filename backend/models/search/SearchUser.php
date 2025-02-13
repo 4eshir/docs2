@@ -1,8 +1,8 @@
 <?php
 
-namespace frontend\models\search;
+namespace backend\models\search;
 
-use frontend\models\work\general\UserWork;
+use common\models\work\UserWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
@@ -56,7 +56,7 @@ class SearchUser extends UserWork
             return $dataProvider;
         }
 
-        /*// grid filtering conditions
+        // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
             'status' => $this->status,
@@ -64,14 +64,14 @@ class SearchUser extends UserWork
             //'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'secondname', $this->secondname])
+        $query->andFilterWhere(['like', 'surname', $this->surname])
             ->andFilterWhere(['like', 'firstname', $this->firstname])
             ->andFilterWhere(['like', 'patronymic', $this->patronymic])
             ->andFilterWhere(['like', 'username', $this->username])
             ->andFilterWhere(['like', 'auth_key', $this->auth_key])
             ->andFilterWhere(['like', 'password_hash', $this->password_hash])
             ->andFilterWhere(['like', 'password_reset_token', $this->password_reset_token])
-            ->andFilterWhere(['like', 'email', $this->email]);*/
+            ->andFilterWhere(['like', 'email', $this->email]);
 
         return $dataProvider;
     }

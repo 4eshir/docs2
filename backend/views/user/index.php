@@ -1,14 +1,15 @@
 <?php
 
-use yii\grid\GridView;
+use backend\models\search\SearchUser;
 use yii\helpers\Html;
+use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel SearchUser */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = 'Пользователи';
-$this->params['breadcrumbs'][] = ['label' => 'Список пользователей / Роли', 'url' => ['dictionaries/users']];
+$this->params['breadcrumbs'][] = ['label' => 'Список пользователей', 'url' => ['dictionaries/users']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="user-index">
@@ -18,8 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a('Добавить пользователя', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -31,12 +30,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'firstname',
             'patronymic',
             'username',
-            //'auth_key',
-            //'password_hash',
-            //'password_reset_token',
-            //'status',
-            //'created_at',
-            //'updated_at',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

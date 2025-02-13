@@ -1,9 +1,9 @@
 <?php
 
 /* @var $this yii\web\View */
-/* @var $model UserWork */
+/* @var $model \common\models\work\UserWork */
 
-use frontend\models\work\general\UserWork;
+use common\models\work\UserWork;
 use yii\helpers\Url;
 
 $this->title = $model->getFullName();

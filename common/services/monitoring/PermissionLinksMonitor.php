@@ -2,9 +2,10 @@
 
 namespace common\services\monitoring;
 
-use common\repositories\rac\PermissionFunctionRepository;
+use common\helpers\StringFormatter;
+use common\repositories\rubac\PermissionFunctionRepository;
 use common\services\file\ControllerParser;
-use frontend\models\work\rac\PermissionFunctionWork;
+use frontend\models\work\rubac\PermissionFunctionWork;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -85,6 +86,12 @@ class PermissionLinksMonitor
         $missingControllers = [];
         $missingActions = [];
         foreach ($controllersProject as $name => $actions) {
+            $actions = ArrayHelper::map(
+                $actions,
+                null,
+                function ($value) {
+                    return StringFormatter::formatStyle($value, StringFormatter::STYLE_CAMEL, StringFormatter::STYLE_KEBAB);
+                });
             // проверяем, упоминается ли данный контроллер хотя бы в одном правиле
             if (!in_array($name, $controllersConfig)) {
                 $missingControllers[] = $name;

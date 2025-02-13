@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\models\work\rac;
+namespace frontend\models\work\rubac;
 
 use common\models\scaffold\PermissionTemplateFunction;
 

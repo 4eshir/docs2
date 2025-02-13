@@ -3,13 +3,13 @@
 namespace console\controllers;
 
 use common\repositories\dictionaries\CompanyRepository;
-use common\repositories\rac\PermissionFunctionRepository;
-use common\repositories\rac\PermissionTemplateFunctionRepository;
-use common\repositories\rac\PermissionTemplateRepository;
-use frontend\models\work\rac\PermissionFunctionWork;
-use frontend\models\work\rac\PermissionTemplateFunctionWork;
-use frontend\models\work\rac\PermissionTemplateWork;
-use frontend\models\work\rac\UserPermissionFunctionWork;
+use common\repositories\rubac\PermissionFunctionRepository;
+use common\repositories\rubac\PermissionTemplateFunctionRepository;
+use common\repositories\rubac\PermissionTemplateRepository;
+use frontend\models\work\rubac\PermissionFunctionWork;
+use frontend\models\work\rubac\PermissionTemplateFunctionWork;
+use frontend\models\work\rubac\PermissionTemplateWork;
+use frontend\models\work\rubac\UserPermissionFunctionWork;
 use Yii;
 use yii\console\Controller;
 
@@ -99,42 +99,44 @@ class FillController extends Controller
         $fIds[13] = $this->functionRepository->save(PermissionFunctionWork::fill('Прощение ошибок в основной деятельности', 'forgive_base_errors', 13));
         $fIds[14] = $this->functionRepository->save(PermissionFunctionWork::fill('Удаление участников деятельности', 'delete_participants', 14));
         $fIds[15] = $this->functionRepository->save(PermissionFunctionWork::fill('Слияние участников деятельности', 'merge_participants', 15));
-        $fIds[17] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр образовательных программ', 'view_training_programs', 17));
-        $fIds[18] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование образовательных программ', 'edit_training_programs', 18));
-        $fIds[19] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр приказов по образовательной деятельности', 'view_study_orders', 19));
-        $fIds[20] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование приказов по образовательной деятельности', 'edit_study_orders', 20));
-        $fIds[21] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр приказов по основной деятельности', 'view_base_orders', 21));
-        $fIds[22] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование приказов по основной деятельности', 'edit_base_orders', 22));
-        $fIds[23] = $this->functionRepository->save(PermissionFunctionWork::fill('Генерирование отчетов по запросу', 'gen_report_query', 23));
-        $fIds[24] = $this->functionRepository->save(PermissionFunctionWork::fill('Генерирование отчетов по формам', 'gen_report_forms', 24));
-        $fIds[25] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр входящей документации', 'view_doc_in', 25));
-        $fIds[26] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование входящей документации', 'edit_doc_in', 26));
-        $fIds[27] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр исходящей документации', 'view_doc_out', 27));
-        $fIds[28] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование исходящей документации', 'edit_doc_out', 28));
-        $fIds[29] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр положений о мероприятиях', 'view_event_regulations', 29));
-        $fIds[30] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование положений о мероприятиях', 'edit_event_regulations', 30));
-        $fIds[31] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр положений, инструкций и правил', 'view_base_regulations', 31));
-        $fIds[32] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование положений, инструкций и правил', 'edit_base_regulations', 32));
-        $fIds[33] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр мероприятий', 'view_events', 33));
-        $fIds[34] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование мероприятий', 'edit_events', 34));
-        $fIds[35] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр учета достижений в мероприятиях', 'view_foreign_events', 35));
-        $fIds[36] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование учета достижений в мероприятиях', 'edit_foreign_events', 36));
-        $fIds[37] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр учета ответственности работников', 'view_local_resp', 37));
-        $fIds[38] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование учета ответственности работников', 'edit_local_resp', 38));
-        $fIds[39] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр пользователей', 'view_users', 39));
-        $fIds[40] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование пользователей', 'edit_users', 40));
-        $fIds[41] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование правил', 'edit_permissions', 41));
-        $fIds[42] = $this->functionRepository->save(PermissionFunctionWork::fill('Создание сертификатов', 'create_certificates', 42));
-        $fIds[43] = $this->functionRepository->save(PermissionFunctionWork::fill('Удаление сертификатов', 'delete_certificates', 43));
-        $fIds[44] = $this->functionRepository->save(PermissionFunctionWork::fill('Доступ к основным административным функциям', 'allow_base_admin', 44));
-        $fIds[45] = $this->functionRepository->save(PermissionFunctionWork::fill('Доступ к дополнительным административным функциям', 'allow_extended_admin', 45));
-        $fIds[46] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр справочника шаблонов сертификатов', 'view_certificate_template', 46));
-        $fIds[47] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование справочника шаблонов сертификатов', 'edit_certificate_template', 47));
-        $fIds[48] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр мат. объектов и их объединений', 'view_material_obj', 48));
-        $fIds[49] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование мат. объектов и их объединений', 'edit_material_obj', 49));
-        $fIds[50] = $this->functionRepository->save(PermissionFunctionWork::fill('Внутреннее перемещение мат. объектов по МОЛ', 'move_material_obj', 50));
-        $fIds[51] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр справочника организаций', 'view_dictionaries', 51));
-        $fIds[52] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование справочника организаций', 'edit_dictionaries', 52));
+        $fIds[16] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр образовательных программ', 'view_training_programs', 16));
+        $fIds[17] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование образовательных программ', 'edit_training_programs', 17));
+        $fIds[18] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр приказов по мероприятиям', 'view_event_orders', 18));
+        $fIds[19] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование приказов по мероприятиям', 'edit_event_orders', 19));
+        $fIds[20] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр приказов по образовательной деятельности', 'view_study_orders', 20));
+        $fIds[21] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование приказов по образовательной деятельности', 'edit_study_orders', 21));
+        $fIds[22] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр приказов по основной деятельности', 'view_base_orders', 22));
+        $fIds[23] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование приказов по основной деятельности', 'edit_base_orders', 23));
+        $fIds[24] = $this->functionRepository->save(PermissionFunctionWork::fill('Генерирование отчетов по запросу', 'gen_report_query', 24));
+        $fIds[25] = $this->functionRepository->save(PermissionFunctionWork::fill('Генерирование отчетов по формам', 'gen_report_forms', 25));
+        $fIds[26] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр входящей документации', 'view_doc_in', 26));
+        $fIds[27] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование входящей документации', 'edit_doc_in', 27));
+        $fIds[28] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр исходящей документации', 'view_doc_out', 28));
+        $fIds[29] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование исходящей документации', 'edit_doc_out', 29));
+        $fIds[30] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр положений о мероприятиях', 'view_event_regulations', 30));
+        $fIds[31] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование положений о мероприятиях', 'edit_event_regulations', 31));
+        $fIds[32] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр положений, инструкций и правил', 'view_base_regulations', 32));
+        $fIds[33] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование положений, инструкций и правил', 'edit_base_regulations', 33));
+        $fIds[34] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр мероприятий', 'view_events', 34));
+        $fIds[35] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование мероприятий', 'edit_events', 35));
+        $fIds[36] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр учета достижений в мероприятиях', 'view_foreign_events', 36));
+        $fIds[37] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование учета достижений в мероприятиях', 'edit_foreign_events', 37));
+        $fIds[38] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр учета ответственности работников', 'view_local_resp', 38));
+        $fIds[39] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование учета ответственности работников', 'edit_local_resp', 39));
+        $fIds[40] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр пользователей', 'view_users', 40));
+        $fIds[41] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование пользователей', 'edit_users', 41));
+        $fIds[42] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование правил', 'edit_permissions', 42));
+        $fIds[43] = $this->functionRepository->save(PermissionFunctionWork::fill('Создание сертификатов', 'create_certificates', 43));
+        $fIds[44] = $this->functionRepository->save(PermissionFunctionWork::fill('Удаление сертификатов', 'delete_certificates', 44));
+        $fIds[45] = $this->functionRepository->save(PermissionFunctionWork::fill('Доступ к основным административным функциям', 'allow_base_admin', 45));
+        $fIds[46] = $this->functionRepository->save(PermissionFunctionWork::fill('Доступ к дополнительным административным функциям', 'allow_extended_admin', 46));
+        $fIds[47] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр справочника шаблонов сертификатов', 'view_certificate_template', 47));
+        $fIds[48] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование справочника шаблонов сертификатов', 'edit_certificate_template', 48));
+        $fIds[49] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр мат. объектов и их объединений', 'view_material_obj', 49));
+        $fIds[50] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование мат. объектов и их объединений', 'edit_material_obj', 50));
+        $fIds[51] = $this->functionRepository->save(PermissionFunctionWork::fill('Внутреннее перемещение мат. объектов по МОЛ', 'move_material_obj', 51));
+        $fIds[52] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр справочника организаций', 'view_dictionaries', 52));
+        $fIds[53] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование справочника организаций', 'edit_dictionaries', 53));
     }
 
     private function createAdminRole()
@@ -154,6 +156,7 @@ class FillController extends Controller
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 13));
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 14));
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 15));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 16));
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 17));
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 18));
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 19));
@@ -190,5 +193,6 @@ class FillController extends Controller
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 50));
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 51));
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 52));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 53));
     }
 }

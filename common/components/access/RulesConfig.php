@@ -141,6 +141,26 @@ class RulesConfig
             ]
         ],
 
+        'view_event_orders' => [
+            \frontend\controllers\order\OrderEventController::class => [
+                'index',
+                'view',
+                'get-file',
+                'get-files'
+            ]
+        ],
+
+        'edit_event_orders' => [
+            \frontend\controllers\order\OrderEventController::class => [
+                'create',
+                'update',
+                'delete-file',
+                'act',
+                'delete-people',
+                'act-delete'
+            ]
+        ],
+
         'view_study_orders' => [
             \frontend\controllers\order\OrderTrainingController::class => [
                 'index',
@@ -418,7 +438,8 @@ class RulesConfig
             \frontend\controllers\dictionaries\PeopleController::class => [
                 'create',
                 'update',
-                'delete'
+                'delete',
+                'delete-position'
             ],
             \frontend\controllers\dictionaries\PositionController::class => [
                 'create',

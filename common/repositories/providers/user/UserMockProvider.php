@@ -2,7 +2,7 @@
 
 namespace common\repositories\providers\user;
 
-use frontend\models\work\general\UserWork;
+use common\models\work\UserWork;
 
 class UserMockProvider implements UserProviderInterface
 {

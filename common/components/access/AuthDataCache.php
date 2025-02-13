@@ -2,8 +2,8 @@
 
 namespace common\components\access;
 
-use common\repositories\rac\UserPermissionFunctionRepository;
-use frontend\models\work\rac\PermissionFunctionWork;
+use common\repositories\rubac\UserPermissionFunctionRepository;
+use frontend\models\work\rubac\PermissionFunctionWork;
 use Yii;
 
 class AuthDataCache

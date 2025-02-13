@@ -9,15 +9,14 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\models\scaffold\DocumentOut;
+use common\models\work\UserWork;
 use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\document_in_out\InOutDocumentsRepository;
-
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
-use frontend\models\work\general\UserWork;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\Url;

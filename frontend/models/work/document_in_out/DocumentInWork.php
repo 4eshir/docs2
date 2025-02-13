@@ -9,20 +9,17 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\models\scaffold\DocumentIn;
+use common\models\work\UserWork;
 use common\repositories\document_in_out\DocumentInRepository;
 use common\repositories\document_in_out\DocumentOutRepository;
 use common\repositories\document_in_out\InOutDocumentsRepository;
-use common\repositories\general\FilesRepository;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
-use frontend\models\work\general\FilesWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
-use frontend\models\work\general\UserWork;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\Url;
-use yii\web\User;
 
 /**
  * @property PeopleStampWork $correspondentWork

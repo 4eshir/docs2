@@ -3,10 +3,10 @@
 namespace common\components\access\pbac;
 
 use common\components\access\pbac\data\PbacGroupData;
+use common\models\work\UserWork;
 use common\repositories\educational\TrainingGroupRepository;
-use common\repositories\rac\UserPermissionFunctionRepository;
-use frontend\models\work\general\UserWork;
-use frontend\models\work\rac\PermissionFunctionWork;
+use common\repositories\rubac\UserPermissionFunctionRepository;
+use frontend\models\work\rubac\PermissionFunctionWork;
 use Yii;
 
 class PbacGroupAccess implements PbacComponentInterface

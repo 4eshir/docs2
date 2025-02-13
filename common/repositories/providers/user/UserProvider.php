@@ -2,8 +2,8 @@
 
 namespace common\repositories\providers\user;
 
+use common\models\work\UserWork;
 use DomainException;
-use frontend\models\work\general\UserWork;
 
 class UserProvider implements UserProviderInterface
 {

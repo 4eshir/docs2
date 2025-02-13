@@ -64,7 +64,7 @@ use common\models\scaffold\Visit;
 use common\models\User;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\general\RussianNamesWork;
-use frontend\models\work\rac\UserPermissionFunctionWork;
+use frontend\models\work\rubac\UserPermissionFunctionWork;
 
 class TableDictionary extends BaseDictionary
 {

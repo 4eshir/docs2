@@ -301,7 +301,6 @@ class LocalResponsibilityController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    //Проверка на права доступа к CRUD-операциям
     public function beforeAction($action)
     {
         if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {

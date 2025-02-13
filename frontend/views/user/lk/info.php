@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\work\general\UserWork;
+use common\models\work\UserWork;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */

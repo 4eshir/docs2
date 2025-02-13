@@ -2,9 +2,7 @@
 
 namespace common\components\access\pbac\data;
 
-use frontend\models\work\educational\training_group\TrainingGroupWork;
-use frontend\models\work\general\UserWork;
-use frontend\models\work\rac\UserPermissionFunctionWork;
+use common\models\work\UserWork;
 
 class PbacGroupData extends PbacData
 {

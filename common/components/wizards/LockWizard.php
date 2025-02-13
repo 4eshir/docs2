@@ -2,9 +2,9 @@
 
 namespace common\components\wizards;
 
+use common\models\work\UserWork;
 use common\repositories\general\UserRepository;
 use frontend\models\work\general\PeopleWork;
-use frontend\models\work\general\UserWork;
 use Yii;
 use yii\db\Exception;
 

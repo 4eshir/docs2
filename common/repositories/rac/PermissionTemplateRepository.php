@@ -1,9 +1,9 @@
 <?php
 
-namespace common\repositories\rac;
+namespace common\repositories\rubac;
 
 use DomainException;
-use frontend\models\work\rac\PermissionTemplateWork;
+use frontend\models\work\rubac\PermissionTemplateWork;
 
 class PermissionTemplateRepository
 {

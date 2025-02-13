@@ -2,13 +2,13 @@
 
 namespace frontend\models\work\regulation;
 
-use frontend\models\work\order\OrderMainWork;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\Regulation;
-use frontend\models\work\general\UserWork;
+use common\models\work\UserWork;
+use frontend\models\work\order\OrderMainWork;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;

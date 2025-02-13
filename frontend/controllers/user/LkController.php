@@ -2,10 +2,10 @@
 
 namespace frontend\controllers\user;
 
+use common\models\work\UserWork;
 use common\repositories\general\UserRepository;
 use DomainException;
 use frontend\forms\ChangePasswordForm;
-use frontend\models\work\general\UserWork;
 use Yii;
 use yii\web\Controller;
 

@@ -3,9 +3,9 @@
 namespace common\repositories\general;
 
 use common\components\traits\CommonDatabaseFunctions;
+use common\models\work\UserWork;
 use common\repositories\providers\user\UserProvider;
 use common\repositories\providers\user\UserProviderInterface;
-use frontend\models\work\general\UserWork;
 use Yii;
 
 class UserRepository
