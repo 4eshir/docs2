@@ -20,6 +20,7 @@ class SearchEvent extends Model implements SearchInterfaces
     public int $eventWay;               // формат проведения
     public int $eventLevel;             // уровень мероприятия
     public int $eventType;              // тип мероприятия
+    
 
 
     public function rules()
@@ -57,9 +58,9 @@ class SearchEvent extends Model implements SearchInterfaces
 
     public function search($params)
     {
-        $params['SearchEvent']['eventWay'] = (int) $params['SearchEvent']['eventWay'];
-        $params['SearchEvent']['eventType'] = (int) $params['SearchEvent']['eventType'];
-        $params['SearchEvent']['eventLevel'] = (int) $params['SearchEvent']['eventLevel'];
+        $params['SearchEvent']['eventWay'] = empty($params['SearchEvent']['eventWay']) ? -1 : (int) $params['SearchEvent']['eventWay'];
+        $params['SearchEvent']['eventType'] = empty($params['SearchEvent']['eventType']) ? -1 : (int) $params['SearchEvent']['eventType'];
+        $params['SearchEvent']['eventLevel'] = empty($params['SearchEvent']['eventLevel']) ? -1 : (int) $params['SearchEvent']['eventLevel'];
 
         $this->load($params);
 

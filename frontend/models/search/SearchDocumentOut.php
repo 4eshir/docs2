@@ -126,8 +126,7 @@ class SearchDocumentOut extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterDate(ActiveQuery $query) {
-        if ($this->startDateSearch != '' || $this->finishDateSearch != '')
-        {
+        if (!empty($this->startDateSearch) || !empty($this->finishDateSearch)) {
             $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
             $dateTo =  $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
 
@@ -146,8 +145,7 @@ class SearchDocumentOut extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterNumber(ActiveQuery $query) {
-        if (!empty($this->number))
-        {
+        if (!empty($this->number)) {
             $query->andFilterWhere(['like', "CONCAT(document_number, '/', document_postfix)", $this->number]);
         }
     }
@@ -159,13 +157,15 @@ class SearchDocumentOut extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterStatus(ActiveQuery $query) {
-        $statusConditions = [
-            DocumentStatusDictionary::CURRENT => ['>=', 'document_date', date('Y') . '-01-01'],
-            DocumentStatusDictionary::ARCHIVE => ['<=', 'document_date', date('Y-m-d')],
-            DocumentStatusDictionary::RESERVED => ['like', 'LOWER(document_theme)', 'РЕЗЕРВ'],
-            DocumentStatusDictionary::ANSWER => ['IS NOT', 'document_out_id', null],
-        ];
-        $query->andWhere($statusConditions[$this->status]);
+        if ($this->status !== -1) {
+            $statusConditions = [
+                DocumentStatusDictionary::CURRENT => ['>=', 'document_date', date('Y') . '-01-01'],
+                DocumentStatusDictionary::ARCHIVE => ['<=', 'document_date', date('Y-m-d')],
+                DocumentStatusDictionary::RESERVED => ['like', 'LOWER(document_theme)', 'РЕЗЕРВ'],
+                DocumentStatusDictionary::ANSWER => ['IS NOT', 'document_out_id', null],
+            ];
+            $query->andWhere($statusConditions[$this->status]);
+        }
     }
 
     /**
@@ -175,8 +175,7 @@ class SearchDocumentOut extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterExecutorName(ActiveQuery $query) {
-        if (!empty($this->executorName))
-        {
+        if (!empty($this->executorName)) {
             $query->andFilterWhere([
                 'OR',
                 ['like', 'LOWER(executorPeople.firstname)', mb_strtolower($this->executorName)],

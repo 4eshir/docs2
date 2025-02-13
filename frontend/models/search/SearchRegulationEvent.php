@@ -64,6 +64,6 @@ class SearchRegulationEvent extends RegulationSearch implements SearchInterfaces
      */
     public function filterQueryParams(ActiveQuery $query)
     {
-        parent::filterAbstractQueryParams($query);
+        parent::filterAbstractQueryParams($query, $this->startDateSearch, $this->finishDateSearch, $this->nameRegulation, $this->orderName, $this->status);
     }
 }

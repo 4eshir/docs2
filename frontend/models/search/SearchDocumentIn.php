@@ -116,18 +116,20 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterStatus(ActiveQuery $query) {
-        $statusConditions = [
-            DocumentStatusDictionary::CURRENT => ['>=', 'local_date', date('Y') . '-01-01'],
-            DocumentStatusDictionary::ARCHIVE => ['<=', 'local_date', date('Y-m-d')],
-            DocumentStatusDictionary::EXPIRED => [
-                'AND',
-                ['<', 'date', date('Y-m-d')],
-                ['IS', 'document_out_id', null]
-            ],
-            DocumentStatusDictionary::NEEDANSWER => ['=', 'need_answer', 1],
-            DocumentStatusDictionary::RESERVED => ['like', 'LOWER(document_theme)', 'РЕЗЕРВ'],
-        ];
-        $query->andWhere($statusConditions[$this->status]);
+        if ($this->status != -1) {
+            $statusConditions = [
+                DocumentStatusDictionary::CURRENT => ['>=', 'local_date', date('Y') . '-01-01'],
+                DocumentStatusDictionary::ARCHIVE => ['<=', 'local_date', date('Y-m-d')],
+                DocumentStatusDictionary::EXPIRED => [
+                    'AND',
+                    ['<', 'date', date('Y-m-d')],
+                    ['IS', 'document_out_id', null]
+                ],
+                DocumentStatusDictionary::NEEDANSWER => ['=', 'need_answer', 1],
+                DocumentStatusDictionary::RESERVED => ['like', 'LOWER(document_theme)', 'РЕЗЕРВ'],
+            ];
+            $query->andWhere($statusConditions[$this->status]);
+        }
     }
 
     /**
@@ -137,8 +139,7 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterDate(ActiveQuery $query) {
-        if ($this->startDateSearch != '' || $this->finishDateSearch != '')
-        {
+        if (!empty($this->startDateSearch) || !empty($this->finishDateSearch)) {
             $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
             $dateTo =  $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
 
@@ -156,8 +157,7 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterNumber(ActiveQuery $query) {
-        if (!empty($this->number))
-        {
+        if (!empty($this->number)) {
             $query->andFilterWhere(['or',
                 ['like', 'real_number', $this->number],
                 ['like', "CONCAT(local_number, '/', local_postfix)", $this->number],
@@ -172,8 +172,7 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterExecutorName(ActiveQuery $query) {
-        if (!empty($this->executorName))
-        {
+        if (!empty($this->executorName)) {
             $query->andFilterWhere(['like', 'LOWER(responsiblePeople.firstname)', mb_strtolower($this->executorName)]);
         }
     }
