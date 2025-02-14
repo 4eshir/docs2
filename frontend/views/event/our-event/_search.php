@@ -28,6 +28,8 @@ use yii\widgets\ActiveForm;
         SearchFieldHelper::dropdownField('eventLevel', 'Уровень мероприятия', Yii::$app->eventLevel->getList(), 'Уровень мероприятия'),
         SearchFieldHelper::dropdownField('eventForm', 'Форма мероприятия', Yii::$app->eventForm->getList(), 'Форма мероприятия'),
         SearchFieldHelper::dropdownField('eventScope', 'Сферы участия', Yii::$app->participationScope->getList(), 'Сферы участия'),
+        SearchFieldHelper::dropdownField('branch', 'Мероприятие проводит', Yii::$app->branches->getList(), 'Мероприятие проводит'),
+        SearchFieldHelper::textField('responsible', 'Ответственный работник', 'Ответственный работник'),
     );
 
     echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::OUR_EVENT_INDEX); ?>

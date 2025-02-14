@@ -166,7 +166,8 @@ class SearchEvent extends Model implements SearchInterfaces
         $this->filterLevel($query);
         $this->filterForm($query);
         $this->filterScope($query);
-
+        $this->filterBranch($query);
+        $this->filterResponsible($query);
     }
 
     /**
@@ -258,5 +259,9 @@ class SearchEvent extends Model implements SearchInterfaces
         if (!empty($this->eventScope) && $this->eventScope !== -1) {
             $query->andFilterWhere(['participation_scope' => $this->eventScope]);
         }
+    }
+
+    public function filterBrach(ActiveQuery $query) {
+        if ()
     }
 }
