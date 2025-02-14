@@ -2,26 +2,40 @@
 
 namespace backend\controllers;
 
+use backend\models\forms\UserForm;
 use backend\models\search\SearchUser;
 use common\models\work\UserWork;
+use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\general\UserRepository;
+use common\repositories\rubac\PermissionFunctionRepository;
+use common\repositories\rubac\UserPermissionFunctionRepository;
 use frontend\models\work\rubac\PermissionFunctionWork;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
 class UserController extends Controller
 {
     private UserRepository $repository;
+    private PeopleRepository $peopleRepository;
+    private PermissionFunctionRepository $permissionRepository;
+    private UserPermissionFunctionRepository $userPermissionRepository;
 
     public function __construct(
         $id,
         $module,
         UserRepository $repository,
+        PeopleRepository $peopleRepository,
+        PermissionFunctionRepository $permissionRepository,
+        UserPermissionFunctionRepository $userPermissionRepository,
         $config = []
     )
     {
         parent::__construct($id, $module, $config);
         $this->repository = $repository;
+        $this->peopleRepository = $peopleRepository;
+        $this->permissionRepository = $permissionRepository;
+        $this->userPermissionRepository = $userPermissionRepository;
     }
 
     public function actionIndex()
@@ -37,39 +51,63 @@ class UserController extends Controller
 
     public function actionCreate()
     {
-        $model = new UserWork();
-        $modelRules = [new PermissionFunctionWork];
+        $model = new UserForm(
+            new UserWork(),
+            $this->peopleRepository->getAll(),
+            [],
+            $this->permissionRepository->getAllPermissions()
+        );
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->setPassword($model->password_hash);
-            $this->repository->save($model);
-            return $this->redirect(['view', 'id' => $model->id]);
+            $this->repository->save($model->entity);
+            $model->savePermissions();
+            $model->releaseEvents();
+            return $this->redirect(['view', 'id' => $model->entity->id]);
         }
 
         return $this->render('create', [
             'model' => $model,
-            'modelRules' => $modelRules,
         ]);
     }
 
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-        $modelRole = [new RoleWork];
+        $model = new UserForm(
+            $this->repository->get($id),
+            $this->peopleRepository->getAll(),
+            ArrayHelper::getColumn(
+                $this->userPermissionRepository->getPermissionsByUser($id),
+                'id'
+            ),
+            $this->permissionRepository->getAllPermissions()
+        );
 
         if ($model->load(Yii::$app->request->post())) {
-            $modelRole = DynamicModel::createMultiple(RoleWork::classname());
-            DynamicModel::loadMultiple($modelRole, Yii::$app->request->post());
-            $model->roles = $modelRole;
-            //$model->last_update_id = Yii::$app->user->identity->getId();
-            $model->save();
-            Logger::WriteLog(Yii::$app->user->identity->getId(), 'Изменен пользователь '.$model->username);
-            return $this->redirect(['view', 'id' => $model->id]);
+            $this->repository->save($model->entity);
+            $model->savePermissions();
+            $model->releaseEvents();
+            return $this->redirect(['view', 'id' => $model->entity->id]);
         }
 
         return $this->render('update', [
             'model' => $model,
-            'modelRole' => $modelRole,
+        ]);
+    }
+
+    public function actionView($id)
+    {
+        $model = new UserForm(
+            $this->repository->get($id),
+            $this->peopleRepository->getAll(),
+            ArrayHelper::getColumn(
+                $this->userPermissionRepository->getPermissionsByUser($id),
+                'id'
+            ),
+            $this->permissionRepository->getAllPermissions()
+        );
+
+        return $this->render('view', [
+            'model' => $model
         ]);
     }
 
@@ -116,14 +154,14 @@ class UserController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    //Проверка на права доступа к CRUD-операциям
     public function beforeAction($action)
     {
-        if (Yii::$app->user->isGuest)
-            return $this->redirect(['/site/login']);
-        if (!RoleBaseAccess::CheckAccess($action->controller->id, $action->id, Yii::$app->user->identity->getId())) {
-            return $this->redirect(['/site/error-access']);
+        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
+            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
+            $this->redirect(Yii::$app->request->referrer);
+            return false;
         }
-        return parent::beforeAction($action); // TODO: Change the autogenerated stub
+
+        return parent::beforeAction($action);
     }
 }

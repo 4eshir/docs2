@@ -1,15 +1,14 @@
 <?php
 
+use backend\models\forms\UserForm;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\UserWork
- * @var $modelRole \app\models\work\RoleWork
- */
+/* @var $model UserForm */
 
-$this->title = 'Редактировать пользователя: ' . $model->fullName;
+$this->title = 'Редактировать пользователя: ' . $model->entity->fullName;
 $this->params['breadcrumbs'][] = ['label' => 'Пользователи', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->fullName, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->entity->fullName, 'url' => ['view', 'id' => $model->entity->id]];
 $this->params['breadcrumbs'][] = 'Редактирование';
 ?>
 <div class="user-update">
@@ -18,7 +17,6 @@ $this->params['breadcrumbs'][] = 'Редактирование';
 
     <?= $this->render('_form', [
         'model' => $model,
-        'modelRole' => $modelRole,
     ]) ?>
 
 </div>

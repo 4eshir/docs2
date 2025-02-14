@@ -1,11 +1,11 @@
 <?php
 
+use backend\models\forms\UserForm;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\work\UserWork
- * @var $modelRole \app\models\work\RoleWork
+/* @var $model UserForm
  */
 
 $this->title = 'Добавить пользователя';
@@ -18,7 +18,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
-        'modelRole' => $modelRole,
     ]) ?>
 
     <?php /*

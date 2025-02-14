@@ -1,12 +1,14 @@
 <?php
 
-use common\models\work\UserWork;
+use backend\models\forms\UserForm;
+use kartik\select2\Select2;
 use wbraganca\dynamicform\DynamicFormWidget;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model UserWork */
+/* @var $model UserForm */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -14,85 +16,43 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
 
-    <?= $form->field($model, 'firstname')->textInput() ?>
-    <?= $form->field($model, 'surname')->textInput() ?>
-    <?= $form->field($model, 'patronymic')->textInput() ?>
-    <?= $form->field($model, 'username')->textInput() ?>
-    <?php if (is_null($model->password_hash)): ?>
-        <?= $form->field($model, 'password_hash')->textInput(); ?>
+    <?= $form->field($model->entity, 'firstname')->textInput() ?>
+    <?= $form->field($model->entity, 'surname')->textInput() ?>
+    <?= $form->field($model->entity, 'patronymic')->textInput() ?>
+    <?= $form->field($model->entity, 'username')->textInput() ?>
+
+    <?php if (is_null($model->entity->password_hash)): ?>
+        <?= $form->field($model->entity, 'password_hash')->textInput(); ?>
     <?php endif; ?>
 
-    <?php
-    $people = \app\models\work\PeopleWork::find()->where(['company_id' => 8])->all();
-    $items = \yii\helpers\ArrayHelper::map($people,'id','fullName');
-    $params = [
-        'prompt' => ''
-    ];
-    echo $form->field($model, "aka")->dropDownList($items,$params);
+    <?= $form->field($model->entity, 'aka')->widget(Select2::classname(), [
+        'data' => ArrayHelper::map($model->peoples, 'id', 'fullFio'),
+        'size' => Select2::LARGE,
+        'options' => ['prompt' => '---'],
+        'pluginOptions' => [
+            'allowClear' => true
+        ],
+    ])->label('Также является'); ?>
 
-    ?>
-
-    <div class="row">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4><i class="glyphicon glyphicon-user"></i>Роли</h4></div>
-            <?php
-            $resp = \app\models\work\UserRoleWork::find()->where(['user_id' => $model->id])->all();
-            if ($resp != null)
-            {
-                echo '<table>';
-                foreach ($resp as $respOne) {
-                    echo '<tr><td style="padding-left: 20px"><h4>'.$respOne->role->name.'</h4></td><td style="padding-left: 10px">'.Html::a('X', \yii\helpers\Url::to(['user/delete-role', 'roleId' => $respOne->id, 'modelId' => $model->id])).'</td></tr>';
+    <?= $form->field($model, 'userPermissions')->checkboxList(
+        ArrayHelper::map($model->permissions, 'id', 'name'),
+        [
+            'class' => 'base',
+            'item' => function ($index, $label, $name, $checked, $value) {
+                if ($checked == 1) {
+                    $checked = 'checked';
                 }
-                echo '</table>';
+                return
+                    '<div class="checkbox" class="form-control">
+                            <label style="margin-bottom: 0px" for="branch-' . $index .'">
+                                <input id="branch-'. $index .'" name="'. $name .'" type="checkbox" '. $checked .' value="'. $value .'">
+                                '. $label .'
+                            </label>
+                        </div>';
             }
-            ?>
-            <div class="panel-body">
-                <?php DynamicFormWidget::begin([
-                    'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
-                    'widgetBody' => '.container-items', // required: css class selector
-                    'widgetItem' => '.item', // required: css class
-                    'limit' => 40, // the maximum times, an element can be cloned (default 999)
-                    'min' => 1, // 0 or 1 (default 1)
-                    'insertButton' => '.add-item', // css class
-                    'deleteButton' => '.remove-item', // css class
-                    'model' => $modelRole[0],
-                    'formId' => 'dynamic-form',
-                    'formFields' => [
-                        'people_id',
-                    ],
-                ]); ?>
-
-                <div class="container-items"><!-- widgetContainer -->
-                    <?php foreach ($modelRole as $i => $modelRoleOne): ?>
-                        <div class="item panel panel-default"><!-- widgetBody -->
-                            <div class="panel-heading" onload="scrolling()">
-                                <h3 class="panel-title pull-left">Роль</h3>
-                                <div class="pull-right">
-                                    <button type="button" name="add" class="add-item btn btn-success btn-xs"><i class="glyphicon glyphicon-plus"></i></button>
-                                    <button type="button" class="remove-item btn btn-danger btn-xs"><i class="glyphicon glyphicon-minus"></i></button>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-                            <div class="panel-body" id="scroll">
-
-                                <?php
-                                $roles = \app\models\work\RoleWork::find()->all();
-                                $items = \yii\helpers\ArrayHelper::map($roles,'id','name');
-                                $params = [
-                                    'prompt' => ''
-                                ];
-                                echo $form->field($modelRoleOne, "[{$i}]role_id")->dropDownList($items,$params)->label('Название роли');
-
-                                ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <?php DynamicFormWidget::end(); ?>
-            </div>
-        </div>
-    </div>
-
+        ]
+    )->label('<u>Правила доступа</u>')
+    ?>
 
     </div>
     <div class="form-group">
