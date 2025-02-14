@@ -364,7 +364,12 @@ class RulesConfig
         ],
 
         'allow_base_admin' => [
-
+            \backend\controllers\UserController::class => [
+                'index',
+                'view',
+                'create',
+                'update'
+            ]
         ],
 
         'allow_extended_admin' => [

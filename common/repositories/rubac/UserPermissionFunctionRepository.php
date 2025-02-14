@@ -58,7 +58,25 @@ class UserPermissionFunctionRepository
 
     public function getByUserAndPermission($userId, $permissionId)
     {
-        return UserPermissionFunctionWork::find()->where(['user_id' => $userId])->andWhere(['function_id' => $permissionId])->all();
+        return UserPermissionFunctionWork::find()->where(['user_id' => $userId])->andWhere(['function_id' => $permissionId])->one();
+    }
+
+    public function prepareCreate($userId, $functionId){
+        $model = UserPermissionFunctionWork::fill($userId, $functionId);
+        $command = Yii::$app->db->createCommand();
+        $command->insert($model::tableName(), $model->getAttributes());
+        return $command->getRawSql();
+    }
+
+    public function prepareDelete($userId, $functionId){
+        $model = $this->getByUserAndPermission($userId, $functionId);
+        if ($model) {
+            $command = Yii::$app->db->createCommand();
+            $command->delete($model::tableName(), $model->getAttributes());
+            return $command->getRawSql();
+        }
+
+        return '';
     }
 
     public function save(UserPermissionFunctionWork $userFunction)
