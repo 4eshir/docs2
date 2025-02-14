@@ -3,6 +3,8 @@
 namespace frontend\models\search\abstractBase;
 
 use common\helpers\DateFormatter;
+use common\helpers\search\SearchFieldHelper;
+use common\helpers\StringFormatter;
 use frontend\models\work\regulation\RegulationWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -31,7 +33,7 @@ class RegulationSearch extends Model
         string $finishDateSearch = '',
         string $nameRegulation = '',
         string $orderName = '',
-        int $status = -1
+        int $status = SearchFieldHelper::EMPTY_FIELD
     ) {
         parent::__construct();
         $this->startDateSearch = $startDateSearch;
@@ -151,7 +153,7 @@ class RegulationSearch extends Model
      * @return void
      */
     private function filterStatus(ActiveQuery $query, int $status) {
-        if ($status !== RegulationWork::STATE_ACTIVE)
+        if (!StringFormatter::isEmpty($status) && $status !== RegulationWork::STATE_ACTIVE)
         {
             $query->andFilterWhere(['like', 'regulation.state', $status]);
         }

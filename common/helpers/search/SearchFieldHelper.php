@@ -6,6 +6,8 @@ use common\helpers\DateFormatter;
 
 class SearchFieldHelper
 {
+    const EMPTY_FIELD = -1;     // необходимо для проверки полей в фильтрах и в классах search
+
     /**
      * Создает поле фильтра типа date
      *

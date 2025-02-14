@@ -4,6 +4,7 @@ namespace frontend\models\search;
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\components\interfaces\SearchInterfaces;
+use common\helpers\search\SearchFieldHelper;
 use common\helpers\StringFormatter;
 use frontend\models\search\abstractBase\RegulationSearch;
 use frontend\models\work\regulation\RegulationWork;
@@ -27,8 +28,8 @@ class SearchRegulation extends RegulationSearch implements SearchInterfaces
         string $finishDateSearch = '',
         string $nameRegulation = '',
         string $orderName = '',
-        int $status = -1,
-        int $numberBoard = -1
+        int $status = SearchFieldHelper::EMPTY_FIELD,
+        int $numberBoard = SearchFieldHelper::EMPTY_FIELD
     ) {
         parent::__construct(
             $startDateSearch,

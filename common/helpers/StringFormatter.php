@@ -2,6 +2,7 @@
 
 namespace common\helpers;
 
+use common\helpers\search\SearchFieldHelper;
 use http\Exception\InvalidArgumentException;
 use PhpOffice\PhpSpreadsheet\Reader\Xls\MD5;
 use yii\helpers\Html;
@@ -30,6 +31,18 @@ class StringFormatter
     }
 
     /**
+     * Функция для проверка на пустоту. Стандартная empty() считается что "0" это пусто
+     * Примеры: '', ' ' - вернет true, "0" - вернет false
+     *
+     * @param $variable
+     * @return bool
+     */
+    public static function isEmpty($variable)
+    {
+        return strlen(trim($variable)) === 0;
+    }
+
+    /**
      * Преобразование пустой строки в -1, а всех остальных значений в числовые.
      * Функция необходима для трансформации инпута фильтров в серчи
      *
@@ -38,7 +51,7 @@ class StringFormatter
      */
     public static function stringAsInt($variable)
     {
-        return $variable === "" ? -1 : (int) $variable;
+        return self::isEmpty($variable) ? SearchFieldHelper::EMPTY_FIELD : (int) $variable;
     }
 
     public static function stringAsLink($name, $url)
