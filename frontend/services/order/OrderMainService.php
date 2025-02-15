@@ -2,6 +2,9 @@
 
 namespace frontend\services\order;
 
+use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\general\PeopleStampRepository;
+use common\services\general\PeopleStampService;
 use frontend\models\work\general\OrderPeopleWork;
 use frontend\models\work\order\ExpireWork;
 use frontend\models\work\order\OrderMainWork;
@@ -21,6 +24,7 @@ use frontend\events\general\OrderPeopleDeleteEvent;
 use frontend\models\forms\ExpireForm;
 use frontend\models\work\document_in_out\DocumentInWork;
 use frontend\models\work\regulation\RegulationWork;
+use frontend\services\dictionaries\PeopleService;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
@@ -33,6 +37,8 @@ class OrderMainService {
     private ExpireRepository $expireRepository;
     private OrderMainRepository $orderMainRepository;
     private OrderMainFileNameGenerator $filenameGenerator;
+    private PeopleStampRepository $peopleStampRepository;
+    private PeopleRepository $peopleRepository;
 
     public function __construct(
         FileService $fileService,
@@ -40,7 +46,9 @@ class OrderMainService {
         OrderMainRepository $orderMainRepository,
         OrderPeopleRepository $orderPeopleRepository,
         ExpireRepository $expireRepository,
-        RegulationRepository $regulationRepository
+        RegulationRepository $regulationRepository,
+        PeopleStampRepository $peopleStampRepository,
+        PeopleRepository $peopleRepository
     )
     {
         $this->orderPeopleRepository = $orderPeopleRepository;
@@ -49,6 +57,8 @@ class OrderMainService {
         $this->regulationRepository = $regulationRepository;
         $this->orderMainRepository = $orderMainRepository;
         $this->filenameGenerator = $filenameGenerator;
+        $this->peopleStampRepository = $peopleStampRepository;
+        $this->peopleRepository = $peopleRepository;
     }
     public function createChangedDocumentsArray(array $data)
     {

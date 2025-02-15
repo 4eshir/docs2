@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\order;
 
+use common\repositories\dictionaries\PeopleRepository;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderMainWork;
 use frontend\services\order\DocumentOrderService;
@@ -38,12 +39,12 @@ class OrderMainController extends DocumentController
     private OrderMainService $service;
     public DocumentOrderService $documentOrderService;
     private ExpireRepository $expireRepository;
-    private PeopleStampRepository $peopleStampRepository;
     private OrderPeopleRepository $orderPeopleRepository;
     private UserRepository $userRepository;
     private RegulationRepository $regulationRepository;
     private LockWizard $lockWizard;
     private OrderPeopleService $orderPeopleService;
+    private PeopleRepository $peopleRepository;
 
     public function __construct(
         $id,
@@ -53,12 +54,12 @@ class OrderMainController extends DocumentController
         OrderMainService $service,
         DocumentOrderService $documentOrderService,
         ExpireRepository $expireRepository,
-        PeopleStampRepository $peopleStampRepository,
         OrderPeopleRepository $orderPeopleRepository,
         UserRepository $userRepository,
         RegulationRepository $regulationRepository,
         LockWizard $lockWizard,
         OrderPeopleService $orderPeopleService,
+        PeopleRepository $peopleRepository,
         $config = []
     )
     {
@@ -67,13 +68,13 @@ class OrderMainController extends DocumentController
         $this->documentOrderService = $documentOrderService;
         $this->documentOrderRepository = $documentOrderRepository;
         $this->expireRepository = $expireRepository;
-        $this->peopleStampRepository = $peopleStampRepository;
         $this->orderPeopleRepository = $orderPeopleRepository;
         $this->userRepository = $userRepository;
         $this->regulationRepository = $regulationRepository;
         $this->lockWizard = $lockWizard;
         $this->repository = $repository;
         $this->orderPeopleService = $orderPeopleService;
+        $this->peopleRepository = $peopleRepository;
 
     }
     public function actionIndex(){
@@ -86,21 +87,23 @@ class OrderMainController extends DocumentController
     }
     public function actionCreate(){
         $model = new OrderMainWork();
-        $people = $this->peopleStampRepository->getAll();
+        $people = $this->peopleRepository->getOrderedList();
         $users = $this->userRepository->getAll();
         $orders = $this->documentOrderRepository->getAllByType(DocumentOrderWork::ORDER_MAIN);
         $regulations = $this->regulationRepository->getOrderedList();
         $modelExpire = [new ExpireForm()];
         $post = Yii::$app->request->post();
         if ($model->load($post)) {
+            $this->documentOrderService->getPeopleStamps($model);
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
+
             $model->generateOrderNumber();
             $this->repository->save($model);
             $this->documentOrderService->getFilesInstances($model);
             $this->service->addExpireEvent($post["ExpireForm"], $model);
-            $this->orderPeopleService->addOrderPeopleEvent($post["OrderMainWork"]["responsiblePeople"], $model);
+            $this->orderPeopleService->addOrderPeopleEvent($post["OrderMainWork"]["responsible_id"], $model);
             $this->documentOrderService->saveFilesFromModel($model);
             $model->releaseEvents();
             return $this->redirect(['view', 'id' => $model->id]);
@@ -119,7 +122,7 @@ class OrderMainController extends DocumentController
         if ($this->lockWizard->lockObject($id, DocumentOrder::tableName(), Yii::$app->user->id)) {
             /* @var OrderMainWork $model */
             $model = $this->repository->get($id);
-            $people = $this->peopleStampRepository->getAll();
+            $people = $this->peopleRepository->getOrderedList();
             $post = Yii::$app->request->post();
             $orders = $this->documentOrderRepository->getExceptByIdAndStatus($id, DocumentOrderWork::ORDER_MAIN);
             $regulations = $this->regulationRepository->getOrderedList();
@@ -127,16 +130,18 @@ class OrderMainController extends DocumentController
             $modelExpire = [new ExpireForm()];
             $modelChangedDocuments = $this->service->getChangedDocumentsTable($model->id);
             $tables = $this->documentOrderService->getUploadedFilesTables($model);
-            $model->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'));
+            $model->setValuesForUpdate();
+            $this->documentOrderService->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $model);
             if ($model->load($post)) {
                 $this->lockWizard->unlockObject($id, DocumentOrder::tableName());
+                $this->documentOrderService->getPeopleStamps($model);
                 if (!$model->validate()) {
                     throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
                 }
                 $this->repository->save($model);
                 $this->documentOrderService->getFilesInstances($model);
                 $this->orderPeopleService->updateOrderPeopleEvent(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
-                    $post["OrderMainWork"]["responsiblePeople"], $model);
+                    $post["OrderMainWork"]["responsible_id"], $model);
                 $this->service->addExpireEvent($post["ExpireForm"], $model);
                 $this->documentOrderService->saveFilesFromModel($model);
                 $model->releaseEvents();
@@ -203,7 +208,6 @@ class OrderMainController extends DocumentController
             $this->redirect(Yii::$app->request->referrer);
             return false;
         }
-
         return parent::beforeAction($action);
     }
 }

@@ -3,6 +3,7 @@
 namespace frontend\controllers\order;
 
 use app\components\DynamicWidget;
+use common\repositories\dictionaries\PeopleRepository;
 use frontend\components\GroupParticipantWidget;
 use frontend\models\search\SearchOrderTraining;
 use frontend\models\work\order\DocumentOrderWork;
@@ -28,7 +29,6 @@ use yii\helpers\ArrayHelper;
 
 class OrderTrainingController extends DocumentController
 {
-    private PeopleStampRepository $peopleStampRepository;
     private DocumentOrderService $documentOrderService;
     private OrderTrainingService $orderTrainingService;
     private OrderPeopleRepository $orderPeopleRepository;
@@ -37,11 +37,11 @@ class OrderTrainingController extends DocumentController
     private TrainingGroupRepository $trainingGroupRepository;
     private LockWizard $lockWizard;
     private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
+    private PeopleRepository $peopleRepository;
 
     public function __construct(
         $id,
         $module,
-        PeopleStampRepository $peopleStampRepository,
         DocumentOrderService $documentOrderService,
         OrderTrainingService $orderTrainingService,
         OrderPeopleRepository $orderPeopleRepository,
@@ -49,6 +49,7 @@ class OrderTrainingController extends DocumentController
         OrderTrainingRepository $orderTrainingRepository,
         TrainingGroupRepository $trainingGroupRepository,
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
+        PeopleRepository $peopleRepository,
         LockWizard $lockWizard,
 
         FileService $fileService,
@@ -56,13 +57,13 @@ class OrderTrainingController extends DocumentController
         $config = []
     )
     {
-        $this->peopleStampRepository = $peopleStampRepository;
         $this->documentOrderService = $documentOrderService;
         $this->orderTrainingService = $orderTrainingService;
         $this->orderPeopleRepository = $orderPeopleRepository;
         $this->orderPeopleService = $orderPeopleService;
         $this->orderTrainingRepository = $orderTrainingRepository;
         $this->trainingGroupRepository = $trainingGroupRepository;
+        $this->peopleRepository = $peopleRepository;
         $this->lockWizard = $lockWizard;
         $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
@@ -94,11 +95,12 @@ class OrderTrainingController extends DocumentController
     }
     public function actionCreate(){
         $model = new OrderTrainingWork();
-        $people = $this->peopleStampRepository->getAll();
+        $people = $this->peopleRepository->getOrderedList();
         $post = Yii::$app->request->post();
         $groups = $this->orderTrainingService->getGroupsEmptyDataProvider();
         $groupParticipant = $this->orderTrainingService->getParticipantEmptyDataProvider();;
         if ($model->load($post)) {
+            $this->documentOrderService->getPeopleStamps($model);
             if (!$model->validate()) {
                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
@@ -130,8 +132,7 @@ class OrderTrainingController extends DocumentController
         if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
             $model = $this->orderTrainingRepository->get($id);
             $this->orderTrainingService->setBranch($model);
-            $people = $this->peopleStampRepository->getAll();
-            $model->responsible_id = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
+            $people = $this->peopleRepository->getOrderedList();
             $post = Yii::$app->request->post();
             $number = $model->order_number;
             $groups = $this->orderTrainingService->getGroupsDataProvider($model);
@@ -141,8 +142,11 @@ class OrderTrainingController extends DocumentController
             $status = $this->orderTrainingService->getStatus($model);
             $groupCheckOption = $this->trainingGroupRepository->getAttachedGroupsByOrder($id, $status);
             $groupParticipantOption = $this->trainingGroupParticipantRepository->getAttachedParticipantByOrder($id, $status);
+            $model->setValuesForUpdate();
+            $this->documentOrderService->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $model);
             if ($model->load($post)) {
                 $this->lockWizard->unlockObject($id, DocumentOrderWork::tableName());
+                $this->documentOrderService->getPeopleStamps($model);
                 if (!$model->validate()) {
                     throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
                 }
@@ -296,7 +300,6 @@ class OrderTrainingController extends DocumentController
             $this->redirect(Yii::$app->request->referrer);
             return false;
         }
-
         return parent::beforeAction($action);
     }
 }

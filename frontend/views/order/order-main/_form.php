@@ -97,7 +97,7 @@ use yii\widgets\DetailView;
         ?>
 
     </div>
-    <?= $form->field($model, "responsiblePeople")->widget(Select2::class, [
+    <?= $form->field($model, "responsible_id")->widget(Select2::class, [
         'data' => ArrayHelper::map($people,'id','fullFio'),
         'size' => Select2::LARGE,
         'options' => [

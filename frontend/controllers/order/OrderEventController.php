@@ -4,8 +4,10 @@ namespace frontend\controllers\order;
 
 use app\components\DynamicWidget;
 use app\models\work\order\OrderEventGenerateWork;
+use app\services\order\OrderEventGenerateService;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\models\scaffold\OrderEventGenerate;
+use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\order\OrderEventGenerateRepository;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\order\DocumentOrderWork;
@@ -41,7 +43,7 @@ class OrderEventController extends DocumentController
 {
     private OrderPeopleService $orderPeopleService;
     private DocumentOrderService $documentOrderService;
-    private PeopleStampRepository $peopleStampRepository;
+    private PeopleRepository $peopleRepository;
     private OrderEventRepository $orderEventRepository;
     private OrderPeopleRepository $orderPeopleRepository;
     private ForeignEventRepository $foreignEventRepository;
@@ -55,12 +57,13 @@ class OrderEventController extends DocumentController
     private CompanyRepository $companyRepository;
     private LockWizard $lockWizard;
     private OrderEventGenerateRepository $orderEventGenerateRepository;
+    private OrderEventGenerateService $orderEventGenerateService;
 
     public function __construct(
         $id, $module,
         OrderPeopleService $orderPeopleService,
         DocumentOrderService $documentOrderService,
-        PeopleStampRepository $peopleStampRepository,
+        PeopleRepository $peopleRepository,
         OrderEventRepository $orderEventRepository,
         OrderPeopleRepository $orderPeopleRepository,
         ForeignEventRepository $foreignEventRepository,
@@ -77,12 +80,13 @@ class OrderEventController extends DocumentController
         CompanyRepository $companyRepository,
         LockWizard $lockWizard,
         OrderEventGenerateRepository $orderEventGenerateRepository,
+        OrderEventGenerateService $orderEventGenerateService,
         $config = []
     )
     {
         $this->orderPeopleService = $orderPeopleService;
         $this->documentOrderService = $documentOrderService;
-        $this->peopleStampRepository = $peopleStampRepository;
+        $this->peopleRepository = $peopleRepository;
         $this->orderPeopleRepository = $orderPeopleRepository;
         $this->foreignEventRepository = $foreignEventRepository;
         $this->orderEventRepository = $orderEventRepository;
@@ -96,6 +100,7 @@ class OrderEventController extends DocumentController
         $this->companyRepository = $companyRepository;
         $this->lockWizard = $lockWizard;
         $this->orderEventGenerateRepository = $orderEventGenerateRepository;
+        $this->orderEventGenerateService = $orderEventGenerateService;
         parent::__construct($id, $module, $fileService, $fileRepository, $config);
     }
     public function actionIndex() {
@@ -109,7 +114,7 @@ class OrderEventController extends DocumentController
     public function actionCreate() {
         /* @var OrderEventForm $model */
         $model = new OrderEventForm();
-        $people = $this->peopleStampRepository->getAll();
+        $people = $this->peopleRepository->getOrderedList();
         $modelActs = [new ActParticipantForm];
         $post = Yii::$app->request->post();
         $teams = [];
@@ -144,6 +149,7 @@ class OrderEventController extends DocumentController
                 $model->docFiles,
             );
             $modelOrderEvent->generateOrderNumber();
+            $this->documentOrderService->getPeopleStamps($modelOrderEvent);
             $number = $modelOrderEvent->getNumberPostfix();
             $this->orderEventRepository->save($modelOrderEvent);
             $generateInfo = OrderEventGenerateWork::fill(
@@ -157,6 +163,7 @@ class OrderEventController extends DocumentController
                 $model->extraRespMethod,
                 $model->extraRespInfoStuff
             );
+            $this->orderEventGenerateService->setPeopleStamp($generateInfo);
             $this->orderEventGenerateRepository->save($generateInfo);
             $this->documentOrderService->saveFilesFromModel($modelOrderEvent);
             $modelForeignEvent = ForeignEventWork::fill(
@@ -214,6 +221,7 @@ class OrderEventController extends DocumentController
     }
     public function actionUpdate($id)
     {
+        /* @var $modelOrderEvent OrderEventWork */
         if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
             $data = $this->orderEventFacade->prepareOrderEventUpdateFacade($id);
             $people = $data['people'];
@@ -227,9 +235,9 @@ class OrderEventController extends DocumentController
             $modelOrderEvent = $data['modelOrderEvent'];
             $modelData = $this->orderEventFacade->modelOrderEventFormFacade($model, $id);
             $orderNumber = $modelData['orderNumber'];
-            $model->responsible_id = $modelData['responsiblePeople'];
             $participants = $this->foreignEventParticipantsRepository->getSortedList();
             $company = $this->companyRepository->getList();
+            $model->setValuesForUpdate();
             $post = Yii::$app->request->post();
             if ($model->load($post)) {
                 $this->lockWizard->unlockObject($id, DocumentOrderWork::tableName());
@@ -258,6 +266,7 @@ class OrderEventController extends DocumentController
                     $model->scanFile,
                     $model->docFiles,
                 );
+                $this->documentOrderService->getPeopleStamps($modelOrderEvent);
                 $this->orderEventRepository->save($modelOrderEvent);
                 $generateInfo = $this->orderEventGenerateRepository->getByOrderId($id);
                 $generateInfo->fillUpdate(
@@ -271,6 +280,7 @@ class OrderEventController extends DocumentController
                     $model->extraRespMethod,
                     $model->extraRespInfoStuff
                 );
+                $this->orderEventGenerateService->setPeopleStamp($generateInfo);
                 $this->orderEventGenerateRepository->save($generateInfo);
                 $this->documentOrderService->saveFilesFromModel($modelOrderEvent);
                 $this->orderPeopleService->updateOrderPeopleEvent(

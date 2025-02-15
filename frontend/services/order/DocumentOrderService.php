@@ -2,6 +2,8 @@
 
 namespace frontend\services\order;
 
+use common\repositories\general\PeopleStampRepository;
+use common\services\general\PeopleStampService;
 use frontend\models\work\general\OrderPeopleWork;
 use frontend\models\work\order\DocumentOrderWork;
 use common\helpers\files\filenames\DocumentOrderFileNameGenerator;
@@ -18,15 +20,20 @@ class DocumentOrderService
 
     private FileService $fileService;
     private DocumentOrderFileNameGenerator $filenameGenerator;
+    private PeopleStampService $peopleStampService;
+    private PeopleStampRepository $peopleStampRepository;
 
     public function __construct(
         FileService $fileService,
-        DocumentOrderFileNameGenerator $filenameGenerator
+        DocumentOrderFileNameGenerator $filenameGenerator,
+        PeopleStampService $peopleStampService,
+        PeopleStampRepository $peopleStampRepository
     )
     {
         $this->fileService = $fileService;
-
         $this->filenameGenerator = $filenameGenerator;
+        $this->peopleStampService = $peopleStampService;
+        $this->peopleStampRepository = $peopleStampRepository;
     }
     public function createOrderPeopleArray(array $data)
     {
@@ -135,5 +142,28 @@ class DocumentOrderService
         );
 
         return ['scan' => $scanFile, 'docs' => $docFiles, 'app' => $appFiles];
+    }
+    public function getPeopleStamps($model)
+    {
+        if ($model->executor_id != "") {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->executor_id);
+            $model->executor_id = $peopleStampId;
+        }
+        if ($model->signed_id != "") {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->signed_id);
+            $model->signed_id = $peopleStampId;
+        }
+        if ($model->bring_id != "") {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->bring_id);
+            $model->bring_id = $peopleStampId;
+        }
+    }
+    public function setResponsiblePeople($responsiblePeople, $model)
+    {
+        foreach ($responsiblePeople as $index => $person) {
+            $person = $this->peopleStampRepository->get($person);
+            $responsiblePeople[$index] = $person->people_id;
+        }
+        $model->responsible_id = $responsiblePeople;
     }
 }

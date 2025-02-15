@@ -35,7 +35,7 @@ class m241007_091939_add_document_order extends Migration
             'fk-document_order-1',
             'document_order',
             'signed_id',
-            'people',
+            'people_stamp',
             'id',
             'RESTRICT',
         );
@@ -44,7 +44,7 @@ class m241007_091939_add_document_order extends Migration
             'fk-document_order-2',
             'document_order',
             'executor_id',
-            'people',
+            'people_stamp',
             'id',
             'RESTRICT',
         );
@@ -53,7 +53,7 @@ class m241007_091939_add_document_order extends Migration
             'fk-document_order-3',
             'document_order',
             'bring_id',
-            'people',
+            'people_stamp',
             'id',
             'RESTRICT',
         );
