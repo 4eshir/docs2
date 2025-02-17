@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         }, 'filter' => [1 => "Да", 0 => "Нет"]],
                         ['attribute' => 'responsibleString', 'label' => 'Ответственный(-ые) работник(-и)'],
                         ['attribute' => 'eventBranches', 'label' => 'Мероприятие проводит', 'format' => 'raw'],
-                        ['attribute' => 'orderString', 'value' => function(EventWork $model){
+                        ['attribute' => 'orderStringRaw', 'value' => function(EventWork $model){
                             /*$order = \app\models\work\DocumentOrderWork::find()->where(['id' => $model->order_id])->one();
                             if ($order == null)
                                 return 'Нет';
@@ -107,7 +107,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'eventLevelAndType', 'encodeLabel' => false, 'format' => 'raw'],
             ['attribute' => 'address', 'encodeLabel' => false],
             ['attribute' => 'participantCount', 'encodeLabel' => false],
-            ['attribute' => 'orderName', 'encodeLabel' => false],
+            ['attribute' => 'orderNameRaw', 'encodeLabel' => false, 'format' => 'raw'],
             ['attribute' => 'eventWay', 'encodeLabel' => false],
             ['attribute' => 'regulationRaw', 'encodeLabel' => false, 'format' => 'raw'],
 
