@@ -15,20 +15,16 @@ class TempController extends Controller
 {
     public function actionCheck()
     {
-        $provider = SearchLog::byParams(
-            [LogInterface::LVL_INFO],
-            '1900-01-01',
-            '1900-01-01',
-            [2],
-            [],
-            ''
+        $provider = SearchLog::byUserIds(
+            [1, 2]
         );
-        //$provider->setMethodSearchData(MethodSearchData::create(['peoples-controller']));
-        var_dump(
-            ArrayHelper::getColumn(
-                SearchLogFacade::findLogs($provider),
-                'id'
+
+        $provider->setMethodSearchData(
+            MethodSearchData::create(
+                ['document-in-controller'], ['index']
             )
         );
+
+        var_dump(count(SearchLogFacade::findLogs($provider)));
     }
 }

@@ -90,12 +90,11 @@ class MethodSearchData implements SearchDataInterface
         ];
 
         foreach ($checks as $key => $values) {
-            var_dump($values);
-            if (isset($data[$key]) && in_array($data[$key], $values, true)) {
-                return true;
+            if (!empty($values) && !(isset($data[$key]) && in_array($data[$key], $values, true))) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 }
