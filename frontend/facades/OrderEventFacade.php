@@ -23,9 +23,7 @@ class OrderEventFacade
 {
     private OrderEventRepository $orderEventRepository;
     private PeopleRepository $peopleRepository;
-    private PeopleStampRepository $peopleStampRepository;
     private ForeignEventRepository $foreignEventRepository;
-    private OrderMainService $orderMainService;
     private ActParticipantService $actParticipantService;
     private TeamService $teamService;
     private ActParticipantRepository $actParticipantRepository;
@@ -35,9 +33,7 @@ class OrderEventFacade
     public function __construct(
         OrderEventRepository $orderEventRepository,
         PeopleRepository $peopleRepository,
-        PeopleStampRepository $peopleStampRepository,
         ForeignEventRepository $foreignEventRepository,
-        OrderMainService $orderMainService,
         ActParticipantService $actParticipantService,
         TeamService $teamService,
         ActParticipantRepository $actParticipantRepository,
@@ -47,9 +43,7 @@ class OrderEventFacade
     ){
         $this->orderEventRepository = $orderEventRepository;
         $this->peopleRepository = $peopleRepository;
-        $this->peopleStampRepository = $peopleStampRepository;
         $this->foreignEventRepository = $foreignEventRepository;
-        $this->orderMainService = $orderMainService;
         $this->actParticipantService = $actParticipantService;
         $this->teamService = $teamService;
         $this->actParticipantRepository = $actParticipantRepository;
@@ -62,7 +56,7 @@ class OrderEventFacade
         /* @var ForeignEventWork $modelForeignEvent */
         /* @var OrderEventForm $model */
         $modelOrderEvent = $this->orderEventRepository->get($id);
-        $people = $this->peopleStampRepository->getAll();
+        $people = $this->peopleRepository->getOrderedList();
         $modelForeignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
         $modelActForms = [new ActParticipantForm];
         $model = OrderEventForm::fill($modelOrderEvent, $modelForeignEvent);
@@ -86,10 +80,9 @@ class OrderEventFacade
     public function modelOrderEventFormFacade($model, $id)
     {
         $orderNumber = $model->order_number;
-        $responsiblePeople = ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id');
+        $this->documentOrderService->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $model);
         return [
             'orderNumber' => $orderNumber,
-            'responsiblePeople' => $responsiblePeople
         ];
     }
 }

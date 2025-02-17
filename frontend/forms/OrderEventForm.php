@@ -5,6 +5,7 @@ namespace frontend\forms;
 use app\models\work\order\OrderEventGenerateWork;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderEventWork;
 use common\events\EventTrait;
@@ -90,11 +91,6 @@ class OrderEventForm extends Model {
             [['order_number', 'order_name'], 'string', 'max' => 64],
             [['key_words', 'keyEventWords'], 'string', 'max' => 512],
             [['eventName' ,'dateBegin', 'dateEnd', 'city'], 'string'],
-            [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['signed_id' => 'id']],
-            [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['bring_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['executor_id' => 'id']],
-            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['creator_id' => 'id']],
-            [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['last_edit_id' => 'id']],
             [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
                 'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt']
         ];
@@ -171,12 +167,18 @@ class OrderEventForm extends Model {
     public function fillExtraInfo(OrderEventGenerateWork $model){
         $this->purpose = $model->purpose;
         $this->docEvent = $model->doc_event;
-        $this->respPeopleInfo = $model->resp_people_info_id;
+        $this->respPeopleInfo = (PeopleStampWork::findOne($model->resp_people_info_id))->people_id;
         $this->timeProvisionDay = $model->time_provision_day;
-        $this->extraRespInsert = $model->extra_resp_insert_id;
+        $this->extraRespInsert = (PeopleStampWork::findOne($model->extra_resp_insert_id))->people_id;
         $this->timeInsertDay = $model->time_insert_day;
-        $this->extraRespMethod = $model->extra_resp_method_id;
-        $this->extraRespInfoStuff = $model->extra_resp_info_stuff_id;
+        $this->extraRespMethod = (PeopleStampWork::findOne($model->extra_resp_method_id))->people_id;
+        $this->extraRespInfoStuff = (PeopleStampWork::findOne($model->extra_resp_info_stuff_id))->people_id;
 
+    }
+    public function setValuesForUpdate()
+    {
+        $this->bring_id = (PeopleStampWork::findOne($this->bring_id))->people_id;
+        $this->executor_id = (PeopleStampWork::findOne($this->executor_id))->people_id;
+        $this->signed_id = (PeopleStampWork::findOne($this->signed_id))->people_id;
     }
 }

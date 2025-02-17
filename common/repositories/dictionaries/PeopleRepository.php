@@ -109,7 +109,10 @@ class PeopleRepository
             throw new DomainException('Mock-провайдер не имеет реализации метода deletePosition');
         }
     }
-
+    public function getByIds($ids)
+    {
+        return PeopleWork::where(['id' => $ids])->all();
+    }
     public function save(PeopleWork $people)
     {
         return $this->provider->save($people);

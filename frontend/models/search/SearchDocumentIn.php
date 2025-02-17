@@ -5,6 +5,7 @@ namespace frontend\models\search;
 use common\components\dictionaries\base\DocumentStatusDictionary;
 use common\components\interfaces\SearchInterfaces;
 use common\helpers\DateFormatter;
+use common\helpers\search\SearchFieldHelper;
 use common\helpers\StringFormatter;
 use frontend\models\search\abstractBase\DocumentSearch;
 use frontend\models\work\document_in_out\DocumentInWork;
@@ -29,12 +30,12 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
     public function __construct(
         string $fullNumber = '',
         string $companyName = '',
-        int $sendMethod = -1,
+        int $sendMethod = SearchFieldHelper::EMPTY_FIELD,
         string $documentTheme = '',
         string $startDateSearch = '',
         string $finishDateSearch = '',
         string $executorName = '',
-        int $status = -1,
+        int $status = SearchFieldHelper::EMPTY_FIELD,
         string $keyWords = '',
         string $correspondentName = '',
         string $number = '',
@@ -163,7 +164,7 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
      * @return void
      */
     private function filterStatus(ActiveQuery $query) {
-        if (!empty($this->status) && $this->status != -1) {
+        if (!StringFormatter::isEmpty($this->status) && $this->status != SearchFieldHelper::EMPTY_FIELD) {
             $statusConditions = [
                 DocumentStatusDictionary::CURRENT => ['>=', 'local_date', date('Y') . '-01-01'],
                 DocumentStatusDictionary::ARCHIVE => ['<=', 'local_date', date('Y-m-d')],

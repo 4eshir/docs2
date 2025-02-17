@@ -31,11 +31,6 @@ class DocumentOrderWork extends DocumentOrder
                 'extensions' => 'ppt, pptx, xls, xlsx, pdf, png, jpg, doc, docx, zip, rar, 7z, tag, txt'],
         ]);
     }
-    public $responsiblePeople;
-    public function setResponsiblePeople($responsiblePeople)
-    {
-        $this->responsiblePeople = $responsiblePeople;
-    }
     public function getFullOrderName(){
         return $this->order_number . ' ' . $this->order_postfix . ' ' . $this->order_name;
     }
@@ -101,7 +96,7 @@ class DocumentOrderWork extends DocumentOrder
     }
     public function getExecutorName()
     {
-        $model = PeopleWork::findOne($this->executor_id);
+        $model = PeopleStampWork::findOne($this->executor_id);
         if($model != NULL) {
             return $model->getFullFio();
         }
@@ -127,5 +122,11 @@ class DocumentOrderWork extends DocumentOrder
                 break;
         }
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
+    }
+    public function setValuesForUpdate()
+    {
+        $this->bring_id = $this->bring->people_id;
+        $this->executor_id = $this->executor->people_id;
+        $this->signed_id = $this->signed->people_id;
     }
 }

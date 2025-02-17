@@ -126,7 +126,7 @@ class Event extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getEventBranches()
+    public function getBranches()
     {
         return $this->hasMany(EventBranch::class, ['event_id' => 'id']);
     }

@@ -4,6 +4,7 @@ namespace frontend\models\search;
 
 use common\components\interfaces\SearchInterfaces;
 use common\helpers\DateFormatter;
+use common\helpers\search\SearchFieldHelper;
 use common\helpers\StringFormatter;
 use frontend\models\work\event\EventWork;
 use yii\base\Model;
@@ -46,13 +47,13 @@ class SearchEvent extends Model implements SearchInterfaces
         string $startDateSearch = '',
         string $finishDateSearch = '',
         string $eventName = '',
-        int $eventLevel = -1,
-        int $eventType = -1,
-        int $eventWay = -1,
-        int $eventForm = -1,
-        int $eventScope = -1,
+        int $eventLevel = SearchFieldHelper::EMPTY_FIELD,
+        int $eventType = SearchFieldHelper::EMPTY_FIELD,
+        int $eventWay = SearchFieldHelper::EMPTY_FIELD,
+        int $eventForm = SearchFieldHelper::EMPTY_FIELD,
+        int $eventScope = SearchFieldHelper::EMPTY_FIELD,
         string $responsible = '',
-        int $branch = -1,
+        int $branch = SearchFieldHelper::EMPTY_FIELD,
         $config = []
     ) {
         parent::__construct($config);
@@ -97,12 +98,21 @@ class SearchEvent extends Model implements SearchInterfaces
                     'documentOrder' => function ($query) {
                         $query->alias('orderMain');
                     },
-                ])
-                ->joinWith([
-                    'regulation'
-                ])
-                ->joinWith([
-                    'scopes'
+                    'regulation',
+                    'scopes',
+                    'branches',
+                    'responsible1' => function ($query) {
+                        $query->alias('resp1');
+                    },
+                    'responsible1.people' => function ($query) {
+                        $query->alias('responsibleOne');
+                    },
+                    'responsible2' => function ($query) {
+                        $query->alias('resp2');
+                    },
+                    'responsible2.people' => function ($query) {
+                        $query->alias('responsibleTwo');
+                    },
                 ]);
 
         $dataProvider = new ActiveDataProvider([
@@ -208,7 +218,7 @@ class SearchEvent extends Model implements SearchInterfaces
      * @return void
      */
     public function filterWay(ActiveQuery $query) {
-        if (!empty($this->eventWay) && $this->eventWay !== -1) {
+        if (!StringFormatter::isEmpty($this->eventWay) && $this->eventWay !== SearchFieldHelper::EMPTY_FIELD) {
             $query->andFilterWhere(['event_way' => $this->eventWay]);
         }
     }
@@ -220,7 +230,7 @@ class SearchEvent extends Model implements SearchInterfaces
      * @return void
      */
     public function filterType(ActiveQuery $query) {
-        if (!empty($this->eventType) && $this->eventType !== -1) {
+        if (!StringFormatter::isEmpty($this->eventType) && $this->eventType !== SearchFieldHelper::EMPTY_FIELD) {
             $query->andFilterWhere(['event_type' => $this->eventType]);
         }
     }
@@ -232,7 +242,7 @@ class SearchEvent extends Model implements SearchInterfaces
      * @return void
      */
     public function filterLevel(ActiveQuery $query) {
-        if (!empty($this->eventLevel) && $this->eventLevel !== -1) {
+        if (!StringFormatter::isEmpty($this->eventLevel) && $this->eventLevel !== SearchFieldHelper::EMPTY_FIELD) {
             $query->andFilterWhere(['event_level' => $this->eventLevel]);
         }
     }
@@ -244,7 +254,7 @@ class SearchEvent extends Model implements SearchInterfaces
      * @return void
      */
     public function filterForm(ActiveQuery $query) {
-        if (!empty($this->eventForm) && $this->eventForm !== -1) {
+        if (!StringFormatter::isEmpty($this->eventForm) && $this->eventForm !== SearchFieldHelper::EMPTY_FIELD) {
             $query->andFilterWhere(['event_form' => $this->eventForm]);
         }
     }
@@ -256,12 +266,36 @@ class SearchEvent extends Model implements SearchInterfaces
      * @return void
      */
     public function filterScope(ActiveQuery $query) {
-        if (!empty($this->eventScope) && $this->eventScope !== -1) {
+        if (!StringFormatter::isEmpty($this->eventScope) && $this->eventScope !== SearchFieldHelper::EMPTY_FIELD) {
             $query->andFilterWhere(['participation_scope' => $this->eventScope]);
         }
     }
 
-    public function filterBrach(ActiveQuery $query) {
-        if ()
+    /**
+     * Фильтрация по отделам, которые проводят мероприятие
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterBranch(ActiveQuery $query) {
+        if (!StringFormatter::isEmpty($this->branch) && $this->branch !== SearchFieldHelper::EMPTY_FIELD) {
+            $query->andFilterWhere(['branch' => $this->branch]);
+        }
+    }
+
+    /**
+     * Фильтрация по ответственным
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterResponsible(ActiveQuery $query) {
+        if (!empty($this->responsible)) {
+            $responsibleLOWER = mb_strtolower($this->responsible);
+            $query->andFilterWhere(['or',
+                ['like', 'LOWER(responsibleOne.surname)', $responsibleLOWER],
+                ['like', 'LOWER(responsibleTwo.surname)', $responsibleLOWER]
+            ]);
+        }
     }
 }

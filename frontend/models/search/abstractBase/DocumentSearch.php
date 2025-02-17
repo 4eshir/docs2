@@ -3,6 +3,8 @@
 namespace frontend\models\search\abstractBase;
 
 use common\components\dictionaries\base\DocumentStatusDictionary;
+use common\helpers\search\SearchFieldHelper;
+use common\helpers\StringFormatter;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
@@ -34,12 +36,12 @@ class DocumentSearch extends Model
     public function __construct(
         string $fullNumber = '',
         string $companyName = '',
-        int $sendMethod = -1,
+        int $sendMethod = SearchFieldHelper::EMPTY_FIELD,
         string $documentTheme = '',
         string $startDateSearch = '',
         string $finishDateSearch = '',
         string $executorName = '',
-        int $status = -1,
+        int $status = SearchFieldHelper::EMPTY_FIELD,
         string $keyWords = '',
         string $correspondentName = '',
         string $number = ''
@@ -143,7 +145,7 @@ class DocumentSearch extends Model
      * @return void
      */
     private function filterSendMethod(ActiveQuery $query, int $sendMethod) {
-        if (!empty($sendMethod) && $sendMethod !== -1) {
+        if (!StringFormatter::isEmpty($sendMethod) && $sendMethod !== SearchFieldHelper::EMPTY_FIELD) {
             $query->andFilterWhere(['send_method' => $sendMethod]);
         }
     }
