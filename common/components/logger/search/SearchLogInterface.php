@@ -3,12 +3,13 @@
 namespace common\components\logger\search;
 
 use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 interface SearchLogInterface
 {
     /**
-     * Метод, собирающий запрос к БД на основе свойств класса
-     * @return ActiveQuery
+     * Составляет ActiveQuery по основным полям таблицы и возвращает результат
+     * @return array|ActiveRecord[]
      */
-    public function createQuery() : ActiveQuery;
+    public function findByBaseData() : array;
 }
