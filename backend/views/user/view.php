@@ -1,6 +1,7 @@
 <?php
 
 use backend\models\forms\UserForm;
+use common\models\work\UserWork;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -68,15 +69,19 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <h4><u>Общая информация</u></h4>
     <?= DetailView::widget([
-        'model' => $model->entity,
+        'model' => $model,
         'attributes' => [
-            'surname',
-            'firstname',
-            'patronymic',
-            'username',
+            'entity.surname',
+            'entity.firstname',
+            'entity.patronymic',
+            'entity.username',
             //'email',
-            'akaName',
-            ['attribute' => 'rolesString', 'label' => 'Роль в системе', 'format' => 'raw'],
+            ['attribute' => 'aka', 'label' => 'Также является', 'format' => 'raw', 'value' => function(UserForm $model) {
+                return $model->getAkaLink();
+            }],
+            ['attribute' => 'rules', 'label' => 'Разрешения', 'format' => 'raw', 'value' => function(UserForm $model) {
+                return implode('<br>', $model->getPermissions());
+            }],
         ],
     ]) ?>
     <!--

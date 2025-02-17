@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\educational;
 
+use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\common\RequestHelper;
@@ -31,6 +32,8 @@ use Yii;
 
 class TrainingGroupController extends DocumentController
 {
+    use AccessControl;
+
     private TrainingGroupService $service;
     private JournalService $journalService;
     private TrainingProgramRepository $trainingProgramRepository;
@@ -376,10 +379,10 @@ class TrainingGroupController extends DocumentController
 
     public function beforeAction($action)
     {
-        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
-            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
-            $this->redirect(Yii::$app->request->referrer);
-            return false;
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
         }
 
         return parent::beforeAction($action);

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\dictionaries;
 
+use common\components\traits\AccessControl;
 use common\controllers\DocumentController;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\general\FilesRepository;
@@ -21,6 +22,8 @@ use yii\web\UploadedFile;
  */
 class AuditoriumController extends DocumentController
 {
+    use AccessControl;
+
     private AuditoriumRepository $repository;
     private AuditoriumService $service;
 
@@ -167,10 +170,10 @@ class AuditoriumController extends DocumentController
 
     public function beforeAction($action)
     {
-        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
-            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
-            $this->redirect(Yii::$app->request->referrer);
-            return false;
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
         }
 
         return parent::beforeAction($action);

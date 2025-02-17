@@ -32,7 +32,10 @@ class AuthController extends Controller
             if ($user && $user->validatePassword($model->password)) {
                 $duration = $model->rememberMe ? 3600 * 24 * 365 : 3600 * 12;
                 Yii::$app->user->login($user, $duration);
-                return $this->redirect(['site/index']);
+                return
+                    Yii::$app->session->get('previous_url') ?
+                    $this->redirect(Yii::$app->session->get('previous_url')) :
+                    $this->redirect(['site/index']);
             }
 
             Yii::$app->session->setFlash('danger', 'Неверное имя пользователя и/или пароль');

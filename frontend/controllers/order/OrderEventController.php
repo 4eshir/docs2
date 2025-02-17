@@ -5,6 +5,7 @@ namespace frontend\controllers\order;
 use app\components\DynamicWidget;
 use app\models\work\order\OrderEventGenerateWork;
 use common\components\dictionaries\base\NomenclatureDictionary;
+use common\components\traits\AccessControl;
 use common\models\scaffold\OrderEventGenerate;
 use common\repositories\order\OrderEventGenerateRepository;
 use frontend\models\work\event\ForeignEventWork;
@@ -39,6 +40,8 @@ use Yii;
 use yii\helpers\ArrayHelper;
 class OrderEventController extends DocumentController
 {
+    use AccessControl;
+
     private OrderPeopleService $orderPeopleService;
     private DocumentOrderService $documentOrderService;
     private PeopleStampRepository $peopleStampRepository;
@@ -381,10 +384,10 @@ class OrderEventController extends DocumentController
 
     public function beforeAction($action)
     {
-        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
-            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
-            $this->redirect(Yii::$app->request->referrer);
-            return false;
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
         }
 
         return parent::beforeAction($action);

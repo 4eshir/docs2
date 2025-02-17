@@ -3,6 +3,7 @@
 namespace frontend\controllers\responsibility;
 
 use common\components\BaseConsts;
+use common\components\traits\AccessControl;
 use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\dictionaries\PeopleRepository;
@@ -27,6 +28,8 @@ use yii\filters\VerbFilter;
  */
 class LocalResponsibilityController extends Controller
 {
+    use AccessControl;
+
     private LocalResponsibilityRepository $responsibilityRepository;
     private LegacyResponsibleRepository $legacyRepository;
     private AuditoriumRepository $auditoriumRepository;
@@ -303,10 +306,10 @@ class LocalResponsibilityController extends Controller
 
     public function beforeAction($action)
     {
-        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
-            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
-            $this->redirect(Yii::$app->request->referrer);
-            return false;
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
         }
 
         return parent::beforeAction($action);

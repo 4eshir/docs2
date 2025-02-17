@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\event;
 
+use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\Model;
@@ -24,6 +25,8 @@ use yii\web\Controller;
 
 class ForeignEventController extends DocumentController
 {
+    use AccessControl;
+
     private ForeignEventService $service;
     private OrderEventRepository $orderEventRepository;
     private PeopleRepository $peopleRepository;
@@ -160,10 +163,10 @@ class ForeignEventController extends DocumentController
 
     public function beforeAction($action)
     {
-        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
-            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
-            $this->redirect(Yii::$app->request->referrer);
-            return false;
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
         }
 
         return parent::beforeAction($action);

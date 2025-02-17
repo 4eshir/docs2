@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\dictionaries;
 
+use common\components\traits\AccessControl;
 use common\repositories\dictionaries\PositionRepository;
 use DomainException;
 use frontend\models\search\SearchPosition;
@@ -16,6 +17,7 @@ use yii\web\NotFoundHttpException;
  */
 class PositionController extends Controller
 {
+    use AccessControl;
     private PositionRepository $repository;
     private PositionService $service;
 
@@ -109,10 +111,10 @@ class PositionController extends Controller
 
     public function beforeAction($action)
     {
-        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
-            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
-            $this->redirect(Yii::$app->request->referrer);
-            return false;
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
         }
 
         return parent::beforeAction($action);
