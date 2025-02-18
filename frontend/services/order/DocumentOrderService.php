@@ -40,7 +40,7 @@ class DocumentOrderService
         $result = [];
         foreach ($data as $item) {
             /** @var OrderPeopleWork $item */
-            $result[] = $item->getFullFio();
+            $result[] = ($this->peopleStampRepository->get($item->people_id))->getFullFio();
         }
         return $result;
     }

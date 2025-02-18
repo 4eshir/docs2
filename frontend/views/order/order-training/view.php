@@ -1,4 +1,6 @@
 <?php
+
+use common\helpers\html\HtmlBuilder;
 use frontend\models\work\order\OrderTrainingWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -11,12 +13,18 @@ use yii\widgets\DetailView;
 /* @var $modelResponsiblePeople */
 /* @var $groups */
 /* @var $participants */
+/* @var $error */
 $this->title = $model->order_name;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об образовательной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="order-training-view">
+    <?php
+    if ($error) {
+        echo HtmlBuilder::createInfoMessage('Невозможно применить действие к ученикам.');
+    }
+    ?>
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
         <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -70,11 +78,18 @@ $this->params['breadcrumbs'][] = $this->title;
         DetailView::widget([
             'model' => $model,
             'attributes' => [
-                ['label' => 'Группы в приказе', 'value' => $groups],
-                ['label' => 'Обучающиеся', 'value' => $participants],
+                [
+                    'label' => 'Группы в приказе',
+                    'value' => $groups,
+                    'format' => 'raw'
+
+                ],
+                [
+                    'label' => 'Обучающиеся',
+                    'value' => $participants,
+                    'format' => 'raw'
+                ],
             ]
-
-
         ]);
     ?>
 </div>

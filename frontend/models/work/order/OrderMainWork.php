@@ -28,7 +28,8 @@ class OrderMainWork extends DocumentOrderWork
             'orderName' => 'Название приказа',
             'bringName' => 'Проект вносит',
             'executorName' => 'Исполнитель',
-            'state' => 'Статус'
+            'state' => 'Статус',
+            'archive' => 'Архивный приказ',
         ]);
     }
     public function rules()

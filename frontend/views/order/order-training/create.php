@@ -2,7 +2,7 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model \app\models\work\order\OrderTrainingWork */
+/* @var $model \frontend\models\work\order\OrderTrainingWork */
 /* @var $model */
 /* @var $people */
 /* @var $groups */

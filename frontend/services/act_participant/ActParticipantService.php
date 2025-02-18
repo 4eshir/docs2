@@ -2,6 +2,8 @@
 
 namespace frontend\services\act_participant;
 
+use common\repositories\general\PeopleStampRepository;
+use common\services\general\PeopleStampService;
 use frontend\services\act_participant\ActParticipantBranchService;
 use frontend\services\act_participant\SquadParticipantService;
 use frontend\events\act_participant\ActParticipantCreateEvent;
@@ -34,8 +36,8 @@ class ActParticipantService
     private FileService $fileService;
     private SquadParticipantService $squadParticipantService;
     private SquadParticipantRepository $squadParticipantRepository;
-    private PeopleRepository $peopleRepository;
     private ActParticipantBranchService $actParticipantBranchService;
+    private PeopleStampService $peopleStampService;
 
     public function __construct(
         TeamRepository $teamRepository,
@@ -45,8 +47,8 @@ class ActParticipantService
         FileService $fileService,
         SquadParticipantService $squadParticipantService,
         SquadParticipantRepository $squadParticipantRepository,
-        PeopleRepository $peopleRepository,
-        ActParticipantBranchService $actParticipantBranchService
+        ActParticipantBranchService $actParticipantBranchService,
+        PeopleStampService $peopleStampService
     )
     {
         $this->teamRepository = $teamRepository;
@@ -56,8 +58,8 @@ class ActParticipantService
         $this->fileService = $fileService;
         $this->squadParticipantService = $squadParticipantService;
         $this->squadParticipantRepository = $squadParticipantRepository;
-        $this->peopleRepository = $peopleRepository;
         $this->actParticipantBranchService = $actParticipantBranchService;
+        $this->peopleStampService = $peopleStampService;
     }
     public function getFilesInstance(ActParticipantForm $modelActParticipant, $index)
     {
@@ -137,6 +139,7 @@ class ActParticipantService
                     $modelActParticipantForm->nomination,
                     $modelActParticipantForm->form,
                 );
+                $this->setPeopleStamp($modelAct);
                 $modelAct->actFiles = $modelActParticipantForm->actFiles;
                 if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
                     $this->actParticipantRepository->save($modelAct);
@@ -152,6 +155,20 @@ class ActParticipantService
                 $index++;
             }
         }
+    }
+    public function setPeopleStamp(ActParticipantWork $model)
+    {
+        if ($model->teacher_id != ""){
+            $model->teacher_id = $this->peopleStampService->createStampFromPeople($model->teacher_id);
+        }
+        if ($model->teacher2_id != ""){
+            $model->teacher2_id = $this->peopleStampService->createStampFromPeople($model->teacher2_id);
+        }
+    }
+    public function getPeopleStamp(ActParticipantWork $model)
+    {
+        $model->teacher_id = $model->teacher->people_id;
+        $model->teacher2_id = $model->teacher2->people_id;
     }
     public function updateSquadParticipant(ActParticipantWork $model, $participant)
     {
