@@ -15,7 +15,7 @@ class TrainingGroupRepository
 {
     use CommonDatabaseFunctions;
 
-    private $provider;
+    private TrainingGroupProviderInterface $provider;
     private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
     private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
     public function __construct(
@@ -50,6 +50,66 @@ class TrainingGroupRepository
         } else {
             throw new DomainException('Mock-провайдер не имеет реализации метода getByTeacher');
         }
+    }
+
+    /**
+     * Возвращает все группы, попадающие любым периодом в указанный промежуток
+     *
+     * @param string $date1
+     * @param string $date2
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getBetweenDates(string $date1, string $date2)
+    {
+        return $this->provider->getBetweenDates($date1, $date2);
+    }
+
+    /**
+     * Возвращает все группы, начавшие обучение до промежутка и закончившие в промежуток
+     *
+     * @param string $date1
+     * @param string $date2
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getStartBeforeFinishInDates(string $date1, string $date2)
+    {
+        return $this->provider->getStartBeforeFinishInDates($date1, $date2);
+    }
+
+    /**
+     * Возвращает все группы, начавшие обучение в промежуток и закончившие после промежутка
+     *
+     * @param string $date1
+     * @param string $date2
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getStartInFinishAfterDates(string $date1, string $date2)
+    {
+        return $this->provider->getStartInFinishAfterDates($date1, $date2);
+    }
+
+    /**
+     * Возвращает все группы, начавшие занятия в промежуток и закончившие в промежуток
+     *
+     * @param string $date1
+     * @param string $date2
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getStartInFinishInDates(string $date1, string $date2)
+    {
+        return $this->provider->getStartInFinishInDates($date1, $date2);
+    }
+
+    /**
+     * Возвращает все группы, начавшие занятия до промежутка и закончившие после промежутка
+     *
+     * @param string $date1
+     * @param string $date2
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getStartBeforeFinishAfterDates(string $date1, string $date2)
+    {
+        return $this->provider->getStartBeforeFinishAfterDates($date1, $date2);
     }
 
     public function getGroupsForCertificates()

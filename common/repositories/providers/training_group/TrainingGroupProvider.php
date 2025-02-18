@@ -5,6 +5,7 @@ namespace common\repositories\providers\training_group;
 
 
 use common\helpers\files\FilesHelper;
+use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
@@ -47,6 +48,49 @@ class TrainingGroupProvider implements TrainingGroupProviderInterface
         return TrainingGroupWork::find()
             ->joinWith(['teacherWork teacherWork'])
             ->where(['teacherWork.people_id' => $teacherId])
+            ->all();
+    }
+
+    public function getBetweenDates(string $date1, string $date2)
+    {
+        return TrainingGroupWork::find()
+            ->where(['BETWEEN', 'start_date', $date1, $date2])
+            ->orWhere(['BETWEEN', 'finish_date', $date1, $date2])
+            ->orWhere(['and',
+                ['<', 'start_data', $date1],
+                ['>', 'finish_date', $date2]
+            ])->all();
+    }
+
+    public function getStartBeforeFinishInDates(string $date1, string $date2)
+    {
+        return TrainingGroupWork::find()
+            ->where(['>', 'start_date', $date1])
+            ->andWhere(['BETWEEN', 'finish_date', $date1, $date2])
+            ->all();
+    }
+
+    public function getStartInFinishAfterDates(string $date1, string $date2)
+    {
+        return TrainingGroupWork::find()
+            ->where(['BETWEEN', 'start_date', $date1, $date2])
+            ->andWhere(['<', 'finish_date', $date2])
+            ->all();
+    }
+
+    public function getStartInFinishInDates(string $date1, string $date2)
+    {
+        return TrainingGroupWork::find()
+            ->where(['BETWEEN', 'start_date', $date1, $date2])
+            ->andWhere(['BETWEEN', 'finish_date', $date1, $date2])
+            ->all();
+    }
+
+    public function getStartBeforeFinishAfterDates(string $date1, string $date2)
+    {
+        return TrainingGroupWork::find()
+            ->where(['>', 'start_date', $date1])
+            ->andWhere(['<', 'finish_date', $date2])
             ->all();
     }
 

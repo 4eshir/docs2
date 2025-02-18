@@ -25,6 +25,6 @@ class TempController extends Controller
             )
         );
 
-        var_dump(count(SearchLogFacade::findLogs($provider)));
+        SearchLogFacade::findLogs($provider);
     }
 }

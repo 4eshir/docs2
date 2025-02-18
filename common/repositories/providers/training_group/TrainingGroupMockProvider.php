@@ -67,4 +67,49 @@ class TrainingGroupMockProvider implements TrainingGroupProviderInterface
         unset($this->dataStore[$model->id]);
         return true;
     }
+
+    public function getBetweenDates(string $date1, string $date2)
+    {
+        return array_filter($this->dataStore, function($item) use ($date1, $date2) {
+            return
+                $item['start_date'] >= $date1 && $item['start_date'] <= $date2 ||
+                $item['finish_date'] >= $date1 && $item['finish_date'] <= $date2 ||
+                $item['start_date'] < $date1 && $item['finish_date'] > $date2;
+        });
+    }
+
+    public function getStartBeforeFinishInDates(string $date1, string $date2)
+    {
+        return array_filter($this->dataStore, function($item) use ($date1, $date2) {
+            return
+                $item['start_date'] > $date1 &&
+                $item['finish_date'] >= $date1 && $item['finish_date'] <= $date2;
+        });
+    }
+
+    public function getStartInFinishAfterDates(string $date1, string $date2)
+    {
+        return array_filter($this->dataStore, function($item) use ($date1, $date2) {
+            return
+                $item['start_date'] >= $date1 && $item['start_date'] <= $date2 ||
+                $item['finish_date'] < $date2;
+        });
+    }
+
+    public function getStartInFinishInDates(string $date1, string $date2)
+    {
+        return array_filter($this->dataStore, function($item) use ($date1, $date2) {
+            return
+                $item['start_date'] >= $date1 && $item['start_date'] <= $date2 &&
+                $item['finish_date'] >= $date1 && $item['finish_date'] <= $date2;
+        });
+    }
+
+    public function getStartBeforeFinishAfterDates(string $date1, string $date2)
+    {
+        return TrainingGroupWork::find()
+            ->where(['>', 'start_date', $date1])
+            ->andWhere(['<', 'finish_date', $date2])
+            ->all();
+    }
 }

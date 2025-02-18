@@ -36,6 +36,14 @@ AppAsset::register($this);
     ]);
     $menuItems = [
         ['label' => 'Пользователи', 'url' => ['/user/index']],
+        [
+            'label' => 'Отчеты',
+            'items' => [
+                ['label' => 'Отчеты по обучающимся', 'url' => ['/report/query-report/man-hours']],
+                ['label' => 'Отчеты по мероприятиям', 'url' => ['/report/query-report/foreign-event']],
+                ['label' => 'Отчеты по формам', 'url' => ['/report/form-report/choose-form']],
+            ],
+        ],
     ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];

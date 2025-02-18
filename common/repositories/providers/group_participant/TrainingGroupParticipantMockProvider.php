@@ -18,10 +18,10 @@ class TrainingGroupParticipantMockProvider implements TrainingGroupParticipantPr
         return $this->data[$id] ?? null;
     }
 
-    public function getParticipantsFromGroup($groupId)
+    public function getParticipantsFromGroups(array $groupId)
     {
         return array_filter($this->data, function($item) use ($groupId) {
-            return $item['training_group_id'] === $groupId;
+            return in_array($item['training_group_id'], $groupId);
         });
     }
 

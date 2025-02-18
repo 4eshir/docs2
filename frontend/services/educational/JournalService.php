@@ -51,7 +51,7 @@ class JournalService
     public function createJournal($groupId)
     {
         $lessons = $this->lessonRepository->getLessonsFromGroup($groupId);
-        $participants = $this->participantRepository->getParticipantsFromGroup($groupId);
+        $participants = $this->participantRepository->getParticipantsFromGroups([$groupId]);
 
         // Конвертируем занятия
         $newLessons = [];

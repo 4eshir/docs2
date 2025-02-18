@@ -7,6 +7,11 @@ use frontend\models\work\educational\training_group\TrainingGroupWork;
 interface TrainingGroupProviderInterface
 {
     public function get($id);
+    public function getBetweenDates(string $date1, string $date2);
+    public function getStartBeforeFinishInDates(string $date1, string $date2);
+    public function getStartInFinishAfterDates(string $date1, string $date2);
+    public function getStartInFinishInDates(string $date1, string $date2);
+    public function getStartBeforeFinishAfterDates(string $date1, string $date2);
     public function getParticipants($id);
     public function getLessons($id);
     public function getExperts($id);

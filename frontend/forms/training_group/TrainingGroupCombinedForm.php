@@ -102,7 +102,7 @@ class TrainingGroupCombinedForm extends Model
 
     private function fillParticipantsInfo(TrainingGroupWork $model)
     {
-        $this->participants = (Yii::createObject(TrainingGroupParticipantRepository::class))->getParticipantsFromGroup($model->id);
+        $this->participants = (Yii::createObject(TrainingGroupParticipantRepository::class))->getParticipantsFromGroups([$model->id]);
     }
 
     private function fillLessonsInfo(TrainingGroupWork $model)
