@@ -53,13 +53,6 @@ class m240620_110736_first_wave extends Migration
             'updated_at' => $this->timestamp(),
         ]);
 
-        $this->createTable('event_external', [
-            'id' => $this->primaryKey(),
-            'name' => $this->string(256)->notNull(),
-            'created_at' => $this->timestamp(),
-            'updated_at' => $this->timestamp(),
-        ]);
-
         $this->createTable('foreign_event_participants', [
             'id' => $this->primaryKey(),
             'firstname' => $this->string(64)->notNull(),

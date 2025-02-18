@@ -152,7 +152,7 @@ class SearchEvent extends Model implements SearchInterfaces
             'desc' => ['participant_count' => SORT_DESC],
         ];
 
-        $dataProvider->sort->attributes['orderName'] = [
+        $dataProvider->sort->attributes['orderNameRaw'] = [
             'asc' => ['orderMain.order_name' => SORT_ASC],
             'desc' => ['orderMain.order_name' => SORT_DESC],
         ];
