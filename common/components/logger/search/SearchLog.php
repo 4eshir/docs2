@@ -6,6 +6,7 @@ use common\models\work\LogWork;
 use common\repositories\log\LogRepository;
 use Yii;
 use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 class SearchLog implements SearchLogInterface
 {
@@ -34,7 +35,7 @@ class SearchLog implements SearchLogInterface
             $methodData = new MethodSearchData();
         }
 
-        if (is_null($methodData)) {
+        if (is_null($repository)) {
             $repository = Yii::createObject(LogRepository::class);
         }
 
@@ -127,33 +128,33 @@ class SearchLog implements SearchLogInterface
     }
 
     /**
-     * Составляет ActiveQuery по основным полям таблицы
+     * Составляет ActiveQuery по основным полям таблицы и возвращает результат
      *
-     * @return ActiveQuery
+     * @return array|ActiveRecord[]
      */
-    public function createQuery(): ActiveQuery
+    public function findByBaseData() : array
     {
         $baseQuery = $this->repository->query();
-        if (count($this->levels) > 0) {
+        if (isset($this->levels) && count($this->levels) > 0) {
             $baseQuery = $baseQuery->andWhere(['IN', 'level', $this->levels]);
         }
-        if (count($this->userIds) > 0) {
+        if (isset($this->userIds) && count($this->userIds) > 0) {
             $baseQuery = $baseQuery->andWhere(['IN', 'user_id', $this->userIds]);
         }
-        if (count($this->types) > 0) {
+        if (isset($this->types) && count($this->types) > 0) {
             $baseQuery = $baseQuery->andWhere(['IN', 'type', $this->types]);
         }
-        if ($this->startDatetime != '1900-01-01') {
+        if (isset($this->startDatetime) && $this->startDatetime != '1900-01-01') {
             $baseQuery = $baseQuery->andWhere(['>=', 'datetime', $this->startDatetime]);
         }
-        if ($this->endDatetime != '1900-01-01') {
+        if (isset($this->endDatetime) && $this->endDatetime != '1900-01-01') {
             $baseQuery = $baseQuery->andWhere(['<=', 'datetime', $this->endDatetime]);
         }
-        if ($this->partText != '') {
+        if (isset($this->partText) && $this->partText != '') {
             $baseQuery = $baseQuery->andWhere(['LIKE', 'text', $this->partText]);
         }
 
-        return $baseQuery;
+        return $this->repository->findByQuery($baseQuery);
     }
 
     /**

@@ -4,28 +4,27 @@ namespace console\controllers;
 
 use common\components\logger\base\LogInterface;
 use common\components\logger\LogFactory;
+use common\components\logger\search\MethodSearchData;
+use common\components\logger\search\SearchLog;
+use common\components\logger\SearchLogFacade;
 use Yii;
 use yii\console\Controller;
+use yii\helpers\ArrayHelper;
 
 class TempController extends Controller
 {
     public function actionCheck()
     {
-        LogFactory::createBaseLog(
-            '2025-02-13',
-            LogInterface::LVL_INFO,
-            1,
-            'TEST TEST'
+        $provider = SearchLog::byUserIds(
+            [1, 2]
         );
 
-        LogFactory::createMethodLog(
-            '2025-02-13',
-            LogInterface::LVL_INFO,
-            1,
-            'METHOD METHOD',
-            'document-in-controller',
-            'index',
-            LogInterface::TYPE_METHOD
+        $provider->setMethodSearchData(
+            MethodSearchData::create(
+                ['document-in-controller'], ['index']
+            )
         );
+
+        SearchLogFacade::findLogs($provider);
     }
 }

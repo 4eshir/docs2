@@ -161,4 +161,23 @@ class StringFormatter
                 return strtolower(implode('', $words));
         }
     }
+
+    /**
+     * Возвращает доменное имя из любого валидного URL
+     *
+     * @param string $url
+     * @return string
+     */
+    public static function getDomainName(string $url) : string
+    {
+        $url = preg_replace('/^https?:\/\//i', '', $url);
+        $parts = explode('/', $url);
+        $domain = array_shift($parts);
+
+        if (($pos = strpos($domain, ':')) !== false) {
+            $domain = substr($domain, 0, $pos);
+        }
+
+        return $domain;
+    }
 }

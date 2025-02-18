@@ -28,6 +28,40 @@ class MethodSearchData implements SearchDataInterface
     }
 
     /**
+     * @var string[] $controllerNames
+     * @var string[] $actionNames
+     * @var int[] $callTypes
+     */
+    public static function create(
+        array $controllerNames = [],
+        array $actionNames = [],
+        array $callTypes = []
+    ) : MethodSearchData
+    {
+        $entity = new static();
+        $entity->controllerNames = $controllerNames;
+        $entity->actionNames = $actionNames;
+        $entity->callTypes = $callTypes;
+
+        return $entity;
+    }
+
+    /**
+     * Проверка на хотя бы один установленный фильтр
+     * Если фильтры не установлены, то haveData по умолчанию true
+     *
+     * @return bool
+     */
+    private function isHaveFilter() : bool
+    {
+        return
+            count($this->controllerNames) > 0 ||
+            count($this->actionNames) > 0 ||
+            count($this->callTypes) > 0;
+    }
+
+
+    /**
      * Проверяет, есть ли в данных в виде json строки совпадающие key-value значения
      * Пример:
      *   addData {controllerName: 'test', callType: 12}
@@ -39,15 +73,16 @@ class MethodSearchData implements SearchDataInterface
      */
     public function haveData(string $addData) : bool
     {
-        // Парсим JSON строку
-        $data = json_decode($addData, true);
-
-        // Проверяем, корректно ли распарсили JSON
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return false; // Возвращаем false, если есть ошибка парсинга
+        if (!$this->isHaveFilter()) {
+            return true;
         }
 
-        // Сопоставление ключей с массивами
+        $data = json_decode($addData, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+
         $checks = [
             'controllerName' => $this->controllerNames,
             'actionName' => $this->actionNames,
@@ -55,11 +90,11 @@ class MethodSearchData implements SearchDataInterface
         ];
 
         foreach ($checks as $key => $values) {
-            if (isset($data[$key]) && in_array($data[$key], $values, true)) {
-                return true;
+            if (!empty($values) && !(isset($data[$key]) && in_array($data[$key], $values, true))) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
 }

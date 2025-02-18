@@ -23,6 +23,11 @@ class TeacherGroupRepository
         $this->provider = $provider;
     }
 
+    public function getAll()
+    {
+        return $this->provider->getAll();
+    }
+
     public function getAllTeachersFromGroup($groupId)
     {
         return $this->provider->getAllTeachersFromGroup($groupId);

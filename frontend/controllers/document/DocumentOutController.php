@@ -1,6 +1,7 @@
 <?php
 
 namespace frontend\controllers\document;
+use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\helpers\ButtonsFormatter;
 use common\helpers\DateFormatter;
@@ -29,6 +30,8 @@ use yii\web\Controller;
 
 class DocumentOutController extends Controller
 {
+    use AccessControl;
+
     private DocumentOutRepository $repository;
     private PeopleRepository $peopleRepository;
     private PositionRepository $positionRepository;
@@ -268,12 +271,12 @@ class DocumentOutController extends Controller
     
     public function beforeAction($action)
     {
-        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
-            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
-            $this->redirect(Yii::$app->request->referrer);
-            return false;
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
         }
 
-        return parent::beforeAction($action);
+        return parent::beforeAction($action);;
     }
 }

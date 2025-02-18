@@ -3,6 +3,8 @@
 namespace frontend\controllers\dictionaries;
 
 use app\components\DynamicWidget;
+use common\components\traits\AccessControl;
+use common\helpers\StringFormatter;
 use frontend\events\dictionaries\PeopleEventCreate;
 use frontend\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
 use common\components\dictionaries\base\BranchDictionary;
@@ -11,6 +13,7 @@ use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\dictionaries\PositionRepository;
 use DomainException;
 use frontend\models\search\SearchPeople;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\services\dictionaries\PeopleService;
@@ -19,6 +22,8 @@ use yii\web\Controller;
 
 class PeopleController extends Controller
 {
+    use AccessControl;
+
     private PeopleRepository $repository;
     private PeopleService $service;
     private CompanyRepository $companyRepository;
@@ -139,7 +144,7 @@ class PeopleController extends Controller
 
         if (count($deleteErrors) == 0) {
             if ($this->repository->delete($model)) {
-                Yii::$app->session->addFlash('success', $model->getFIO(PeopleWork::FIO_FULL).' успешно удален');
+                Yii::$app->session->addFlash('success', $model->getFIO(PersonInterface::FIO_FULL).' успешно удален');
             }
             else {
                 Yii::$app->session->addFlash('error', 'Произошла ошибка при удалении человека');
@@ -161,10 +166,10 @@ class PeopleController extends Controller
 
     public function beforeAction($action)
     {
-        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
-            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
-            $this->redirect(Yii::$app->request->referrer);
-            return false;
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
         }
 
         return parent::beforeAction($action);

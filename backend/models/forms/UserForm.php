@@ -7,12 +7,16 @@ use backend\events\user\DeleteUserPermissionEvent;
 use common\components\compare\UserPermissionCompare;
 use common\components\traits\Math;
 use common\events\EventTrait;
+use common\helpers\StringFormatter;
 use common\Model;
 use common\models\work\UserWork;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\rubac\PermissionFunctionWork;
 use frontend\models\work\rubac\UserPermissionFunctionWork;
 use Yii;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 class UserForm extends Model
 {
@@ -24,6 +28,8 @@ class UserForm extends Model
     /**
      * @var PeopleWork[] $peoples
      * @var int[] $userPermissions
+     * @var int[] $prevUserPermissions
+     * @var PermissionFunctionWork[] $prevUserPermissions
      * @var PermissionFunctionWork[] $permissions
      */
     public array $peoples;
@@ -80,8 +86,13 @@ class UserForm extends Model
 
     public function savePermissions()
     {
-        $addPermissions = array_diff($this->userPermissions, $this->prevUserPermissions);
-        $delPermissions = array_diff($this->prevUserPermissions, $this->userPermissions);
+        $prevPermissionIds = ArrayHelper::getColumn(
+            $this->prevUserPermissions,
+            'id'
+        );
+
+        $addPermissions = array_diff($this->userPermissions, $prevPermissionIds);
+        $delPermissions = array_diff($prevPermissionIds, $this->userPermissions);
 
         foreach ($addPermissions as $permission) {
             $this->recordEvent(new AddUserPermissionEvent($this->entity->id, $permission), UserPermissionFunctionWork::class);
@@ -90,5 +101,18 @@ class UserForm extends Model
         foreach ($delPermissions as $permission) {
             $this->recordEvent(new DeleteUserPermissionEvent($this->entity->id, $permission), UserPermissionFunctionWork::class);
         }
+    }
+
+    public function getPermissions()
+    {
+        return ArrayHelper::map($this->prevUserPermissions, 'id', 'name');
+    }
+
+    public function getAkaLink()
+    {
+        return StringFormatter::stringAsLink(
+            $this->entity->akaWork->getFIO(PersonInterface::FIO_WITH_POSITION),
+            Yii::$app->params['frontendDomain'] . Url::to(['/dictionaries/people/view', 'id' => $this->entity->aka])
+        );
     }
 }

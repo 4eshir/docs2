@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\order;
 
+use common\components\traits\AccessControl;
 use common\repositories\dictionaries\PeopleRepository;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderMainWork;
@@ -34,6 +35,8 @@ use yii\web\Controller;
 
 class OrderMainController extends DocumentController
 {
+    use AccessControl;
+
     private OrderMainRepository $repository;
     private DocumentOrderRepository $documentOrderRepository;
     private OrderMainService $service;
@@ -203,10 +206,10 @@ class OrderMainController extends DocumentController
 
     public function beforeAction($action)
     {
-        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
-            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
-            $this->redirect(Yii::$app->request->referrer);
-            return false;
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
         }
         return parent::beforeAction($action);
     }

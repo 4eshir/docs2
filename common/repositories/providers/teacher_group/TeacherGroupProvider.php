@@ -8,6 +8,11 @@ use Yii;
 
 class TeacherGroupProvider implements TeacherGroupProviderInterface
 {
+    public function getAll()
+    {
+        return TeacherGroupWork::find()->all();
+    }
+
     public function getAllTeachersFromGroup($groupId)
     {
         return TeacherGroupWork::find()->where(['training_group_id' => $groupId])->all();

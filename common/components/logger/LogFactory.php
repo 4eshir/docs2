@@ -5,6 +5,7 @@ namespace common\components\logger;
 use common\components\logger\base\BaseLog;
 use common\components\logger\base\LogInterface;
 use common\components\logger\method\MethodLog;
+use common\components\logger\search\SearchLog;
 
 class LogFactory
 {

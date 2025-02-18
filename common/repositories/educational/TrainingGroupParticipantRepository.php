@@ -44,9 +44,9 @@ class TrainingGroupParticipantRepository
         return $this->provider->getByParticipantIds($ids);
     }
 
-    public function getParticipantsFromGroup($groupId)
+    public function getParticipantsFromGroups(array $groupId)
     {
-        return $this->provider->getParticipantsFromGroup($groupId);
+        return $this->provider->getParticipantsFromGroups($groupId);
     }
 
     public function prepareCreate($groupId, $participantId, $sendMethod)

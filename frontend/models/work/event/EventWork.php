@@ -9,6 +9,7 @@ use common\helpers\StringFormatter;
 use common\models\scaffold\Event;
 use common\models\work\UserWork;
 use common\repositories\event\EventRepository;
+use common\repositories\order\OrderMainRepository;
 use common\repositories\regulation\RegulationRepository;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
@@ -82,7 +83,7 @@ class EventWork extends Event
             'eventLevel' => 'Уровень<br>мероприятия',
             'participantCount' => 'Кол-во<br>участников',
             'isFederal' => 'Входит<br>в ФП',
-            'orderName' => 'Приказ',
+            'orderNameRaw' => 'Приказ',
             'eventWay' => 'Формат<br>проведения',
             'eventLevelAndType' => 'Уровень и Тип<br>мероприятия',
         ]);
@@ -113,15 +114,47 @@ class EventWork extends Event
         return $this->participant_count;
     }
 
-    public function getOrderName()
+    public function getChildParticipantsCount()
+    {
+        return $this->child_participants_count;
+    }
+
+    public function getChildRSTParticipantsCount()
+    {
+        return $this->child_rst_participants_count;
+    }
+
+    public function getTeacherParticipantsCount()
+    {
+        return $this->teacher_participants_count;
+    }
+
+    public function getOtherParticipantsCount()
+    {
+        return $this->other_participants_count;
+    }
+
+    public function getAgeRestrictions()
+    {
+        return $this->age_left_border . ' - ' . $this->age_right_border . ' лет';
+    }
+
+    public function getOrderNameRaw()
     {
         $order = $this->orderWork;
-        return $order ? $order->getFullName() : '---';
+        return $order ?
+                StringFormatter::stringAsLink("Приказ № {$order->getFullName()}", Url::to(['order/order-main/view', 'id' => $order->id])) :
+                "Нет";
     }
 
     public function getEventWay()
     {
         return Yii::$app->eventWay->get($this->event_way);
+    }
+
+    public function getEventForm()
+    {
+        return Yii::$app->eventForm->get($this->event_form);
     }
 
     public function getEventLevelAndType()
@@ -132,6 +165,29 @@ class EventWork extends Event
     public function getIsFederal()
     {
         return $this->is_federal == 1 ? 'Да' : 'Нет';
+    }
+
+    public function getScopesString()
+    {
+        $eventScopes = (Yii::createObject(EventRepository::class))->getScopes($this->id);
+
+        $result = '';
+        $scopes = ArrayHelper::getColumn($eventScopes, 'participation_scope');
+        foreach ($scopes as $scope) {
+            $result .= Yii::$app->participationScope->get($scope) . ', ';
+        }
+
+        return substr($result, 0, -2);
+    }
+
+    public function getContainsEducation()
+    {
+        return $this->contains_education == 0 ? 'Нет' : 'Да';
+    }
+
+    public function getComment()
+    {
+        return $this->comment;
     }
 
     public function getResponsible1Work()
@@ -151,10 +207,10 @@ class EventWork extends Event
         $result = '';
         $branches = ArrayHelper::getColumn($eventBranches, 'branch');
         foreach ($branches as $branch) {
-            $result .= Yii::$app->branches->get($branch) . ' ';
+            $result .= Yii::$app->branches->get($branch) . ', ';
         }
 
-        return $result;
+        return substr($result, 0, -2);
     }
 
     public function getRegulationRaw()

@@ -13,6 +13,11 @@ class TeacherGroupMockProvider implements TeacherGroupProviderInterface
         $this->data = $data;
     }
 
+    public function getAll()
+    {
+        return $this->data;
+    }
+
     public function getAllTeachersFromGroup($groupId)
     {
         return array_filter($this->data, function($item) use ($groupId) {

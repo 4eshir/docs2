@@ -80,7 +80,12 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            if (Yii::$app->session->get('previous_url')) {
+                return $this->redirect(Yii::$app->session->get('previous_url'));
+            }
+            else {
+                return $this->goBack();
+            }
         }
 
         $model->password = '';

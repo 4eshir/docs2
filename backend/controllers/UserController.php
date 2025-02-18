@@ -75,10 +75,7 @@ class UserController extends Controller
         $model = new UserForm(
             $this->repository->get($id),
             $this->peopleRepository->getAll(),
-            ArrayHelper::getColumn(
-                $this->userPermissionRepository->getPermissionsByUser($id),
-                'id'
-            ),
+            $this->userPermissionRepository->getPermissionsByUser($id),
             $this->permissionRepository->getAllPermissions()
         );
 
@@ -99,10 +96,7 @@ class UserController extends Controller
         $model = new UserForm(
             $this->repository->get($id),
             $this->peopleRepository->getAll(),
-            ArrayHelper::getColumn(
-                $this->userPermissionRepository->getPermissionsByUser($id),
-                'id'
-            ),
+            $this->userPermissionRepository->getPermissionsByUser($id),
             $this->permissionRepository->getAllPermissions()
         );
 
