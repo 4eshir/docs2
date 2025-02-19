@@ -14,6 +14,8 @@ class DocumentOrderWork extends DocumentOrder
     public const ORDER_MAIN = 1;
     public const ORDER_EVENT = 2;
     public const ORDER_TRAINING = 3;
+    public const ERROR_DATE_PARTICIPANT = 1;
+    public const ERROR_RELATION = 2;
     /**
      * Переменные для input-file в форме
      */

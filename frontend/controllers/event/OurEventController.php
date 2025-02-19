@@ -104,7 +104,7 @@ class OurEventController extends DocumentController
 
         /** @var EventWork $model */
         $model = $this->repository->get($id);
-        //$model->checkFilesExist();
+        $model->checkFilesExist();
 
         return $this->render('view', [
             'model' => $model,

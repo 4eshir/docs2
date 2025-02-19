@@ -513,7 +513,6 @@ use yii\widgets\DetailView;
             ->label('Формат проведения') ?>
         <?= $form->field($model, 'eventLevel')->dropDownList(Yii::$app->eventLevel->getList(), ['prompt' => '---'])
             ->label('Уровень') ?>
-        <?= $form->field($model, 'minister')->checkbox()->label('Входит в перечень Минпросвещения РФ') ?>
         <?= $form->field($model, 'minAge')->textInput()->label('Мин. возраст участников (лет)') ?>
         <?= $form->field($model, 'maxAge')->textInput()->label('Макс. возраст участников (лет)') ?>
         <?= $form->field($model, 'keyEventWords')->textInput()->label('Ключевые слова') ?>

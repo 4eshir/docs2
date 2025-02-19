@@ -125,17 +125,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
             <div class="card-set">
-                <div class="card-head">Файлы</div>
-                <div class="flexx files-section space-around">
-                    <div class="file-block-center"><?= ''/*$model->getFullScan();*/ ?><div>Протокол мероприятия</div></div>
-                    <div class="file-block-center"><?= ''/*$model->getFullScan();*/ ?><div>Фотоматериалы</div></div>
-                    <div class="file-block-center"><?= ''/*$model->getFullScan();*/ ?><div>Явочные документы</div></div>
-                    <div class="file-block-center"><?= ''/*$model->getFullScan();*/ ?><div>Другие файлы</div></div>
-                </div>
-            </div>
-        </div>
-        <div class="card-block-2">
-            <div class="card-set">
                 <div class="card-head">Дополнительная информация</div>
                 <div class="card-field flexx">
                     <div class="field-title">
@@ -155,7 +144,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="card-field flexx">
                     <div class="field-title">
-                        Ответственный(-ые) работник(-и)
+                        Ответственные работники
                     </div>
                     <div class="field-date">
                         <?= $model->getResponsibles(); ?>
@@ -163,7 +152,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="card-field flexx">
                     <div class="field-title">
-                        Содержит образовательные программы
+                        Содержит образ. программы
                     </div>
                     <div class="field-date">
                         <?= $model->getContainsEducation(); ?>
@@ -178,6 +167,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="card-block-2">
             <div class="card-set">
                 <div class="card-head">Связанные документы</div>
                 <div class="card-field flexx">
@@ -201,7 +192,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-head">Связанные группы</div>
                 <div class="card-field flexx">
                     <div class="field-date">
-                        <?= $model->getDatePeriod(); ?>
+                        <?= $model->getEventGroupRaw(); ?>
                     </div>
                 </div>
             </div>
@@ -209,8 +200,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card-head">Ключевые слова</div>
                 <div class="card-field flexx">
                     <div class="field-date">
-                        <?= $model->getDatePeriod(); ?>
+                        <?= $model->getKeyWord(); ?>
                     </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Файлы</div>
+                <div class="flexx files-section space-around">
+                    <div class="file-block-center"><?= $model->getFullProtocol(); ?><div>Протокол мероприятия</div></div>
+                    <div class="file-block-center"><?= $model->getFullPhoto(); ?><div>Фотоматериалы</div></div>
+                    <div class="file-block-center"><?= $model->getFullReporting(); ?><div>Явочные документы</div></div>
+                    <div class="file-block-center"><?= $model->getFullOther(); ?><div>Другие файлы</div></div>
                 </div>
             </div>
             <div class="card-set">
@@ -221,7 +221,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             Создатель карточки
                         </div>
                         <div class="field-date">
-                            <?= ''/*$model->getCreatorName();*/ ?>
+                            <?= $model->getCreatorName(); ?>
                         </div>
                     </div>
                     <div class="card-field flexx">
@@ -229,81 +229,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             Последний редактор
                         </div>
                         <div class="field-date">
-                            <?= ''/*$model->getLastEditorName();*/ ?>
+                            <?= $model->getLastEditorName(); ?>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'start_date',
-            'finish_date',
-            ['attribute' => 'event_type', 'value' => function(EventWork $model){
-                return Yii::$app->eventType->get($model->event_type);
-            }],
-            ['attribute' => 'event_form', 'value' => function(EventWork $model){
-                return Yii::$app->eventForm->get($model->event_form);
-            }],
-            ['attribute' => 'event_way', 'value' => function(EventWork $model){
-                return Yii::$app->eventWay->get($model->event_way);
-            }],
-            'address',
-            ['attribute' => 'event_level', 'value' => function(EventWork $model){
-                return Yii::$app->eventLevel->get($model->event_level);
-            }],
-            ['attribute' => 'scopesString', 'format' => 'raw'],
-            ['attribute' => 'participants_count', 'value' => function (EventWork $model){
-                return $model->child_participants_count + $model->teacher_participants_count + $model->other_participants_count;
-            }],
-            'child_participants_count',
-            'child_rst_participants_count',
-            'teacher_participants_count',
-            'other_participants_count',
-            'leftAge',
-            'rightAge',
-            ['attribute' => 'is_federal', 'value' => function($model){
-                if ($model->is_federal == 1) {
-                    return 'Да';
-                }
-                else {
-                    return 'Нет';
-                }
-            }],
-            ['attribute' => 'responsibles', 'format' => 'raw'],
-            ['attribute' => 'eventBranches', 'label' => 'Мероприятие проводит', 'format' => 'raw'],
-            ['attribute' => 'contains_education', 'value' => function($model){
-                if ($model->contains_education == 0)
-                    return 'Не содержит образовательных программы';
-                else
-                    return 'Содержит образовательные программы';
-            }],
-            'key_words',
-            'comment',
-            ['attribute' => 'order_id', 'value' => function (EventWork $model) {
-                return 'Coming soon';
-            }, 'format' => 'raw'],
-            ['attribute' => 'regulationRaw', 'label' => 'Положение', 'format' => 'raw'],
-            ['label' => 'Протоколы мероприятия', 'attribute' => 'protocol', 'value' => function (EventWork $model) {
-                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_PROTOCOL), 'link'));
-            }, 'format' => 'raw'],
-            ['label' => 'Фотоматериалы', 'attribute' => 'photoFiles', 'value' => function ($model) {
-                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_PHOTO), 'link'));
-            }, 'format' => 'raw'],
-            ['label' => 'Явочные документы', 'attribute' => 'reporting_doc', 'value' => function ($model) {
-                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_REPORT), 'link'));
-            }, 'format' => 'raw'],
-            ['label' => 'Другие файлы', 'attribute' => 'otherFiles', 'value' => function ($model) {
-                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_OTHER), 'link'));
-            }, 'format' => 'raw'],
-            ['attribute' => 'linkGroups', 'format' => 'raw'],
-            ['label' => 'Создатель карточки', 'attribute' => 'creatorString', 'value' => function (EventWork $model) {
-                return $model->creatorWork ? $model->creatorWork->getFullName() : '';
-            }, 'format' => 'raw'],
-        ],
-    ]) ?>
-
 </div>

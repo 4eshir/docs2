@@ -224,6 +224,12 @@ use yii\widgets\Pjax;
     $this->registerJs("
         $('#order-number-dropdown').on('change', function() {
             var nomenclature = $('#order-number-dropdown').val();
+            var gridView = $('.training-group-participant .grid-view');
+            var checkedCheckboxes = $('.group-checkbox:checked');
+            var checkedCheckboxAll = $('.select-on-check-all');
+            gridView.html(null);
+            checkedCheckboxes.prop('checked', false);
+            checkedCheckboxAll.prop('checked', false);
             $.ajax({
                 url: '" . Url::to(['order/order-training/set-name-order']) . "', // Укажите ваш правильный путь к контроллеру
                 type: 'GET',

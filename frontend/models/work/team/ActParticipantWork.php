@@ -75,10 +75,10 @@ class ActParticipantWork extends ActParticipant
 
     public function getTeachers()
     {
-        $firstTeacher = PeopleWork::findOne($this->teacher_id);
-        $secondTeacher = PeopleWork::findOne($this->teacher2_id);
-        return $firstTeacher->firstname . ' ' . $firstTeacher->surname . ' ' . $firstTeacher->patronymic. "\n" .
-             $secondTeacher->firstname . ' ' . $secondTeacher->surname . ' ' . $secondTeacher->patronymic;
+        $firstTeacher = PeopleStampWork::findOne($this->teacher_id);
+        $secondTeacher = PeopleStampWork::findOne($this->teacher2_id);
+        return $firstTeacher->getFullFio() .  "\n" .
+             $secondTeacher->getFullFio();
     }
 
     public function getTeamName()

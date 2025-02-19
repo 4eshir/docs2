@@ -15,7 +15,6 @@ class m240912_092827_add_our_events extends Migration
         $this->createTable('event', [
             'id' => $this->primaryKey(),
             'name' => $this->string(512),
-            'old_name' => $this->string(512),
             'start_date' => $this->date(),
             'finish_date' => $this->date(),
             'event_type' => $this->smallInteger(),
@@ -23,7 +22,6 @@ class m240912_092827_add_our_events extends Migration
             'event_level' => $this->smallInteger(),
             'event_way' => $this->smallInteger(),
             'address' => $this->string(1024),
-            'participant_count' => $this->integer(),
             'is_federal' => $this->boolean(),
             'responsible1_id' => $this->integer(),
             'responsible2_id' => $this->integer(),
@@ -62,14 +60,14 @@ class m240912_092827_add_our_events extends Migration
             'RESTRICT',
         );
 
-        /*$this->addForeignKey(
+        $this->addForeignKey(
             'fk-event-3',
             'event',
             'order_id',
             'document_order',
             'id',
             'RESTRICT',
-        );*/
+        );
 
         $this->addForeignKey(
             'fk-event-4',
@@ -135,7 +133,7 @@ class m240912_092827_add_our_events extends Migration
 
         $this->dropForeignKey('fk-event-5', 'event');
         $this->dropForeignKey('fk-event-4', 'event');
-        //$this->dropForeignKey('fk-event-3', 'event');
+        $this->dropForeignKey('fk-event-3', 'event');
         $this->dropForeignKey('fk-event-2', 'event');
         $this->dropForeignKey('fk-event-1', 'event');
 

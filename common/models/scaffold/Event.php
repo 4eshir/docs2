@@ -9,7 +9,6 @@ use Yii;
  *
  * @property int $id
  * @property string|null $name
- * @property string|null $old_name
  * @property string|null $start_date
  * @property string|null $finish_date
  * @property int|null $event_type
@@ -17,7 +16,6 @@ use Yii;
  * @property int|null $event_level
  * @property int|null $event_way
  * @property string|null $address
- * @property int|null $participant_count
  * @property int|null $is_federal
  * @property int|null $responsible1_id
  * @property int|null $responsible2_id
@@ -43,6 +41,7 @@ use Yii;
  * @property Regulation $regulation
  * @property PeopleStamp $responsible1
  * @property PeopleStamp $responsible2
+ * @property EventTrainingGroup[] $eventTrainingGroups
  */
 class Event extends \yii\db\ActiveRecord
 {
@@ -61,9 +60,9 @@ class Event extends \yii\db\ActiveRecord
     {
         return [
             [['start_date', 'finish_date', 'created_at', 'updated_at'], 'safe'],
-            [['event_type', 'event_form', 'event_level', 'event_way', 'participant_count', 'is_federal', 'responsible1_id', 'responsible2_id', 'order_id', 'regulation_id', 'contains_education', 'participation_scope', 'child_participants_count', 'child_rst_participants_count', 'teacher_participants_count', 'other_participants_count', 'age_right_border', 'creator_id'], 'integer'],
+            [['event_type', 'event_form', 'event_level', 'event_way', 'is_federal', 'responsible1_id', 'responsible2_id', 'order_id', 'regulation_id', 'contains_education', 'participation_scope', 'child_participants_count', 'child_rst_participants_count', 'teacher_participants_count', 'other_participants_count', 'age_right_border', 'creator_id'], 'integer'],
             [['age_left_border'], 'number'],
-            [['name', 'old_name'], 'string', 'max' => 512],
+            [['name'], 'string', 'max' => 512],
             [['address', 'key_words', 'comment'], 'string', 'max' => 1024],
             [['responsible1_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['responsible1_id' => 'id']],
             [['responsible2_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['responsible2_id' => 'id']],
@@ -80,7 +79,6 @@ class Event extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Name',
-            'old_name' => 'Old Name',
             'start_date' => 'Start Date',
             'finish_date' => 'Finish Date',
             'event_type' => 'Event Type',
@@ -88,7 +86,6 @@ class Event extends \yii\db\ActiveRecord
             'event_level' => 'Event Level',
             'event_way' => 'Event Way',
             'address' => 'Address',
-            'participant_count' => 'Participant Count',
             'is_federal' => 'Is Federal',
             'responsible1_id' => 'Responsible1 ID',
             'responsible2_id' => 'Responsible2 ID',
@@ -169,5 +166,10 @@ class Event extends \yii\db\ActiveRecord
     public function getScopes()
     {
         return $this->hasMany(EventScope::class, ['event_id' => 'id']);
+    }
+
+    public function getTrainingGroups()
+    {
+        return $this->hasMany(EventTrainingGroup::class, ['event_id' => 'id']);
     }
 }

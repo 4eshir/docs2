@@ -336,6 +336,7 @@ class OrderEventController extends DocumentController
         if($act[0] == NULL){
             return $this->redirect(['index']);
         }
+        $this->actParticipantService->getPeopleStamp($act[0]);
         $data = $this->actParticipantFacade->prepareActFacade($act);
         $modelAct = $data['modelAct'];
         $people = $data['people'];
@@ -352,14 +353,14 @@ class OrderEventController extends DocumentController
                 $post[0]["secondTeacher"],
                 $act[0]->team_name_id,
                 $act[0]->foreign_event_id,
-                $act[0]->branch,
                 $act[0]->focus,
                 $act[0]->type,
                 NULL,
                 $act[0]->nomination,
                 $act[0]->form
             );
-            $act[0]->save();
+            $this->actParticipantService->setPeopleStamp($act[0]);
+            $this->actParticipantRepository->save($act[0]);
             $this->actParticipantService->getFilesInstance($modelAct[0], 0);
             $act[0]->actFiles = $modelAct[0]->actFiles;
             $this->actParticipantService->saveFilesFromModel($act[0], 0);

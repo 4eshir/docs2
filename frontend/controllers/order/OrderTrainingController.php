@@ -80,7 +80,7 @@ class OrderTrainingController extends DocumentController
             'dataProvider' => $dataProvider,
         ]);
     }
-    public function actionView($id){
+    public function actionView($id, $error = NULL){
         $model = $this->orderTrainingRepository->get($id);
         $modelResponsiblePeople = implode('<br>',
             $this->documentOrderService->createOrderPeopleArray(
@@ -95,6 +95,7 @@ class OrderTrainingController extends DocumentController
             'modelResponsiblePeople' => $modelResponsiblePeople,
             'groups' => $groups,
             'participants' => $participants,
+            'error' => $error
         ]);
     }
     public function actionCreate(){
@@ -114,12 +115,12 @@ class OrderTrainingController extends DocumentController
             $this->orderTrainingRepository->save($model);
             $status = $this->orderTrainingService->getStatus($model);
             //create
-            $this->orderTrainingService->createOrderTrainingGroupParticipantEvent($model, $status, $post);
+            $error = $this->orderTrainingService->createOrderTrainingGroupParticipantEvent($model, $status, $post);
             //create
             $this->documentOrderService->saveFilesFromModel($model);
             $this->orderPeopleService->addOrderPeopleEvent($respPeopleId, $model);
             $model->releaseEvents();
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['view', 'id' => $model->id, 'error' => $error]);
         }
         return $this->render('create', [
             'model' => $model,
@@ -161,15 +162,15 @@ class OrderTrainingController extends DocumentController
                 //$status = $this->orderTrainingService->getStatus($model);
                 //update
                 $error = $this->orderTrainingService->updateOrderTrainingGroupParticipantEvent($model, $status, $post);
+                if($error) {
+                    return $this->redirect(['update', 'id' => $id, 'error' => $error]);
+                }
                 //update
                 $this->documentOrderService->saveFilesFromModel($model);
                 $this->orderPeopleService->updateOrderPeopleEvent(
                     ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
                     $post["OrderTrainingWork"]["responsible_id"], $model);
                 $model->releaseEvents();
-                if($error) {
-                    return $this->redirect(['update', 'id' => $id, 'error' => $error]);
-                }
                 return $this->redirect(['view', 'id' => $model->id]);
             }
             return $this->render('update', [

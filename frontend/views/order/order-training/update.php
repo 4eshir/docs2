@@ -3,6 +3,7 @@
 use common\components\wizards\AlertMessageWizard;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\DocumentOrder;
+use frontend\models\work\order\DocumentOrderWork;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -24,8 +25,13 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
 ?>
 <div class="order-training-update">
     <?php
-        if ($error) {
-            echo HtmlBuilder::createInfoMessage('Невозможно отменить действие на учениках.');
+        switch ($error) {
+            case DocumentOrderWork::ERROR_DATE_PARTICIPANT:
+                echo HtmlBuilder::createWarningMessage('Невозможно применить действие к ученикам.', 'Ошибка выбора даты приказа');
+                break;
+            case DocumentOrderWork::ERROR_RELATION:
+                echo HtmlBuilder::createWarningMessage('Невозможно применить действие к ученикам.', 'Выбранные обучающиеся задействованы в других приказах');
+                break;
         }
     ?>
     <?= AlertMessageWizard::showRedisConnectMessage() ?>

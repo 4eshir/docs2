@@ -5,11 +5,11 @@ namespace frontend\models\work\event;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\models\scaffold\Event;
 use common\models\work\UserWork;
 use common\repositories\event\EventRepository;
-use common\repositories\order\OrderMainRepository;
 use common\repositories\regulation\RegulationRepository;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
@@ -25,11 +25,24 @@ use yii\helpers\Url;
 /** @property PeopleStampWork $responsible1Work */
 /** @property PeopleStampWork $responsible2Work */
 /** @property OrderMainWork $orderWork */
+/** @property UserWork $creatorWork */
+/** @property UserWork $lastEditorWork */
 
 class EventWork extends Event
 {
     use EventTrait;
 
+    /**
+     * Имена файлов для сохранения в БД
+     */
+    public $protocolExist;
+    public $reportExist;
+    public $photoExist;
+    public $otherExist;
+
+    /**
+     * Переменные для input-file в форме
+     */
     public $protocolFiles;
     public $reportingFiles;
     public $photoFiles;
@@ -86,6 +99,21 @@ class EventWork extends Event
             'orderNameRaw' => 'Приказ',
             'eventWay' => 'Формат<br>проведения',
             'eventLevelAndType' => 'Уровень и Тип<br>мероприятия',
+            'childParticipantsCount' => 'Кол-во детей',
+            'childRSTParticipantsCount' => 'Кол-во детей из РШТ',
+            'teacherParticipantsCount' => 'Кол-во педагогов',
+            'otherParticipantsCount' => 'Кол-во иных',
+            'ageRestrictions' => 'Возрастной диапазон',
+            'eventGroupRaw' => 'Связанные группы',
+            'age_left_border' => 'Возраст детей: минимальный, лет',
+            'age_right_border' => 'Возраст детей: максимальный, лет',
+            'child_participants_count' => 'Кол-во детей',
+            'child_rst_participants_count' => 'В т.ч. обучающихся РШТ',
+            'teacher_participants_count' => 'Кол-во педагогов',
+            'other_participants_count' => 'Кол-во иных',
+            'key_words' => 'Ключевые слова',
+            'keyWords' => 'Ключевые слова',
+            'comment' => 'Примечание',
         ]);
     }
 
@@ -111,7 +139,7 @@ class EventWork extends Event
 
     public function getParticipantCount()
     {
-        return $this->participant_count;
+        return $this->getChildParticipantsCount() + $this->getTeacherParticipantsCount() + $this->getOtherParticipantsCount();
     }
 
     public function getChildParticipantsCount()
@@ -143,8 +171,29 @@ class EventWork extends Event
     {
         $order = $this->orderWork;
         return $order ?
-                StringFormatter::stringAsLink("Приказ № {$order->getFullName()}", Url::to(['order/order-main/view', 'id' => $order->id])) :
+                StringFormatter::stringAsLink("Приказ № {$order->getFullName()}", Url::to([Yii::$app->frontUrls::ORDER_MAIN_VIEW, 'id' => $order->id])) :
                 "Нет";
+    }
+
+    public function getEventGroupRaw()
+    {
+        $result = '';
+        $eventGroups = $this->eventTrainingGroupWork;
+
+        if (!$eventGroups) {
+            $result = '-----';
+        }
+        foreach ($eventGroups as $eventGroup) {
+            $trainingGroup = $eventGroup->trainingGroup;
+            $result .= StringFormatter::stringAsLink("{$trainingGroup->number}", Url::to([Yii::$app->frontUrls::TRAINING_GROUP_VIEW, 'id' => $trainingGroup->id])) . ', ';
+        }
+
+        return substr($result, 0, -2);
+    }
+
+    public function getKeyWord()
+    {
+        return $this->key_words ? $this->key_words : '---';
     }
 
     public function getEventWay()
@@ -187,7 +236,7 @@ class EventWork extends Event
 
     public function getComment()
     {
-        return $this->comment;
+        return $this->comment ? $this->comment : '---';
     }
 
     public function getResponsible1Work()
@@ -310,11 +359,6 @@ class EventWork extends Event
         $this->scopes = $scopesArray;
     }
 
-    public function getCreatorWork()
-    {
-        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
-    }
-
     public function setValuesForUpdate()
     {
         $this->responsible1_id = $this->responsible1Work->people_id;
@@ -324,5 +368,80 @@ class EventWork extends Event
     public function getOrderWork()
     {
         return $this->hasOne(OrderMainWork::class, ['id' => 'order_id']);
+    }
+
+    public function getEventTrainingGroupWork()
+    {
+        return $this->hasMany(EventTrainingGroupWork::class, ['event_id' => 'id']);
+    }
+
+    public function getCreatorName()
+    {
+        $creator = $this->creatorWork;
+        return $creator ? $creator->getFullName() : '---';
+    }
+
+    public function getLastEditorName()
+    {
+        $editor = $this->lastEditorWork;
+        return $editor ? $editor->getFullName() : '---';
+    }
+
+    public function getCreatorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
+    }
+
+    public function getLastEditorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
+    }
+
+    public function checkFilesExist()
+    {
+        $this->reportExist = count($this->getFileLinks(FilesHelper::TYPE_REPORT)) > 0;
+        $this->photoExist = count($this->getFileLinks(FilesHelper::TYPE_PHOTO)) > 0;
+        $this->protocolExist = count($this->getFileLinks(FilesHelper::TYPE_PROTOCOL)) > 0;
+        $this->otherExist = count($this->getFileLinks(FilesHelper::TYPE_OTHER)) > 0;
+    }
+
+    public function getFullReporting()
+    {
+        $link = '#';
+        if ($this->reportExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_REPORT, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
+    }
+
+    public function getFullProtocol()
+    {
+        $link = '#';
+        if ($this->protocolExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_PROTOCOL, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
+    }
+
+    public function getFullPhoto()
+    {
+        $link = '#';
+        if ($this->photoExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_PHOTO, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
+    }
+
+    public function getFullOther()
+    {
+        $link = '#';
+        if ($this->otherExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_OTHER, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
     }
 }
