@@ -212,12 +212,13 @@ class ActParticipantService
             [
                 array_merge(['#'], ArrayHelper::getColumn($model, 'id')),
                 array_merge(['Тип участия'], ArrayHelper::getColumn($model, 'typeParticipant')),
+                array_merge(['Участники'], ArrayHelper::getColumn($model, 'participantString')),
                 array_merge(['Учителя'], ArrayHelper::getColumn($model, 'teachers')),
                 array_merge(['Направленность'], ArrayHelper::getColumn($model, 'focusName')),
                 array_merge(['Отдел'], ArrayHelper::getColumn($model, 'branchName')),
                 array_merge(['Номинация'], ArrayHelper::getColumn($model, 'nomination')),
                 array_merge(['Команда'], ArrayHelper::getColumn($model, 'teamName')),
-                array_merge(['Участники'], ArrayHelper::getColumn($model, 'participantString')),
+
             ],
             [
                 HtmlBuilder::createButtonsArray(
