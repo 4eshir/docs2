@@ -3,6 +3,8 @@
 namespace backend\services\report;
 
 use backend\forms\report\ManHoursReportForm;
+use common\repositories\educational\LessonThemeRepository;
+use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
@@ -17,18 +19,24 @@ class ReportManHoursService
     private TrainingGroupRepository $groupRepository;
     private TrainingGroupParticipantRepository $participantRepository;
     private TrainingGroupLessonRepository $lessonRepository;
+    private TeacherGroupRepository $teacherGroupRepository;
+    private LessonThemeRepository $lessonThemeRepository;
     private VisitRepository $visitRepository;
 
     public function __construct(
         TrainingGroupRepository $groupRepository,
         TrainingGroupParticipantRepository $participantRepository,
         TrainingGroupLessonRepository $lessonRepository,
+        TeacherGroupRepository $teacherGroupRepository,
+        LessonThemeRepository $lessonThemeRepository,
         VisitRepository $visitRepository
     )
     {
         $this->groupRepository = $groupRepository;
         $this->participantRepository = $participantRepository;
         $this->lessonRepository = $lessonRepository;
+        $this->teacherGroupRepository = $teacherGroupRepository;
+        $this->lessonThemeRepository = $lessonThemeRepository;
         $this->visitRepository = $visitRepository;
     }
 
@@ -38,10 +46,19 @@ class ReportManHoursService
      * @param string $startDate
      * @param string $endDate
      * @param int $calculateType
+     * @param int[] $teacherIds
      * @return int
      */
-    public function calculateManHours(string $startDate, string $endDate, int $calculateType) : int
+    public function calculateManHours(string $startDate, string $endDate, int $calculateType, array $teacherIds = []) : int
     {
+        $teacherLessonIds = [];
+        if (count($teacherIds) > 0) {
+            $teacherLessonIds = ArrayHelper::getColumn(
+                $this->lessonThemeRepository->getByTeacherIds($teacherIds),
+                'training_group_lesson_id'
+            );
+        }
+
         $participants = $this->participantRepository->getParticipantsFromGroups(
             ArrayHelper::getColumn($this->groupRepository->getBetweenDates($startDate, $endDate), 'id')
         );
@@ -55,7 +72,7 @@ class ReportManHoursService
             /** @var VisitWork $visit */
             $lessons = VisitLesson::fromString($visit->lessons);
             foreach ($lessons as $lesson) {
-                $result += $this->checkVisitLesson($lesson, $calculateType);
+                $result += $this->checkVisitLesson($lesson, $calculateType, $teacherLessonIds);
             }
         }
 
@@ -67,13 +84,20 @@ class ReportManHoursService
      *
      * @param VisitLesson $visitLesson
      * @param int $calculateType
+     * @param int[] $teacherIds
      * @return int
      */
-    private function checkVisitLesson(VisitLesson $visitLesson, int $calculateType)
+    private function checkVisitLesson(VisitLesson $visitLesson, int $calculateType, array $teacherLessonIds = [])
     {
+        $conditionTeacher = true;
+        if (count($teacherLessonIds) > 0) {
+            $conditionTeacher = in_array($visitLesson->lessonId, $teacherLessonIds);
+        }
+
         if (
             ($visitLesson->status == VisitWork::ATTENDANCE || $visitLesson->status == VisitWork::DISTANCE) ||
-            ($calculateType == ManHoursReportForm::MAN_HOURS_ALL && $visitLesson->status == VisitWork::NO_ATTENDANCE)
+            ($calculateType == ManHoursReportForm::MAN_HOURS_ALL && $visitLesson->status == VisitWork::NO_ATTENDANCE) &&
+            $conditionTeacher
         ) {
             return 1;
         }
@@ -88,22 +112,37 @@ class ReportManHoursService
      * @param string $endDate
      * @param int $calculateType тип поиск групп (время начала/окончания занятий)
      * @param int $calculateSubtype подтип для фильтрации обучающихся (уникальные/все)
+     * @param int[] $teacherIds id преподавателей для фильтрации групп
      * @return int
      */
-    public function calculateParticipantsByPeriod(string $startDate, string $endDate, int $calculateType, int $calculateSubtype) : int
+    public function calculateParticipantsByPeriod(
+        string $startDate,
+        string $endDate,
+        int $calculateType,
+        int $calculateSubtype,
+        array $teacherIds = []
+    ) : int
     {
+        $filterGroupIds = [];
+        if (count($teacherIds) > 0) {
+            $filterGroupIds = ArrayHelper::getColumn(
+                $this->teacherGroupRepository->getAllFromTeacherIds($teacherIds),
+                'training_group_id'
+            );
+        }
+
         switch ($calculateType) {
             case ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_IN:
-                $groups = $this->groupRepository->getStartBeforeFinishInDates($startDate, $endDate);
+                $groups = $this->groupRepository->getStartBeforeFinishInDates($startDate, $endDate, $filterGroupIds);
                 break;
             case ManHoursReportForm::PARTICIPANT_START_IN_FINISH_AFTER:
-                $groups = $this->groupRepository->getStartInFinishAfterDates($startDate, $endDate);
+                $groups = $this->groupRepository->getStartInFinishAfterDates($startDate, $endDate, $filterGroupIds);
                 break;
             case ManHoursReportForm::PARTICIPANT_START_IN_FINISH_IN:
-                $groups = $this->groupRepository->getStartInFinishInDates($startDate, $endDate);
+                $groups = $this->groupRepository->getStartInFinishInDates($startDate, $endDate, $filterGroupIds);
                 break;
             case ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_AFTER:
-                $groups = $this->groupRepository->getStartBeforeFinishAfterDates($startDate, $endDate);
+                $groups = $this->groupRepository->getStartBeforeFinishAfterDates($startDate, $endDate, $filterGroupIds);
                 break;
             default:
                 throw new InvalidArgumentException('Неизвестный тип периода');
@@ -118,7 +157,12 @@ class ReportManHoursService
                 return count($participants);
             case ManHoursReportForm::PARTICIPANTS_UNIQUE:
                 return count(
-                    ArrayHelper::getColumn($participants, 'participant_id')
+                    array_unique(
+                        ArrayHelper::getColumn(
+                            $participants,
+                            'participant_id'
+                        )
+                    )
                 );
             default:
                 return -1;

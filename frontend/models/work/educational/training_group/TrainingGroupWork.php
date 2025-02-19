@@ -25,6 +25,9 @@ class TrainingGroupWork extends TrainingGroup
 {
     use EventTrait;
 
+    const ERROR_NO_PROGRAM = 1;
+    const ERROR_THEMES_MISMATCH = 2;
+
     public static function fill(
         $startDate,
         $endDate,
@@ -144,5 +147,10 @@ class TrainingGroupWork extends TrainingGroup
             }
         }
         return 0;
+    }
+
+    public function haveProgram()
+    {
+        return is_null($this->training_program_id);
     }
 }

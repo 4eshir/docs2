@@ -25,6 +25,13 @@ class TeacherGroupMockProvider implements TeacherGroupProviderInterface
         });
     }
 
+    public function getAllFromTeacherIds(array $teacherIds)
+    {
+        return array_filter($this->data, function($item) use ($teacherIds) {
+            return in_array($item['teacher_id'], $teacherIds);
+        });
+    }
+
     public function save(TeacherGroupWork $model)
     {
         $model->id = count($this->data);

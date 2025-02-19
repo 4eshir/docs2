@@ -293,6 +293,12 @@ class TrainingGroupController extends DocumentController
         }
     }
 
+    public function createLessonThemes($groupId)
+    {
+        $this->service->createLessonThemes($groupId);
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
     public function actionDeleteLesson($groupId, $entityId)
     {
         /** @var TrainingGroupLessonWork $model */

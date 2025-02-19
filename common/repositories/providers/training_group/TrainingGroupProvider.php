@@ -17,6 +17,7 @@ use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\ProjectThemeWork;
+use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 
 class TrainingGroupProvider implements TrainingGroupProviderInterface
@@ -51,47 +52,73 @@ class TrainingGroupProvider implements TrainingGroupProviderInterface
             ->all();
     }
 
-    public function getBetweenDates(string $date1, string $date2)
+    public function getBetweenDates(string $date1, string $date2, array $groupIds = [])
     {
-        return TrainingGroupWork::find()
+        $query = TrainingGroupWork::find()
             ->where(['BETWEEN', 'start_date', $date1, $date2])
             ->orWhere(['BETWEEN', 'finish_date', $date1, $date2])
             ->orWhere(['and',
                 ['<', 'start_data', $date1],
                 ['>', 'finish_date', $date2]
-            ])->all();
+            ]);
+
+        if (count($groupIds) > 0) {
+            $query = $this->filterQueryByIds($query, $groupIds);
+        }
+
+        return $query->all();
     }
 
-    public function getStartBeforeFinishInDates(string $date1, string $date2)
+    public function getStartBeforeFinishInDates(string $date1, string $date2, array $groupIds = [])
     {
-        return TrainingGroupWork::find()
+        $query = TrainingGroupWork::find()
             ->where(['>', 'start_date', $date1])
-            ->andWhere(['BETWEEN', 'finish_date', $date1, $date2])
-            ->all();
+            ->andWhere(['BETWEEN', 'finish_date', $date1, $date2]);
+
+        if (count($groupIds) > 0) {
+            $query = $this->filterQueryByIds($query, $groupIds);
+        }
+
+        return $query->all();
     }
 
-    public function getStartInFinishAfterDates(string $date1, string $date2)
+    public function getStartInFinishAfterDates(string $date1, string $date2, array $groupIds = [])
     {
-        return TrainingGroupWork::find()
+        $query = TrainingGroupWork::find()
             ->where(['BETWEEN', 'start_date', $date1, $date2])
-            ->andWhere(['<', 'finish_date', $date2])
-            ->all();
+            ->andWhere(['<', 'finish_date', $date2]);
+
+        if (count($groupIds) > 0) {
+            $query = $this->filterQueryByIds($query, $groupIds);
+        }
+
+        return $query->all();
     }
 
-    public function getStartInFinishInDates(string $date1, string $date2)
+    public function getStartInFinishInDates(string $date1, string $date2, array $groupIds = [])
     {
-        return TrainingGroupWork::find()
+        $query = TrainingGroupWork::find()
             ->where(['BETWEEN', 'start_date', $date1, $date2])
-            ->andWhere(['BETWEEN', 'finish_date', $date1, $date2])
-            ->all();
+            ->andWhere(['BETWEEN', 'finish_date', $date1, $date2]);
+
+        if (count($groupIds) > 0) {
+            $query = $this->filterQueryByIds($query, $groupIds);
+        }
+
+        return $query->all();
     }
 
-    public function getStartBeforeFinishAfterDates(string $date1, string $date2)
+    public function getStartBeforeFinishAfterDates(string $date1, string $date2, array $groupIds = [])
     {
-        return TrainingGroupWork::find()
+        $query = TrainingGroupWork::find()
             ->where(['>', 'start_date', $date1])
-            ->andWhere(['<', 'finish_date', $date2])
-            ->all();
+            ->andWhere(['<', 'finish_date', $date2]);
+
+        if (count($groupIds) > 0) {
+            $query = $this->filterQueryByIds($query, $groupIds);
+        }
+
+        return $query->all();
     }
 
     public function getGroupsForCertificates()
@@ -172,5 +199,12 @@ class TrainingGroupProvider implements TrainingGroupProviderInterface
         $model->releaseEvents();
 
         return $model->delete();
+    }
+
+    //--Приватные вспомогательные методы--
+
+    private function filterQueryByIds(ActiveQuery $query, array $groupIds)
+    {
+        return $query->andWhere(['IN', 'id', $groupIds]);
     }
 }

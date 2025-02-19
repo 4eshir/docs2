@@ -8,5 +8,6 @@ interface TeacherGroupProviderInterface
 {
     public function getAll();
     public function getAllTeachersFromGroup($groupId);
+    public function getAllFromTeacherIds(array $teacherIds);
     public function save(TeacherGroupWork $model);
 }

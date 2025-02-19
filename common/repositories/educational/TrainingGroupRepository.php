@@ -59,9 +59,9 @@ class TrainingGroupRepository
      * @param string $date2
      * @return array|\yii\db\ActiveRecord[]
      */
-    public function getBetweenDates(string $date1, string $date2)
+    public function getBetweenDates(string $date1, string $date2, array $teacherIds = [])
     {
-        return $this->provider->getBetweenDates($date1, $date2);
+        return $this->provider->getBetweenDates($date1, $date2, $teacherIds);
     }
 
     /**
@@ -71,9 +71,9 @@ class TrainingGroupRepository
      * @param string $date2
      * @return array|\yii\db\ActiveRecord[]
      */
-    public function getStartBeforeFinishInDates(string $date1, string $date2)
+    public function getStartBeforeFinishInDates(string $date1, string $date2, array $teacherIds = [])
     {
-        return $this->provider->getStartBeforeFinishInDates($date1, $date2);
+        return $this->provider->getStartBeforeFinishInDates($date1, $date2, $teacherIds);
     }
 
     /**
@@ -83,9 +83,9 @@ class TrainingGroupRepository
      * @param string $date2
      * @return array|\yii\db\ActiveRecord[]
      */
-    public function getStartInFinishAfterDates(string $date1, string $date2)
+    public function getStartInFinishAfterDates(string $date1, string $date2, array $teacherIds = [])
     {
-        return $this->provider->getStartInFinishAfterDates($date1, $date2);
+        return $this->provider->getStartInFinishAfterDates($date1, $date2, $teacherIds);
     }
 
     /**
@@ -95,9 +95,9 @@ class TrainingGroupRepository
      * @param string $date2
      * @return array|\yii\db\ActiveRecord[]
      */
-    public function getStartInFinishInDates(string $date1, string $date2)
+    public function getStartInFinishInDates(string $date1, string $date2, array $teacherIds = [])
     {
-        return $this->provider->getStartInFinishInDates($date1, $date2);
+        return $this->provider->getStartInFinishInDates($date1, $date2, $teacherIds);
     }
 
     /**
@@ -107,9 +107,9 @@ class TrainingGroupRepository
      * @param string $date2
      * @return array|\yii\db\ActiveRecord[]
      */
-    public function getStartBeforeFinishAfterDates(string $date1, string $date2)
+    public function getStartBeforeFinishAfterDates(string $date1, string $date2, array $teacherIds = [])
     {
-        return $this->provider->getStartBeforeFinishAfterDates($date1, $date2);
+        return $this->provider->getStartBeforeFinishAfterDates($date1, $date2, $teacherIds);
     }
 
     public function getGroupsForCertificates()
