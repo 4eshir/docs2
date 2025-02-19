@@ -4,6 +4,7 @@ namespace common\components\logger;
 
 use common\components\logger\base\BaseLog;
 use common\components\logger\base\LogInterface;
+use common\components\logger\crud\CrudLog;
 use common\components\logger\method\MethodLog;
 use common\components\logger\search\SearchLog;
 
@@ -46,6 +47,26 @@ class LogFactory
             $controllerName,
             $actionName,
             $callType
+        );
+
+        return $log->write();
+    }
+
+    public static function createCrudLog(
+        string $datetime,
+        int $level,
+        int $userId,
+        string $text,
+        string $query
+    )
+    {
+        $log = new CrudLog(
+            $datetime,
+            $level,
+            LogInterface::TYPE_METHOD,
+            $userId,
+            $text,
+            $query
         );
 
         return $log->write();

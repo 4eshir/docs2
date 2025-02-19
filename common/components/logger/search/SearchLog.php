@@ -23,16 +23,22 @@ class SearchLog implements SearchLogInterface
     public string $partText;
 
     public MethodSearchData $methodData;
+    public CrudSearchData $crudData;
 
     private LogRepository $repository;
 
     public function __construct(
         MethodSearchData $methodData = null,
+        CrudSearchData $crudData = null,
         LogRepository $repository = null
     )
     {
         if (is_null($methodData)) {
             $methodData = new MethodSearchData();
+        }
+
+        if (is_null($crudData)) {
+            $crudData = new CrudSearchData();
         }
 
         if (is_null($repository)) {
@@ -42,6 +48,9 @@ class SearchLog implements SearchLogInterface
         /** @var MethodSearchData $methodData */
         $this->methodData = $methodData;
 
+        /** @var CrudSearchData $crudData */
+        $this->crudData = $crudData;
+
         /** @var LogRepository $repository */
         $this->repository = $repository;
     }
@@ -49,6 +58,11 @@ class SearchLog implements SearchLogInterface
     public function setMethodSearchData(MethodSearchData $data)
     {
         $this->methodData = $data;
+    }
+
+    public function setCrudSearchData(CrudSearchData $data)
+    {
+        $this->crudData = $data;
     }
 
     /**
@@ -183,6 +197,7 @@ class SearchLog implements SearchLogInterface
     private function haveAddData(string $addData)
     {
         return
-            $this->methodData->haveData($addData);
+            $this->methodData->haveData($addData) ||
+            $this->crudData->haveData($addData);
     }
 }
