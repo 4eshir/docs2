@@ -14,10 +14,14 @@ use common\helpers\files\filenames\TrainingGroupFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\PeopleStamp;
+use common\models\scaffold\ThematicPlan;
 use common\repositories\dictionaries\AuditoriumRepository;
+use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\ProjectThemeRepository;
+use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupRepository;
+use common\repositories\educational\TrainingProgramRepository;
 use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
@@ -42,11 +46,13 @@ use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
 use frontend\forms\training_group\TrainingGroupScheduleForm;
 use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
+use frontend\models\work\educational\training_group\LessonThemeWork;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
+use frontend\models\work\educational\training_program\ThematicPlanWork;
 use frontend\models\work\ProjectThemeWork;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -59,24 +65,33 @@ class TrainingGroupService implements DatabaseServiceInterface
     use CommonDatabaseFunctions, Math;
 
     private TrainingGroupRepository $trainingGroupRepository;
+    private TeacherGroupRepository $teacherGroupRepository;
     private TrainingGroupLessonRepository $trainingGroupLessonRepository;
     private ProjectThemeRepository $themeRepository;
+    private TrainingProgramRepository $trainingProgramRepository;
+    private LessonThemeRepository $lessonThemeRepository;
     private FileService $fileService;
     private TrainingGroupFileNameGenerator $filenameGenerator;
     private PeopleStampService $peopleStampService;
 
     public function __construct(
         TrainingGroupRepository $trainingGroupRepository,
+        TeacherGroupRepository $teacherGroupRepository,
         TrainingGroupLessonRepository $trainingGroupLessonRepository,
         ProjectThemeRepository $themeRepository,
+        TrainingProgramRepository $trainingProgramRepository,
+        LessonThemeRepository $lessonThemeRepository,
         FileService $fileService,
         TrainingGroupFileNameGenerator $filenameGenerator,
         PeopleStampService $peopleStampService
     )
     {
         $this->trainingGroupRepository = $trainingGroupRepository;
+        $this->teacherGroupRepository = $teacherGroupRepository;
         $this->trainingGroupLessonRepository = $trainingGroupLessonRepository;
         $this->themeRepository = $themeRepository;
+        $this->trainingProgramRepository = $trainingProgramRepository;
+        $this->lessonThemeRepository = $lessonThemeRepository;
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
         $this->peopleStampService = $peopleStampService;
@@ -480,5 +495,54 @@ class TrainingGroupService implements DatabaseServiceInterface
             'auditoriums' => $auditoriums,
             'scheduleTable' => $scheduleTable
         ];
+    }
+
+    public function createLessonThemes($groupId)
+    {
+        /** @var TrainingGroupWork $group */
+        $group = $this->trainingGroupRepository->get($groupId);
+        $teachers = ArrayHelper::getColumn(
+            $this->teacherGroupRepository->getAllTeachersFromGroup($groupId),
+            'teacher_id'
+        );
+
+        if (!$group->haveProgram()) {
+            return TrainingGroupWork::ERROR_NO_PROGRAM;
+        }
+
+        $lessons = $this->trainingGroupLessonRepository->getLessonsFromGroup($groupId);
+        $thematicPlan = $this->trainingProgramRepository->getThematicPlan($group->training_program_id);
+
+        if (count($lessons) !== count($thematicPlan)) {
+            return TrainingGroupWork::ERROR_THEMES_MISMATCH;
+        }
+
+        $this->deleteLessonThemes($groupId);
+
+        foreach ($thematicPlan as $key => $theme) {
+            /** @var ThematicPlanWork $theme */
+            $this->lessonThemeRepository->save(
+                LessonThemeWork::fill(
+                    $lessons[$key]->id,
+                    $theme->id,
+                    count($teachers) > 0 ? $teachers[0] : null
+                )
+            );
+        }
+
+        return true;
+    }
+
+    public function deleteLessonThemes($groupId)
+    {
+        $lessonIds = ArrayHelper::getColumn(
+            $this->trainingGroupLessonRepository->getLessonsFromGroup($groupId),
+            'id'
+        );
+        $lessonThemes = $this->lessonThemeRepository->getByLessonIds($lessonIds);
+
+        foreach ($lessonThemes as $lessonTheme) {
+            $this->lessonThemeRepository->delete($lessonTheme);
+        }
     }
 }

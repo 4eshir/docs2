@@ -54,6 +54,6 @@ class VisitProvider implements VisitProviderInterface
 
     public function getByTrainingGroupParticipants(array $trainingGroupParticipantId)
     {
-        return VisitWork::find()->where(['IN', 'training_group_participant_id', $trainingGroupParticipantId])->one();
+        return VisitWork::find()->where(['IN', 'training_group_participant_id', $trainingGroupParticipantId])->all();
     }
 }

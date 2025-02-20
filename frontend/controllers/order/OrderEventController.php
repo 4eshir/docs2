@@ -214,11 +214,13 @@ class OrderEventController extends DocumentController
         );
         $modelOrderEvent = $this->orderEventRepository->get($id);
         $foreignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
+        $actTable = $this->actParticipantService->createActTable($foreignEvent->id);
         return $this->render('view',
             [
                 'model' => $modelOrderEvent,
                 'foreignEvent' => $foreignEvent,
-                'modelResponsiblePeople' => $modelResponsiblePeople
+                'modelResponsiblePeople' => $modelResponsiblePeople,
+                'actTable' => $actTable
             ]
         );
     }
@@ -333,6 +335,8 @@ class OrderEventController extends DocumentController
     {
         /* @var $act ActParticipantWork */
         $act = [$this->actParticipantRepository->get($id)];
+        $foreignEventId = $act[0]->foreign_event_id;
+        $orderId = ($this->foreignEventRepository->get($foreignEventId))->order_participant_id;
         if($act[0] == NULL){
             return $this->redirect(['index']);
         }
@@ -366,7 +370,7 @@ class OrderEventController extends DocumentController
             $this->actParticipantService->saveFilesFromModel($act[0], 0);
             //при замене select в act-update заменить в следующей строчке $post[0]["participant"] на что-то другое
             $this->actParticipantService->updateSquadParticipant($act[0], $post[0]["participant"]);
-            return $this->redirect(['act', 'id' => $id]);
+            return $this->redirect(['view', 'id' => $orderId]);
         }
         return $this->render('act-update', [
             'act' => $act[0],
@@ -377,6 +381,7 @@ class OrderEventController extends DocumentController
             'defaultTeam' => $defaultTeam['name'],
             'tables' => $tables,
             'participants' => $participants,
+            'orderId' => $orderId,
         ]);
     }
     public function actionDeletePeople($id, $modelId)

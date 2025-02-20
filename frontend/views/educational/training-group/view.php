@@ -2,6 +2,7 @@
 
 use common\helpers\StringFormatter;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\services\educational\JournalService;
@@ -58,7 +59,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
     <h1><?= Html::encode('Группа '.$this->title) ?>
 
     <p>
-        <?= Html::a('Тест', ['test', 'id' => $model->id], ['class' => 'btn btn-secondary']) ?>
+        <?= Html::a('Перенести темы занятий из ОП', ['create-lesson-themes', 'groupId' => $model->id], ['class' => 'btn btn-secondary']) ?>
         <?= Html::a('Редактировать', ['base-form', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?php if ($journalState == JournalService::JOURNAL_EMPTY): ?>
             <?= Html::a('Создать журнал', ['generate-journal', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
@@ -85,7 +86,11 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                 return $model->budget == 1 ? 'Бюджет' : 'Внебюджет';
             }],
             ['attribute' => 'trainingProgram', 'format' => 'html', 'value' => function (TrainingGroupCombinedForm $model){
-                return $model->trainingProgram ? $model->trainingProgram->name : '';
+                return $model->trainingProgram ?
+                    StringFormatter::stringAsLink(
+                        $model->trainingProgram->name,
+                        Url::to(['educational/training-program/view', 'id' => $model->trainingProgram->id])
+                    ) : '';
             }],
             ['attribute' => 'network', 'label' => 'Сетевая форма обучения', 'value' => function (TrainingGroupCombinedForm $model){
                 return $model->network == 1 ? 'Да' : 'Нет';
@@ -94,7 +99,10 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                 $newTeachers = [];
                 foreach ($model->teachers as $teacher) {
                     /** @var TeacherGroupWork $teacher */
-                    $newTeachers[] = StringFormatter::stringAsLink($teacher->teacherWork->getFIO(PeopleWork::FIO_FULL), Url::to(['dictionaries/people/view', 'id' => $teacher->teacherWork->people_id]));
+                    $newTeachers[] = StringFormatter::stringAsLink(
+                            $teacher->teacherWork->getFIO(PersonInterface::FIO_FULL),
+                            Url::to(['dictionaries/people/view', 'id' => $teacher->teacherWork->people_id])
+                    );
                 }
                 return implode('<br>', $newTeachers);
             }],

@@ -18,6 +18,11 @@ class TeacherGroupProvider implements TeacherGroupProviderInterface
         return TeacherGroupWork::find()->where(['training_group_id' => $groupId])->all();
     }
 
+    public function getAllFromTeacherIds(array $teacherIds)
+    {
+        return TeacherGroupWork::find()->where(['IN', 'teacher_id', $teacherIds])->all();
+    }
+
     public function prepareCreate($teacherId, $groupId)
     {
         $model = TeacherGroupWork::fill($teacherId, $groupId);

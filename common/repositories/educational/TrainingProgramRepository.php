@@ -44,6 +44,16 @@ class TrainingProgramRepository
         return TrainingProgramWork::find()->all();
     }
 
+    public function getByFocuses(array $focuses)
+    {
+        return TrainingProgramWork::find()->where(['IN', 'focus', $focuses])->all();
+    }
+
+    public function getByAllowRemotes(array $allowRemotes)
+    {
+        return TrainingProgramWork::find()->where(['IN', 'allow_remote', $allowRemotes])->all();
+    }
+
     public function getBranches($id)
     {
         return BranchProgramWork::find()->where(['training_program_id' => $id])->orderBy(['branch' => SORT_ASC])->all();
@@ -85,7 +95,10 @@ class TrainingProgramRepository
 
     public function getThematicPlan($programId)
     {
-        return ThematicPlanWork::find()->where(['training_program_id' => $programId])->all();
+        return ThematicPlanWork::find()
+            ->where(['training_program_id' => $programId])
+            ->orderBy(['id' => SORT_ASC])
+            ->all();
     }
 
     public function getAuthors($programId)

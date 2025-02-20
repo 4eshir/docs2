@@ -77,8 +77,8 @@ class ActParticipantWork extends ActParticipant
     {
         $firstTeacher = PeopleStampWork::findOne($this->teacher_id);
         $secondTeacher = PeopleStampWork::findOne($this->teacher2_id);
-        return $firstTeacher->getFullFio() .  "\n" .
-             $secondTeacher->getFullFio();
+        return ($firstTeacher ? $firstTeacher->getFullFio() : '') . "\n" .
+            ($secondTeacher ? $secondTeacher->getFullFio() : '');
     }
 
     public function getTeamName()

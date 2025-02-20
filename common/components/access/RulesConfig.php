@@ -50,7 +50,8 @@ class RulesConfig
                 'schedule-form',
                 'pitch-form',
                 'group-deletion',
-                'delete-file'
+                'delete-file',
+                'create-lesson-themes'
             ]
         ],
 
@@ -61,7 +62,8 @@ class RulesConfig
                 'schedule-form',
                 'pitch-form',
                 'group-deletion',
-                'delete-file'
+                'delete-file',
+                'create-lesson-themes'
             ]
         ],
 
@@ -72,7 +74,8 @@ class RulesConfig
                 'schedule-form',
                 'pitch-form',
                 'group-deletion',
-                'delete-file'
+                'delete-file',
+                'create-lesson-themes'
             ]
         ],
 

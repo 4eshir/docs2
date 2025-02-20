@@ -126,7 +126,6 @@ class OrderMainController extends DocumentController
             /* @var OrderMainWork $model */
             $model = $this->repository->get($id);
             $people = $this->peopleRepository->getOrderedList();
-            $post = Yii::$app->request->post();
             $orders = $this->documentOrderRepository->getExceptByIdAndStatus($id, DocumentOrderWork::ORDER_MAIN);
             $regulations = $this->regulationRepository->getOrderedList();
             $users = $this->userRepository->getAll();
@@ -134,6 +133,7 @@ class OrderMainController extends DocumentController
             $modelChangedDocuments = $this->service->getChangedDocumentsTable($model->id);
             $tables = $this->documentOrderService->getUploadedFilesTables($model);
             $model->setValuesForUpdate();
+            $post = Yii::$app->request->post();
             $this->documentOrderService->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $model);
             if ($model->load($post)) {
                 $this->lockWizard->unlockObject($id, DocumentOrder::tableName());

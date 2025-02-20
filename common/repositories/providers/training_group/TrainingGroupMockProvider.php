@@ -68,48 +68,74 @@ class TrainingGroupMockProvider implements TrainingGroupProviderInterface
         return true;
     }
 
-    public function getBetweenDates(string $date1, string $date2)
+    public function getBetweenDates(string $date1, string $date2, array $groupIds = [])
     {
-        return array_filter($this->dataStore, function($item) use ($date1, $date2) {
+        return array_filter($this->dataStore, function($item) use ($date1, $date2, $groupIds) {
+            $conditionIds = true;
+            if (count($groupIds) > 0) {
+                $conditionIds = in_array($item['id'], $groupIds);
+            }
             return
                 $item['start_date'] >= $date1 && $item['start_date'] <= $date2 ||
                 $item['finish_date'] >= $date1 && $item['finish_date'] <= $date2 ||
-                $item['start_date'] < $date1 && $item['finish_date'] > $date2;
+                $item['start_date'] < $date1 && $item['finish_date'] > $date2 &&
+                $conditionIds;
         });
     }
 
-    public function getStartBeforeFinishInDates(string $date1, string $date2)
+    public function getStartBeforeFinishInDates(string $date1, string $date2, array $groupIds = [])
     {
-        return array_filter($this->dataStore, function($item) use ($date1, $date2) {
+        return array_filter($this->dataStore, function($item) use ($date1, $date2, $groupIds) {
+            $conditionIds = true;
+            if (count($groupIds) > 0) {
+                $conditionIds = in_array($item['id'], $groupIds);
+            }
             return
                 $item['start_date'] > $date1 &&
-                $item['finish_date'] >= $date1 && $item['finish_date'] <= $date2;
+                $item['finish_date'] >= $date1 && $item['finish_date'] <= $date2 &&
+                $conditionIds;
         });
     }
 
-    public function getStartInFinishAfterDates(string $date1, string $date2)
+    public function getStartInFinishAfterDates(string $date1, string $date2, array $groupIds = [])
     {
-        return array_filter($this->dataStore, function($item) use ($date1, $date2) {
+        return array_filter($this->dataStore, function($item) use ($date1, $date2, $groupIds) {
+            $conditionIds = true;
+            if (count($groupIds) > 0) {
+                $conditionIds = in_array($item['id'], $groupIds);
+            }
             return
                 $item['start_date'] >= $date1 && $item['start_date'] <= $date2 ||
-                $item['finish_date'] < $date2;
+                $item['finish_date'] < $date2 &&
+                $conditionIds;
         });
     }
 
-    public function getStartInFinishInDates(string $date1, string $date2)
+    public function getStartInFinishInDates(string $date1, string $date2, array $groupIds = [])
     {
-        return array_filter($this->dataStore, function($item) use ($date1, $date2) {
+        return array_filter($this->dataStore, function($item) use ($date1, $date2, $groupIds) {
+            $conditionIds = true;
+            if (count($groupIds) > 0) {
+                $conditionIds = in_array($item['id'], $groupIds);
+            }
             return
                 $item['start_date'] >= $date1 && $item['start_date'] <= $date2 &&
-                $item['finish_date'] >= $date1 && $item['finish_date'] <= $date2;
+                $item['finish_date'] >= $date1 && $item['finish_date'] <= $date2 &&
+                $conditionIds;
         });
     }
 
-    public function getStartBeforeFinishAfterDates(string $date1, string $date2)
+    public function getStartBeforeFinishAfterDates(string $date1, string $date2, array $groupIds = [])
     {
-        return TrainingGroupWork::find()
-            ->where(['>', 'start_date', $date1])
-            ->andWhere(['<', 'finish_date', $date2])
-            ->all();
+        return array_filter($this->dataStore, function($item) use ($date1, $date2, $groupIds) {
+            $conditionIds = true;
+            if (count($groupIds) > 0) {
+                $conditionIds = in_array($item['id'], $groupIds);
+            }
+            return
+                $item['start_date'] > $date1 &&
+                $item['finish_date'] < $date2 &&
+                $conditionIds;
+        });
     }
 }

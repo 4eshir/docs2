@@ -3,6 +3,9 @@
 namespace backend\services\report;
 
 use backend\forms\report\ManHoursReportForm;
+use backend\repositories\report\ManHoursReportRepository;
+use common\repositories\educational\LessonThemeRepository;
+use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
@@ -14,21 +17,21 @@ use yii\helpers\ArrayHelper;
 
 class ReportManHoursService
 {
-    private TrainingGroupRepository $groupRepository;
+    private ManHoursReportRepository $repository;
+    private LessonThemeRepository $lessonThemeRepository;
     private TrainingGroupParticipantRepository $participantRepository;
-    private TrainingGroupLessonRepository $lessonRepository;
     private VisitRepository $visitRepository;
 
     public function __construct(
-        TrainingGroupRepository $groupRepository,
+        ManHoursReportRepository $repository,
+        LessonThemeRepository $lessonThemeRepository,
         TrainingGroupParticipantRepository $participantRepository,
-        TrainingGroupLessonRepository $lessonRepository,
         VisitRepository $visitRepository
     )
     {
-        $this->groupRepository = $groupRepository;
+        $this->repository = $repository;
+        $this->lessonThemeRepository = $lessonThemeRepository;
         $this->participantRepository = $participantRepository;
-        $this->lessonRepository = $lessonRepository;
         $this->visitRepository = $visitRepository;
     }
 
@@ -38,16 +41,40 @@ class ReportManHoursService
      * @param string $startDate
      * @param string $endDate
      * @param int $calculateType
+     * @param int[] $teacherIds
      * @return int
      */
-    public function calculateManHours(string $startDate, string $endDate, int $calculateType) : int
+    public function calculateManHours(
+        string $startDate,
+        string $endDate,
+        array $branches,
+        array $focuses,
+        array $allowRemotes,
+        array $budgets,
+        int $calculateType,
+        array $teacherIds = []
+    ) : int
     {
+        $query = $this->repository->searchTrainingGroups();
+        $query = $this->repository->filterGroupsBetweenDates($query, $startDate, $endDate);
+        $query = $this->repository->filterGroupsByBranches($query, $branches);
+        $query = $this->repository->filterGroupsByFocuses($query, $focuses);
+        $query = $this->repository->filterGroupsByAllowRemote($query, $allowRemotes);
+        $query = $this->repository->filterGroupsByBudget($query, $budgets);
+
+        $groups = $this->repository->findAll($query);
+
         $participants = $this->participantRepository->getParticipantsFromGroups(
-            ArrayHelper::getColumn($this->groupRepository->getBetweenDates($startDate, $endDate), 'id')
+            ArrayHelper::getColumn($groups, 'id')
         );
 
-        $visits = $this->visitRepository->getParticipantsFromGroup(
+        $visits = $this->visitRepository->getByTrainingGroupParticipants(
             ArrayHelper::getColumn($participants, 'id')
+        );
+
+        $teacherLessonIds = ArrayHelper::getColumn(
+            $this->lessonThemeRepository->getByTeacherIds($teacherIds),
+            'training_group_lesson_id'
         );
 
         $result = 0;
@@ -55,7 +82,7 @@ class ReportManHoursService
             /** @var VisitWork $visit */
             $lessons = VisitLesson::fromString($visit->lessons);
             foreach ($lessons as $lesson) {
-                $result += $this->checkVisitLesson($lesson, $calculateType);
+                $result += $this->checkVisitLesson($lesson, $calculateType, $teacherLessonIds);
             }
         }
 
@@ -67,13 +94,20 @@ class ReportManHoursService
      *
      * @param VisitLesson $visitLesson
      * @param int $calculateType
+     * @param int[] $teacherLessonIds
      * @return int
      */
-    private function checkVisitLesson(VisitLesson $visitLesson, int $calculateType)
+    private function checkVisitLesson(VisitLesson $visitLesson, int $calculateType, array $teacherLessonIds = [])
     {
+        $conditionTeacher = true;
+        if (count($teacherLessonIds) > 0) {
+            $conditionTeacher = in_array($visitLesson->lessonId, $teacherLessonIds);
+        }
+
         if (
-            ($visitLesson->status == VisitWork::ATTENDANCE || $visitLesson->status == VisitWork::DISTANCE) ||
-            ($calculateType == ManHoursReportForm::MAN_HOURS_ALL && $visitLesson->status == VisitWork::NO_ATTENDANCE)
+            (($visitLesson->status == VisitWork::ATTENDANCE || $visitLesson->status == VisitWork::DISTANCE) ||
+            ($calculateType == ManHoursReportForm::MAN_HOURS_ALL && $visitLesson->status == VisitWork::NO_ATTENDANCE)) &&
+            $conditionTeacher
         ) {
             return 1;
         }
@@ -88,22 +122,37 @@ class ReportManHoursService
      * @param string $endDate
      * @param int $calculateType тип поиск групп (время начала/окончания занятий)
      * @param int $calculateSubtype подтип для фильтрации обучающихся (уникальные/все)
+     * @param int[] $teacherIds id преподавателей для фильтрации групп
      * @return int
      */
-    public function calculateParticipantsByPeriod(string $startDate, string $endDate, int $calculateType, int $calculateSubtype) : int
+    public function calculateParticipantsByPeriod(
+        string $startDate,
+        string $endDate,
+        int $calculateType,
+        int $calculateSubtype,
+        array $teacherIds = []
+    ) : int
     {
+        $filterGroupIds = [];
+        if (count($teacherIds) > 0) {
+            $filterGroupIds = ArrayHelper::getColumn(
+                $this->teacherGroupRepository->getAllFromTeacherIds($teacherIds),
+                'training_group_id'
+            );
+        }
+
         switch ($calculateType) {
             case ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_IN:
-                $groups = $this->groupRepository->getStartBeforeFinishInDates($startDate, $endDate);
+                $groups = $this->groupRepository->getStartBeforeFinishInDates($startDate, $endDate, $filterGroupIds);
                 break;
             case ManHoursReportForm::PARTICIPANT_START_IN_FINISH_AFTER:
-                $groups = $this->groupRepository->getStartInFinishAfterDates($startDate, $endDate);
+                $groups = $this->groupRepository->getStartInFinishAfterDates($startDate, $endDate, $filterGroupIds);
                 break;
             case ManHoursReportForm::PARTICIPANT_START_IN_FINISH_IN:
-                $groups = $this->groupRepository->getStartInFinishInDates($startDate, $endDate);
+                $groups = $this->groupRepository->getStartInFinishInDates($startDate, $endDate, $filterGroupIds);
                 break;
             case ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_AFTER:
-                $groups = $this->groupRepository->getStartBeforeFinishAfterDates($startDate, $endDate);
+                $groups = $this->groupRepository->getStartBeforeFinishAfterDates($startDate, $endDate, $filterGroupIds);
                 break;
             default:
                 throw new InvalidArgumentException('Неизвестный тип периода');
@@ -118,7 +167,12 @@ class ReportManHoursService
                 return count($participants);
             case ManHoursReportForm::PARTICIPANTS_UNIQUE:
                 return count(
-                    ArrayHelper::getColumn($participants, 'participant_id')
+                    array_unique(
+                        ArrayHelper::getColumn(
+                            $participants,
+                            'participant_id'
+                        )
+                    )
                 );
             default:
                 return -1;

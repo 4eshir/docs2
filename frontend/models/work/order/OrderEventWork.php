@@ -98,7 +98,7 @@ class OrderEventWork extends DocumentOrderWork
     public function beforeValidate()
     {
         $this->order_copy_id = 1;
-        $this->order_name = 'Об участии в мероприятии';
+        $this->order_name = 'Об участии в мероприятии' ;
         $this->type = DocumentOrderWork::ORDER_EVENT;
         $this->order_date = DateFormatter::format($this->order_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         return parent::beforeValidate();

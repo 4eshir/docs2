@@ -9,6 +9,7 @@
 /* @var $act */
 /* @var $tables */
 /* @var $participants */
+/* @var $orderId */
 use frontend\models\work\team\ActParticipantWork;
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
@@ -18,19 +19,13 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\widgets\DetailView;
 
+$this->title = 'Изменить акт об участии ';
+$this->params['breadcrumbs'][] = ['label' => 'Приказ об участии', 'url' => ['view', 'id' => $orderId]];
+$this->params['breadcrumbs'][] = 'Редактирование';
 ?>
+
 <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
 <h1><?= Html::encode($this->title) ?></h1>
-<p>
-    <?= Html::a('Удалить', ['act-delete', 'id' => $act->id], [
-        'class' => 'btn btn-danger',
-        'data' => [
-            'confirm' => 'Are you sure you want to delete this item?',
-            'method' => 'post',
-        ],
-    ]) ?>
-</p>
-
 <script>
     function displayDetails()
     {
@@ -234,6 +229,15 @@ use yii\widgets\DetailView;
             'class' => 'btn btn-success',
             'onclick' => 'prepareAndSubmit();' // Подготовка скрытых полей перед отправкой
         ]) ?>
+        <p>
+            <?= Html::a('Удалить', ['act-delete', 'id' => $act->id], [
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => 'Are you sure you want to delete this item?',
+                    'method' => 'post',
+                ],
+            ]) ?>
+        </p>
     <?php $form = ActiveForm::end(); ?>
 </div>
 <script>

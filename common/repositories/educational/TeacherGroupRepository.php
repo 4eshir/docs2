@@ -33,6 +33,11 @@ class TeacherGroupRepository
         return $this->provider->getAllTeachersFromGroup($groupId);
     }
 
+    public function getAllFromTeacherIds(array $teacherIds)
+    {
+        return $this->provider->getAllFromTeacherIds($teacherIds);
+    }
+
     public function prepareCreate($teacherId, $groupId)
     {
         if (get_class($this->provider) == TeacherGroupProvider::class) {

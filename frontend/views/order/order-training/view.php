@@ -1,6 +1,7 @@
 <?php
 
 use common\helpers\html\HtmlBuilder;
+use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderTrainingWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -21,8 +22,13 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="order-training-view">
     <?php
-    if ($error) {
-        echo HtmlBuilder::createInfoMessage('Невозможно применить действие к ученикам.');
+    switch ($error) {
+        case DocumentOrderWork::ERROR_DATE_PARTICIPANT:
+            echo HtmlBuilder::createWarningMessage('Невозможно применить действие к ученикам.', 'Ошибка выбора даты приказа');
+            break;
+        case DocumentOrderWork::ERROR_RELATION:
+            echo HtmlBuilder::createWarningMessage('Невозможно применить действие к ученикам.', 'Выбранные обучающиеся задействованы в других приказах');
+            break;
     }
     ?>
     <h1><?= Html::encode($this->title) ?></h1>
