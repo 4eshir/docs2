@@ -6,6 +6,7 @@ use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\TrainingProgram;
+use common\models\work\UserWork;
 use common\repositories\educational\TrainingProgramRepository;
 use common\services\general\files\FileService;
 use frontend\models\work\general\PeopleStampWork;
@@ -125,5 +126,27 @@ class TrainingProgramWork extends TrainingProgram
         }
 
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
+    }
+
+    public function getCreatorName()
+    {
+        $creator = $this->creatorWork;
+        return $creator ? $creator->getFullName() : '---';
+    }
+
+    public function getLastEditorName()
+    {
+        $editor = $this->lastEditorWork;
+        return $editor ? $editor->getFullName() : '---';
+    }
+
+    public function getCreatorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
+    }
+
+    public function getLastEditorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
     }
 }
