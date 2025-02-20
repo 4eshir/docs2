@@ -144,7 +144,7 @@ class ActParticipantService
                 if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
                     $this->actParticipantRepository->save($modelAct);
                 }
-                if ($modelAct->id != NULL) {
+                if (!is_null($modelAct->id)) {
                     $this->saveFilesFromModel($modelAct, $index);
                     $modelAct->releaseEvents();
                     $this->squadParticipantService->addSquadParticipantEvent($modelAct, $participants, $modelAct->id);
