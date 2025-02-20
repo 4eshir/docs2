@@ -23,7 +23,6 @@ Thumbs.db
 /backend/config
 /forntend/config
 /common/config
-/.idea
 # composer itself is not needed
 composer.phar
 

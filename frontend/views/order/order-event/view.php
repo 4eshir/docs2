@@ -11,6 +11,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model \frontend\models\work\order\OrderEventWork */
 /* @var $modelResponsiblePeople */
+/* @var $actTable */
 $this->title = $model->order_name;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы о мероприятиях'];
 \yii\web\YiiAsset::register($this);
@@ -61,4 +62,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Приказы о мероприя
             }],
         ],
     ]) ?>
+    <?php if (!is_null($actTable)): ?>
+        <?= $actTable; ?>
+    <?php endif; ?>
 </div>
