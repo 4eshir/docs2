@@ -151,6 +151,6 @@ class TrainingGroupWork extends TrainingGroup
 
     public function haveProgram()
     {
-        return is_null($this->training_program_id);
+        return !is_null($this->training_program_id);
     }
 }

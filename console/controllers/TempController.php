@@ -2,6 +2,9 @@
 
 namespace console\controllers;
 
+use backend\forms\report\ManHoursReportForm;
+use backend\services\report\ReportManHoursService;
+use common\components\dictionaries\base\BranchDictionary;
 use common\components\logger\base\LogInterface;
 use common\components\logger\LogFactory;
 use common\components\logger\search\MethodSearchData;
@@ -26,5 +29,19 @@ class TempController extends Controller
         );
 
         SearchLogFacade::findLogs($provider);
+    }
+
+    public function actionReport()
+    {
+        $service = Yii::createObject(ReportManHoursService::class);
+        var_dump($service->calculateManHours(
+            '2025-01-01',
+            '2025-02-02',
+            [BranchDictionary::TECHNOPARK],
+            [1, 2, 3, 4, 5],
+            [1, 2],
+            [0, 1],
+            ManHoursReportForm::MAN_HOURS_FAIR
+        ));
     }
 }

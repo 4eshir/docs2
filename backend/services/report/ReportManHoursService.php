@@ -3,6 +3,7 @@
 namespace backend\services\report;
 
 use backend\forms\report\ManHoursReportForm;
+use backend\repositories\report\ManHoursReportRepository;
 use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
@@ -16,27 +17,21 @@ use yii\helpers\ArrayHelper;
 
 class ReportManHoursService
 {
-    private TrainingGroupRepository $groupRepository;
-    private TrainingGroupParticipantRepository $participantRepository;
-    private TrainingGroupLessonRepository $lessonRepository;
-    private TeacherGroupRepository $teacherGroupRepository;
+    private ManHoursReportRepository $repository;
     private LessonThemeRepository $lessonThemeRepository;
+    private TrainingGroupParticipantRepository $participantRepository;
     private VisitRepository $visitRepository;
 
     public function __construct(
-        TrainingGroupRepository $groupRepository,
-        TrainingGroupParticipantRepository $participantRepository,
-        TrainingGroupLessonRepository $lessonRepository,
-        TeacherGroupRepository $teacherGroupRepository,
+        ManHoursReportRepository $repository,
         LessonThemeRepository $lessonThemeRepository,
+        TrainingGroupParticipantRepository $participantRepository,
         VisitRepository $visitRepository
     )
     {
-        $this->groupRepository = $groupRepository;
-        $this->participantRepository = $participantRepository;
-        $this->lessonRepository = $lessonRepository;
-        $this->teacherGroupRepository = $teacherGroupRepository;
+        $this->repository = $repository;
         $this->lessonThemeRepository = $lessonThemeRepository;
+        $this->participantRepository = $participantRepository;
         $this->visitRepository = $visitRepository;
     }
 
@@ -49,22 +44,37 @@ class ReportManHoursService
      * @param int[] $teacherIds
      * @return int
      */
-    public function calculateManHours(string $startDate, string $endDate, int $calculateType, array $teacherIds = []) : int
+    public function calculateManHours(
+        string $startDate,
+        string $endDate,
+        array $branches,
+        array $focuses,
+        array $allowRemotes,
+        array $budgets,
+        int $calculateType,
+        array $teacherIds = []
+    ) : int
     {
-        $teacherLessonIds = [];
-        if (count($teacherIds) > 0) {
-            $teacherLessonIds = ArrayHelper::getColumn(
-                $this->lessonThemeRepository->getByTeacherIds($teacherIds),
-                'training_group_lesson_id'
-            );
-        }
+        $query = $this->repository->searchTrainingGroups();
+        $query = $this->repository->filterGroupsBetweenDates($query, $startDate, $endDate);
+        $query = $this->repository->filterGroupsByBranches($query, $branches);
+        $query = $this->repository->filterGroupsByFocuses($query, $focuses);
+        $query = $this->repository->filterGroupsByAllowRemote($query, $allowRemotes);
+        $query = $this->repository->filterGroupsByBudget($query, $budgets);
+
+        $groups = $this->repository->findAll($query);
 
         $participants = $this->participantRepository->getParticipantsFromGroups(
-            ArrayHelper::getColumn($this->groupRepository->getBetweenDates($startDate, $endDate), 'id')
+            ArrayHelper::getColumn($groups, 'id')
         );
 
-        $visits = $this->visitRepository->getParticipantsFromGroup(
+        $visits = $this->visitRepository->getByTrainingGroupParticipants(
             ArrayHelper::getColumn($participants, 'id')
+        );
+
+        $teacherLessonIds = ArrayHelper::getColumn(
+            $this->lessonThemeRepository->getByTeacherIds($teacherIds),
+            'training_group_lesson_id'
         );
 
         $result = 0;
@@ -84,7 +94,7 @@ class ReportManHoursService
      *
      * @param VisitLesson $visitLesson
      * @param int $calculateType
-     * @param int[] $teacherIds
+     * @param int[] $teacherLessonIds
      * @return int
      */
     private function checkVisitLesson(VisitLesson $visitLesson, int $calculateType, array $teacherLessonIds = [])
@@ -95,8 +105,8 @@ class ReportManHoursService
         }
 
         if (
-            ($visitLesson->status == VisitWork::ATTENDANCE || $visitLesson->status == VisitWork::DISTANCE) ||
-            ($calculateType == ManHoursReportForm::MAN_HOURS_ALL && $visitLesson->status == VisitWork::NO_ATTENDANCE) &&
+            (($visitLesson->status == VisitWork::ATTENDANCE || $visitLesson->status == VisitWork::DISTANCE) ||
+            ($calculateType == ManHoursReportForm::MAN_HOURS_ALL && $visitLesson->status == VisitWork::NO_ATTENDANCE)) &&
             $conditionTeacher
         ) {
             return 1;

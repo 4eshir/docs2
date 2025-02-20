@@ -21,7 +21,10 @@ class TrainingGroupLessonProvider implements TrainingGroupLessonProviderInterfac
 
     public function getLessonsFromGroup($id)
     {
-        return TrainingGroupLessonWork::find()->where(['training_group_id' => $id])->all();
+        return TrainingGroupLessonWork::find()
+            ->where(['training_group_id' => $id])
+            ->orderBy(['lesson_date' => SORT_ASC, 'lesson_start_time' => SORT_ASC])
+            ->all();
     }
 
     public function prepareCreate($groupId, $lessonDate, $lessonStartTime, $branch, $auditoriumId, $lessonEndTime, $duration)

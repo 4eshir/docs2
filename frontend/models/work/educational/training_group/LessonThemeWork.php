@@ -11,7 +11,7 @@ class LessonThemeWork extends LessonTheme
     public static function fill(
         int $trainingGroupLessonId,
         int $thematicPlanId,
-        int $teacherId
+        int $teacherId = null
     )
     {
         $entity = new static();

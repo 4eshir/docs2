@@ -501,9 +501,12 @@ class TrainingGroupService implements DatabaseServiceInterface
     {
         /** @var TrainingGroupWork $group */
         $group = $this->trainingGroupRepository->get($groupId);
-        $teachers = $this->teacherGroupRepository->getAllTeachersFromGroup($groupId);
+        $teachers = ArrayHelper::getColumn(
+            $this->teacherGroupRepository->getAllTeachersFromGroup($groupId),
+            'teacher_id'
+        );
 
-        if ($group->haveProgram()) {
+        if (!$group->haveProgram()) {
             return TrainingGroupWork::ERROR_NO_PROGRAM;
         }
 
@@ -516,11 +519,11 @@ class TrainingGroupService implements DatabaseServiceInterface
 
         $this->deleteLessonThemes($groupId);
 
-        foreach ($thematicPlan as $theme) {
+        foreach ($thematicPlan as $key => $theme) {
             /** @var ThematicPlanWork $theme */
             $this->lessonThemeRepository->save(
                 LessonThemeWork::fill(
-                    $groupId,
+                    $lessons[$key]->id,
                     $theme->id,
                     count($teachers) > 0 ? $teachers[0] : null
                 )

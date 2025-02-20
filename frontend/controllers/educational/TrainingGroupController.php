@@ -293,9 +293,20 @@ class TrainingGroupController extends DocumentController
         }
     }
 
-    public function createLessonThemes($groupId)
+    public function actionCreateLessonThemes($groupId)
     {
-        $this->service->createLessonThemes($groupId);
+        $result = $this->service->createLessonThemes($groupId);
+        if ($result === TrainingGroupWork::ERROR_NO_PROGRAM) {
+            Yii::$app->session->setFlash('danger', 'Ошибка создания тематического плана: у группы отсутствует образовательная программа');
+        }
+        if ($result === TrainingGroupWork::ERROR_THEMES_MISMATCH) {
+            Yii::$app->session->setFlash('danger', 'Ошибка создания тематического плана: количество занятий группы не совпадает с количеством тем в образовательной программе');
+        }
+
+        if ($result === true) {
+            Yii::$app->session->setFlash('success', 'Тематический план создан');
+        }
+
         return $this->redirect(Yii::$app->request->referrer);
     }
 
