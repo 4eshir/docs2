@@ -7,7 +7,6 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model \frontend\models\work\order\OrderMainWork */
 /* @var $people */
-/* @var $users */
 /* @var $modelExpire */
 /* @var $orders */
 /* @var $regulations */
@@ -31,7 +30,6 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
     <?= $this->render('_form', [
         'model' => $model,
         'people' => $people,
-        'users' => $users,
         'modelExpire' => $modelExpire,
         'orders' => $orders,
         'regulations' => $regulations,

@@ -4,7 +4,6 @@ use yii\helpers\Html;
 
 /* @var $model \app\models\work\order\OrderMainWork */
 /* @var $people */
-/* @var $users */
 /* @var $modelExpire */
 /* @var $orders */
 /* @var $regulations */
@@ -20,7 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $this->render('_form', [
             'model' => $model,
             'people' => $people,
-            'users' => $users,
             'modelExpire' => $modelExpire,
             'orders' => $orders,
             'regulations' => $regulations

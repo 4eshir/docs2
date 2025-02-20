@@ -3,6 +3,7 @@
 namespace frontend\controllers\order;
 
 use app\components\DynamicWidget;
+use app\models\forms\OrderEventBuilderForm;
 use app\models\work\order\OrderEventGenerateWork;
 use app\services\order\OrderEventGenerateService;
 use common\components\dictionaries\base\NomenclatureDictionary;
@@ -33,7 +34,6 @@ use common\repositories\order\OrderEventRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\facades\ActParticipantFacade;
-use frontend\facades\OrderEventFacade;
 use frontend\forms\OrderEventForm;
 use frontend\models\forms\ActParticipantForm;
 use frontend\models\search\SearchOrderEvent;
@@ -55,12 +55,12 @@ class OrderEventController extends DocumentController
     private ActParticipantService $actParticipantService;
     private ActParticipantRepository $actParticipantRepository;
     private ActParticipantFacade $actParticipantFacade;
-    private OrderEventFacade $orderEventFacade;
     private ForeignEventParticipantsRepository $foreignEventParticipantsRepository;
     private CompanyRepository $companyRepository;
     private LockWizard $lockWizard;
     private OrderEventGenerateRepository $orderEventGenerateRepository;
     private OrderEventGenerateService $orderEventGenerateService;
+    private TeamService $teamService;
 
     public function __construct(
         $id, $module,
@@ -77,7 +77,6 @@ class OrderEventController extends DocumentController
         FileService $fileService,
         FilesRepository $fileRepository,
         ActParticipantFacade $actParticipantFacade,
-        OrderEventFacade $orderEventFacade,
         TeamService $teamService,
         ForeignEventParticipantsRepository $foreignEventParticipantsRepository,
         CompanyRepository $companyRepository,
@@ -98,12 +97,12 @@ class OrderEventController extends DocumentController
         $this->actParticipantService = $actParticipantService;
         $this->actParticipantRepository = $actParticipantRepository;
         $this->actParticipantFacade = $actParticipantFacade;
-        $this->orderEventFacade = $orderEventFacade;
         $this->foreignEventParticipantsRepository = $foreignEventParticipantsRepository;
         $this->companyRepository = $companyRepository;
         $this->lockWizard = $lockWizard;
         $this->orderEventGenerateRepository = $orderEventGenerateRepository;
         $this->orderEventGenerateService = $orderEventGenerateService;
+        $this->teamService = $teamService;
         parent::__construct($id, $module, $fileService, $fileRepository, $config);
     }
     public function actionIndex() {
@@ -115,41 +114,44 @@ class OrderEventController extends DocumentController
         ]);
     }
     public function actionCreate() {
-        /* @var OrderEventForm $model */
-        $model = new OrderEventForm();
-        $people = $this->peopleRepository->getOrderedList();
-        $modelActs = [new ActParticipantForm];
+        $form = new OrderEventBuilderForm(
+            new OrderEventForm(),
+            $this->peopleRepository->getOrderedList(),
+            [new ActParticipantForm],
+            [],
+            [],
+            $this->foreignEventParticipantsRepository->getSortedList(),
+            $this->companyRepository->getList(),
+            NULL,
+            NULL
+        );
         $post = Yii::$app->request->post();
-        $teams = [];
-        $nominations = [];
-        $participants = $this->foreignEventParticipantsRepository->getSortedList();
-        $company = $this->companyRepository->getList();
-        if($model->load($post)) {
+        if($form->orderEventForm->load($post)) {
             $acts = $post["ActParticipantForm"];
-            if (!$model->validate()) {
-                  throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            if (!$form->orderEventForm->validate()) {
+                  throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($form->orderEventForm->getErrors()));
             }
-            $this->orderEventFormService->getFilesInstances($model);
+            $this->orderEventFormService->getFilesInstances($form->orderEventForm);
             $respPeopleId = DynamicWidget::getData(basename(OrderEventForm::class), "responsible_id", $post);
             $modelOrderEvent = OrderEventWork::fill(
-                $model->order_copy_id,
+                $form->orderEventForm->order_copy_id,
                 NomenclatureDictionary::ADMIN_ORDER,
-                $model->order_postfix,
-                $model->order_date,
-                $model->order_name,
-                $model->signed_id,
-                $model->bring_id,
-                $model->executor_id,
-                $model->key_words,
-                $model->creator_id,
-                $model->last_edit_id,
-                $model->target,
+                $form->orderEventForm->order_postfix,
+                $form->orderEventForm->order_date,
+                $form->orderEventForm->order_name,
+                $form->orderEventForm->signed_id,
+                $form->orderEventForm->bring_id,
+                $form->orderEventForm->executor_id,
+                $form->orderEventForm->key_words,
+                $form->orderEventForm->creator_id,
+                $form->orderEventForm->last_edit_id,
+                $form->orderEventForm->target,
                 DocumentOrderWork::ORDER_EVENT, //$model->type,
-                $model->state,
-                $model->nomenclature_id,
-                $model->study_type,
-                $model->scanFile,
-                $model->docFiles,
+                $form->orderEventForm->state,
+                $form->orderEventForm->nomenclature_id,
+                $form->orderEventForm->study_type,
+                $form->orderEventForm->scanFile,
+                $form->orderEventForm->docFiles,
             );
             $modelOrderEvent->generateOrderNumber();
             $this->documentOrderService->getPeopleStamps($modelOrderEvent);
@@ -157,50 +159,50 @@ class OrderEventController extends DocumentController
             $this->orderEventRepository->save($modelOrderEvent);
             $generateInfo = OrderEventGenerateWork::fill(
                 $modelOrderEvent->id,
-                $model->purpose,
-                $model->docEvent,
-                $model->respPeopleInfo,
-                $model->timeProvisionDay,
-                $model->extraRespInsert,
-                $model->timeInsertDay,
-                $model->extraRespMethod,
-                $model->extraRespInfoStuff
+                $form->orderEventForm->purpose,
+                $form->orderEventForm->docEvent,
+                $form->orderEventForm->respPeopleInfo,
+                $form->orderEventForm->timeProvisionDay,
+                $form->orderEventForm->extraRespInsert,
+                $form->orderEventForm->timeInsertDay,
+                $form->orderEventForm->extraRespMethod,
+                $form->orderEventForm->extraRespInfoStuff
             );
             $this->orderEventGenerateService->setPeopleStamp($generateInfo);
             $this->orderEventGenerateRepository->save($generateInfo);
             $this->documentOrderService->saveFilesFromModel($modelOrderEvent);
             $modelForeignEvent = ForeignEventWork::fill(
-                $model->eventName,
-                $model->organizer_id,
-                $model->dateBegin,
-                $model->dateEnd,
-                $model->city,
-                $model->eventWay,
-                $model->eventLevel,
-                $model->minister,
-                $model->minAge,
-                $model->maxAge,
-                $model->keyEventWords,
+                $form->orderEventForm->eventName,
+                $form->orderEventForm->organizer_id,
+                $form->orderEventForm->dateBegin,
+                $form->orderEventForm->dateEnd,
+                $form->orderEventForm->city,
+                $form->orderEventForm->eventWay,
+                $form->orderEventForm->eventLevel,
+                $form->orderEventForm->minister,
+                $form->orderEventForm->minAge,
+                $form->orderEventForm->maxAge,
+                $form->orderEventForm->keyEventWords,
                 $modelOrderEvent->id,
-                $model->actFiles
+                $form->orderEventForm->actFiles
             );
             $this->foreignEventRepository->save($modelForeignEvent);
             $this->orderPeopleService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
-            $this->foreignEventService->saveActFilesFromModel($modelForeignEvent, $model->actFiles, $number);
-            $model->releaseEvents();
+            $this->foreignEventService->saveActFilesFromModel($modelForeignEvent, $form->orderEventForm->actFiles, $number);
+            $form->orderEventForm->releaseEvents();
             $modelForeignEvent->releaseEvents();
             $modelOrderEvent->releaseEvents();
             $this->actParticipantService->addActParticipant($acts, $modelForeignEvent->id);
             return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
         }
         return $this->render('create', [
-            'model' => $model,
-            'people' => $people,
-            'modelActs' => $modelActs,
-            'nominations' => $nominations,
-            'teams' => $teams,
-            'participants' => $participants,
-            'company' => $company
+            'model' => $form->orderEventForm,
+            'people' => $form->people,
+            'modelActs' => $form->modelActs,
+            'nominations' => $form->nominations,
+            'teams' => $form->teams,
+            'participants' => $form->participants,
+            'company' => $form->company
         ]);
     }
     public function actionView($id)
@@ -228,62 +230,66 @@ class OrderEventController extends DocumentController
     {
         /* @var $modelOrderEvent OrderEventWork */
         if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
-            $data = $this->orderEventFacade->prepareOrderEventUpdateFacade($id);
-            $people = $data['people'];
-            $tables = $data['tables'];
-            $nominations = $data['nominations'];
-            $teams = $data['teams'];
-            $modelActForms = $data['modelActForms'];
-            $actTable = $data['actTable'];
-            $model = $data['model'];
-            $modelForeignEvent = $data['modelForeignEvent'];
-            $modelOrderEvent = $data['modelOrderEvent'];
-            $modelData = $this->orderEventFacade->modelOrderEventFormFacade($model, $id);
-            $orderNumber = $modelData['orderNumber'];
-            $participants = $this->foreignEventParticipantsRepository->getSortedList();
-            $company = $this->companyRepository->getList();
-            $model->setValuesForUpdate();
+            /* @var OrderEventWork $modelOrderEvent */
+            /* @var ForeignEventWork $modelForeignEvent */
+            $modelOrderEvent = $this->orderEventRepository->get($id);
+            $modelForeignEvent = $this->foreignEventRepository->getByDocOrderId($modelOrderEvent->id);
+            $form = new OrderEventBuilderForm(
+                OrderEventForm::fill($modelOrderEvent, $modelForeignEvent),
+                $this->peopleRepository->getOrderedList(),
+                [new ActParticipantForm],
+                $this->teamService->getNamesByForeignEventId($modelForeignEvent->id),
+                array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($modelForeignEvent->id), 'nomination')),
+                $this->foreignEventParticipantsRepository->getSortedList(),
+                $this->companyRepository->getList(),
+                $this->actParticipantService->createActTable($modelForeignEvent->id),
+                $this->documentOrderService->getUploadedFilesTables($modelOrderEvent),
+            );
+            $form->orderEventForm->fillExtraInfo($this->orderEventGenerateRepository->getByOrderId($id));
+            $this->documentOrderService->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $form->orderEventForm);
+            $orderNumber = $form->orderEventForm->order_number;
+            $form->orderEventForm->setValuesForUpdate();
             $post = Yii::$app->request->post();
-            if ($model->load($post)) {
+            if ($form->orderEventForm->load($post)) {
                 $this->lockWizard->unlockObject($id, DocumentOrderWork::tableName());
-                if (!$model->validate()) {
-                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                if (!$form->orderEventForm->validate()) {
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($form->orderEventForm->getErrors()));
                 }
                 $acts = $post["ActParticipantForm"];
-                $this->orderEventFormService->getFilesInstances($model);
+                $this->orderEventFormService->getFilesInstances($form->orderEventForm);
                 $modelOrderEvent->fillUpdate(
-                    $model->order_copy_id,
+                    $form->orderEventForm->order_copy_id,
                     $orderNumber,
-                    $model->order_postfix,
-                    $model->order_date,
-                    $model->order_name,
-                    $model->signed_id,
-                    $model->bring_id,
-                    $model->executor_id,
-                    $model->key_words,
-                    $model->creator_id,
-                    $model->last_edit_id,
-                    $model->target,
+                    $form->orderEventForm->order_postfix,
+                    $form->orderEventForm->order_date,
+                    $form->orderEventForm->order_name,
+                    $form->orderEventForm->signed_id,
+                    $form->orderEventForm->bring_id,
+                    $form->orderEventForm->executor_id,
+                    $form->orderEventForm->key_words,
+                    $form->orderEventForm->creator_id,
+                    $form->orderEventForm->last_edit_id,
+                    $form->orderEventForm->target,
                     DocumentOrderWork::ORDER_EVENT, //$model->type,
-                    $model->state,
-                    $model->nomenclature_id,
-                    $model->study_type,
-                    $model->scanFile,
-                    $model->docFiles,
+                    $form->orderEventForm->state,
+                    $form->orderEventForm->nomenclature_id,
+                    $form->orderEventForm->study_type,
+                    $form->orderEventForm->scanFile,
+                    $form->orderEventForm->docFiles,
                 );
                 $this->documentOrderService->getPeopleStamps($modelOrderEvent);
                 $this->orderEventRepository->save($modelOrderEvent);
                 $generateInfo = $this->orderEventGenerateRepository->getByOrderId($id);
                 $generateInfo->fillUpdate(
                     $modelOrderEvent->id,
-                    $model->purpose,
-                    $model->docEvent,
-                    $model->respPeopleInfo,
-                    $model->timeProvisionDay,
-                    $model->extraRespInsert,
-                    $model->timeInsertDay,
-                    $model->extraRespMethod,
-                    $model->extraRespInfoStuff
+                    $form->orderEventForm->purpose,
+                    $form->orderEventForm->docEvent,
+                    $form->orderEventForm->respPeopleInfo,
+                    $form->orderEventForm->timeProvisionDay,
+                    $form->orderEventForm->extraRespInsert,
+                    $form->orderEventForm->timeInsertDay,
+                    $form->orderEventForm->extraRespMethod,
+                    $form->orderEventForm->extraRespInfoStuff
                 );
                 $this->orderEventGenerateService->setPeopleStamp($generateInfo);
                 $this->orderEventGenerateRepository->save($generateInfo);
@@ -292,19 +298,19 @@ class OrderEventController extends DocumentController
                     ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
                     $post["OrderEventForm"]["responsible_id"], $modelOrderEvent);
                 $modelForeignEvent->fillUpdate(
-                    $model->eventName,
-                    $model->organizer_id,
-                    $model->dateBegin,
-                    $model->dateEnd,
-                    $model->city,
-                    $model->eventWay,
-                    $model->eventLevel,
-                    $model->minister,
-                    $model->minAge,
-                    $model->maxAge,
-                    $model->keyEventWords,
+                    $form->orderEventForm->eventName,
+                    $form->orderEventForm->organizer_id,
+                    $form->orderEventForm->dateBegin,
+                    $form->orderEventForm->dateEnd,
+                    $form->orderEventForm->city,
+                    $form->orderEventForm->eventWay,
+                    $form->orderEventForm->eventLevel,
+                    $form->orderEventForm->minister,
+                    $form->orderEventForm->minAge,
+                    $form->orderEventForm->maxAge,
+                    $form->orderEventForm->keyEventWords,
                     $modelOrderEvent->id,
-                    $model->actFiles
+                    $form->orderEventForm->actFiles
                 );
                 $this->foreignEventRepository->save($modelForeignEvent);
                 $this->actParticipantService->addActParticipant($acts, $modelForeignEvent->id);
@@ -312,16 +318,16 @@ class OrderEventController extends DocumentController
                 return $this->redirect(['view', 'id' => $modelOrderEvent->id]);
             }
             return $this->render('update', [
-                'model' => $model,
-                'people' => $people,
-                'scanFile' => $tables['scan'],
-                'docFiles' => $tables['docs'],
-                'nominations' => $nominations,
-                'teams' => $teams,
-                'modelActs' => $modelActForms,
-                'actTable' => $actTable,
-                'participants' => $participants,
-                'company' => $company,
+                'model' => $form->orderEventForm,
+                'people' => $form->people,
+                'scanFile' => $form->tables['scan'],
+                'docFiles' => $form->tables['docs'],
+                'nominations' => $form->nominations,
+                'teams' => $form->teams,
+                'modelActs' => $form->modelActs,
+                'actTable' => $form->actTable,
+                'participants' => $form->participants,
+                'company' => $form->company,
                 'id' => $id
             ]);
         }
