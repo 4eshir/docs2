@@ -7,7 +7,6 @@ use common\helpers\html\HtmlBuilder;
 use common\helpers\search\SearchFieldHelper;
 use yii\widgets\ActiveForm;
 
-//Yii::$app->eventType->getList()
 ?>
 
 <div class="event-search">

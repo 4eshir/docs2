@@ -9,6 +9,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model TrainingProgramWork */
 /* @var $thematicPlan array */
+/* @var $buttonsAct */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Образовательные программы', 'url' => ['index']];
@@ -17,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="training-program-view">
 
-<style>
+<!--<style>
     .accordion {
         background-color: #3680b1;
         color: white;
@@ -47,20 +48,201 @@ $this->params['breadcrumbs'][] = $this->title;
     .hoverless:hover {
         cursor: default;
     }
-</style>
+</style>-->
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="substrate">
+        <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Вы действительно хотите удалить программу?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+        <div class="flexx space">
+            <div class="flexx">
+                <?= $buttonsAct; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-block-1">
+            <div class="card-set">
+                <div class="card-head">Основное</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Актуальность программы
+                    </div>
+                    <div class="field-date">
+                        <?= 'Да/Нет' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Уровень сложности
+                    </div>
+                    <div class="field-date">
+                        <?= '1' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Возрастные ограничения
+                    </div>
+                    <div class="field-date">
+                        <?= '7-8 лет' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Объем программы
+                    </div>
+                    <div class="field-date">
+                        <?= '72 ак. час. по 20 мин.' ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Дополнительная информация</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Направленность
+                    </div>
+                    <div class="field-date">
+                        <?= 'Техническая' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Тематическое направление
+                    </div>
+                    <div class="field-date">
+                        <?= 'Общее интеллектуальное развитие (ОИР)' ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Форма и место реализации</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Форма реализации
+                    </div>
+                    <div class="field-date">
+                        <?= 'Только очная форма' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Сетевая форма обучения
+                    </div>
+                    <div class="field-date">
+                        <?= 'Да/Нет' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Отдел(-ы) - место реализации
+                    </div>
+                    <div class="field-date">
+                        <?= 'ЦДНТТ' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Итоговая форма контроля
+                    </div>
+                    <div class="field-date">
+                        <?= 'Завершение с итоговой контрольной работой' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Учебно-тематический план
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Описание
+                    </div>
+                    <div class="field-date">
+                        <?= 'Программа направлена на подготовку к перечневым олимпиадам по математике для учащихся 8 класса. Основная цель обучения – развитие математических способностей и подготовка к олимпиадам. В рамках программы ученики научатся решать математический задачи олимпиадного уровня и подготовятся к таким олимпиадам, как Всероссийская олимпиада школьников, Турнир Архимеда, Московская математическая олимпиада, олимпиада имени Эйлера и т.д. В процессе обучения школьники самостоятельно решают различные олимпиадные задачи, подробно разбирают примеры задач перечневых олимпиад.' ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-2">
+            <div class="card-set">
+                <div class="card-head">Педагогический совет</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Дата пед. совета
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Номер протокола
+                    </div>
+                    <div class="field-date">
+                        <?= '2023-05-15' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Составители
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Связанные группы</div>
+                <div class="card-field flexx">
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Ключевые слова</div>
+                <div class="card-field flexx">
+                    <div class="field-date">
+                        <?= 'математика вне бюджет' ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Файлы</div>
+                <div class="flexx files-section space-around">
+                    <div class="file-block-center"><?= '' ?><div>Документ программы</div></div>
+                    <div class="file-block-center"><?= '' ?><div>Редактируемый документ</div></div>
+                    <div class="file-block-center"><?= '' ?><div>Договор о сетевой форме</div></div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Свойства</div>
+                <div class="flexx">
+                    <div class="card-field flexx">
+                        <div class="field-title field-option">
+                            Создатель карточки
+                        </div>
+                        <div class="field-date">
+                            <?= $model->getCreatorName(); ?>
+                        </div>
+                    </div>
+                    <div class="card-field flexx">
+                        <div class="field-title field-option">
+                            Последний редактор
+                        </div>
+                        <div class="field-date">
+                            <?= $model->getLastEditorName(); ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <?= DetailView::widget([
         'model' => $model,
@@ -108,7 +290,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 
-<script>
+<!--<script>
     var acc = document.getElementsByClassName("accordion");
     var i;
 
@@ -124,4 +306,4 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         });
     }
-</script>
+</script>-->

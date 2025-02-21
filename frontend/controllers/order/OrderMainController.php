@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\order;
 
+use app\models\forms\OrderMainForm;
 use common\components\traits\AccessControl;
 use common\repositories\dictionaries\PeopleRepository;
 use frontend\models\work\order\DocumentOrderWork;
@@ -89,77 +90,82 @@ class OrderMainController extends DocumentController
         ]);
     }
     public function actionCreate(){
-        $model = new OrderMainWork();
-        $people = $this->peopleRepository->getOrderedList();
-        $users = $this->userRepository->getAll();
-        $orders = $this->documentOrderRepository->getAllByType(DocumentOrderWork::ORDER_MAIN);
-        $regulations = $this->regulationRepository->getOrderedList();
-        $modelExpire = [new ExpireForm()];
+
+        $form = new OrderMainForm(
+            new OrderMainWork(),
+            $this->peopleRepository->getOrderedList(),
+            $this->documentOrderRepository->getAllByType(DocumentOrderWork::ORDER_MAIN),
+            $this->regulationRepository->getOrderedList(),
+            [new ExpireForm()],
+            NULL,
+            NULL
+        );
+
+
         $post = Yii::$app->request->post();
-        if ($model->load($post)) {
-            $this->documentOrderService->getPeopleStamps($model);
-            if (!$model->validate()) {
+        if ($form->entity->load($post)) {
+            $this->documentOrderService->getPeopleStamps($form->entity);
+            if (!$form->entity->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
 
-            $model->generateOrderNumber();
-            $this->repository->save($model);
-            $this->documentOrderService->getFilesInstances($model);
-            $this->service->addExpireEvent($post["ExpireForm"], $model);
-            $this->orderPeopleService->addOrderPeopleEvent($post["OrderMainWork"]["responsible_id"], $model);
-            $this->documentOrderService->saveFilesFromModel($model);
-            $model->releaseEvents();
-            return $this->redirect(['view', 'id' => $model->id]);
+            $form->entity->generateOrderNumber();
+            $this->repository->save($form->entity);
+            $this->documentOrderService->getFilesInstances($form->entity);
+            $this->service->addExpireEvent($post["ExpireForm"], $form->entity);
+            $this->orderPeopleService->addOrderPeopleEvent($post["OrderMainWork"]["responsible_id"], $form->entity);
+            $this->documentOrderService->saveFilesFromModel($form->entity);
+            $form->entity->releaseEvents();
+            return $this->redirect(['view', 'id' => $form->entity->id]);
         }
         return $this->render('create', [
-            'model' => $model,
-            'people' => $people,
-            'users' => $users,
-            'modelExpire' => $modelExpire,
-            'orders' => $orders,
-            'regulations' => $regulations
+            'model' => $form->entity,
+            'people' => $form->people,
+            'modelExpire' => $form->modelExpire,
+            'orders' => $form->orders,
+            'regulations' => $form->regulations
         ]);
     }
     public function actionUpdate($id)
     {
         if ($this->lockWizard->lockObject($id, DocumentOrder::tableName(), Yii::$app->user->id)) {
             /* @var OrderMainWork $model */
-            $model = $this->repository->get($id);
-            $people = $this->peopleRepository->getOrderedList();
-            $orders = $this->documentOrderRepository->getExceptByIdAndStatus($id, DocumentOrderWork::ORDER_MAIN);
-            $regulations = $this->regulationRepository->getOrderedList();
-            $users = $this->userRepository->getAll();
-            $modelExpire = [new ExpireForm()];
-            $modelChangedDocuments = $this->service->getChangedDocumentsTable($model->id);
-            $tables = $this->documentOrderService->getUploadedFilesTables($model);
-            $model->setValuesForUpdate();
+            $form = new OrderMainForm(
+                $this->repository->get($id),
+                $this->peopleRepository->getOrderedList(),
+                $this->documentOrderRepository->getExceptByIdAndStatus($id, DocumentOrderWork::ORDER_MAIN),
+                $this->regulationRepository->getOrderedList(),
+                [new ExpireForm()],
+                $this->service->getChangedDocumentsTable($id),
+                $this->documentOrderService->getUploadedFilesTables($this->repository->get($id))
+            );
+            $form->entity->setValuesForUpdate();
             $post = Yii::$app->request->post();
-            $this->documentOrderService->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $model);
-            if ($model->load($post)) {
+            $this->documentOrderService->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $form->entity);
+            if ($form->entity->load($post)) {
                 $this->lockWizard->unlockObject($id, DocumentOrder::tableName());
-                $this->documentOrderService->getPeopleStamps($model);
-                if (!$model->validate()) {
+                $this->documentOrderService->getPeopleStamps($form->entity);
+                if (!$form->entity->validate()) {
                     throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
                 }
-                $this->repository->save($model);
-                $this->documentOrderService->getFilesInstances($model);
+                $this->repository->save($form->entity);
+                $this->documentOrderService->getFilesInstances($form->entity);
                 $this->orderPeopleService->updateOrderPeopleEvent(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
-                    $post["OrderMainWork"]["responsible_id"], $model);
-                $this->service->addExpireEvent($post["ExpireForm"], $model);
-                $this->documentOrderService->saveFilesFromModel($model);
-                $model->releaseEvents();
-                return $this->redirect(['view', 'id' => $model->id]);
+                    $post["OrderMainWork"]["responsible_id"], $form->entity);
+                $this->service->addExpireEvent($post["ExpireForm"], $form->entity);
+                $this->documentOrderService->saveFilesFromModel($form->entity);
+                $form->entity->releaseEvents();
+                return $this->redirect(['view', 'id' => $form->entity->id]);
             }
             return $this->render('update', [
-                'orders' => $orders,
-                'model' => $model,
-                'people' => $people,
-                'users' => $users,
-                'modelExpire' => $modelExpire,
-                'regulations' => $regulations,
-                'modelChangedDocuments' => $modelChangedDocuments,
-                'scanFile' => $tables['scan'],
-                'docFiles' => $tables['docs'],
+                'orders' => $form->orders,
+                'model' => $form->entity,
+                'people' => $form->people,
+                'modelExpire' => $form->modelExpire,
+                'regulations' => $form->regulations,
+                'modelChangedDocuments' => $form->modelChangedDocuments,
+                'scanFile' => $form->tables['scan'],
+                'docFiles' => $form->tables['docs'],
             ]);
         }
         else {

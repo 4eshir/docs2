@@ -1,11 +1,7 @@
 <?php
 
-use common\helpers\files\FilesHelper;
 use frontend\models\work\event\EventWork;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model EventWork */

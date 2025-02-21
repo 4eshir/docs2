@@ -3,6 +3,7 @@
 namespace frontend\controllers\order;
 
 use app\components\DynamicWidget;
+use app\models\forms\OrderTrainingForm;
 use common\components\traits\AccessControl;
 use common\repositories\dictionaries\PeopleRepository;
 use frontend\components\GroupParticipantWidget;
@@ -100,10 +101,16 @@ class OrderTrainingController extends DocumentController
     }
     public function actionCreate(){
         $model = new OrderTrainingWork();
-        $people = $this->peopleRepository->getOrderedList();
+        $form = new OrderTrainingForm(
+            $this->peopleRepository->getOrderedList(),
+            $this->orderTrainingService->getGroupsEmptyDataProvider(),
+            $this->orderTrainingService->getParticipantEmptyDataProvider(),
+            NULL,
+            NULL,
+            NULL,
+            NULL,
+        );
         $post = Yii::$app->request->post();
-        $groups = $this->orderTrainingService->getGroupsEmptyDataProvider();
-        $groupParticipant = $this->orderTrainingService->getParticipantEmptyDataProvider();;
         if ($model->load($post)) {
             $this->documentOrderService->getPeopleStamps($model);
             if (!$model->validate()) {
@@ -114,9 +121,7 @@ class OrderTrainingController extends DocumentController
             $model->generateOrderNumber();
             $this->orderTrainingRepository->save($model);
             $status = $this->orderTrainingService->getStatus($model);
-            //create
             $error = $this->orderTrainingService->createOrderTrainingGroupParticipantEvent($model, $status, $post);
-            //create
             $this->documentOrderService->saveFilesFromModel($model);
             $this->orderPeopleService->addOrderPeopleEvent($respPeopleId, $model);
             $model->releaseEvents();
@@ -124,9 +129,9 @@ class OrderTrainingController extends DocumentController
         }
         return $this->render('create', [
             'model' => $model,
-            'people' => $people,
-            'groups' => $groups,
-            'groupParticipant' => $groupParticipant,
+            'people' => $form->people,
+            'groups' => $form->groups,
+            'groupParticipant' => $form->groupParticipant,
             'groupCheckOption' => [],
             'groupParticipantOption' => [],
 
@@ -137,17 +142,20 @@ class OrderTrainingController extends DocumentController
         if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {
             $model = $this->orderTrainingRepository->get($id);
             $this->orderTrainingService->setBranch($model);
-            $people = $this->peopleRepository->getOrderedList();
-            $post = Yii::$app->request->post();
-            $number = $model->order_number;
-            $groups = $this->orderTrainingService->getGroupsDataProvider($model);
-            $groupParticipant = $this->orderTrainingService->getParticipantsDataProvider($model);
-            $transferGroups = $this->trainingGroupRepository->getByBranchQuery($model->branch)->all();
-            $tables = $this->documentOrderService->getUploadedFilesTables($model);
             $status = $this->orderTrainingService->getStatus($model);
-            $groupCheckOption = $this->trainingGroupRepository->getAttachedGroupsByOrder($id, $status);
-            $groupParticipantOption = $this->trainingGroupParticipantRepository->getAttachedParticipantByOrder($id, $status);
+            $number = $model->order_number;
             $model->setValuesForUpdate();
+            $post = Yii::$app->request->post();
+            $form = new OrderTrainingForm(
+                $this->peopleRepository->getOrderedList(),
+                $this->orderTrainingService->getGroupsDataProvider($model),
+                $this->orderTrainingService->getParticipantsDataProvider($model),
+                $this->trainingGroupRepository->getByBranchQuery($model->branch)->all(),
+                $this->documentOrderService->getUploadedFilesTables($model),
+                $this->trainingGroupRepository->getAttachedGroupsByOrder($id, $status),
+                $this->trainingGroupParticipantRepository->getAttachedParticipantByOrder($id, $status)
+            );
+
             $this->documentOrderService->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $model);
             if ($model->load($post)) {
                 $this->lockWizard->unlockObject($id, DocumentOrderWork::tableName());
@@ -159,13 +167,10 @@ class OrderTrainingController extends DocumentController
                 $this->documentOrderService->getFilesInstances($model);
                 $model->order_number = $number;
                 $this->orderTrainingRepository->save($model);
-                //$status = $this->orderTrainingService->getStatus($model);
-                //update
                 $error = $this->orderTrainingService->updateOrderTrainingGroupParticipantEvent($model, $status, $post);
                 if($error) {
                     return $this->redirect(['update', 'id' => $id, 'error' => $error]);
                 }
-                //update
                 $this->documentOrderService->saveFilesFromModel($model);
                 $this->orderPeopleService->updateOrderPeopleEvent(
                     ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
@@ -175,14 +180,14 @@ class OrderTrainingController extends DocumentController
             }
             return $this->render('update', [
                 'model' => $model,
-                'people' => $people,
-                'groups' => $groups,
-                'groupParticipant' => $groupParticipant,
-                'transferGroups' => $transferGroups,
-                'scanFile' => $tables['scan'],
-                'docFiles' => $tables['docs'],
-                'groupCheckOption' => $groupCheckOption,
-                'groupParticipantOption' => $groupParticipantOption,
+                'people' => $form->people,
+                'groups' => $form->groups,
+                'groupParticipant' => $form->groupParticipant,
+                'transferGroups' => $form->transferGroups,
+                'scanFile' => $form->tables['scan'],
+                'docFiles' => $form->tables['docs'],
+                'groupCheckOption' => $form->groupCheckOption,
+                'groupParticipantOption' => $form->groupParticipantOption,
                 'error' => $error
             ]);
         }

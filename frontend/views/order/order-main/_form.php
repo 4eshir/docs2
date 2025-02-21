@@ -19,7 +19,6 @@ use yii\widgets\DetailView;
 /* @var $model OrderMainWork */
 /* @var $form yii\widgets\ActiveForm */
 /* @var $people */
-/* @var $users */
 
 /* @var $modelExpire */
 /* @var $orders */

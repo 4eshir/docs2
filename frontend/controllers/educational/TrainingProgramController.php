@@ -6,6 +6,8 @@ use app\components\DynamicWidget;
 use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
+use common\helpers\ButtonsFormatter;
+use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\FilesRepository;
@@ -88,9 +90,19 @@ class TrainingProgramController extends DocumentController
      */
     public function actionView($id)
     {
+        $links = ButtonsFormatter::UpdateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
+        /** @var TrainingProgramWork $model */
+        $model = $this->repository->get($id);
+        //$model->checkFilesExist();
+
+        $thematicPlan = $this->repository->getThematicPlan($id);
+
         return $this->render('view', [
-            'model' => $this->repository->get($id),
-            'thematicPlan' => $this->repository->getThematicPlan($id),
+            'model' => $model,
+            'thematicPlan' => $thematicPlan,
+            'buttonsAct' => $buttonHtml,
         ]);
     }
 
