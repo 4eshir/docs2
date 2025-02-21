@@ -3,7 +3,7 @@
 namespace backend\services\report;
 
 use backend\forms\report\ManHoursReportForm;
-use backend\repositories\report\ManHoursReportRepository;
+use backend\repositories\report\TrainingGroupReportRepository;
 use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
@@ -13,20 +13,21 @@ use common\repositories\educational\VisitRepository;
 use frontend\models\work\educational\journal\VisitLesson;
 use frontend\models\work\educational\journal\VisitWork;
 use InvalidArgumentException;
+use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 
 class ReportManHoursService
 {
-    private ManHoursReportRepository $repository;
+    private TrainingGroupReportRepository $repository;
     private LessonThemeRepository $lessonThemeRepository;
     private TrainingGroupParticipantRepository $participantRepository;
     private VisitRepository $visitRepository;
 
     public function __construct(
-        ManHoursReportRepository $repository,
-        LessonThemeRepository $lessonThemeRepository,
+        TrainingGroupReportRepository      $repository,
+        LessonThemeRepository              $lessonThemeRepository,
         TrainingGroupParticipantRepository $participantRepository,
-        VisitRepository $visitRepository
+        VisitRepository                    $visitRepository
     )
     {
         $this->repository = $repository;
@@ -36,12 +37,40 @@ class ReportManHoursService
     }
 
     /**
+     * Вспомогательная функция для генерации отчетов
+     * Возвращает запрос на получение отфильтрованных групп
+     *
+     * @param array $branches
+     * @param array $focuses
+     * @param array $allowRemotes
+     * @param array $budgets
+     * @return ActiveQuery
+     */
+    private function getTrainingGroupsQueryByFilters(
+        array $branches,
+        array $focuses,
+        array $allowRemotes,
+        array $budgets
+    ) : ActiveQuery
+    {
+        $query = $this->repository->query();
+        $query = $this->repository->filterGroupsByBranches($query, $branches);
+        $query = $this->repository->filterGroupsByFocuses($query, $focuses);
+        $query = $this->repository->filterGroupsByAllowRemote($query, $allowRemotes);
+        return $this->repository->filterGroupsByBudget($query, $budgets);
+    }
+
+    /**
      * Метод подсчета человеко-часов за заданный период и с заданным типом подсчета
      *
      * @param string $startDate
      * @param string $endDate
+     * @param int[] $branches
+     * @param int[] $focuses
+     * @param int[] $allowRemotes
+     * @param int[] $budgets
      * @param int $calculateType
-     * @param int[] $teacherIds
+     * @param int[] $teacherIds передаются id из таблицы {@see PeopleStamp}, не из {@see People}
      * @return int
      */
     public function calculateManHours(
@@ -55,13 +84,9 @@ class ReportManHoursService
         array $teacherIds = []
     ) : int
     {
-        $query = $this->repository->searchTrainingGroups();
-        $query = $this->repository->filterGroupsBetweenDates($query, $startDate, $endDate);
-        $query = $this->repository->filterGroupsByBranches($query, $branches);
-        $query = $this->repository->filterGroupsByFocuses($query, $focuses);
-        $query = $this->repository->filterGroupsByAllowRemote($query, $allowRemotes);
-        $query = $this->repository->filterGroupsByBudget($query, $budgets);
+        $query = $this->getTrainingGroupsQueryByFilters($branches, $focuses, $allowRemotes, $budgets);
 
+        $query = $this->repository->filterGroupsBetweenDates($query, $startDate, $endDate);
         $groups = $this->repository->findAll($query);
 
         $participants = $this->participantRepository->getParticipantsFromGroups(
@@ -120,43 +145,33 @@ class ReportManHoursService
      *
      * @param string $startDate
      * @param string $endDate
-     * @param int $calculateType тип поиск групп (время начала/окончания занятий)
+     * @param array $branches
+     * @param array $focuses
+     * @param array $allowRemotes
+     * @param array $budgets
+     * @param int[] $calculateTypes типы периодов для поиска групп
      * @param int $calculateSubtype подтип для фильтрации обучающихся (уникальные/все)
-     * @param int[] $teacherIds id преподавателей для фильтрации групп
+     * @param int[] $teacherIds передаются id из таблицы {@see PeopleStamp}, не из {@see People}
      * @return int
      */
     public function calculateParticipantsByPeriod(
         string $startDate,
         string $endDate,
-        int $calculateType,
+        array $branches,
+        array $focuses,
+        array $allowRemotes,
+        array $budgets,
+        array $calculateTypes,
         int $calculateSubtype,
         array $teacherIds = []
     ) : int
     {
-        $filterGroupIds = [];
-        if (count($teacherIds) > 0) {
-            $filterGroupIds = ArrayHelper::getColumn(
-                $this->teacherGroupRepository->getAllFromTeacherIds($teacherIds),
-                'training_group_id'
-            );
-        }
+        $query = $this->getTrainingGroupsQueryByFilters($branches, $focuses, $allowRemotes, $budgets);
+        $query = $this->repository->filterGroupsByDates($query, $startDate, $endDate, $calculateTypes);
 
-        switch ($calculateType) {
-            case ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_IN:
-                $groups = $this->groupRepository->getStartBeforeFinishInDates($startDate, $endDate, $filterGroupIds);
-                break;
-            case ManHoursReportForm::PARTICIPANT_START_IN_FINISH_AFTER:
-                $groups = $this->groupRepository->getStartInFinishAfterDates($startDate, $endDate, $filterGroupIds);
-                break;
-            case ManHoursReportForm::PARTICIPANT_START_IN_FINISH_IN:
-                $groups = $this->groupRepository->getStartInFinishInDates($startDate, $endDate, $filterGroupIds);
-                break;
-            case ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_AFTER:
-                $groups = $this->groupRepository->getStartBeforeFinishAfterDates($startDate, $endDate, $filterGroupIds);
-                break;
-            default:
-                throw new InvalidArgumentException('Неизвестный тип периода');
-        }
+        $query = $this->repository->filterGroupsByTeachers($query, $teacherIds);
+        var_dump($query->createCommand()->getRawSql());
+        $groups = $this->repository->findAll($query);
 
         $participants = $this->participantRepository->getParticipantsFromGroups(
             ArrayHelper::getColumn($groups, 'id')

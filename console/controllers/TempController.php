@@ -40,7 +40,7 @@ class TempController extends Controller
 
     public function actionReport()
     {
-        $service = Yii::createObject(ReportManHoursService::class);
+        /*$service = Yii::createObject(ReportManHoursService::class);
         var_dump($service->calculateManHours(
             '2025-01-01',
             '2025-02-02',
@@ -49,6 +49,19 @@ class TempController extends Controller
             [1, 2],
             [0, 1],
             ManHoursReportForm::MAN_HOURS_FAIR
+        ));*/
+
+        $service = Yii::createObject(ReportManHoursService::class);
+        var_dump($service->calculateParticipantsByPeriod(
+            '2025-01-01',
+            '2025-02-02',
+            [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM],
+            [1, 2, 3, 4, 5],
+            [1, 2],
+            [0, 1],
+            [ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_IN, ManHoursReportForm::PARTICIPANT_START_IN_FINISH_AFTER, ManHoursReportForm::PARTICIPANT_START_IN_FINISH_IN, ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_AFTER],
+            ManHoursReportForm::PARTICIPANTS_ALL,
+            [45]
         ));
     }
 }
