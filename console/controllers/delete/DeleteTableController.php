@@ -43,8 +43,44 @@ class DeleteTableController extends Controller
     public function actionDeleteRussianNames(){
         Yii::$app->db->createCommand()->delete('russian_names')->execute();
     }
+    public function actionDeleteCompany(){
+        Yii::$app->db->createCommand()->delete('company')->execute();
+    }
+    public function actionDeletePeople(){
+        Yii::$app->db->createCommand()->delete('people')->execute();
+    }
+    public function actionDeleteUser(){
+        Yii::$app->db->createCommand()->delete('user')->execute();
+    }
+    public function actionDeleteDocumentIn(){
+        Yii::$app->db->createCommand()->delete('document_in')->execute();
+    }
+    public function actionDeleteDocumentOut(){
+        Yii::$app->db->createCommand()->delete('document_out')->execute();
+    }
+    public function actionDeleteInOutDocuments(){
+        Yii::$app->db->createCommand()->delete('in_out_documents')->execute();
+    }
+    public function actionDeleteFiles()
+    {
+        Yii::$app->db->createCommand()->delete('files')->execute();
+    }
+    public function actionDeletePeoplePositionCompanyBranch(){
+        Yii::$app->db->createCommand()->delete('people_position_company_branch')->execute();
+    }
     public function actionDeleteAll()
     {
+        $this->actionDeletePeoplePositionCompanyBranch();
+
+        $this->actionDeleteFiles();
+        $this->actionDeleteInOutDocuments();
+        $this->actionDeleteDocumentIn();
+        $this->actionDeleteDocumentOut();
+
+        $this->actionDeleteCompany();
+        $this->actionDeletePeople();
+        $this->actionDeleteUser();
+
         $this->actionDeleteBotMessage();
         $this->actionDeleteCertificateTemplates();
         $this->actionDeleteCharacteristicObject();
