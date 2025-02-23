@@ -68,8 +68,18 @@ class DeleteTableController extends Controller
     public function actionDeletePeoplePositionCompanyBranch(){
         Yii::$app->db->createCommand()->delete('people_position_company_branch')->execute();
     }
+    public function actionDeleteRegulation(){
+        Yii::$app->db->createCommand()->delete('regulation')->execute();
+    }
+    public function actionDeletePersonalData(){
+        Yii::$app->db->createCommand()->delete('personal_data_participant')->execute();
+    }
     public function actionDeleteAll()
     {
+        $this->actionDeletePersonalData();
+
+        $this->actionDeleteRegulation();
+
         $this->actionDeletePeoplePositionCompanyBranch();
 
         $this->actionDeleteFiles();
