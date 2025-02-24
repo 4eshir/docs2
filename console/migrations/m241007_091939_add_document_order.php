@@ -30,7 +30,14 @@ class m241007_091939_add_document_order extends Migration
             'nomenclature_id' => $this->integer(),
             'study_type' => $this->smallInteger(),
         ]);
-
+        $this->addForeignKey(
+            'fk-event-3',
+            'event',
+            'order_id',
+            'document_order',
+            'id',
+            'RESTRICT',
+        );
         $this->addForeignKey(
             'fk-document_order-1',
             'document_order',
@@ -82,6 +89,7 @@ class m241007_091939_add_document_order extends Migration
      */
     public function safeDown()
     {
+        $this->dropForeignKey('fk-event-3', 'event');
         $this->dropForeignKey('fk-document_order-1', 'document_order');
         $this->dropForeignKey('fk-document_order-2', 'document_order');
         $this->dropForeignKey('fk-document_order-3', 'document_order');

@@ -50,4 +50,7 @@ class RegulationCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionCopyAll(){
+        $this->actionCopyRegulation();
+    }
 }

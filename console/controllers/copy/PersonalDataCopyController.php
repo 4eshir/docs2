@@ -21,4 +21,7 @@ class PersonalDataCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionCopyAll(){
+        $this->actionCopyPersonalDataParticipant();
+    }
 }

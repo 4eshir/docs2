@@ -23,16 +23,19 @@ class FileTransferHelper
             $command->execute();
         }
         if($doc != null){
-            $command = Yii::$app->db->createCommand();
-            $command->insert('files',
-                [
-                    'table_name' => $table,
-                    'table_row_id' => $row,
-                    'file_type' => 'doc',
-                    'filepath' => $doc
-                ]
-            );
-            $command->execute();
+            $files = explode(" ", $doc);
+            foreach ($files as $file) {
+                $command = Yii::$app->db->createCommand();
+                $command->insert('files',
+                    [
+                        'table_name' => $table,
+                        'table_row_id' => $row,
+                        'file_type' => 'doc',
+                        'filepath' => $file
+                    ]
+                );
+                $command->execute();
+            }
         }
         if($app != null){
             $command = Yii::$app->db->createCommand();

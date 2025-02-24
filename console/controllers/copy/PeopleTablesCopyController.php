@@ -36,4 +36,7 @@ class PeopleTablesCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionCopyAll(){
+        $this->actionCopyPeoplePositionCompanyBranch();
+    }
 }

@@ -182,10 +182,18 @@ class DocumentInOutCopyController extends Controller
                     'document_in_id' => $record['document_in_id'],
                     'document_out_id' => $record['document_out_id'],
                     'date' => $record['date'],
-                    'responsible_id' => $record['people_id'],
+                    'responsible_id' => '' ? $this->peopleStampService->createStampFromPeople($record['people_id']) : NULL,
                 ]
             );
             $command->execute();
         }
+    }
+    public function actionCopyAll(){
+        $this->actionCopyCompany();
+        $this->actionCopyPeople();
+        $this->actionCopyUser();
+        $this->actionCopyDocumentIn();
+        $this->actionCopyDocumentOut();
+        $this->actionCopyInOutDocuments();
     }
 }
