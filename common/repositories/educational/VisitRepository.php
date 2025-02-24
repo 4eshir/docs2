@@ -40,6 +40,11 @@ class VisitRepository
         }
     }
 
+    public function getByTrainingGroupParticipant(int $trainingGroupParticipantId)
+    {
+        return $this->provider->getByTrainingGroupParticipant($trainingGroupParticipantId);
+    }
+
     public function getByTrainingGroupParticipants(array $trainingGroupParticipantIds)
     {
         return $this->provider->getByTrainingGroupParticipants($trainingGroupParticipantIds);

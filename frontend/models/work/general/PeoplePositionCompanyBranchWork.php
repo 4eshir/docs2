@@ -7,6 +7,7 @@ use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\dictionaries\PositionWork;
 
 /**
+ * @property CompanyWork $companyWork
  * @property PositionWork $positionWork
  */
 

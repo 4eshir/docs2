@@ -45,7 +45,7 @@ use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
 use frontend\forms\training_group\TrainingGroupScheduleForm;
-use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
+use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\LessonThemeWork;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
@@ -367,7 +367,7 @@ class TrainingGroupService implements DatabaseServiceInterface
     {
         $newThemes = [];
         foreach ($form->themeIds as $themeId) {
-            $groupThemeEntity = GroupProjectsThemesWork::fill(
+            $groupThemeEntity = GroupProjectThemesWork::fill(
                 $form->id,
                 $themeId,
                 0
@@ -380,24 +380,24 @@ class TrainingGroupService implements DatabaseServiceInterface
         $delThemes = $this->setDifference($form->prevThemes, $newThemes, GroupThemeCompare::class);
 
         foreach ($addThemes as $theme) {
-            /** @var GroupProjectsThemesWork $theme */
-            $form->recordEvent(new AddGroupThemeEvent($form->id, $theme->project_theme_id, $theme->confirm), GroupProjectsThemesWork::class);
+            /** @var GroupProjectThemesWork $theme */
+            $form->recordEvent(new AddGroupThemeEvent($form->id, $theme->project_theme_id, $theme->confirm), GroupProjectThemesWork::class);
         }
 
         foreach ($delThemes as $theme) {
-            /** @var GroupProjectsThemesWork $theme */
-            $form->recordEvent(new DeleteGroupThemeEvent($theme->id), GroupProjectsThemesWork::class);
+            /** @var GroupProjectThemesWork $theme */
+            $form->recordEvent(new DeleteGroupThemeEvent($theme->id), GroupProjectThemesWork::class);
         }
 
         foreach ($newThemes as $theme) {
-            /** @var GroupProjectsThemesWork $theme */
+            /** @var GroupProjectThemesWork $theme */
             $form->recordEvent(
                 new UpdateProjectThemeEvent(
                     $theme->project_theme_id,
                     $theme->projectThemeWork->project_type,
                     $theme->projectThemeWork->description
                 ),
-                GroupProjectsThemesWork::class
+                GroupProjectThemesWork::class
             );
         }
     }

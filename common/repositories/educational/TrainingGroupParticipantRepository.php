@@ -36,6 +36,11 @@ class TrainingGroupParticipantRepository
         return $this->provider->get($id);
     }
 
+    public function getByIds(array $ids)
+    {
+        return $this->provider->getByIds($ids);
+    }
+
     /**
      * @param int[] $ids
      */

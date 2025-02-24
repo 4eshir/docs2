@@ -22,6 +22,23 @@ use yii\widgets\ActiveForm;
 
 class HtmlBuilder
 {
+    public static function createAccordion($content, $lenghtPrev = 20, $textBtnOpen = 'Отобразить', $textBtnClose = 'Скрыть')
+    {
+        $regex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
+        $contentString = preg_replace($regex, '', $content);
+        $result = '<div class="accordion-block">
+                        <div class="flexx represent">
+                            <div class="prev-accorodion">' . mb_substr($contentString, 0, $lenghtPrev) . '...</div>
+                            <button class="accordion-btn btn-secondary">' . $textBtnOpen . '</button>
+                        </div>
+                        <div class="accordion-date">
+                        '. $content .'
+                        </div>
+                        <button class="accordion-btn-close btn-secondary">'. $textBtnClose .'</button>
+                   </div>';
+        return $result;
+    }
+
     /**
      * Метод создания массива option-s для select
      * $items должен иметь поля $id и $name
@@ -37,6 +54,10 @@ class HtmlBuilder
         return $result;
     }
 
+    /**
+     * Добавляет пустое знчание в список выпадающего списка
+     * @return string
+     */
     public static function createEmptyOption()
     {
         return "<option value>---</option>";
@@ -89,6 +110,11 @@ class HtmlBuilder
         return $result;
     }
 
+    /**
+     * Создает кнопки для фильтрации(поиска) и очистки параметров(переход к чистому индексу)
+     * @param $resetUrl     // url куда возвращаться по кнопке очистки параметров
+     * @return string
+     */
     public static function filterButton($resetUrl) {
         return '<div class="form-group-button">
                     <button type="submit" class="btn btn-primary">Поиск</button>
@@ -323,6 +349,12 @@ class HtmlBuilder
         return $result;
     }
 
+    /**
+     * Создает предупреждающее сообщение
+     * @param $boldMessage
+     * @param $regularMessage
+     * @return string
+     */
     public static function createWarningMessage($boldMessage, $regularMessage)
     {
         return "<div class='alert alert-warning alert-dismissible fade show' role='alert'>
@@ -330,6 +362,11 @@ class HtmlBuilder
                 </div>";
     }
 
+    /**
+     * Создает информационное сообщение
+     * @param $regularMessage
+     * @return string
+     */
     public static function createInfoMessage($regularMessage)
     {
         return "<div class='alert alert-info alert-dismissible fade show' role='alert'>
@@ -338,6 +375,11 @@ class HtmlBuilder
                 </div>";
     }
 
+    /**
+     * Создаем изображение файла со ссылкой для view представлений
+     * @param $url
+     * @return string
+     */
     public static function createSVGLink($url)
     {
         $title = 'скачать файл';

@@ -19,6 +19,8 @@ use Yii;
 /**
  * @property TrainingProgramWork $trainingProgramWork
  * @property PeopleStampWork $teacherWork
+ * @property TeacherGroupWork[] $teachersWork
+ * @property TrainingGroupExpertWork[] $expertsWork
  */
 
 class TrainingGroupWork extends TrainingGroup
@@ -89,6 +91,11 @@ class TrainingGroupWork extends TrainingGroup
         return $this->number;
     }
 
+    public function getNumber()
+    {
+        return $this->number;
+    }
+
     /**
      * Возвращает массив
      * link => форматированная ссылка на документ
@@ -149,8 +156,25 @@ class TrainingGroupWork extends TrainingGroup
         return 0;
     }
 
+    public function getBudgetString()
+    {
+        return $this->budget ?
+            'Бюджет' :
+            'Внебюджет';
+    }
+
     public function haveProgram()
     {
         return !is_null($this->training_program_id);
+    }
+
+    public function getTeachersWork()
+    {
+        return $this->hasMany(TeacherGroupWork::className(), ['training_group_id' => 'id']);
+    }
+
+    public function getExpertsWork()
+    {
+        return $this->hasMany(TrainingGroupExpertWork::className(), ['training_group_id' => 'id']);
     }
 }

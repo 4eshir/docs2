@@ -5,15 +5,19 @@ namespace frontend\models\work\educational\training_program;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
+use common\helpers\StringFormatter;
 use common\models\scaffold\TrainingProgram;
 use common\models\work\UserWork;
 use common\repositories\educational\TrainingProgramRepository;
 use common\services\general\files\FileService;
 use frontend\models\work\general\PeopleStampWork;
+use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\Url;
 
 /** @property PeopleStampWork $authorWork */
 
@@ -31,6 +35,10 @@ class TrainingProgramWork extends TrainingProgram
     public $themes;
     public $controls;
     public $authors;
+
+    public $mainExist;
+    public $docExist;
+    public $contractExist;
 
     private FileService $fileService;
     private TrainingProgramRepository $repository;
@@ -96,6 +104,143 @@ class TrainingProgramWork extends TrainingProgram
     public function getFullDirectionName()
     {
         return Yii::$app->thematicDirection->getFullnameList()[$this->thematic_direction];
+    }
+
+    public function getActual()
+    {
+        return $this->actual == 0 ? 'Нет' : 'Да';
+    }
+
+    public function getLevel()
+    {
+        return $this->level;
+    }
+
+    public function getAgePeriod()
+    {
+        return $this->student_left_age . ' - ' . $this->student_right_age . ' лет';
+    }
+
+    public function getCapacityAndHour()
+    {
+        return $this->capacity . ' ак. час. по ' . $this->hour_capacity . ' мин.';
+    }
+
+    public function getFocus()
+    {
+        return Yii::$app->focus->get($this->focus);
+    }
+
+    public function getAllowRemote()
+    {
+        return Yii::$app->allowRemote->get($this->allow_remote);
+    }
+
+    public function getIsNetwork()
+    {
+        return $this->is_network == 0 ? 'Нет' : 'Да';
+    }
+
+    public function getBranch()
+    {
+        $branchesPrograms = $this->repository->getBranches($this->id);
+        $result = '';
+
+        foreach ($branchesPrograms as $branches)
+        {
+            $result .= Yii::$app->branches->get($branches->branch) . ', ';
+        }
+        return substr($result, 0, -2);
+    }
+
+    public function getCertificateType()
+    {
+        return Yii::$app->certificateType->get($this->certificate_type);
+    }
+
+    public function getDescription()
+    {
+        return HtmlBuilder::createAccordion($this->description);
+    }
+
+    public function getPedCouncilDate()
+    {
+        return DateFormatter::format($this->ped_council_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
+    }
+
+    public function getPedCouncilNumber()
+    {
+        return $this->ped_council_number;
+    }
+
+    public function getAuthorString()
+    {
+        $authors = $this->repository->getAuthors($this->id);
+        $result = '';
+
+        foreach ($authors as $author)
+        {
+            $result .= StringFormatter::stringAsLink(
+                $author->authorWork->peopleWork->getFio(PeopleWork::FIO_SURNAME_INITIALS),
+                Url::to([Yii::$app->frontUrls::PEOPLE_VIEW, 'id' => $author->authorWork->peopleWork->id])) . '<br>';
+        }
+        return substr($result, 0, -4);
+    }
+
+    public function getTrainingProgramRaw()
+    {
+        $result = '';
+        $trGroups = $this->repository->getTrainingGroups($this->id);
+
+        foreach ($trGroups as $trGroup)
+        {
+            $result .= StringFormatter::stringAsLink(
+                    $trGroup->getNumber(),
+                    Url::to([Yii::$app->frontUrls::TRAINING_GROUP_VIEW, 'id' => $trGroup->id])) . ', ';
+        }
+        return substr($result, 0, -2);
+    }
+
+    public function getKeyWords()
+    {
+        return $this->key_words;
+    }
+
+    public function checkFilesExist()
+    {
+        $this->mainExist = count($this->getFileLinks(FilesHelper::TYPE_MAIN)) > 0;
+        $this->docExist = count($this->getFileLinks(FilesHelper::TYPE_DOC)) > 0;
+        $this->contractExist = count($this->getFileLinks(FilesHelper::TYPE_CONTRACT)) > 0;
+    }
+
+    public function getFullMainFiles()
+    {
+        $link = '#';
+        if ($this->mainExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_MAIN, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
+    }
+
+    public function getFullContract()
+    {
+        $link = '#';
+        if ($this->contractExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_CONTRACT, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
+    }
+
+    public function getFullDoc()
+    {
+        $link = '#';
+        if ($this->docExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_DOC, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
     }
 
     /**
