@@ -473,3 +473,25 @@ body {
 .tr-link {
     cursor: pointer;
 }
+
+.accordion-block {
+    padding: 0.5em;
+}
+
+.accordion-btn, .accordion-btn-close {
+    text-align: center;
+    padding: 0.5em 1em;
+    border-radius: var(--border-radius);
+}
+
+.accordion-date, .accordion-btn-close {
+    display: none;
+}
+
+.accordion-btn-close {
+    margin: 1em auto auto;
+}
+
+.accordion-date {
+    text-align: justify;
+}

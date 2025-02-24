@@ -217,3 +217,28 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    let accordionButtons = document.querySelectorAll(".accordion-btn");
+
+    if (accordionButtons) {
+        accordionButtons.forEach(function(button) {
+            let represent = button.parentNode;
+            let date = represent.nextElementSibling;
+            let btnClose = date.nextElementSibling;
+
+            button.addEventListener("click", function() {
+                represent.style.display = "none";
+                date.style.display = "block";
+                btnClose.style.display = "block";
+            });
+
+            btnClose.addEventListener("click", function() {
+                represent.style.display = "flex";
+                date.style.display = "none";
+                btnClose.style.display = "none";
+            });
+        });
+    }
+
+});

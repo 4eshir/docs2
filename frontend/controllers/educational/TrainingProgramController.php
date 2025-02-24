@@ -95,7 +95,7 @@ class TrainingProgramController extends DocumentController
 
         /** @var TrainingProgramWork $model */
         $model = $this->repository->get($id);
-        //$model->checkFilesExist();
+        $model->checkFilesExist();
 
         $thematicPlan = $this->repository->getThematicPlan($id);
 

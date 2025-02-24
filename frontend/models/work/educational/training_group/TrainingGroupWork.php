@@ -89,6 +89,11 @@ class TrainingGroupWork extends TrainingGroup
         return $this->number;
     }
 
+    public function getNumber()
+    {
+        return $this->number;
+    }
+
     /**
      * Возвращает массив
      * link => форматированная ссылка на документ
