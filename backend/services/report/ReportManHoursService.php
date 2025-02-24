@@ -23,17 +23,21 @@ class ReportManHoursService
     private TrainingGroupParticipantRepository $participantRepository;
     private VisitRepository $visitRepository;
 
+    private DebugReportService $debugService;
+
     public function __construct(
         TrainingGroupReportRepository      $repository,
         LessonThemeRepository              $lessonThemeRepository,
         TrainingGroupParticipantRepository $participantRepository,
-        VisitRepository                    $visitRepository
+        VisitRepository                    $visitRepository,
+        DebugReportService                 $debugService
     )
     {
         $this->repository = $repository;
         $this->lessonThemeRepository = $lessonThemeRepository;
         $this->participantRepository = $participantRepository;
         $this->visitRepository = $visitRepository;
+        $this->debugService = $debugService;
     }
 
     /**
@@ -152,7 +156,7 @@ class ReportManHoursService
      * @param int[] $calculateTypes типы периодов для поиска групп
      * @param int $calculateSubtype подтип для фильтрации обучающихся (уникальные/все)
      * @param int[] $teacherIds передаются id из таблицы {@see PeopleStamp}, не из {@see People}
-     * @return int
+     * @return array
      */
     public function calculateParticipantsByPeriod(
         string $startDate,
@@ -164,34 +168,39 @@ class ReportManHoursService
         array $calculateTypes,
         int $calculateSubtype,
         array $teacherIds = []
-    ) : int
+    ) : array
     {
         $query = $this->getTrainingGroupsQueryByFilters($branches, $focuses, $allowRemotes, $budgets);
         $query = $this->repository->filterGroupsByDates($query, $startDate, $endDate, $calculateTypes);
 
         $query = $this->repository->filterGroupsByTeachers($query, $teacherIds);
-        var_dump($query->createCommand()->getRawSql());
         $groups = $this->repository->findAll($query);
 
         $participants = $this->participantRepository->getParticipantsFromGroups(
             ArrayHelper::getColumn($groups, 'id')
         );
 
-        switch ($calculateSubtype) {
-            case ManHoursReportForm::PARTICIPANTS_ALL:
-                return count($participants);
-            case ManHoursReportForm::PARTICIPANTS_UNIQUE:
-                return count(
-                    array_unique(
-                        ArrayHelper::getColumn(
-                            $participants,
-                            'participant_id'
-                        )
-                    )
-                );
-            default:
-                return -1;
+        if ($calculateSubtype === ManHoursReportForm::PARTICIPANTS_UNIQUE) {
+            $uniqueParticipants = array_reduce($participants, function ($carry, $item) {
+                $participantId = $item->participant_id;
+                if (!isset($carry[$participantId])) {
+                    $carry[$participantId] = $item;
+                }
+                return $carry;
+            }, []);
+
+            $participants = $this->participantRepository->getByIds(
+                ArrayHelper::getColumn(
+                    $uniqueParticipants,
+                    'id'
+                )
+            );
         }
+
+        return [
+            'result' => count($participants),
+            'debugData' => $this->debugService->createParticipantDebugData($participants)
+        ];
     }
 
     public function generateManHoursReport()

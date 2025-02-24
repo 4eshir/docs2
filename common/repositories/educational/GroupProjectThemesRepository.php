@@ -4,7 +4,7 @@ namespace common\repositories\educational;
 
 use common\repositories\providers\group_project_themes\GroupProjectThemesProvider;
 use common\repositories\providers\group_project_themes\GroupProjectThemesProviderInterface;
-use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
+use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use Yii;
 
 class GroupProjectThemesRepository
@@ -40,7 +40,7 @@ class GroupProjectThemesRepository
         return $this->provider->prepareDelete($id);
     }
 
-    public function save(GroupProjectsThemesWork $theme)
+    public function save(GroupProjectThemesWork $theme)
     {
         return $this->provider->save($theme);
     }

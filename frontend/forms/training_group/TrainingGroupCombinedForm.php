@@ -17,7 +17,7 @@ use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\PeopleStampRepository;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
-use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
+use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
@@ -152,7 +152,7 @@ class TrainingGroupCombinedForm extends Model
         $result = [];
         if (is_array($this->themes)) {
             foreach ($this->themes as $theme) {
-                /** @var GroupProjectsThemesWork $theme */
+                /** @var GroupProjectThemesWork $theme */
                 $type = Yii::$app->projectType->get($theme->projectThemeWork->project_type);
                 $result[] = "{$theme->projectThemeWork->name} ($type проект)";
             }
