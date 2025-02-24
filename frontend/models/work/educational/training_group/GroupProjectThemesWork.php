@@ -14,7 +14,7 @@ use Yii;
  * @property ProjectThemeWork $projectThemeWork
  */
 
-class GroupProjectsThemesWork extends GroupProjectThemes
+class GroupProjectThemesWork extends GroupProjectThemes
 {
 
     public static function fill(int $groupId, int $themeId, int $confirm, int $id = null)

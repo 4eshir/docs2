@@ -13,8 +13,8 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
- * @property PeoplePositionCompanyBranchWork $positionWork
- * */
+ * @property PeoplePositionCompanyBranchWork[] $positionCompanyWork
+ */
 
 class PeopleWork extends People implements PersonInterface
 {
@@ -118,11 +118,6 @@ class PeopleWork extends People implements PersonInterface
         }
     }
 
-    public function getPositionWork()
-    {
-        return $this->hasOne(PeoplePositionCompanyBranchWork::class, ['people_id' => 'id']);
-    }
-
     public function getBranchByPost($post)
     {
         return $post["PeopleWork"]['branches'];
@@ -147,5 +142,10 @@ class PeopleWork extends People implements PersonInterface
     public function inMainCompany()
     {
         return $this->company_id == Yii::$app->params["mainCompanyId"];
+    }
+
+    public function getPeoplePositionCompanyBranchWork()
+    {
+        return $this->hasMany(PeoplePositionCompanyBranchWork::className(), ['people_id' => 'id']);
     }
 }

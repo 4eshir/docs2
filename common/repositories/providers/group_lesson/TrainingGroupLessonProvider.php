@@ -3,7 +3,7 @@
 namespace common\repositories\providers\group_lesson;
 
 use DomainException;
-use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
+use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use Yii;
 

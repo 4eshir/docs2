@@ -7,6 +7,7 @@ use frontend\models\work\general\PeopleStampWork;
 /**
  * @property ForeignEventParticipantsWork $participantWork
  * @property TrainingGroupWork $trainingGroupWork
+ * @property GroupProjectThemesWork $groupProjectThemesWork
  */
 
 class TrainingGroupParticipantWork extends TrainingGroupParticipant
@@ -99,5 +100,10 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
     public function setParticipantId(int $participantId)
     {
         $this->participant_id = $participantId;
+    }
+
+    public function getGroupProjectThemesWork()
+    {
+        return $this->hasOne(GroupProjectThemesWork::class, ['id' => 'group_project_themes_id']);
     }
 }

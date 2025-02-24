@@ -11,7 +11,7 @@ use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\educational\training_group\DeleteTeachersFromGroupEvent;
 use frontend\events\general\FileDeleteEvent;
-use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
+use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
@@ -144,7 +144,7 @@ class TrainingGroupProvider implements TrainingGroupProviderInterface
 
     public function getThemes($id)
     {
-        $groupProjects = GroupProjectsThemesWork::find()->where(['training_group_id' => $id])->all();
+        $groupProjects = GroupProjectThemesWork::find()->where(['training_group_id' => $id])->all();
         return ProjectThemeWork::find()->where(['IN', 'id', ArrayHelper::getColumn($groupProjects, 'project_theme_id')])->all();
     }
 
