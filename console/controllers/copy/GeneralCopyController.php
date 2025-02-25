@@ -13,6 +13,10 @@ class GeneralCopyController extends Controller
     private RegulationCopyController $regulationCopyController;
     private EventCopyController $eventCopyController;
     private TrainingProgramCopyController $trainingProgramCopyController;
+    private DocumentOrderCopyController $documentOrderCopyController;
+    private LocalResponsibilityCopyController $localResponsibilityCopyController;
+    private ForeignEventCopyController $foreignEventCopyController;
+    private ActCopyController $actCopyController;
     public function __construct(
         $id,
         $module,
@@ -23,6 +27,10 @@ class GeneralCopyController extends Controller
         RegulationCopyController $regulationCopyController,
         EventCopyController $eventCopyController,
         TrainingProgramCopyController $trainingProgramCopyController,
+        DocumentOrderCopyController $documentOrderCopyController,
+        LocalResponsibilityCopyController $localResponsibilityCopyController,
+        ForeignEventCopyController $foreignEventCopyController,
+        ActCopyController $actCopyController,
         $config = [])
     {
         $this->initCopyController = $initCopyController;
@@ -32,10 +40,18 @@ class GeneralCopyController extends Controller
         $this->regulationCopyController = $regulationCopyController;
         $this->eventCopyController = $eventCopyController;
         $this->trainingProgramCopyController = $trainingProgramCopyController;
+        $this->documentOrderCopyController = $documentOrderCopyController;
+        $this->localResponsibilityCopyController = $localResponsibilityCopyController;
+        $this->foreignEventCopyController = $foreignEventCopyController;
+        $this->actCopyController = $actCopyController;
         parent::__construct($id, $module, $config);
     }
 
     public function actionCopyAll(){
+        $this->actCopyController->actionCopyAll();
+        $this->foreignEventCopyController->actionCopyAll();
+        $this->localResponsibilityCopyController->actionCopyAll();
+        $this->documentOrderCopyController->actionCopyAll();
         $this->initCopyController->actionCopyAll();
         $this->documentInOutCopyController->actionCopyAll();
         //$this->peopleTablesCopyController->actionCopyAll();
