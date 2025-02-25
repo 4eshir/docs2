@@ -65,6 +65,37 @@ class TrainingProgramWork extends TrainingProgram
         );
     }
 
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'name' => 'Название',
+            'thematic_direction' => 'Тематическое направление',
+            'level' => 'Уровень сложности',
+            'levelNumber' => 'Уровень<br>сложности',
+            'branch' => 'Место<br>реализации',
+            'authorString' => 'Составители',
+            'agePeriod' => 'Возрастные<br>ограничения',
+            'ped_council_date' => 'Дата педагогического совета',
+            'ped_council_number' => 'Номер протокола педагогического совета',
+            'capacity' => 'Объем, ак. час.',
+            'hour_capacity' => 'Длительность 1 академического часа в минутах',
+            'student_left_age' => 'Мин. возраст учащихся, лет',
+            'student_right_age' => 'Макс. возраст учащихся, лет',
+            'focus' => 'Направленность',
+            'focusString' => 'Направленность',
+            'allow_remote' => 'Форма реализации',
+            'actual' => 'Образовательная программа актуальна',
+            'certificate_type' => 'Итоговая форма контроля',
+            'description' => 'Описание',
+            'key_words' => 'Ключевые слова',
+            'is_network' => 'Сетевая форма обучения',
+            'mainFile' => 'Документ программы',
+            'docFiles' => 'Редактируемые документы',
+            'contractFile' => 'Договор о сетевой форме обучения',
+            'utpFile' => 'Файл УТП',
+        ]);
+    }
+
     public function behaviors()
     {
         return [
@@ -80,6 +111,7 @@ class TrainingProgramWork extends TrainingProgram
             ],
         ];
     }
+
     public function getAuthorWork()
     {
         return $this->hasOne(PeopleStampWork::class, ['id' => 'author_id']);
@@ -111,9 +143,9 @@ class TrainingProgramWork extends TrainingProgram
         return $this->actual == 0 ? 'Нет' : 'Да';
     }
 
-    public function getLevel()
+    public function getLevelNumber()
     {
-        return $this->level;
+        return $this->level+1;
     }
 
     public function getAgePeriod()
@@ -126,7 +158,7 @@ class TrainingProgramWork extends TrainingProgram
         return $this->capacity . ' ак. час. по ' . $this->hour_capacity . ' мин.';
     }
 
-    public function getFocus()
+    public function getFocusString()
     {
         return Yii::$app->focus->get($this->focus);
     }
@@ -158,6 +190,20 @@ class TrainingProgramWork extends TrainingProgram
         return Yii::$app->certificateType->get($this->certificate_type);
     }
 
+    public function getThematicPlaneRaw()
+    {
+        $thematicPlaneArr = $this->repository->getThematicPlan($this->id);
+        $thematicPlaneStr = '<ol>';
+
+        foreach ($thematicPlaneArr as $oneTheme)
+        {
+            $thematicPlaneStr .= '<li>' . $oneTheme->theme . ' (' . Yii::$app->controlType->get($oneTheme->control_type) . ')</li>';
+        }
+        $thematicPlaneStr .= '</ol>';
+
+        return HtmlBuilder::createAccordion($thematicPlaneStr);
+    }
+
     public function getDescription()
     {
         return HtmlBuilder::createAccordion($this->description);
@@ -173,16 +219,22 @@ class TrainingProgramWork extends TrainingProgram
         return $this->ped_council_number;
     }
 
-    public function getAuthorString()
+    public function getAuthorString(StringFormatter $formatter = null)
     {
         $authors = $this->repository->getAuthors($this->id);
         $result = '';
 
         foreach ($authors as $author)
         {
-            $result .= StringFormatter::stringAsLink(
-                $author->authorWork->peopleWork->getFio(PeopleWork::FIO_SURNAME_INITIALS),
-                Url::to([Yii::$app->frontUrls::PEOPLE_VIEW, 'id' => $author->authorWork->peopleWork->id])) . '<br>';
+            if ($formatter == StringFormatter::FORMAT_LINK)
+            {
+                $result .= StringFormatter::stringAsLink(
+                        $author->authorWork->peopleWork->getFio(PeopleWork::FIO_SURNAME_INITIALS),
+                        Url::to([Yii::$app->frontUrls::PEOPLE_VIEW, 'id' => $author->authorWork->peopleWork->id])) . '<br>';
+            }
+            else {
+                $result .= $author->authorWork->peopleWork->getFio(PeopleWork::FIO_SURNAME_INITIALS) . '<br>';
+            }
         }
         return substr($result, 0, -4);
     }

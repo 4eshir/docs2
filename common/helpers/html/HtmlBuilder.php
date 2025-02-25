@@ -22,13 +22,12 @@ use yii\widgets\ActiveForm;
 
 class HtmlBuilder
 {
-    public static function createAccordion($content, $lenghtPrev = 20, $textBtnOpen = 'Отобразить', $textBtnClose = 'Скрыть')
+    public static function createAccordion($content, $lenghtPrev = 20, $textBtnOpen = 'Развернуть', $textBtnClose = 'Скрыть')
     {
-        $regex = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
-        $contentString = preg_replace($regex, '', $content);
+        $contentString = strip_tags($content);
         $result = '<div class="accordion-block">
-                        <div class="flexx represent">
-                            <div class="prev-accorodion">' . mb_substr($contentString, 0, $lenghtPrev) . '...</div>
+                        <div class="flexx space represent">
+                            <div class="prev-accordion">' . mb_substr($contentString, 0, $lenghtPrev) . '...</div>
                             <button class="accordion-btn btn-secondary">' . $textBtnOpen . '</button>
                         </div>
                         <div class="accordion-date">

@@ -69,6 +69,7 @@ class RegulationWork extends Regulation
         return array_merge(parent::attributeLabels(), [
             'date' => 'Дата положения',
             'name' => 'Наименование',
+            'short_name' => 'Короткое наименование',
             'orderName' => 'Приказ',
             'state' => 'Состояние',
             'ped_council_number' => '№ пед.<br>совета',

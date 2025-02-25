@@ -114,6 +114,10 @@ class EventWork extends Event
             'key_words' => 'Ключевые слова',
             'keyWords' => 'Ключевые слова',
             'comment' => 'Примечание',
+            'protocolFiles' => 'Протокол мероприятия',
+            'photoFiles' => 'Фотоматериалы',
+            'reportingFiles' => 'Явочные документы',
+            'otherFiles' => 'Другие файлы',
         ]);
     }
 
