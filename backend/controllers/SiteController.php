@@ -90,15 +90,15 @@ class SiteController extends Controller
     public function actionTest()
     {
         $service = Yii::createObject(ReportManHoursService::class);
-        $res = $service->calculateParticipantsByPeriod(
+        $res = $service->calculateManHours(
             '2025-01-01',
             '2025-02-02',
             [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM],
             [1, 2, 3, 4, 5],
             [1, 2],
             [0, 1],
-            [ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_IN, ManHoursReportForm::PARTICIPANT_START_IN_FINISH_AFTER, ManHoursReportForm::PARTICIPANT_START_IN_FINISH_IN, ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_AFTER],
-            ManHoursReportForm::PARTICIPANTS_ALL,
+            ManHoursReportForm::MAN_HOURS_FAIR,
+            []
         );
 
         HeaderWizard::setCsvLoadHeaders((Yii::createObject(Client::class))->generateId(10) . '.csv');
@@ -106,7 +106,7 @@ class SiteController extends Controller
         $writer = new Csv(
             ExcelCreator::createCsvFile(
                 $res["debugData"],
-                DebugReportHelper::getParticipantsReportHeaders()
+                DebugReportHelper::getManHoursReportHeaders()
             )
         );
         $writer->setDelimiter(';');

@@ -3,6 +3,8 @@
 namespace backend\services\report;
 
 use backend\forms\report\ManHoursReportForm;
+use backend\helpers\ReportHelper;
+use backend\invokables\report\CheckVisitLesson;
 use backend\repositories\report\TrainingGroupReportRepository;
 use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\TeacherGroupRepository;
@@ -75,7 +77,7 @@ class ReportManHoursService
      * @param int[] $budgets
      * @param int $calculateType
      * @param int[] $teacherIds передаются id из таблицы {@see PeopleStamp}, не из {@see People}
-     * @return int
+     * @return array
      */
     public function calculateManHours(
         string $startDate,
@@ -85,13 +87,15 @@ class ReportManHoursService
         array $allowRemotes,
         array $budgets,
         int $calculateType,
-        array $teacherIds = []
-    ) : int
+        array $teacherIds = [],
+        int $mode = ManHoursReportForm::MODE_PURE
+    ) : array
     {
         $query = $this->getTrainingGroupsQueryByFilters($branches, $focuses, $allowRemotes, $budgets);
 
         $query = $this->repository->filterGroupsBetweenDates($query, $startDate, $endDate);
         $groups = $this->repository->findAll($query);
+
 
         $participants = $this->participantRepository->getParticipantsFromGroups(
             ArrayHelper::getColumn($groups, 'id')
@@ -111,38 +115,18 @@ class ReportManHoursService
             /** @var VisitWork $visit */
             $lessons = VisitLesson::fromString($visit->lessons);
             foreach ($lessons as $lesson) {
-                $result += $this->checkVisitLesson($lesson, $calculateType, $teacherLessonIds);
+                $result += ReportHelper::checkVisitLesson($lesson, $calculateType, $teacherLessonIds);
             }
         }
 
-        return $result;
+        return [
+            'result' => $result,
+            'debugData' => $mode == ManHoursReportForm::MODE_DEBUG ?
+                $this->debugService->createManHoursDebugData($groups, $calculateType, $teacherIds) :
+                ''
+        ];
     }
 
-    /**
-     * Вспомогательная функция проверки учета занятия в отчете по человеко-часам
-     *
-     * @param VisitLesson $visitLesson
-     * @param int $calculateType
-     * @param int[] $teacherLessonIds
-     * @return int
-     */
-    private function checkVisitLesson(VisitLesson $visitLesson, int $calculateType, array $teacherLessonIds = [])
-    {
-        $conditionTeacher = true;
-        if (count($teacherLessonIds) > 0) {
-            $conditionTeacher = in_array($visitLesson->lessonId, $teacherLessonIds);
-        }
-
-        if (
-            (($visitLesson->status == VisitWork::ATTENDANCE || $visitLesson->status == VisitWork::DISTANCE) ||
-            ($calculateType == ManHoursReportForm::MAN_HOURS_ALL && $visitLesson->status == VisitWork::NO_ATTENDANCE)) &&
-            $conditionTeacher
-        ) {
-            return 1;
-        }
-
-        return 0;
-    }
 
     /**
      * Метод подсчета обучающихся за заданный период и заданным типом/подтипом подсчета
@@ -167,7 +151,8 @@ class ReportManHoursService
         array $budgets,
         array $calculateTypes,
         int $calculateSubtype,
-        array $teacherIds = []
+        array $teacherIds = [],
+        int $mode = ManHoursReportForm::MODE_PURE
     ) : array
     {
         $query = $this->getTrainingGroupsQueryByFilters($branches, $focuses, $allowRemotes, $budgets);
@@ -199,7 +184,9 @@ class ReportManHoursService
 
         return [
             'result' => count($participants),
-            'debugData' => $this->debugService->createParticipantDebugData($participants)
+            'debugData' => $mode == ManHoursReportForm::MODE_DEBUG ?
+                $this->debugService->createParticipantDebugData($participants) :
+                ''
         ];
     }
 

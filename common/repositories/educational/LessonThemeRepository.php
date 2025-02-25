@@ -28,6 +28,11 @@ class LessonThemeRepository
         return $this->provider->get($id);
     }
 
+    public function getByTrainingGroupId(int $trainingGroupId)
+    {
+
+    }
+
     public function getByLessonIds(array $lessonIds)
     {
         return $this->provider->getByLessonIds($lessonIds);

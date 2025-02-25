@@ -91,4 +91,15 @@ class DebugReportHelper
         ];
     }
 
+    public static function getManHoursReportHeaders()
+    {
+        return [
+            'Группа',
+            'Кол-во занятий выбранного педагога',
+            'Кол-во занятий всех педагогов',
+            'Кол-во учеников',
+            'Кол-во ч/ч'
+        ];
+    }
+
 }

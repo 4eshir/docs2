@@ -181,6 +181,23 @@ $this->title = 'Генерация отчета по обучающимся';
         )->label('Педагог');
         ?>
     </div>
+    <div class="col-xs-8 block-report" id="mode">
+        <?php
+        $arr = [ManHoursReportForm::MODE_PURE => 'Только отчетные данные', ManHoursReportForm::MODE_DEBUG => 'Отчетные данные и детализация в csv-файле'];
+        echo $form->field($model, 'mode')->radioList($arr, [
+            'item' => function($index, $label, $name, $checked, $value)
+            {
+                return '<div class="checkbox" style="font-size: 16px; font-family: Arial; color: black">
+                            <label for="interview-'. $index .'">
+                                <input onchange="showHours()" id="interview-'. $index .'" name="'. $name .'" type="checkbox" '. $checked .' value="'. $value .'">
+                                <span></span>
+                                '. $label .'
+                            </label>
+                        </div>';
+            }
+        ])->label('Режим формирования отчета');
+        ?>
+    </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>
 
 
