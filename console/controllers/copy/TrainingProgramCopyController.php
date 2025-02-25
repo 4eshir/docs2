@@ -42,7 +42,7 @@ class TrainingProgramCopyController extends Controller
                     'focus' => $record['focus_id'],
                     'allow_remote' => $record['allow_remote_id'],
                     'actual' => $record['actual'],
-                    'certificate_type' => $record['certificate_type_id'],
+                    'certificate_type' => $record['certificat_type_id'],
                     'description' => $record['description'],
                     'key_words' => $record['key_words'],
                     'is_network' => $record['is_network'],
@@ -79,7 +79,7 @@ class TrainingProgramCopyController extends Controller
             $command->insert('author_program',
                 [
                     'id' => $record['id'],
-                    'author_id' => $record['record_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['record_id']) : NULL,
+                    'author_id' => $record['author_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['author_id']) : NULL,
                     'training_program_id' => $record['training_program_id'],
                 ]
             );

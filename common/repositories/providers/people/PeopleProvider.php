@@ -46,7 +46,7 @@ class PeopleProvider implements PeopleProviderInterface
 
     public function getLastPositionsCompanies($id)
     {
-        return $this->getPositionsCompanies($id)[0];
+        return count($this->getPositionsCompanies($id)) > 0 ? $this->getPositionsCompanies($id)[0] : NULL;
     }
 
     public function getCompaniesPositionsByPeople($peopleId)

@@ -41,8 +41,8 @@ class RegulationCopyController extends Controller
             $this->fileTransferHelper->createFiles(
                 [
                     'scan' => $record['scan'],
-                    'doc' => $record['doc'],
-                    'app' => $record['app'],
+                    'doc' => NULL,
+                    'app' => NULL,
                     'table' => RegulationWork::tableName(),
                     'row' => $record['id'],
                 ]

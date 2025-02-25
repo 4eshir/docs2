@@ -101,6 +101,21 @@ class DeleteTableController extends Controller
     {
         Yii::$app->db->createCommand()->delete('author_program')->execute();
     }
+    public function actionDeleteDocumentOrder()
+    {
+        Yii::$app->db->createCommand()->delete('document_order')->execute();
+    }
+    public function actionDeleteAuditorium()
+    {
+        Yii::$app->db->createCommand()->delete('auditorium')->execute();
+    }
+    public function actionDeleteLocalResponsibility()
+    {
+        Yii::$app->db->createCommand()->delete('local_responsibility')->execute();
+    }
+    public function actionDeleteLegacyResponsible(){
+        Yii::$app->db->createCommand()->delete('legacy_responsible')->execute();
+    }
     public function actionDeleteInitCopy()
     {
         $this->actionDeleteBotMessage();
@@ -141,8 +156,17 @@ class DeleteTableController extends Controller
         $this->actionDeleteThematicPlan();
         $this->actionDeleteTrainingProgram();
     }
+    public function actionDeleteLocalResponsibilityCopy()
+    {
+
+        $this->actionDeleteLocalResponsibility();
+        $this->actionDeleteLegacyResponsible();
+        $this->actionDeleteAuditorium();
+    }
     public function actionDeleteAll()
     {
+        $this->actionDeleteLocalResponsibilityCopy();
+        $this->actionDeleteDocumentOrder();
         $this->actionDeleteTrainingProgramCopy();
         $this->actionDeleteEventCopy();
         $this->actionDeletePersonalData();

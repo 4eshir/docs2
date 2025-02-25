@@ -36,7 +36,12 @@ class PeopleStampService
             $positionsCompanies = $this->peopleRepository->getLastPositionsCompanies($peopleId);
 
             if ($stamp == null) {
-                $stamp = PeopleStampWork::fill($people->id, $people->surname, $people->genitive_surname, $positionsCompanies->position_id, $positionsCompanies->company_id);
+                if($positionsCompanies) {
+                    $stamp = PeopleStampWork::fill($people->id, $people->surname, $people->genitive_surname, $positionsCompanies->position_id, $positionsCompanies->company_id);
+                }
+                else {
+                    $stamp = PeopleStampWork::fill($people->id, $people->surname, $people->genitive_surname, null,null);
+                }
             }
 
             return $this->stampRepository->save($stamp);
