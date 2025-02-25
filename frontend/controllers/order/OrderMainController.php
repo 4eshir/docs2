@@ -106,7 +106,7 @@ class OrderMainController extends DocumentController
         if ($form->entity->load($post)) {
             $this->documentOrderService->getPeopleStamps($form->entity);
             if (!$form->entity->validate()) {
-                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($form->entity->getErrors()));
             }
 
             $form->entity->generateOrderNumber();
@@ -146,7 +146,7 @@ class OrderMainController extends DocumentController
                 $this->lockWizard->unlockObject($id, DocumentOrder::tableName());
                 $this->documentOrderService->getPeopleStamps($form->entity);
                 if (!$form->entity->validate()) {
-                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($form->entity->getErrors()));
                 }
                 $this->repository->save($form->entity);
                 $this->documentOrderService->getFilesInstances($form->entity);

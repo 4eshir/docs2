@@ -13,15 +13,18 @@ class DocumentInOutCopyController extends Controller
 {
     private PeopleStampService $peopleStampService;
     private FileTransferHelper $fileTransferHelper;
+    private PeopleTablesCopyController $peopleTablesCopyController;
     public function __construct(
         $id,
         $module,
         PeopleStampService $peopleStampService,
         FileTransferHelper $fileTransferHelper,
+        PeopleTablesCopyController $peopleTablesCopyController,
         $config = [])
     {
         $this->peopleStampService = $peopleStampService;
         $this->fileTransferHelper = $fileTransferHelper;
+        $this->peopleTablesCopyController = $peopleTablesCopyController;
         parent::__construct($id, $module, $config);
     }
 
@@ -121,14 +124,14 @@ class DocumentInOutCopyController extends Controller
                     'send_method' => $record['send_method_id'],
                     'key_words' => $record['key_words'],
                     'need_answer' => $record['needAnswer'],
-                    'creator_id' => $record['register_id'],
+                    'creator_id' => $record['creator_id'],
                 ]
             );
             $this->fileTransferHelper->createFiles(
                 [
                     'scan' => $record['scan'],
                     'doc' => $record['doc'],
-                    'app' => $record['app'],
+                    'app' => NULL,
                     'table' => DocumentInWork::tableName(),
                     'row' => $record['id'],
                 ]
@@ -157,14 +160,14 @@ class DocumentInOutCopyController extends Controller
                     'sent_date' => $record['sent_date'],
                     'key_words' => $record['key_words'],
                     'is_answer' => $record['isAnswer'],
-                    'creator_id' => $record['register_id'],
+                    'creator_id' => $record['creator_id'],
                 ]
             );
             $this->fileTransferHelper->createFiles(
                 [
                     'scan' => $record['Scan'],
                     'doc' => $record['doc'],
-                    'app' => $record['app'],
+                    'app' => NULL,
                     'table' => DocumentOutWork::tableName(),
                     'row' => $record['id'],
                 ]
@@ -182,10 +185,19 @@ class DocumentInOutCopyController extends Controller
                     'document_in_id' => $record['document_in_id'],
                     'document_out_id' => $record['document_out_id'],
                     'date' => $record['date'],
-                    'responsible_id' => $record['people_id'],
+                    'responsible_id' => '' ? $this->peopleStampService->createStampFromPeople($record['people_id']) : NULL,
                 ]
             );
             $command->execute();
         }
+    }
+    public function actionCopyAll(){
+        $this->actionCopyCompany();
+        $this->actionCopyPeople();
+        $this->actionCopyUser();
+        $this->peopleTablesCopyController->actionCopyAll();
+        $this->actionCopyDocumentIn();
+        $this->actionCopyDocumentOut();
+        $this->actionCopyInOutDocuments();
     }
 }

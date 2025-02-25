@@ -90,3 +90,8 @@ select option[value=""] {
 .event-view .files-section {
     flex-wrap: wrap;
 }
+
+.training-program-view .file-block-center {
+    padding: 1em;
+    text-align: center;
+}

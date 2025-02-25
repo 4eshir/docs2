@@ -129,6 +129,6 @@ class InitCopyController extends Controller
         $this->actionCopyPosition();
         $this->actionCopyProductUnion();
         $this->actionCopyProjectTheme();
-        $this->actionCopyRussianNames();
+        //$this->actionCopyRussianNames();
     }
 }

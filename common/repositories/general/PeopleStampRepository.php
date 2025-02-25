@@ -38,14 +38,18 @@ class PeopleStampRepository
     {
         /** @var PeoplePositionCompanyBranchWork $positionsCompanies */
         $positionsCompanies = $this->peopleRepository->getLastPositionsCompanies($people->id);
-
-        return PeopleStampWork::find()
-            ->where(['people_id' => $people->id])
-            ->andWhere(['surname' => $people->surname])
-            ->andWhere(['genitive_surname' => $people->genitive_surname])
-            ->andWhere(['position_id' => $positionsCompanies->position_id])
-            ->andWhere(['company_id' => $positionsCompanies->company_id])
-            ->one();
+        if ($positionsCompanies) {
+            return PeopleStampWork::find()
+                ->where(['people_id' => $people->id])
+                ->andWhere(['surname' => $people->surname])
+                ->andWhere(['genitive_surname' => $people->genitive_surname])
+                ->andWhere(['position_id' => $positionsCompanies->position_id])
+                ->andWhere(['company_id' => $positionsCompanies->company_id])
+                ->one();
+        }
+        else {
+            return null;
+        }
     }
 
     public function save(PeopleStampWork $stamp)
