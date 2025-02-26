@@ -109,6 +109,10 @@ class DeleteTableController extends Controller
     {
         Yii::$app->db->createCommand()->delete('document_order')->execute();
     }
+    public function actionDeleteDocumentOrderSupplement()
+    {
+        Yii::$app->db->createCommand()->delete('document_order_supplement')->execute();
+    }
     public function actionDeleteAuditorium()
     {
         Yii::$app->db->createCommand()->delete('auditorium')->execute();
@@ -138,6 +142,11 @@ class DeleteTableController extends Controller
         $this->actionDeleteProductUnion();
         $this->actionDeleteProjectTheme();
         $this->actionDeleteRussianNames();
+    }
+    public function actionDeleteDocumentOrderCopy()
+    {
+        $this->actionDeleteDocumentOrder();
+        $this->actionDeleteDocumentOrderSupplement();
     }
     public function actionDeleteDocumentInOutCopy()
     {
@@ -180,7 +189,7 @@ class DeleteTableController extends Controller
         $this->actionDeleteActCopy();
         $this->actionDeleteForeignEvent();
         $this->actionDeleteLocalResponsibilityCopy();
-        $this->actionDeleteDocumentOrder();
+        $this->actionDeleteDocumentOrderCopy();
         $this->actionDeleteTrainingProgramCopy();
         $this->actionDeleteEventCopy();
         $this->actionDeletePersonalData();

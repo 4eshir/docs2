@@ -60,8 +60,31 @@ class DocumentOrderCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionCopyDocumentOrderSupplement()
+    {
+        $query = Yii::$app->old_db->createCommand("SELECT * FROM document_order_supplement");
+        $command = Yii::$app->db->createCommand();
+        foreach ($query->queryAll() as $record) {
+            $command->insert('order_event_generate',
+                [
+                    'id' => $record['id'],
+                    'order_id' => $record['document_order_id'],
+                    'purpose' => $record['foreign_event_goals_id'],
+                    'doc_event' => $record['compliance_document'],
+                    'resp_people_info_id' => $record['collector_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['collector_id']) : NULL,
+                    'extra_resp_insert_id' => $record['contributor_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['contributor_id']) : NULL,
+                    'time_provision_day' => $record['information_deadline'],
+                    'time_insert_day' => $record['input_deadline'],
+                    'extra_resp_method_id' => $record['methodologist_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['methodologist_id']) : NULL,
+                    'extra_resp_info_stuff_id' => $record['informant_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['informant_id']) : NULL,
+                ]
+            );
+            $command->execute();
+        }
+    }
     public function actionCopyAll()
     {
         $this->actionOrderCopy();
+        $this->actionCopyDocumentOrderSupplement();
     }
 }
