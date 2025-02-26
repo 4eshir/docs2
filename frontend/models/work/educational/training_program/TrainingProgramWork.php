@@ -17,6 +17,7 @@ use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 /** @property PeopleStampWork $authorWork */
@@ -283,6 +284,16 @@ class TrainingProgramWork extends TrainingProgram
     {
         $editor = $this->lastEditorWork;
         return $editor ? $editor->getFullName() : '---';
+    }
+
+    public function setBranches()
+    {
+        if ($this->id) {
+            $this->branches = ArrayHelper::getColumn(
+                $this->repository->getBranches($this->id),
+                'branch'
+            );
+        }
     }
 
     public function getCreatorWork()

@@ -4,39 +4,79 @@
 namespace frontend\models\work\educational\journal;
 
 
+use common\Model;
+use common\repositories\educational\GroupProjectThemesRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\providers\group_participant\TrainingGroupParticipantProvider;
+use common\repositories\providers\group_project_themes\GroupProjectThemesProvider;
+use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use Yii;
 
-class ParticipantLessons
+class ParticipantLessons extends Model
 {
     private TrainingGroupParticipantRepository $repository;
+    private GroupProjectThemesRepository $groupProjectThemesRepository;
 
     public $participant;
     public int $trainingGroupParticipantId;
     /** @var VisitLesson[] $lessonIds */
     public array $lessonIds;
 
+    public ?int $groupProjectThemeId;
+    public ?int $points;
+    public ?int $successFinishing;
+
+    public GroupProjectThemesWork $groupProjectThemesWork;
+
     public function __construct(
         int $trainingGroupParticipantId,
         array $lessonIds,
-        TrainingGroupParticipantRepository $repository = null
+        int $groupProjectThemeId = null,
+        int $points = null,
+        int $successFinishing = null,
+        TrainingGroupParticipantRepository $repository = null,
+        GroupProjectThemesRepository $groupProjectThemesRepository = null,
+        $config = []
     )
     {
+        parent::__construct($config);
         $this->trainingGroupParticipantId = $trainingGroupParticipantId;
         $this->lessonIds = $lessonIds;
+        $this->groupProjectThemeId = $groupProjectThemeId;
+        $this->points = $points;
+        $this->successFinishing = $successFinishing;
+
         if (!$repository) {
             $repository = Yii::createObject(
                 TrainingGroupParticipantRepository::class,
                 ['provider' => Yii::createObject(TrainingGroupParticipantProvider::class)]
             );
         }
+
+        if (!$groupProjectThemesRepository) {
+            $groupProjectThemesRepository = Yii::createObject(
+                GroupProjectThemesRepository::class,
+                ['provider' => Yii::createObject(GroupProjectThemesProvider::class)]
+            );
+        }
+
         /** @var TrainingGroupParticipantRepository $repository */
         $this->repository = $repository;
 
+        /** @var GroupProjectThemesRepository $groupProjectThemesRepository */
+        $this->groupProjectThemesRepository = $groupProjectThemesRepository;
+
         $participantWork = $this->repository->get($this->trainingGroupParticipantId);
         $this->participant = $participantWork ? $participantWork->participantWork : null;
+        $this->groupProjectThemesWork = $this->groupProjectThemesRepository->get($this->groupProjectThemeId);
+    }
+
+    public function rules()
+    {
+        return [
+            [['groupProjectThemeId', 'points', 'successFinishing'], 'integer']
+        ];
     }
 
     public function sortLessons()

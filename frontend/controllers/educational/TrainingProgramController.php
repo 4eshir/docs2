@@ -157,6 +157,7 @@ class TrainingProgramController extends DocumentController
         if ($this->lockWizard->lockObject($id, TrainingProgramWork::tableName(), Yii::$app->user->id)) {
             /** @var TrainingProgramWork $model */
             $model = $this->repository->get($id);
+            $model->setBranches();
             $authors = $this->repository->getAuthors($id);
             $themes = $this->repository->getThematicPlan($id);
             $fileTables = $this->service->getUploadedFilesTables($model);
