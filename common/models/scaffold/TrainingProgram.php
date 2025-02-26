@@ -101,6 +101,16 @@ class TrainingProgram extends \yii\db\ActiveRecord
     }
 
     /**
+     * Gets query for [[Branch]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBranch()
+    {
+        return $this->hasMany(BranchProgram::class, ['training_program_id' => 'id']);
+    }
+
+    /**
      * Gets query for [[Creator]].
      *
      * @return \yii\db\ActiveQuery

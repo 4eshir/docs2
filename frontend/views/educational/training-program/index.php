@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 
-    <?= ''//$this->render('_search', ['searchModel' => $searchModel]) ?>
+    <?= $this->render('_search', ['searchModel' => $searchModel]) ?>
 
     <div style="margin-bottom: 10px">
 
@@ -95,7 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }],*/
             ['attribute' => 'name'],
             ['attribute' => 'levelNumber', 'encodeLabel' => false, 'format' => 'raw'],
-            ['attribute' => 'branch', 'encodeLabel' => false, 'format' => 'raw'],
+            ['attribute' => 'branchString', 'encodeLabel' => false, 'format' => 'raw'],
             ['attribute' => 'pedCouncilDate', 'encodeLabel' => false, 'label' => 'Дата<br>пед. сов.'],
             ['attribute' => 'authorString', 'format' => 'html'],
             ['attribute' => 'capacity'],

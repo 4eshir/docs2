@@ -2,90 +2,282 @@
 
 namespace frontend\models\search;
 
+use common\components\interfaces\SearchInterfaces;
+use common\helpers\DateFormatter;
+use common\helpers\search\SearchFieldHelper;
+use common\helpers\StringFormatter;
+use common\Model;
 use frontend\models\work\educational\training_program\TrainingProgramWork;
+use frontend\models\work\regulation\RegulationWork;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 
-/**
- * SearchTrainingProgram represents the model behind the search form of `app\models\common\TrainingProgram`.
- */
-class SearchTrainingProgram extends TrainingProgramWork
+
+class SearchTrainingProgram extends Model implements SearchInterfaces
 {
-    public $authorSearch;
-    public $branchSearch;
-    /**
-     * {@inheritdoc}
-     */
+    public string $startDateSearch;
+    public string $finishDateSearch;
+    public string $programName;
+    public string $authorSearch;
+    public int $branchSearch;
+    public int $focusSearch;
+    public int $allowSearch;
+    public int $levelSearch;
+    public int $actual;
+
+    public const ACTUAL = [0 => 'Не актуальные программы', 1 => 'Актуальные программы'];
+
     public function rules()
     {
         return [
-            [['id', 'ped_council_date', 'author_id', 'capacity', 'student_left_age', 'student_right_age', 'focus_id', 'allow_remote_id', 'name'], 'safe'],
-            [['authorSearch', 'branchSearch'], 'integer'],
+            [['branchSearch', 'focusSearch', 'allowSearch', 'levelSearch'], 'integer'],
+            [['programName', 'authorSearch'], 'string'],
+            [['startDateSearch', 'finishDateSearch'], 'date', 'format' => 'dd.MM.yyyy'],
+            [['name', 'startDateSearch', 'finishDateSearch', 'programName', 'authorSearch', 'branchSearch', 'focusSearch', 'allowSearch', 'levelSearch'], 'safe'],
         ];
     }
 
+    public function __construct(
+        string $startDateSearch = '',
+        string $finishDateSearch = '',
+        string $programName = '',
+        string $authorSearch = '',
+        int $branchSearch = SearchFieldHelper::EMPTY_FIELD,
+        int $focusSearch = SearchFieldHelper::EMPTY_FIELD,
+        int $allowSearch = SearchFieldHelper::EMPTY_FIELD,
+        int $levelSearch = SearchFieldHelper::EMPTY_FIELD,
+        int $actual = SearchFieldHelper::EMPTY_FIELD
+    ) {
+        $this->startDateSearch = $startDateSearch;
+        $this->finishDateSearch = $finishDateSearch;
+        $this->programName = $programName;
+        $this->authorSearch = $authorSearch;
+        $this->branchSearch = $branchSearch;
+        $this->focusSearch = $focusSearch;
+        $this->allowSearch = $allowSearch;
+        $this->levelSearch = $levelSearch;
+        $this->actual = $actual == null ? 1 : $actual;
+    }
+
     /**
-     * Creates data provider instance with search query applied
+     * Определение параметров загрузки данных
      *
-     * @param array $params
+     * @param $params
+     * @return void
+     */
+    public function loadParams($params)
+    {
+        if (count($params) > 1) {
+            $params['SearchTrainingProgram']['branchSearch'] = StringFormatter::stringAsInt($params['SearchTrainingProgram']['branchSearch']);
+            $params['SearchTrainingProgram']['focusSearch'] = StringFormatter::stringAsInt($params['SearchTrainingProgram']['focusSearch']);
+            $params['SearchTrainingProgram']['allowSearch'] = StringFormatter::stringAsInt($params['SearchTrainingProgram']['allowSearch']);
+            $params['SearchTrainingProgram']['levelSearch'] = StringFormatter::stringAsInt($params['SearchTrainingProgram']['levelSearch']);
+        }
+
+        $this->load($params);
+    }
+
+    /**
+     * Создает экземпляр DataProvider с учетом поискового запроса (фильтров или сортировки)
      *
+     * @param $params
      * @return ActiveDataProvider
      */
     public function search($params)
     {
-        $query = TrainingProgramWork::find()->orderBy(['actual' => SORT_DESC]);
+        $this->loadParams($params);
 
-        /*if (array_key_exists("SearchTrainingProgram", $params))
-        {
-            if ($params["SearchTrainingProgram"]["authorSearch"] != null)
-            {
-                $authors = AuthorProgramWork::find()->where(['author_id' => $params["SearchTrainingProgram"]["authorSearch"]])->all();
-                $aIds = [];
-                foreach ($authors as $author) $aIds[] = $author->training_program_id;
-                $query = $query->where(['IN', 'training_program.id', $aIds]);
-            }
-
-            if ($params["SearchTrainingProgram"]["branchSearch"] != null)
-            {
-                $branchs = BranchProgramWork::find()->where(['branch_id' => $params["SearchTrainingProgram"]["branchSearch"]])->all();
-                $aIds = [];
-                foreach ($branchs as $branch) $aIds[] = $branch->training_program_id;
-                if ($params["SearchTrainingProgram"]["authorSearch"] != null)
-                    $query = $query->andWhere(['IN', 'training_program.id', $aIds]);
-                else
-                    $query = $query->where(['IN', 'training_program.id', $aIds]);
-            }
-        }*/
-
-
-
-        // add conditions that should always apply here
+        $query = TrainingProgramWork::find()
+            ->joinWith([
+                'author',
+                'author.people' => function ($query) {
+                    $query->alias('authorPeople');
+                },
+                'branch' => function ($query) {
+                    $query->alias('branch');
+                },
+            ]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['ped_council_date' => SORT_DESC, 'name' => SORT_ASC]]
         ]);
 
-        $this->load($params);
+        $this->sortAttributes($dataProvider);
+        $this->filterQueryParams($query);
 
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
-/*
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-            'ped_council_date' => $this->ped_council_date,
-            'author_id' => $this->author_id,
-            'capacity' => $this->capacity,
-            'student_left_age' => $this->student_left_age,
-            'student_right_age' => $this->student_right_age,
-            'focus_id' => $this->focus_id,
-            'allow_remote_id' => $this->allow_remote_id,
-        ]);
-
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'ped_council_number', $this->ped_council_number]);*/
         return $dataProvider;
+    }
+
+    /**
+     * Сортировка по полям таблицы
+     *
+     * @param ActiveDataProvider $dataProvider
+     * @return void
+     */
+    public function sortAttributes(ActiveDataProvider $dataProvider) {
+        $dataProvider->sort->attributes['name'] = [
+            'asc' => ['name' => SORT_ASC],
+            'desc' => ['name' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['levelNumber'] = [
+            'asc' => ['level' => SORT_ASC],
+            'desc' => ['level' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['branchString'] = [
+            'asc' => ['branch.branch' => SORT_ASC],
+            'desc' => ['branch.branch' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['pedCouncilDate'] = [
+            'asc' => ['ped_council_date' => SORT_DESC],
+            'desc' => ['ped_council_date' => SORT_ASC],
+        ];
+
+        $dataProvider->sort->attributes['authorString'] = [
+            'asc' => ['authorPeople.surname' => SORT_ASC],
+            'desc' => ['authorPeople.surname' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['capacity'] = [
+            'asc' => ['capacity' => SORT_ASC],
+            'desc' => ['capacity' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['agePeriod'] = [
+            'asc' => ['student_left_age' => SORT_ASC, 'student_right_age' => SORT_ASC],
+            'desc' => ['student_right_age' => SORT_DESC, 'student_left_age' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['focusString'] = [
+            'asc' => ['focus' => SORT_ASC],
+            'desc' => ['focus' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['allowRemote'] = [
+            'asc' => ['allow_remote' => SORT_ASC],
+            'desc' => ['allow_remote' => SORT_DESC],
+        ];
+    }
+
+
+    /**
+     * Вызов функций фильтров по параметрам запроса
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterQueryParams(ActiveQuery $query) {
+        $this->filterDate($query);
+        $this->filterBranch($query);
+        $this->filterName($query);
+        $this->filterAuthor($query);
+        $this->filterLevel($query);
+        $this->filterFocus($query);
+        $this->filterAllowRemote($query);
+        $this->filterActual($query);
+    }
+
+    /**
+     * Фильтрация по диапазону дат
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterDate(ActiveQuery $query) {
+        if (!empty($this->startDateSearch) || !empty($this->finishDateSearch)) {
+            $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
+            $dateTo = $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
+
+            $query->andWhere(['between', 'ped_council_date', $dateFrom, $dateTo]);
+        }
+    }
+
+    /**
+     * Поиск по отделам (месту реализации)
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterBranch(ActiveQuery $query) {
+        if (!StringFormatter::isEmpty($this->branchSearch) && $this->branchSearch !== SearchFieldHelper::EMPTY_FIELD) {
+            $query->andFilterWhere(['branch.branch' => $this->branchSearch]);
+        }
+    }
+
+    /**
+     * Поиск по названию
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterName(ActiveQuery $query) {
+        if (!empty($this->programName)) {
+            $query->andFilterWhere(['like', 'LOWER(name)', $this->programName]);
+        }
+    }
+
+    /**
+     * Поиск по составителям
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterAuthor(ActiveQuery $query) {
+        //var_dump($this->authorSearch);
+        if (!empty($this->authorSearch)) {
+            $query->andFilterWhere(['like', 'LOWER(authorPeople.surname)', mb_strtolower($this->authorSearch)]);
+        }
+        //var_dump($query->createCommand()->getRawSql());die();
+    }
+
+    /**
+     * Поиск по уровню сложности
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterLevel(ActiveQuery $query) {
+        if (!StringFormatter::isEmpty($this->levelSearch) && $this->levelSearch !== SearchFieldHelper::EMPTY_FIELD) {
+            $query->andFilterWhere(['level' => $this->levelSearch]);
+        }
+    }
+
+    /**
+     * Поиск по направленности
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterFocus(ActiveQuery $query) {
+        if (!StringFormatter::isEmpty($this->focusSearch) && $this->focusSearch !== SearchFieldHelper::EMPTY_FIELD) {
+            $query->andFilterWhere(['focus' => $this->focusSearch]);
+        }
+    }
+
+    /**
+     * Поиск по форме реализации
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterAllowRemote(ActiveQuery $query) {
+        if (!StringFormatter::isEmpty($this->allowSearch) && $this->allowSearch !== SearchFieldHelper::EMPTY_FIELD) {
+            $query->andFilterWhere(['allow_remote' => $this->allowSearch]);
+        }
+    }
+
+    /**
+     * Фильтр по актуальности программ
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterActual(ActiveQuery $query) {
+        if (!StringFormatter::isEmpty($this->actual) && $this->actual !== SearchFieldHelper::EMPTY_FIELD) {
+            $query->andFilterWhere(['actual' => $this->actual]);
+        }
     }
 }

@@ -39,6 +39,7 @@ class TrainingProgramWork extends TrainingProgram
     public $mainExist;
     public $docExist;
     public $contractExist;
+    public const LEVEL_LIST = [1, 2, 3];
 
     private FileService $fileService;
     private TrainingProgramRepository $repository;
@@ -72,7 +73,8 @@ class TrainingProgramWork extends TrainingProgram
             'thematic_direction' => 'Тематическое направление',
             'level' => 'Уровень сложности',
             'levelNumber' => 'Уровень<br>сложности',
-            'branch' => 'Место<br>реализации',
+            'branch' => 'Место реализации',
+            'branchString' => 'Место<br>реализации',
             'authorString' => 'Составители',
             'agePeriod' => 'Возрастные<br>ограничения',
             'ped_council_date' => 'Дата педагогического совета',
@@ -173,7 +175,7 @@ class TrainingProgramWork extends TrainingProgram
         return $this->is_network == 0 ? 'Нет' : 'Да';
     }
 
-    public function getBranch()
+    public function getBranchString()
     {
         $branchesPrograms = $this->repository->getBranches($this->id);
         $result = '';
@@ -219,7 +221,7 @@ class TrainingProgramWork extends TrainingProgram
         return $this->ped_council_number;
     }
 
-    public function getAuthorString(StringFormatter $formatter = null)
+    public function getAuthorString(int $formatter = null)
     {
         $authors = $this->repository->getAuthors($this->id);
         $result = '';

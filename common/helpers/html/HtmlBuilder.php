@@ -6,6 +6,7 @@ use common\helpers\common\BaseFunctions;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilePaths;
 use common\helpers\StringFormatter;
+use common\Model;
 use DomainException;
 use DOMDocument;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
@@ -22,12 +23,21 @@ use yii\widgets\ActiveForm;
 
 class HtmlBuilder
 {
-    public static function createAccordion($content, $lenghtPrev = 20, $textBtnOpen = 'Развернуть', $textBtnClose = 'Скрыть')
+    /**
+     * Создает красивое представление длинного контента
+     * в виде сложенного набора заголовка и кнопки для полного отображения
+     * @param string $content
+     * @param int $lengthPrev
+     * @param string $textBtnOpen
+     * @param string $textBtnClose
+     * @return string
+     */
+    public static function createAccordion(string $content, int $lengthPrev = 20, string $textBtnOpen = 'Развернуть', string $textBtnClose = 'Скрыть')
     {
         $contentString = strip_tags($content);
         $result = '<div class="accordion-block">
                         <div class="flexx space represent">
-                            <div class="prev-accordion">' . mb_substr($contentString, 0, $lenghtPrev) . '...</div>
+                            <div class="prev-accordion">' . mb_substr($contentString, 0, $lengthPrev) . '...</div>
                             <button class="accordion-btn btn-secondary">' . $textBtnOpen . '</button>
                         </div>
                         <div class="accordion-date">
@@ -90,10 +100,10 @@ class HtmlBuilder
      * Создает группу кнопок
      * $linksArray должен быть ассоциативным массивом ['Имя кнопки' => ['url' => ['ссылка'], 'class' => '...', 'data' => [...] ], ...]
      * параметры class и data являются не обязательными
-     * @param $linksArray
+     * @param array $linksArray
      * @return string
      */
-    public static function createGroupButton($linksArray)
+    public static function createGroupButton(array $linksArray)
     {
         $result = '<div class="button-group">';
 
@@ -111,10 +121,10 @@ class HtmlBuilder
 
     /**
      * Создает кнопки для фильтрации(поиска) и очистки параметров(переход к чистому индексу)
-     * @param $resetUrl     // url куда возвращаться по кнопке очистки параметров
+     * @param string $resetUrl     // url куда возвращаться по кнопке очистки параметров
      * @return string
      */
-    public static function filterButton($resetUrl) {
+    public static function filterButton(string $resetUrl) {
         return '<div class="form-group-button">
                     <button type="submit" class="btn btn-primary">Поиск</button>
                     <a href="'.Url::to([$resetUrl]).'" type="reset" class="btn btn-secondary" style="font-weight: 500;">Очистить</a>
@@ -123,14 +133,15 @@ class HtmlBuilder
 
     /**
      * Создает панель фильтров на _search страницах. Обязательно наличие HtmlCreator::filterToggle() на странице отображения (index)
-     * @param $searchModel
-     * @param $searchFields
+     * @param Model $searchModel
+     * @param array $searchFields
      * @param ActiveForm $form
-     * @param $valueInRow   // количество элементов поиска в строке
-     * @param $resetUrl // является кнопкой сброса фильтров
+     * @param int $valueInRow   // количество элементов поиска в строке
+     * @param string $resetUrl // является кнопкой сброса фильтров
      * @return string
+     * @throws \Exception
      */
-    public static function createFilterPanel($searchModel, $searchFields, ActiveForm $form, $valueInRow, $resetUrl)
+    public static function createFilterPanel(Model $searchModel, array $searchFields, ActiveForm $form, int $valueInRow, string $resetUrl)
     {
         $result = '<div class="filter-panel" id="filterPanel">
                         '.HtmlCreator::filterHeaderForm().'

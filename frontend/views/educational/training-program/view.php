@@ -106,7 +106,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Место реализации
                     </div>
                     <div class="field-date">
-                        <?= $model->getBranch(); ?>
+                        <?= $model->getBranchString(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -162,7 +162,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Составители
                     </div>
                     <div class="field-date">
-                        <?= $model->getAuthorString((int)StringFormatter::FORMAT_LINK); ?>
+                        <?= $model->getAuthorString(StringFormatter::FORMAT_LINK); ?>
                     </div>
                 </div>
             </div>

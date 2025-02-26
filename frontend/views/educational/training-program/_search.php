@@ -2,6 +2,7 @@
 
 use common\helpers\html\HtmlBuilder;
 use common\helpers\search\SearchFieldHelper;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use yii\widgets\ActiveForm;
 
 /* @var $searchModel \frontend\models\search\SearchTrainingProgram */
@@ -18,19 +19,18 @@ use yii\widgets\ActiveForm;
 
     <?php
     $searchFields = array_merge(
-        /*SearchFieldHelper::dateField('startDateSearch', 'Дата мероприятия с', 'Дата мероприятия с'),
-        SearchFieldHelper::dateField('finishDateSearch', 'Дата мероприятия по', 'Дата мероприятия по'),
-        SearchFieldHelper::textField('eventName', 'Наименование мероприятия', 'Наименование мероприятия'),
-        SearchFieldHelper::dropdownField('eventWay', 'Формат проведения', Yii::$app->eventWay->getList(), 'Формат проведения'),
-        SearchFieldHelper::dropdownField('eventType', 'Тип мероприятия', Yii::$app->eventType->getList(), 'Тип мероприятия'),
-        SearchFieldHelper::dropdownField('eventLevel', 'Уровень мероприятия', Yii::$app->eventLevel->getList(), 'Уровень мероприятия'),
-        SearchFieldHelper::dropdownField('eventForm', 'Форма мероприятия', Yii::$app->eventForm->getList(), 'Форма мероприятия'),
-        SearchFieldHelper::dropdownField('eventScope', 'Сферы участия', Yii::$app->participationScope->getList(), 'Сферы участия'),
-        SearchFieldHelper::dropdownField('branch', 'Мероприятие проводит', Yii::$app->branches->getList(), 'Мероприятие проводит'),
-        SearchFieldHelper::textField('responsible', 'Ответственный работник', 'Ответственный работник'),*/
+        SearchFieldHelper::dateField('startDateSearch', 'Дата пед.совета с', 'Дата пед.совета с'),
+        SearchFieldHelper::dateField('finishDateSearch', 'Дата пед.совета по', 'Дата пед.совета по'),
+        SearchFieldHelper::dropdownField('branchSearch', 'Место реализации', Yii::$app->branches->getOnlyEducational(), 'Место реализации'),
+        SearchFieldHelper::textField('programName', 'Наименование программы', 'Наименование программы'),
+        SearchFieldHelper::textField('authorSearch', 'Составитель', 'Составитель'),
+        SearchFieldHelper::dropdownField('levelSearch', 'Уровень сложности', TrainingProgramWork::LEVEL_LIST, 'Уровень сложности'),
+        SearchFieldHelper::dropdownField('focusSearch', 'Направленность', Yii::$app->focus->getList(), 'Направленность'),
+        SearchFieldHelper::dropdownField('allowSearch', 'Форма реализации', Yii::$app->allowRemote->getList(), 'Форма реализации'),
+        SearchFieldHelper::dropdownField('actual', 'Актуальность', $searchModel::ACTUAL, 'Актуальность', 1),
     );
 
-    echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::OUR_EVENT_INDEX); ?>
+    echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::PROGRAM_INDEX); ?>
 
     <?php ActiveForm::end(); ?>
 
