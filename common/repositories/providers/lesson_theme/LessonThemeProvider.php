@@ -23,6 +23,14 @@ class LessonThemeProvider implements LessonThemeProviderInterface
         return LessonThemeWork::find()->where(['IN', 'training_group_lesson_id', $lessonIds])->all();
     }
 
+    public function getByTrainingGroupId(int $trainingGroupId)
+    {
+        return LessonThemeWork::find()
+            ->joinWith(['trainingGroupLessonWork trainingGroupLessonWork'])
+            ->where(['IN', 'trainingGroupLessonWork.training_group_id', $trainingGroupId])
+            ->all();
+    }
+
     public function delete(LessonThemeWork $model)
     {
         return $model->delete();

@@ -2,6 +2,7 @@
 
 use frontend\forms\journal\JournalForm;
 use frontend\models\work\educational\journal\VisitWork;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -28,7 +29,10 @@ use yii\widgets\ActiveForm;
                     </td>
                     <?php foreach ($participantLesson->lessonIds as $index => $lesson): ?>
                         <td>
-                            <?= $form->field($lesson, "[$participantLesson->trainingGroupParticipantId][$index]lessonId")->hiddenInput(['value' => $lesson->lessonId])->label(false) ?>
+                            <?= $form->field($lesson, "[$participantLesson->trainingGroupParticipantId][$index]lessonId")
+                                ->hiddenInput(['value' => $lesson->lessonId])
+                                ->label(false) ?>
+
                             <?= $form->field($lesson, "[$participantLesson->trainingGroupParticipantId][$index]status")
                                 ->dropDownList([
                                     VisitWork::NONE => '---',
@@ -39,6 +43,18 @@ use yii\widgets\ActiveForm;
                                 ->label("Lesson ID: {$lesson->lessonId}"); ?>
                         </td>
                     <?php endforeach; ?>
+                    <td>
+                        <?= $form->field($participantLesson, "[$participantLesson->trainingGroupParticipantId]groupProjectThemeId")->dropDownList(
+                            ArrayHelper::map($model->availableThemes, 'id', 'projectThemeWork.name'),
+                            ['prompt' => '']
+                        ) ?>
+                    </td>
+                    <td>
+                        <?= $form->field($participantLesson, "[$participantLesson->trainingGroupParticipantId]points")->textInput(['type' => 'number']) ?>
+                    </td>
+                    <td>
+                        <?= $form->field($participantLesson, "[$participantLesson->trainingGroupParticipantId]successFinishing")->checkbox() ?>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </table>

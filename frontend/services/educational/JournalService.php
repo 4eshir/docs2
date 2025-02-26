@@ -184,4 +184,26 @@ class JournalService
             $this->visitRepository->save($visit);
         }
     }
+
+    /**
+     * @param int $trainingGroupParticipantId
+     * @param int|null $groupProjectThemeId
+     * @param int|null $points
+     * @param int|null $successFinishing
+     * @return int
+     */
+    public function setParticipantFinishData(
+        int $trainingGroupParticipantId,
+        ?int $groupProjectThemeId,
+        ?int $points,
+        ?int $successFinishing
+    ) : int
+    {
+        /** @var TrainingGroupParticipantWork $participant */
+        $participant = $this->participantRepository->get($trainingGroupParticipantId);
+        $participant->group_project_themes_id = $groupProjectThemeId;
+        $participant->points = $points;
+        $participant->success = $successFinishing;
+        return $this->participantRepository->save($participant);
+    }
 }

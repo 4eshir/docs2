@@ -4,6 +4,7 @@ namespace frontend\controllers\educational;
 
 use common\repositories\educational\VisitRepository;
 use frontend\forms\journal\JournalForm;
+use frontend\forms\journal\ThematicPlanForm;
 use frontend\models\work\educational\journal\ParticipantLessons;
 use frontend\models\work\educational\journal\VisitLesson;
 use frontend\services\educational\JournalService;
@@ -27,9 +28,11 @@ class JournalController extends Controller
     public function actionView($id)
     {
         $form = new JournalForm($id);
+        $plan = new ThematicPlanForm($id);
 
         return $this->render('view', [
-            'model' => $form
+            'model' => $form,
+            'plan' => $plan
         ]);
     }
 
@@ -44,12 +47,31 @@ class JournalController extends Controller
                     $participantLesson->trainingGroupParticipantId,
                     $participantLesson->lessonIds
                 );
+                $this->service->setParticipantFinishData(
+                    $participantLesson->trainingGroupParticipantId,
+                    $participantLesson->groupProjectThemeId,
+                    $participantLesson->points,
+                    $participantLesson->successFinishing
+                );
             }
 
             return $this->redirect(['view', 'id' => $id]);
         }
 
         return $this->render('update', [
+            'model' => $form
+        ]);
+    }
+
+    public function actionEditPlan($id)
+    {
+        $form = new ThematicPlanForm($id);
+
+        if ($form->load(Yii::$app->request->post())) {
+            return $this->redirect(['view', 'id' => $id]);
+        }
+
+        return $this->render('edit-plan', [
             'model' => $form
         ]);
     }

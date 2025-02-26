@@ -30,7 +30,7 @@ class LessonThemeRepository
 
     public function getByTrainingGroupId(int $trainingGroupId)
     {
-
+        return $this->provider->getByTrainingGroupId($trainingGroupId);
     }
 
     public function getByLessonIds(array $lessonIds)

@@ -3,10 +3,13 @@
 namespace frontend\forms\journal;
 
 use common\Model;
+use common\repositories\educational\GroupProjectThemesRepository;
 use common\repositories\educational\VisitRepository;
+use DomainException;
 use frontend\models\work\educational\journal\ParticipantLessons;
 use frontend\models\work\educational\journal\VisitLesson;
 use frontend\models\work\educational\journal\VisitWork;
+use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use Yii;
 
 class JournalForm extends Model
@@ -18,6 +21,9 @@ class JournalForm extends Model
     /** @var ParticipantLessons[] $participantLessons */
     public array $participantLessons = [];
 
+    /** @var GroupProjectThemesWork[] $availableThemes */
+    public array $availableThemes;
+
     public function rules()
     {
         return [
@@ -25,19 +31,26 @@ class JournalForm extends Model
         ];
     }
 
-    public function __construct($groupId = null, $config = [])
+    public function __construct(
+        int $groupId = null,
+        $config = []
+    )
     {
         parent::__construct($config);
-        if ($groupId !== null) {
+        if (!is_null($groupId)) {
             $this->groupId = $groupId;
             $this->visits = (Yii::createObject(VisitRepository::class))->getByTrainingGroup($this->groupId);
+            $this->availableThemes = (Yii::createObject(GroupProjectThemesRepository::class))->getProjectThemesFromGroup($this->groupId);
 
             foreach ($this->visits as $visit) {
                 /** @var VisitWork $visit */
                 $lessons = VisitLesson::fromString($visit->lessons);
                 $this->participantLessons[] = new ParticipantLessons(
                     $visit->training_group_participant_id,
-                    $lessons
+                    $lessons,
+                    $visit->trainingGroupParticipantWork->group_project_themes_id,
+                    $visit->trainingGroupParticipantWork->points,
+                    $visit->trainingGroupParticipantWork->success
                 );
             }
         }
@@ -49,10 +62,16 @@ class JournalForm extends Model
 
     public function load($data, $formName = null)
     {
-        // Дозагружаем VisitLesson вручную, ActiveRecord не справляется сам
+        // Дозагружаем VisitLesson и доп данные для ParticipantLessons вручную, ActiveRecord не справляется сам
         $newParticipantLessons = [];
         $visitLessons = $data["VisitLesson"];
-        if (is_array($visitLessons)) {
+        $participantData = $data["ParticipantLessons"];
+
+        if (is_array($visitLessons) && is_array($participantData)) {
+            if (count($visitLessons) !== count($participantData)) {
+                throw new DomainException('Техническая ошибка сервера. Закройте страницу и попробуйте еще раз');
+            }
+
             foreach ($visitLessons as $index => $visitLesson) {
                 $lessonArray = [];
                 foreach ($visitLesson as $lesson) {
@@ -61,9 +80,16 @@ class JournalForm extends Model
                         $lesson["status"]
                     );
                 }
+
+                $groupProjectThemeId = !empty($participantData[$index]['groupProjectThemeId']) ?
+                    (int)$participantData[$index]['groupProjectThemeId'] :
+                    null;
                 $newParticipantLessons[] = new ParticipantLessons(
                     $index,
-                    $lessonArray
+                    $lessonArray,
+                    $groupProjectThemeId,
+                    (int)$participantData[$index]['points'],
+                    (int)$participantData[$index]['successFinishing']
                 );
             }
             $this->participantLessons = $newParticipantLessons;
