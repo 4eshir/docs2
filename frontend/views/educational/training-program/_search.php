@@ -1,42 +1,36 @@
 <?php
 
-use yii\helpers\Html;
+use common\helpers\html\HtmlBuilder;
+use common\helpers\search\SearchFieldHelper;
 use yii\widgets\ActiveForm;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\SearchTrainingProgram */
-/* @var $form yii\widgets\ActiveForm */
+/* @var $searchModel \frontend\models\search\SearchTrainingProgram */
+
 ?>
 
 <div class="training-program-search">
 
     <?php $form = ActiveForm::begin([
-        'action' => ['index'],
-        'method' => 'get',
+        'action' => ['index'], // Действие контроллера для обработки поиска
+        'method' => 'get', // Метод GET для передачи параметров в URL
+        'options' => ['data-pjax' => true], // Для использования Pjax
     ]); ?>
 
     <?php
-    $branch = \app\models\work\BranchWork::find()->all();
-    $items = \yii\helpers\ArrayHelper::map($branch,'id','name');
-    $params = [
-        'prompt' => ''
-    ];
-    echo $form->field($model, 'branchSearch')->dropDownList($items, $params)->label('Отдел');
-    ?>
+    $searchFields = array_merge(
+        /*SearchFieldHelper::dateField('startDateSearch', 'Дата мероприятия с', 'Дата мероприятия с'),
+        SearchFieldHelper::dateField('finishDateSearch', 'Дата мероприятия по', 'Дата мероприятия по'),
+        SearchFieldHelper::textField('eventName', 'Наименование мероприятия', 'Наименование мероприятия'),
+        SearchFieldHelper::dropdownField('eventWay', 'Формат проведения', Yii::$app->eventWay->getList(), 'Формат проведения'),
+        SearchFieldHelper::dropdownField('eventType', 'Тип мероприятия', Yii::$app->eventType->getList(), 'Тип мероприятия'),
+        SearchFieldHelper::dropdownField('eventLevel', 'Уровень мероприятия', Yii::$app->eventLevel->getList(), 'Уровень мероприятия'),
+        SearchFieldHelper::dropdownField('eventForm', 'Форма мероприятия', Yii::$app->eventForm->getList(), 'Форма мероприятия'),
+        SearchFieldHelper::dropdownField('eventScope', 'Сферы участия', Yii::$app->participationScope->getList(), 'Сферы участия'),
+        SearchFieldHelper::dropdownField('branch', 'Мероприятие проводит', Yii::$app->branches->getList(), 'Мероприятие проводит'),
+        SearchFieldHelper::textField('responsible', 'Ответственный работник', 'Ответственный работник'),*/
+    );
 
-    <?php
-    $people = \app\models\work\PeopleWork::find()->where(['company_id' => 8])->all();
-    $items = \yii\helpers\ArrayHelper::map($people,'id','fullName');
-    $params = [
-        'prompt' => ''
-    ];
-    echo $form->field($model, 'authorSearch')->dropDownList($items, $params)->label('Педагог');
-    ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Найти', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Сбросить фильтры', ['class' => 'btn btn-outline-secondary']) ?>
-    </div>
+    echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::OUR_EVENT_INDEX); ?>
 
     <?php ActiveForm::end(); ?>
 

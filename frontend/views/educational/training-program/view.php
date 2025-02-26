@@ -1,6 +1,7 @@
 <?php
 
 use common\helpers\html\HtmlBuilder;
+use common\helpers\StringFormatter;
 use frontend\models\work\educational\training_program\TrainingProgramWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -43,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Уровень сложности
                     </div>
                     <div class="field-date">
-                        <?= $model->getLevel(); ?>
+                        <?= $model->getLevelNumber(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -70,7 +71,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Направленность
                     </div>
                     <div class="field-date">
-                        <?= $model->getFocus(); ?>
+                        <?= $model->getFocusString(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -102,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="card-field flexx">
                     <div class="field-title">
-                        Отделы - место реализации
+                        Место реализации
                     </div>
                     <div class="field-date">
                         <?= $model->getBranch(); ?>
@@ -124,8 +125,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Учебно-тематический план
                     </div>
                     <div class="field-date">
-                        <?php var_dump($thematicPlan);
-                        //HtmlBuilder::createAccordion(ArrayHelper::getColumn($thematicPlan, 'theme')) ?>
+                        <?= $model->getThematicPlaneRaw(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -162,7 +162,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Составители
                     </div>
                     <div class="field-date">
-                        <?= $model->getAuthorString(); ?>
+                        <?= $model->getAuthorString((int)StringFormatter::FORMAT_LINK); ?>
                     </div>
                 </div>
             </div>
