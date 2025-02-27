@@ -35,6 +35,13 @@ class OrderTrainingGroupParticipantRepository
             ]);
         return $command->getRawSql();
     }
+    public function prepareDeleteById($id) {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(OrderTrainingGroupParticipantWork::tableName(), [
+            'id' => $id,
+        ]);
+        return $command->getRawSql();
+    }
     public function getUnique($trainingGroupParticipantOutId, $orderId){
         return OrderTrainingGroupParticipantWork::find()
             //->andWhere(['training_group_participant_in_id' => $trainingGroupParticipantInId])

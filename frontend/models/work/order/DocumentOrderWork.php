@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\order;
 
+use common\events\EventTrait;
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\DocumentOrder;
 use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
@@ -11,6 +12,7 @@ use InvalidArgumentException;
 
 class DocumentOrderWork extends DocumentOrder
 {
+    use EventTrait;
     public const ORDER_MAIN = 1;
     public const ORDER_EVENT = 2;
     public const ORDER_TRAINING = 3;

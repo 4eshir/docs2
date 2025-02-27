@@ -2,8 +2,27 @@
 
 namespace frontend\services\order;
 
+use app\events\act_participant\ActParticipantBranchDeleteEvent;
+use app\events\act_participant\ActParticipantDeleteEvent;
+use app\events\act_participant\SquadParticipantDeleteByIdEvent;
+use app\events\document_order\DocumentOrderDeleteEvent;
+use app\events\document_order\OrderEventGenerateDeleteEvent;
+use app\events\educational\training_group\OrderTrainingGroupParticipantByIdDeleteEvent;
+use app\events\expire\ExpireDeleteEvent;
+use app\events\foreign_event\ForeignEventDeleteEvent;
+use app\events\general\OrderPeopleDeleteByIdEvent;
+use app\events\team\TeamNameDeleteEvent;
+use common\repositories\act_participant\ActParticipantRepository;
+use common\repositories\educational\OrderTrainingGroupParticipantRepository;
+use common\repositories\event\ForeignEventRepository;
+use common\repositories\expire\ExpireRepository;
+use common\repositories\general\FilesRepository;
+use common\repositories\general\OrderPeopleRepository;
 use common\repositories\general\PeopleStampRepository;
+use common\repositories\team\TeamRepository;
 use common\services\general\PeopleStampService;
+use frontend\events\general\FileDeleteEvent;
+use frontend\models\work\general\FilesWork;
 use frontend\models\work\general\OrderPeopleWork;
 use frontend\models\work\order\DocumentOrderWork;
 use common\helpers\files\filenames\DocumentOrderFileNameGenerator;
@@ -11,6 +30,8 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
+use frontend\models\work\team\ActParticipantWork;
+use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
@@ -22,18 +43,39 @@ class DocumentOrderService
     private DocumentOrderFileNameGenerator $filenameGenerator;
     private PeopleStampService $peopleStampService;
     private PeopleStampRepository $peopleStampRepository;
+    private FilesRepository $filesRepository;
+    private ExpireRepository $expireRepository;
+    private ForeignEventRepository $foreignEventRepository;
+    private TeamRepository $teamRepository;
+    private ActParticipantRepository $actParticipantRepository;
+    private OrderPeopleRepository $orderPeopleRepository;
+    private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
 
     public function __construct(
         FileService $fileService,
         DocumentOrderFileNameGenerator $filenameGenerator,
         PeopleStampService $peopleStampService,
-        PeopleStampRepository $peopleStampRepository
+        PeopleStampRepository $peopleStampRepository,
+        FilesRepository $filesRepository,
+        ExpireRepository $expireRepository,
+        ForeignEventRepository $foreignEventRepository,
+        TeamRepository $teamRepository,
+        ActParticipantRepository $actParticipantRepository,
+        OrderPeopleRepository $orderPeopleRepository,
+        OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository
     )
     {
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
         $this->peopleStampService = $peopleStampService;
         $this->peopleStampRepository = $peopleStampRepository;
+        $this->filesRepository = $filesRepository;
+        $this->expireRepository = $expireRepository;
+        $this->foreignEventRepository = $foreignEventRepository;
+        $this->teamRepository = $teamRepository;
+        $this->actParticipantRepository = $actParticipantRepository;
+        $this->orderPeopleRepository = $orderPeopleRepository;
+        $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
     }
     public function createOrderPeopleArray(array $data)
     {
@@ -165,5 +207,87 @@ class DocumentOrderService
             $responsiblePeople[$index] = $person->people_id;
         }
         $model->responsible_id = $responsiblePeople;
+    }
+    public function documentOrderDelete($model)
+    {
+        switch ($model->type) {
+            case DocumentOrderWork::ORDER_MAIN:
+                $this->orderMainDelete($model);
+            case DocumentOrderWork::ORDER_EVENT:
+                $this->orderEventDelete($model);
+            case DocumentOrderWork::ORDER_TRAINING:
+                $this->orderTrainingDelete($model);
+        }
+    }
+    public function orderMainDelete(DocumentOrderWork $model)
+    {
+        /* @var FilesWork $file */
+        $responsiblePeople = $this->orderPeopleRepository->getResponsiblePeople($model->id);
+        foreach ($responsiblePeople as $person) {
+            $model->recordEvent(new OrderPeopleDeleteByIdEvent($person->id), DocumentOrderWork::class);
+        }
+        $expires = $this->expireRepository->getExpireByActiveRegulationId($model->id);
+        foreach ($expires as $expire) {
+            $model->recordEvent(new ExpireDeleteEvent($expire->id), DocumentOrderWork::class);
+        }
+        $files = $this->filesRepository->getByDocument(DocumentOrderWork::tableName(), $model->id);
+        foreach ($files as $file) {
+            $model->recordEvent(new FileDeleteEvent($file->id), DocumentOrderWork::class);
+        }
+        $model->recordEvent(new DocumentOrderDeleteEvent($model->id), DocumentOrderWork::class);
+    }
+
+    public function orderEventDelete(DocumentOrderWork $model)
+    {
+        $responsiblePeople = $this->orderPeopleRepository->getResponsiblePeople($model->id);
+        foreach ($responsiblePeople as $person) {
+            $model->recordEvent(new OrderPeopleDeleteByIdEvent($person->id), DocumentOrderWork::class);
+        }
+        //files
+        $files = $this->filesRepository->getByDocument(DocumentOrderWork::tableName(), $model->id);
+        foreach ($files as $file) {
+            $model->recordEvent(new FileDeleteEvent($file->id), DocumentOrderWork::class);
+        }
+        //order_event_generate
+        $model->recordEvent(new OrderEventGenerateDeleteEvent($model->id), DocumentOrderWork::class);
+        $event = $this->foreignEventRepository->getByDocOrderId($model->id);
+        $acts = $this->actParticipantRepository->getByForeignEventId($event->id);
+        foreach ($acts as $act) {
+            //files(act_participant)
+            $files = $this->filesRepository->getByDocument(ActParticipantWork::tableName(), $act->id);
+            foreach ($files as $file) {
+                $model->recordEvent(new FileDeleteEvent($file->id), DocumentOrderWork::class);
+            }
+            //act_participant_branch
+            $model->recordEvent(new ActParticipantBranchDeleteEvent($act->id), DocumentOrderWork::class);
+            //squad_participant
+            $model->recordEvent(new SquadParticipantDeleteByIdEvent($act->id), DocumentOrderWork::class);
+            //act_participant
+            $model->recordEvent(new ActParticipantDeleteEvent($act->id), DocumentOrderWork::class);
+        }
+        //team_name
+        $teams = $this->teamRepository->getNamesByForeignEventId($event->id);
+        foreach ($teams as $team) {
+            $model->recordEvent(new TeamNameDeleteEvent($team->id), DocumentOrderWork::class);
+        }
+        //foreign_event
+        $model->recordEvent(new ForeignEventDeleteEvent($event->id), DocumentOrderWork::class);
+        $model->recordEvent(new DocumentOrderDeleteEvent($model->id), DocumentOrderWork::class);
+    }
+    public function orderTrainingDelete(DocumentOrderWork $model)
+    {
+        $responsiblePeople = $this->orderPeopleRepository->getResponsiblePeople($model->id);
+        foreach ($responsiblePeople as $person) {
+            $model->recordEvent(new OrderPeopleDeleteByIdEvent($person->id), DocumentOrderWork::class);
+        }
+        $orderParticipants = $this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id);
+        foreach ($orderParticipants as $orderParticipant) {
+            $model->recordEvent(new OrderTrainingGroupParticipantByIdDeleteEvent($orderParticipant->id), DocumentOrderWork::class);
+        }
+        $files = $this->filesRepository->getByDocument(DocumentOrderWork::tableName(), $model->id);
+        foreach ($files as $file) {
+            $model->recordEvent(new FileDeleteEvent($file->id), DocumentOrderWork::class);
+        }
+        $model->recordEvent(new DocumentOrderDeleteEvent($model->id), DocumentOrderWork::class);
     }
 }

@@ -109,6 +109,10 @@ class DeleteTableController extends Controller
     {
         Yii::$app->db->createCommand()->delete('document_order')->execute();
     }
+    public function actionDeleteDocumentOrderSupplement()
+    {
+        Yii::$app->db->createCommand()->delete('document_order_supplement')->execute();
+    }
     public function actionDeleteAuditorium()
     {
         Yii::$app->db->createCommand()->delete('auditorium')->execute();
@@ -124,6 +128,18 @@ class DeleteTableController extends Controller
     {
         Yii::$app->db->createCommand()->delete('team_name')->execute();
     }
+    public function actionDeleteActParticipant()
+    {
+        Yii::$app->db->createCommand()->delete('act_participant')->execute();
+    }
+    public function actionDeleteSquadParticipant()
+    {
+        Yii::$app->db->createCommand()->delete('squad_participant')->execute();
+    }
+    public function actionDeleteActParticipantBranch()
+    {
+        Yii::$app->db->createCommand()->delete('act_participant_branch')->execute();
+    }
     public function actionDeleteInitCopy()
     {
         $this->actionDeleteBotMessage();
@@ -138,6 +154,11 @@ class DeleteTableController extends Controller
         $this->actionDeleteProductUnion();
         $this->actionDeleteProjectTheme();
         $this->actionDeleteRussianNames();
+    }
+    public function actionDeleteDocumentOrderCopy()
+    {
+        $this->actionDeleteDocumentOrder();
+        $this->actionDeleteDocumentOrderSupplement();
     }
     public function actionDeleteDocumentInOutCopy()
     {
@@ -173,6 +194,9 @@ class DeleteTableController extends Controller
     }
     public function actionDeleteActCopy()
     {
+        $this->actionDeleteActParticipantBranch();
+        $this->actionDeleteSquadParticipant();
+        $this->actionDeleteActParticipant();
         $this->actionDeleteTeamName();
     }
     public function actionDeleteAll()
@@ -180,7 +204,7 @@ class DeleteTableController extends Controller
         $this->actionDeleteActCopy();
         $this->actionDeleteForeignEvent();
         $this->actionDeleteLocalResponsibilityCopy();
-        $this->actionDeleteDocumentOrder();
+        $this->actionDeleteDocumentOrderCopy();
         $this->actionDeleteTrainingProgramCopy();
         $this->actionDeleteEventCopy();
         $this->actionDeletePersonalData();

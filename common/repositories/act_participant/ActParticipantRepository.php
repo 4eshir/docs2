@@ -44,7 +44,12 @@ class ActParticipantRepository
         $modelAct->save();
         return $modelAct->id;
     }
-
+    public function prepareDelete($id)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(ActParticipantWork::tableName(), ['id' => $id]);
+        return $command->getRawSql();
+    }
     public function getOneByUniqueAttributes($teamNameId, $nomination, $foreignEventId)
     {
         return ActParticipantWork::find()

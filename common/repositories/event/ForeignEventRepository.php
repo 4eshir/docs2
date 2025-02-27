@@ -4,6 +4,7 @@ namespace common\repositories\event;
 
 use frontend\models\work\event\ForeignEventWork;
 use DomainException;
+use Yii;
 
 class ForeignEventRepository
 {
@@ -30,6 +31,12 @@ class ForeignEventRepository
     public function getAll()
     {
         return ForeignEventWork::find()->all();
+    }
+    public function prepareDelete($id)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(ForeignEventWork::tableName(), ['id' => $id]);
+        return $command->getRawSql();
     }
 
     public function save(ForeignEventWork $model)
