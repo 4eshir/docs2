@@ -1,5 +1,6 @@
 <?php
 
+use common\helpers\DateFormatter;
 use frontend\forms\journal\JournalForm;
 use frontend\forms\journal\ThematicPlanForm;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
@@ -43,7 +44,13 @@ use yii\helpers\Html;
         <?php foreach ($plan->lessonThemes as $index => $lessonTheme): ?>
             <tr>
                 <td>
-                    <?= $index + 1 ?>
+                    <?=
+                        DateFormatter::format(
+                            $lessonTheme->trainingGroupLessonWork->lesson_date,
+                            DateFormatter::Ymd_dash,
+                            DateFormatter::dmY_dot
+                        )
+                    ?>
                 </td>
                 <td>
                     <?= $lessonTheme->thematicPlanWork->theme ?>

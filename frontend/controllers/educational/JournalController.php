@@ -68,6 +68,7 @@ class JournalController extends Controller
         $form = new ThematicPlanForm($id);
 
         if ($form->load(Yii::$app->request->post())) {
+            $this->service->saveThematicPlan($form->lessonThemes);
             return $this->redirect(['view', 'id' => $id]);
         }
 

@@ -29,6 +29,13 @@ class LessonThemeWork extends LessonTheme
         return $entity;
     }
 
+    public function rules()
+    {
+        return [
+            [['teacher_id', 'id'], 'integer']
+        ];
+    }
+
     public function getTrainingGroupLessonWork()
     {
         return $this->hasOne(TrainingGroupLessonWork::class, ['id' => 'training_group_lesson_id']);

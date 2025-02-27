@@ -5,11 +5,14 @@ namespace frontend\services\educational;
 use common\components\compare\LessonGroupCompare;
 use common\components\compare\ParticipantGroupCompare;
 use common\components\traits\Math;
+use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\VisitRepository;
+use common\services\general\PeopleStampService;
 use frontend\models\work\educational\journal\VisitLesson;
 use frontend\models\work\educational\journal\VisitWork;
+use frontend\models\work\educational\training_group\LessonThemeWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use yii\helpers\ArrayHelper;
@@ -22,16 +25,22 @@ class JournalService
     private VisitRepository $visitRepository;
     private TrainingGroupLessonRepository $lessonRepository;
     private TrainingGroupParticipantRepository $participantRepository;
+    private LessonThemeRepository $lessonThemeRepository;
+    private PeopleStampService $peopleStampService;
 
     public function __construct(
         VisitRepository $visitRepository,
         TrainingGroupLessonRepository $lessonRepository,
-        TrainingGroupParticipantRepository $participantRepository
+        TrainingGroupParticipantRepository $participantRepository,
+        LessonThemeRepository $lessonThemeRepository,
+        PeopleStampService $peopleStampService
     )
     {
         $this->visitRepository = $visitRepository;
         $this->lessonRepository = $lessonRepository;
         $this->participantRepository = $participantRepository;
+        $this->lessonThemeRepository = $lessonThemeRepository;
+        $this->peopleStampService = $peopleStampService;
     }
 
     public function checkJournalStatus($groupId)
@@ -205,5 +214,17 @@ class JournalService
         $participant->points = $points;
         $participant->success = $successFinishing;
         return $this->participantRepository->save($participant);
+    }
+
+    /**
+     * @param LessonThemeWork[] $lessonThemes
+     * @return void
+     */
+    public function saveThematicPlan(array $lessonThemes)
+    {
+        foreach ($lessonThemes as $lessonTheme) {
+            $lessonTheme->teacher_id = $this->peopleStampService->createStampFromPeople($lessonTheme->teacher_id);
+            $this->lessonThemeRepository->save($lessonTheme);
+        }
     }
 }
