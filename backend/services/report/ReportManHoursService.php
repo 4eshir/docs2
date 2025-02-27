@@ -115,7 +115,7 @@ class ReportManHoursService
             /** @var VisitWork $visit */
             $lessons = VisitLesson::fromString($visit->lessons);
             foreach ($lessons as $lesson) {
-                $result += ReportHelper::checkVisitLesson($lesson, $calculateType, $teacherLessonIds);
+                $result += ReportHelper::checkVisitLesson($lesson, $startDate, $endDate, $calculateType, $teacherLessonIds);
             }
         }
 

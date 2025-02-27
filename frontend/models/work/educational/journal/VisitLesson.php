@@ -16,7 +16,7 @@ class VisitLesson extends Model
 
     public int $lessonId;
     public int $status;
-    public $lesson;
+    public ?TrainingGroupLessonWork $lesson;
 
     public function __construct(
         int $lessonId,

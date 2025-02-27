@@ -12,9 +12,19 @@ class TrainingGroupMockProvider implements TrainingGroupProviderInterface
     private array $expertsData = [];
     private array $themesData = [];
 
-    public function __construct(array $data = [])
+    public function __construct(
+        array $dataStore = [],
+        array $participantsData = [],
+        array $lessonsData = [],
+        array $expertsData = [],
+        array $themesData = []
+    )
     {
-        $this->dataStore = $data;
+        $this->dataStore = $dataStore;
+        $this->participantsData = $participantsData;
+        $this->lessonsData = $lessonsData;
+        $this->expertsData = $expertsData;
+        $this->themesData = $themesData;
     }
 
     public function get($id)
@@ -32,6 +42,11 @@ class TrainingGroupMockProvider implements TrainingGroupProviderInterface
         return $this->participantsData[$id] ?? [];
     }
 
+    public function setParticipants(array $participantsData)
+    {
+        $this->participantsData = $participantsData;
+    }
+
     public function getGroupsForCertificates()
     {
         $date = date("Y-m-d", strtotime('+3 days'));
@@ -45,14 +60,29 @@ class TrainingGroupMockProvider implements TrainingGroupProviderInterface
         return $this->lessonsData[$id] ?? [];
     }
 
+    public function setLessons(array $lessonsData)
+    {
+        $this->lessonsData = $lessonsData;
+    }
+
     public function getExperts($id)
     {
         return $this->expertsData[$id] ?? [];
     }
 
+    public function setExperts(array $expertsData)
+    {
+        $this->expertsData = $expertsData;
+    }
+
     public function getThemes($id)
     {
         return $this->themesData[$id] ?? [];
+    }
+
+    public function setThemes(array $themesData)
+    {
+        $this->themesData = $themesData;
     }
 
     public function save(TrainingGroupWork $model)

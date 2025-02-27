@@ -84,10 +84,12 @@ class UserWork extends User implements IdentityInterface
 
     public function beforeSave($insert)
     {
-        if ($this->creator_id == null) {
-            $this->creator_id = Yii::$app->user->identity->getId();
+        if(!(Yii::$app instanceof yii\console\Application)) {
+            if ($this->creator_id == null) {
+                $this->creator_id = Yii::$app->user->identity->getId();
+            }
+            $this->last_edit_id = Yii::$app->user->identity->getId();
         }
-        $this->last_edit_id = Yii::$app->user->identity->getId();
 
         return parent::beforeSave($insert);
     }

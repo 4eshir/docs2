@@ -9,13 +9,6 @@ return [
             'password' => 'root',
             'charset' => 'utf8',
         ],
-        'old_db' => [
-            'class' => \yii\db\Connection::class,
-            'dsn' => 'mysql:host=localhost;dbname=old_table',
-            'username' => 'root',
-            'password' => 'root',
-            'charset' => 'utf8',
-        ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
             'viewPath' => '@common/mail',

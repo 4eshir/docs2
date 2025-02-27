@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\controllers\report;
+namespace backend\controllers\report\query;
 
 use backend\forms\report\ManHoursReportForm;
 use backend\services\report\ReportFacade;
