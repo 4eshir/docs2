@@ -6,7 +6,7 @@ use backend\forms\report\ManHoursReportForm;
 use Yii;
 use yii\web\Controller;
 
-class QueryReportController extends Controller
+class ManHoursReportController extends Controller
 {
     public function actionManHours()
     {
