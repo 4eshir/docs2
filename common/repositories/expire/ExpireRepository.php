@@ -30,21 +30,14 @@ class ExpireRepository
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
+    public function prepareDelete($id)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(ExpireWork::tableName(), ['id' => $id]);
+        return $command->getRawSql();
+    }
     public function getExpireByActiveRegulationId($id){
         return ExpireWork::find()->where(['active_regulation_id'=>$id])->all();
-        /*$model = ExpireWork::find()->where(['active_regulation_id'=>$id])->all();
-        $info = NULL;
-        if($model->expire_order_id){
-
-            $order = $this->orderMainRepository->get($model->expire_order_id);
-            $info = $order->order_name;
-        }
-        if($model->expire_regulation_id){
-
-           $regulation = $this->regulationRepository->get($model->expire_regulation_id);
-           $info = $regulation->id;
-        }
-        return $info*/
     }
     public function get($id){
         return ExpireWork::find()->where(['id'=>$id])->one();

@@ -28,6 +28,12 @@ class SquadParticipantRepository
         $command->delete($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
+    public function prepareDeleteByActId($actId)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(SquadParticipantWork::tableName(), ['act_participant_id' => $actId]);
+        return $command->getRawSql();
+    }
 
     public function getAllByParticipantId($participantId)
     {

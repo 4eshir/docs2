@@ -3,6 +3,7 @@
 namespace common\repositories\act_participant;
 
 use frontend\models\work\team\ActParticipantBranchWork;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 class ActParticipantBranchRepository
@@ -27,5 +28,10 @@ class ActParticipantBranchRepository
         $model = ActParticipantBranchWork::fill($actParticipantId, $branch);
         $model->save();
         return $model->id;
+    }
+    public function prepareDeleteByAct($actParticipantId){
+        $command = Yii::$app->db->createCommand();
+        $command->delete(ActParticipantBranchWork::tableName(), ['act_participant_id' => $actParticipantId]);
+        return $command->getRawSql();
     }
 }
