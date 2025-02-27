@@ -5,11 +5,14 @@ namespace frontend\services\educational;
 use common\components\compare\LessonGroupCompare;
 use common\components\compare\ParticipantGroupCompare;
 use common\components\traits\Math;
+use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\VisitRepository;
+use common\services\general\PeopleStampService;
 use frontend\models\work\educational\journal\VisitLesson;
 use frontend\models\work\educational\journal\VisitWork;
+use frontend\models\work\educational\training_group\LessonThemeWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use yii\helpers\ArrayHelper;
@@ -22,16 +25,22 @@ class JournalService
     private VisitRepository $visitRepository;
     private TrainingGroupLessonRepository $lessonRepository;
     private TrainingGroupParticipantRepository $participantRepository;
+    private LessonThemeRepository $lessonThemeRepository;
+    private PeopleStampService $peopleStampService;
 
     public function __construct(
         VisitRepository $visitRepository,
         TrainingGroupLessonRepository $lessonRepository,
-        TrainingGroupParticipantRepository $participantRepository
+        TrainingGroupParticipantRepository $participantRepository,
+        LessonThemeRepository $lessonThemeRepository,
+        PeopleStampService $peopleStampService
     )
     {
         $this->visitRepository = $visitRepository;
         $this->lessonRepository = $lessonRepository;
         $this->participantRepository = $participantRepository;
+        $this->lessonThemeRepository = $lessonThemeRepository;
+        $this->peopleStampService = $peopleStampService;
     }
 
     public function checkJournalStatus($groupId)
@@ -153,7 +162,7 @@ class JournalService
     public function setVisitStatusParticipant($trainingGroupParticipantId, array $statuses)
     {
         /** @var VisitWork $visit */
-        $visit = $this->visitRepository->getByTrainingGroupParticipants([$trainingGroupParticipantId]);
+        $visit = $this->visitRepository->getByTrainingGroupParticipant($trainingGroupParticipantId);
         $lessons = VisitLesson::fromString($visit->lessons);
         $lessonsString = $visit->lessons;
         if (VisitLesson::equalArrays($lessons, $statuses)) {
@@ -182,6 +191,40 @@ class JournalService
             });
             $visit->lessons = VisitLesson::toString($lessons);
             $this->visitRepository->save($visit);
+        }
+    }
+
+    /**
+     * @param int $trainingGroupParticipantId
+     * @param int|null $groupProjectThemeId
+     * @param int|null $points
+     * @param int|null $successFinishing
+     * @return int
+     */
+    public function setParticipantFinishData(
+        int $trainingGroupParticipantId,
+        ?int $groupProjectThemeId,
+        ?int $points,
+        ?int $successFinishing
+    ) : int
+    {
+        /** @var TrainingGroupParticipantWork $participant */
+        $participant = $this->participantRepository->get($trainingGroupParticipantId);
+        $participant->group_project_themes_id = $groupProjectThemeId;
+        $participant->points = $points;
+        $participant->success = $successFinishing;
+        return $this->participantRepository->save($participant);
+    }
+
+    /**
+     * @param LessonThemeWork[] $lessonThemes
+     * @return void
+     */
+    public function saveThematicPlan(array $lessonThemes)
+    {
+        foreach ($lessonThemes as $lessonTheme) {
+            $lessonTheme->teacher_id = $this->peopleStampService->createStampFromPeople($lessonTheme->teacher_id);
+            $this->lessonThemeRepository->save($lessonTheme);
         }
     }
 }

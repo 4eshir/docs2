@@ -11,6 +11,10 @@ use yii\helpers\ArrayHelper;
 
 class ManHoursReportForm extends Model
 {
+    // Режим формирования отчета
+    const MODE_PURE = 1; // формирование только отчетных данных. работает быстро
+    const MODE_DEBUG = 2; // формирование отчетных данных вместе с подробным исходными данными. работает сильно медленнее MODE_PURE
+
     // Тип отчета
     const MAN_HOURS_REPORT = 1;
     // Типы отчетов по обучающимся
@@ -26,7 +30,6 @@ class ManHoursReportForm extends Model
     // Подтип отчета по человеко-часам
     const MAN_HOURS_FAIR = 1; // учитываем неявки
     const MAN_HOURS_ALL = 2; // игнорируем неявки
-
 
 
     private TeacherGroupRepository $teacherGroupRepository;
@@ -48,6 +51,7 @@ class ManHoursReportForm extends Model
     public $focus;
     public $allowRemote;
     public $method;
+    public $mode;
 
     /**
      * @var PeopleWork[] $teachers
@@ -82,7 +86,7 @@ class ManHoursReportForm extends Model
         return [
             [['startDate', 'endDate'], 'string'],
             [['type', 'branch', 'budget', 'focus', 'allowRemote'], 'safe'],
-            [['method', 'teacher', 'unic'], 'integer']
+            [['method', 'teacher', 'unic', 'mode'], 'integer']
         ];
     }
 
@@ -112,9 +116,18 @@ class ManHoursReportForm extends Model
     }
 
 
-    public function generateReport()
+    public function isManHours()
     {
+        return in_array(self::MAN_HOURS_REPORT, $this->type);
+    }
 
+    public function isParticipants()
+    {
+        return
+            in_array(self::PARTICIPANT_START_BEFORE_FINISH_IN, $this->type) ||
+            in_array(self::PARTICIPANT_START_IN_FINISH_AFTER, $this->type) ||
+            in_array(self::PARTICIPANT_START_IN_FINISH_IN, $this->type) ||
+            in_array(self::PARTICIPANT_START_BEFORE_FINISH_AFTER, $this->type);
     }
 
 

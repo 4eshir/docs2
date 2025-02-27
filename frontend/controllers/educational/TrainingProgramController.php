@@ -74,11 +74,15 @@ class TrainingProgramController extends DocumentController
     {
         $searchModel = new SearchTrainingProgram();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->pagination = false;
+        //$dataProvider->pagination = false;
+
+        $links = ButtonsFormatter::PrimaryCreateLink('программу');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml,
         ]);
     }
 
@@ -95,13 +99,10 @@ class TrainingProgramController extends DocumentController
 
         /** @var TrainingProgramWork $model */
         $model = $this->repository->get($id);
-        //$model->checkFilesExist();
-
-        $thematicPlan = $this->repository->getThematicPlan($id);
+        $model->checkFilesExist();
 
         return $this->render('view', [
             'model' => $model,
-            'thematicPlan' => $thematicPlan,
             'buttonsAct' => $buttonHtml,
         ]);
     }
@@ -157,6 +158,7 @@ class TrainingProgramController extends DocumentController
         if ($this->lockWizard->lockObject($id, TrainingProgramWork::tableName(), Yii::$app->user->id)) {
             /** @var TrainingProgramWork $model */
             $model = $this->repository->get($id);
+            $model->setBranches();
             $authors = $this->repository->getAuthors($id);
             $themes = $this->repository->getThematicPlan($id);
             $fileTables = $this->service->getUploadedFilesTables($model);

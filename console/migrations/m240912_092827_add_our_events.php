@@ -60,14 +60,14 @@ class m240912_092827_add_our_events extends Migration
             'RESTRICT',
         );
 
-        $this->addForeignKey(
+        /*$this->addForeignKey(
             'fk-event-3',
             'event',
             'order_id',
             'document_order',
             'id',
             'RESTRICT',
-        );
+        );*/
 
         $this->addForeignKey(
             'fk-event-4',
@@ -133,7 +133,7 @@ class m240912_092827_add_our_events extends Migration
 
         $this->dropForeignKey('fk-event-5', 'event');
         $this->dropForeignKey('fk-event-4', 'event');
-        $this->dropForeignKey('fk-event-3', 'event');
+        //$this->dropForeignKey('fk-event-3', 'event');
         $this->dropForeignKey('fk-event-2', 'event');
         $this->dropForeignKey('fk-event-1', 'event');
 

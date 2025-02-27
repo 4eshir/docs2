@@ -2,7 +2,15 @@
 
 namespace backend\controllers;
 
+use backend\forms\report\ManHoursReportForm;
+use backend\helpers\DebugReportHelper;
+use backend\services\report\ReportManHoursService;
+use common\components\dictionaries\base\BranchDictionary;
+use common\helpers\creators\ExcelCreator;
 use common\models\LoginForm;
+use frontend\helpers\HeaderWizard;
+use Hidehalo\Nanoid\Client;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -14,34 +22,6 @@ use yii\web\Response;
  */
 class SiteController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'rules' => [
-                    [
-                        'actions' => ['login', 'error'],
-                        'allow' => true,
-                    ],
-                    [
-                        'actions' => ['logout', 'index'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
-    }
 
     /**
      * {@inheritdoc}
@@ -105,5 +85,33 @@ class SiteController extends Controller
         Yii::$app->user->logout();
 
         return $this->goHome();
+    }
+
+    public function actionTest()
+    {
+        $service = Yii::createObject(ReportManHoursService::class);
+        $res = $service->calculateManHours(
+            '2025-01-01',
+            '2025-02-02',
+            [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM],
+            [1, 2, 3, 4, 5],
+            [1, 2],
+            [0, 1],
+            ManHoursReportForm::MAN_HOURS_FAIR,
+            []
+        );
+
+        HeaderWizard::setCsvLoadHeaders((Yii::createObject(Client::class))->generateId(10) . '.csv');
+
+        $writer = new Csv(
+            ExcelCreator::createCsvFile(
+                $res["debugData"],
+                DebugReportHelper::getManHoursReportHeaders()
+            )
+        );
+        $writer->setDelimiter(';');
+        $writer->setOutputEncoding('windows-1251');
+        $writer->save('php://output');
+        exit;
     }
 }

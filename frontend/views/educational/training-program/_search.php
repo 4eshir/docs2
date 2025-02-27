@@ -1,42 +1,36 @@
 <?php
 
-use yii\helpers\Html;
+use common\helpers\html\HtmlBuilder;
+use common\helpers\search\SearchFieldHelper;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use yii\widgets\ActiveForm;
 
-/* @var $this yii\web\View */
-/* @var $model app\models\SearchTrainingProgram */
-/* @var $form yii\widgets\ActiveForm */
+/* @var $searchModel \frontend\models\search\SearchTrainingProgram */
+
 ?>
 
 <div class="training-program-search">
 
     <?php $form = ActiveForm::begin([
-        'action' => ['index'],
-        'method' => 'get',
+        'action' => ['index'], // Действие контроллера для обработки поиска
+        'method' => 'get', // Метод GET для передачи параметров в URL
+        'options' => ['data-pjax' => true], // Для использования Pjax
     ]); ?>
 
     <?php
-    $branch = \app\models\work\BranchWork::find()->all();
-    $items = \yii\helpers\ArrayHelper::map($branch,'id','name');
-    $params = [
-        'prompt' => ''
-    ];
-    echo $form->field($model, 'branchSearch')->dropDownList($items, $params)->label('Отдел');
-    ?>
+    $searchFields = array_merge(
+        SearchFieldHelper::dateField('startDateSearch', 'Дата пед.совета с', 'Дата пед.совета с'),
+        SearchFieldHelper::dateField('finishDateSearch', 'Дата пед.совета по', 'Дата пед.совета по'),
+        SearchFieldHelper::dropdownField('branchSearch', 'Место реализации', Yii::$app->branches->getOnlyEducational(), 'Место реализации'),
+        SearchFieldHelper::textField('programName', 'Наименование программы', 'Наименование программы'),
+        SearchFieldHelper::textField('authorSearch', 'Составитель', 'Составитель'),
+        SearchFieldHelper::dropdownField('levelSearch', 'Уровень сложности', TrainingProgramWork::LEVEL_LIST, 'Уровень сложности'),
+        SearchFieldHelper::dropdownField('focusSearch', 'Направленность', Yii::$app->focus->getList(), 'Направленность'),
+        SearchFieldHelper::dropdownField('allowSearch', 'Форма реализации', Yii::$app->allowRemote->getList(), 'Форма реализации'),
+        SearchFieldHelper::dropdownField('actual', 'Актуальность', $searchModel::ACTUAL, 'Актуальность', 1),
+    );
 
-    <?php
-    $people = \app\models\work\PeopleWork::find()->where(['company_id' => 8])->all();
-    $items = \yii\helpers\ArrayHelper::map($people,'id','fullName');
-    $params = [
-        'prompt' => ''
-    ];
-    echo $form->field($model, 'authorSearch')->dropDownList($items, $params)->label('Педагог');
-    ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Найти', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Сбросить фильтры', ['class' => 'btn btn-outline-secondary']) ?>
-    </div>
+    echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::PROGRAM_INDEX); ?>
 
     <?php ActiveForm::end(); ?>
 

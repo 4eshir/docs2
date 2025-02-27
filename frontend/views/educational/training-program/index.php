@@ -1,14 +1,16 @@
 <?php
 
+use app\components\VerticalActionColumn;
+use common\helpers\html\HtmlCreator;
 use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
-use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\search\SearchTrainingProgram */
 /* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $buttonsAct */
 
 $this->title = 'Образовательные программы';
 $this->params['breadcrumbs'][] = $this->title;
@@ -35,78 +37,81 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="training-program-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="substrate">
+        <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Добавить программу', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+        <div class="flexx space">
+            <div class="flexx">
+                <?= $buttonsAct; ?>
 
-    <div style="margin: 0 118%;">
-        <div class="" data-html="true" style="position: fixed; z-index: 101; width: 30px; height: 30px; padding: 5px 0 0 0; background: #09ab3f; color: white; text-align: center; display: inline-block; border-radius: 4px;" title="Зеленый цвет - образовательная программа актуальная и не имеет ошибок&#10Желтый цвет - образовательная программа имеет ошибку&#10Белый цвет - образовательная программа не актуальная и не имеет ошибок">❔</div>
+                <div class="export-menu">
+                    <?php
+
+                    $gridColumns = [
+                        'actualExport',
+                        'name',
+                        ['attribute' => 'level', 'label' => 'Ур. сложности','value' => function ($model) {return $model->level+1;}],
+                        ['attribute' => 'branchs', 'label' => 'Место реализации', 'format' => 'html'],
+                        ['attribute' => 'ped_council_date', 'label' => 'Дата пед. сов.'],
+                        ['attribute' => 'ped_council_number', 'label' => '№ пед. сов.'],
+                        ['attribute' => 'compilers', 'format' => 'html'],
+                        'capacity',
+                        'studentAge',
+                        'stringFocus',
+                        ['attribute' => 'allowRemote', 'label' => 'Форма реализации'],
+
+                    ];
+                    echo ExportMenu::widget([
+                        'dataProvider' => $dataProvider,
+                        'columns' => $gridColumns,
+
+                        'options' => [
+                            'padding-bottom: 100px',
+                        ],
+                    ]);
+
+                    ?>
+                </div>
+            </div>
+
+            <?= HtmlCreator::filterToggle() ?>
+        </div>
     </div>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?= $this->render('_search', ['searchModel' => $searchModel]) ?>
 
-    <?php
-
-    $gridColumns = [
-        'actualExport',
-        'name',
-        ['attribute' => 'level', 'label' => 'Ур. сложности','value' => function ($model) {return $model->level+1;}],
-        ['attribute' => 'branchs', 'label' => 'Место реализации', 'format' => 'html'],
-        ['attribute' => 'ped_council_date', 'label' => 'Дата пед. сов.'],
-        ['attribute' => 'ped_council_number', 'label' => '№ пед. сов.'],
-        ['attribute' => 'compilers', 'format' => 'html'],
-        'capacity',
-        'studentAge',
-        'stringFocus',
-        ['attribute' => 'allowRemote', 'label' => 'Форма реализации'],
-
-    ];
-    echo '<b>Скачать файл </b>';
-    echo ExportMenu::widget([
-        'dataProvider' => $dataProvider,
-        'columns' => $gridColumns,
-        'options' => [
-            'padding-bottom: 100px',
-        ]
-    ]);
-
-    ?>
     <div style="margin-bottom: 10px">
 
-    <?php
-
-    echo GridView::widget([
+    <?= GridView::widget([
         'id'=>'grid',
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        'summary' => false,
         'columns' => [
-            ['class' => 'yii\grid\CheckboxColumn', 'header' => 'Акт.',
+            /*['class' => 'yii\grid\CheckboxColumn', 'header' => 'Акт.',
                 'checkboxOptions' => function ($model, $key, $index, $column) {
                     $options['checked'] = (bool)$model->actual;
                     $options['class'] = 'check';
                     return $options;
-                }],
-            'name',//'nameX',
-            ['attribute' => 'level', 'label' => 'Ур. сложности','value' => function ($model) {return $model->level+1;}],
-            ['attribute' => 'branchs', 'label' => 'Место реализации', 'format' => 'html'],
-            ['attribute' => 'ped_council_date', 'label' => 'Дата пед. сов.'],
-            ['attribute' => 'ped_council_number', 'label' => '№ пед. сов.'],
-            ['attribute' => 'compilers', 'format' => 'html'],
-            'capacity',
-            'studentAge',
-            'stringFocus',
-            ['attribute' => 'allowRemote', 'label' => 'Форма реализации'],
+                }],*/
+            ['attribute' => 'name'],
+            ['attribute' => 'levelNumber', 'encodeLabel' => false, 'format' => 'raw'],
+            ['attribute' => 'branchString', 'encodeLabel' => false, 'format' => 'raw'],
+            ['attribute' => 'pedCouncilDate', 'encodeLabel' => false, 'label' => 'Дата<br>пед. сов.'],
+            ['attribute' => 'authorString', 'format' => 'html'],
+            ['attribute' => 'capacity'],
+            ['attribute' => 'agePeriod', 'encodeLabel' => false],
+            ['attribute' => 'focusString'],
+            ['attribute' => 'allowRemote', 'encodeLabel' => false, 'label' => 'Форма<br>реализации'],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => VerticalActionColumn::class],
         ],
+        'rowOptions' => function ($model) {
+            return ['data-href' => Url::to([Yii::$app->frontUrls::PROGRAM_VIEW, 'id' => $model->id])];
+        },
     ]); ?>
 
     <div class="form-group">
-        <!--<a class="btn btn-danger" href="/index.php?r=training-group%2Findex&archive=">Сохранить архив</a>-->
         <?php echo Html::button('Сохранить статус программ', ['class' => 'btn btn-success', 'onclick' => 'archive()']) ?>
-        <?php //echo Html::submitButton('Сохранить архив', ['class' => 'btn btn-success']) ?>
     </div>
 
 </div>
@@ -124,4 +129,10 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         });
     }", yii\web\View::POS_END);
+    ?>
+
+    <?php
+    $this->registerJs(<<<JS
+            let totalPages = "{$dataProvider->pagination->pageCount}"; 
+        JS, $this::POS_HEAD);
     ?>

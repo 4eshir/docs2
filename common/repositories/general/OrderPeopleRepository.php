@@ -44,4 +44,9 @@ class OrderPeopleRepository
         $command->delete($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
+    public function prepareDeleteById($id){
+        $command = Yii::$app->db->createCommand();
+        $command->delete(OrderPeopleWork::tableName(), ['id' => $id]);
+        return $command->getRawSql();
+    }
 }

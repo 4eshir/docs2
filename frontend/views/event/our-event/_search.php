@@ -1,11 +1,10 @@
 <?php
 
-
-/* @var $searchModel \frontend\models\search\SearchEvent */
-
 use common\helpers\html\HtmlBuilder;
 use common\helpers\search\SearchFieldHelper;
 use yii\widgets\ActiveForm;
+
+/* @var $searchModel \frontend\models\search\SearchEvent */
 
 ?>
 

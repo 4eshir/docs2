@@ -2,12 +2,13 @@
 
 namespace frontend\models\work\order;
 
+use common\events\EventTrait;
 use common\models\scaffold\Expire;
 use frontend\models\work\regulation\RegulationWork;
 
 class ExpireWork extends Expire
 {
-
+    use EventTrait;
     public static function fill(
         $active_regulation_id,
         $expire_regulation_id,

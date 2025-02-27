@@ -43,7 +43,104 @@ class DeleteTableController extends Controller
     public function actionDeleteRussianNames(){
         Yii::$app->db->createCommand()->delete('russian_names')->execute();
     }
-    public function actionDeleteAll()
+    public function actionDeleteCompany(){
+        Yii::$app->db->createCommand()->delete('company')->execute();
+    }
+    public function actionDeletePeople(){
+        Yii::$app->db->createCommand()->delete('people')->execute();
+    }
+    public function deletePeopleStamp()
+    {
+        Yii::$app->db->createCommand()->delete('people_stamp')->execute();
+    }
+    public function actionDeleteUser(){
+        Yii::$app->db->createCommand()->delete('user')->execute();
+    }
+    public function actionDeleteDocumentIn(){
+        Yii::$app->db->createCommand()->delete('document_in')->execute();
+    }
+    public function actionDeleteDocumentOut(){
+        Yii::$app->db->createCommand()->delete('document_out')->execute();
+    }
+    public function actionDeleteInOutDocuments(){
+        Yii::$app->db->createCommand()->delete('in_out_documents')->execute();
+    }
+    public function actionDeleteFiles()
+    {
+        Yii::$app->db->createCommand()->delete('files')->execute();
+    }
+    public function actionDeletePeoplePositionCompanyBranch(){
+        Yii::$app->db->createCommand()->delete('people_position_company_branch')->execute();
+    }
+    public function actionDeleteRegulation(){
+        Yii::$app->db->createCommand()->delete('regulation')->execute();
+    }
+    public function actionDeletePersonalData(){
+        Yii::$app->db->createCommand()->delete('personal_data_participant')->execute();
+    }
+    public function actionDeleteEvent(){
+        Yii::$app->db->createCommand()->delete('event')->execute();
+    }
+    public function actionDeleteEventBranch(){
+        Yii::$app->db->createCommand()->delete('event_branch')->execute();
+    }
+    public function actionDeleteEventScope(){
+        Yii::$app->db->createCommand()->delete('event_scope')->execute();
+    }
+    public function actionDeleteTrainingProgram(){
+        Yii::$app->db->createCommand()->delete('training_program')->execute();
+    }
+    public function actionDeleteThematicPlan(){
+        Yii::$app->db->createCommand()->delete('thematic_plan')->execute();
+    }
+    public function actionDeleteBranchProgram()
+    {
+        Yii::$app->db->createCommand()->delete('branch_program')->execute();
+    }
+    public function actionDeleteAuthorProgram()
+    {
+        Yii::$app->db->createCommand()->delete('author_program')->execute();
+    }
+    public function actionDeleteForeignEvent()
+    {
+        Yii::$app->db->createCommand()->delete('foreign_event')->execute();
+    }
+    public function actionDeleteDocumentOrder()
+    {
+        Yii::$app->db->createCommand()->delete('document_order')->execute();
+    }
+    public function actionDeleteDocumentOrderSupplement()
+    {
+        Yii::$app->db->createCommand()->delete('document_order_supplement')->execute();
+    }
+    public function actionDeleteAuditorium()
+    {
+        Yii::$app->db->createCommand()->delete('auditorium')->execute();
+    }
+    public function actionDeleteLocalResponsibility()
+    {
+        Yii::$app->db->createCommand()->delete('local_responsibility')->execute();
+    }
+    public function actionDeleteLegacyResponsible(){
+        Yii::$app->db->createCommand()->delete('legacy_responsible')->execute();
+    }
+    public function actionDeleteTeamName()
+    {
+        Yii::$app->db->createCommand()->delete('team_name')->execute();
+    }
+    public function actionDeleteActParticipant()
+    {
+        Yii::$app->db->createCommand()->delete('act_participant')->execute();
+    }
+    public function actionDeleteSquadParticipant()
+    {
+        Yii::$app->db->createCommand()->delete('squad_participant')->execute();
+    }
+    public function actionDeleteActParticipantBranch()
+    {
+        Yii::$app->db->createCommand()->delete('act_participant_branch')->execute();
+    }
+    public function actionDeleteInitCopy()
     {
         $this->actionDeleteBotMessage();
         $this->actionDeleteCertificateTemplates();
@@ -57,5 +154,63 @@ class DeleteTableController extends Controller
         $this->actionDeleteProductUnion();
         $this->actionDeleteProjectTheme();
         $this->actionDeleteRussianNames();
+    }
+    public function actionDeleteDocumentOrderCopy()
+    {
+        $this->actionDeleteDocumentOrder();
+        $this->actionDeleteDocumentOrderSupplement();
+    }
+    public function actionDeleteDocumentInOutCopy()
+    {
+        $this->actionDeleteFiles();
+        $this->actionDeleteInOutDocuments();
+        $this->actionDeleteDocumentIn();
+        $this->actionDeleteDocumentOut();
+        $this->deletePeopleStamp();
+        $this->actionDeleteUser();
+        $this->actionDeletePeople();
+        $this->actionDeleteCompany();
+    }
+    public function actionDeleteEventCopy()
+    {
+
+        $this->actionDeleteEventScope();
+        $this->actionDeleteEventBranch();
+        $this->actionDeleteEvent();
+    }
+    public function actionDeleteTrainingProgramCopy()
+    {
+        $this->actionDeleteAuthorProgram();
+        $this->actionDeleteBranchProgram();
+        $this->actionDeleteThematicPlan();
+        $this->actionDeleteTrainingProgram();
+    }
+    public function actionDeleteLocalResponsibilityCopy()
+    {
+
+        $this->actionDeleteLocalResponsibility();
+        $this->actionDeleteLegacyResponsible();
+        $this->actionDeleteAuditorium();
+    }
+    public function actionDeleteActCopy()
+    {
+        $this->actionDeleteActParticipantBranch();
+        $this->actionDeleteSquadParticipant();
+        $this->actionDeleteActParticipant();
+        $this->actionDeleteTeamName();
+    }
+    public function actionDeleteAll()
+    {
+        $this->actionDeleteActCopy();
+        $this->actionDeleteForeignEvent();
+        $this->actionDeleteLocalResponsibilityCopy();
+        $this->actionDeleteDocumentOrderCopy();
+        $this->actionDeleteTrainingProgramCopy();
+        $this->actionDeleteEventCopy();
+        $this->actionDeletePersonalData();
+        $this->actionDeleteRegulation();
+        $this->actionDeletePeoplePositionCompanyBranch();
+        $this->actionDeleteDocumentInOutCopy();
+        $this->actionDeleteInitCopy();
     }
 }

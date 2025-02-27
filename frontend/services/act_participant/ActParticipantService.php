@@ -74,14 +74,14 @@ class ActParticipantService
                 $filename,
                 [
                     'tableName' => ActParticipantWork::tableName(),
-                    'fileType' => FilesHelper::TYPE_SCAN
+                    'fileType' => FilesHelper::TYPE_MATERIAL
                 ]
             );
             $model->recordEvent(
                 new FileCreateEvent(
                     $model::tableName(),
                     $model->id,
-                    FilesHelper::TYPE_SCAN,
+                    FilesHelper::TYPE_MATERIAL,
                     $filename,
                     FilesHelper::LOAD_TYPE_SINGLE
                 ),

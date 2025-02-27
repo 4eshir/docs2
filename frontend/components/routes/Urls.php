@@ -22,6 +22,11 @@ class Urls
     const OUR_EVENT_INDEX = "event/our-event/index";
     const OUR_EVENT_VIEW = "event/our-event/view";
 
+    CONST PROGRAM_INDEX = "educational/training-program/index";
+    const PROGRAM_VIEW = "educational/training-program/view";
+
+    const PEOPLE_VIEW = "dictionaries/people/view";
+
     const ORDER_MAIN_VIEW = "order/order-main/view";
     const TRAINING_GROUP_VIEW = "educational/training-group/view";
 }

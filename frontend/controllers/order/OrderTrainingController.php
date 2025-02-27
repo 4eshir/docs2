@@ -3,9 +3,11 @@
 namespace frontend\controllers\order;
 
 use app\components\DynamicWidget;
+use app\events\document_order\DocumentOrderDeleteEvent;
 use app\models\forms\OrderTrainingForm;
 use common\components\traits\AccessControl;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\order\DocumentOrderRepository;
 use frontend\components\GroupParticipantWidget;
 use frontend\models\search\SearchOrderTraining;
 use frontend\models\work\order\DocumentOrderWork;
@@ -43,6 +45,7 @@ class OrderTrainingController extends DocumentController
     private LockWizard $lockWizard;
     private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
     private PeopleRepository $peopleRepository;
+    private DocumentOrderRepository $documentOrderRepository;
 
     public function __construct(
         $id,
@@ -56,7 +59,7 @@ class OrderTrainingController extends DocumentController
         TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
         PeopleRepository $peopleRepository,
         LockWizard $lockWizard,
-
+        DocumentOrderRepository $documentOrderRepository,
         FileService $fileService,
         FilesRepository $filesRepository,
         $config = []
@@ -71,6 +74,7 @@ class OrderTrainingController extends DocumentController
         $this->peopleRepository = $peopleRepository;
         $this->lockWizard = $lockWizard;
         $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
+        $this->documentOrderRepository = $documentOrderRepository;
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
     }
     public function actionIndex(){
@@ -196,6 +200,12 @@ class OrderTrainingController extends DocumentController
             ('error', "Объект редактируется пользователем {$this->lockWizard->getUserdata($id, DocumentOrderWork::tableName())}. Попробуйте повторить попытку позднее");
             return $this->redirect(Yii::$app->request->referrer ?: ['index']);
         }
+    }
+    public function actionDelete($id){
+        $model = $this->documentOrderRepository->get($id);
+        $this->documentOrderService->documentOrderDelete($model);
+        $model->releaseEvents();
+        return $this->redirect(['index']);
     }
     public function actionGetListByBranch()
     {

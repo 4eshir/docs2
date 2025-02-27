@@ -25,4 +25,10 @@ class TeamRepository
         $model->save();
         return $model->id;
     }
+    public function prepareTeamNameDelete($id){
+        $command = Yii::$app->db->createCommand();
+        $command->delete(TeamNameWork::tableName(), ['id' => $id]);
+        return $command->getRawSql();
+    }
+
 }

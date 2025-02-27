@@ -298,33 +298,4 @@ class SearchEvent extends Model implements SearchInterfaces
             ]);
         }
     }
-
-    function calculateTotalPrice($productPrices) {
-        $total = 0;
-        foreach ($productPrices as $price) {
-            $total += $price;
-        }
-        return $total;
-    }
-
-    function calculateDiscountedTotalPrice($discount, $productPrices) {
-        $discountedTotal = 0;
-        foreach ($productPrices as $price) {
-            $discountedTotal += $price * (1 - $discount);
-        }
-        return $discountedTotal;
-    }
-
-    function applyShippingCost($totalPrice, $shippingCost) {
-        return $totalPrice + $shippingCost;
-    }
-
-    function getFinalPrice($productPrices, $discount, $shippingCost) {
-        $totalPrice = calculateTotalPrice($productPrices);
-        if ($discount > 0) {
-            $totalPrice = calculateDiscountedTotalPrice($discount, $productPrices);
-        }
-        $finalPrice = applyShippingCost($totalPrice, $shippingCost);
-        return $finalPrice;
-    }
 }

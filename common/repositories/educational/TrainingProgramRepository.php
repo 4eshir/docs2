@@ -12,6 +12,7 @@ use frontend\events\educational\training_program\DeleteAuthorsEvent;
 use frontend\events\educational\training_program\DeleteTrainingProgramBranchEvent;
 use frontend\events\educational\training_program\ResetThematicPlanEvent;
 use frontend\events\general\FileDeleteEvent;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\educational\training_program\AuthorProgramWork;
 use frontend\models\work\educational\training_program\BranchProgramWork;
 use frontend\models\work\educational\training_program\ThematicPlanWork;
@@ -194,5 +195,10 @@ class TrainingProgramRepository
     public function deleteAuthor($id)
     {
         return (AuthorProgramWork::find()->where(['id' => $id])->one())->delete();
+    }
+
+    public function getTrainingGroups($programId)
+    {
+        return TrainingGroupWork::find()->where(['training_program_id' => $programId])->all();
     }
 }

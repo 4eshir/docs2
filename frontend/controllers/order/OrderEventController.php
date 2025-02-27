@@ -3,6 +3,10 @@
 namespace frontend\controllers\order;
 
 use app\components\DynamicWidget;
+use app\events\act_participant\ActParticipantBranchDeleteEvent;
+use app\events\act_participant\ActParticipantDeleteEvent;
+use app\events\act_participant\SquadParticipantDeleteByIdEvent;
+use app\events\document_order\DocumentOrderDeleteEvent;
 use app\models\forms\OrderEventBuilderForm;
 use app\models\work\order\OrderEventGenerateWork;
 use app\services\order\OrderEventGenerateService;
@@ -10,7 +14,9 @@ use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\traits\AccessControl;
 use common\models\scaffold\OrderEventGenerate;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\order\DocumentOrderRepository;
 use common\repositories\order\OrderEventGenerateRepository;
+use frontend\events\general\FileDeleteEvent;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderEventWork;
@@ -61,6 +67,7 @@ class OrderEventController extends DocumentController
     private OrderEventGenerateRepository $orderEventGenerateRepository;
     private OrderEventGenerateService $orderEventGenerateService;
     private TeamService $teamService;
+    private DocumentOrderRepository $documentOrderRepository;
 
     public function __construct(
         $id, $module,
@@ -83,6 +90,7 @@ class OrderEventController extends DocumentController
         LockWizard $lockWizard,
         OrderEventGenerateRepository $orderEventGenerateRepository,
         OrderEventGenerateService $orderEventGenerateService,
+        DocumentOrderRepository $documentOrderRepository,
         $config = []
     )
     {
@@ -103,6 +111,7 @@ class OrderEventController extends DocumentController
         $this->orderEventGenerateRepository = $orderEventGenerateRepository;
         $this->orderEventGenerateService = $orderEventGenerateService;
         $this->teamService = $teamService;
+        $this->documentOrderRepository = $documentOrderRepository;
         parent::__construct($id, $module, $fileService, $fileRepository, $config);
     }
     public function actionIndex() {
@@ -400,10 +409,24 @@ class OrderEventController extends DocumentController
         $model = $this->actParticipantRepository->get($id);
         $foreignEvent = $this->foreignEventRepository->get($model->foreign_event_id);
         $order = $this->orderEventRepository->get($foreignEvent->order_participant_id);
-        $this->actParticipantRepository->delete($model);
+        $files = $this->filesRepository->getByDocument(ActParticipantWork::tableName(), $model->id);
+        foreach ($files as $file) {
+            $model->recordEvent(new FileDeleteEvent($file->id), DocumentOrderWork::class);
+        }
+        //act_participant_branch
+        $model->recordEvent(new ActParticipantBranchDeleteEvent($model->id), DocumentOrderWork::class);
+        //squad_participant
+        $model->recordEvent(new SquadParticipantDeleteByIdEvent($model->id), DocumentOrderWork::class);
+        //act_participant
+        $model->recordEvent(new ActParticipantDeleteEvent($model->id), DocumentOrderWork::class);
         return $this->redirect(['update', 'id' => $order->id]);
     }
-
+    public function actionDelete($id){
+        $model = $this->documentOrderRepository->get($id);
+        $this->documentOrderService->documentOrderDelete($model);
+        $model->releaseEvents();
+        return $this->redirect(['index']);
+    }
     public function beforeAction($action)
     {
         $result = $this->checkActionAccess($action);

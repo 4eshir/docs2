@@ -114,6 +114,10 @@ class EventWork extends Event
             'key_words' => 'Ключевые слова',
             'keyWords' => 'Ключевые слова',
             'comment' => 'Примечание',
+            'protocolFiles' => 'Протокол мероприятия',
+            'photoFiles' => 'Фотоматериалы',
+            'reportingFiles' => 'Явочные документы',
+            'otherFiles' => 'Другие файлы',
         ]);
     }
 
@@ -267,7 +271,7 @@ class EventWork extends Event
         $regulation = (Yii::createObject(RegulationRepository::class))->get($this->regulation_id);
 
         return $regulation ?
-            StringFormatter::stringAsLink("Положение '$regulation->name'", Url::to(['regulation/regulation/view', 'id' => $regulation->id])) :
+            StringFormatter::stringAsLink("Положение '$regulation->name'", Url::to([Yii::$app->frontUrls::REG_VIEW, 'id' => $regulation->id])) :
             'Нет';
     }
 
@@ -275,10 +279,14 @@ class EventWork extends Event
     {
         $resbonsibles = [];
         if ($this->responsible1_id) {
-            $resbonsibles[] = StringFormatter::stringAsLink($this->responsible1Work->peopleWork->getFio(PeopleWork::FIO_SURNAME_INITIALS), Url::to(['dictionaries/people/view', 'id' => $this->responsible1Work->people_id]));
+            $resbonsibles[] = StringFormatter::stringAsLink(
+                    $this->responsible1Work->peopleWork->getFio(PeopleWork::FIO_SURNAME_INITIALS),
+                    Url::to([Yii::$app->frontUrls::PEOPLE_VIEW, 'id' => $this->responsible1Work->people_id]));
         }
         if ($this->responsible2_id) {
-            $resbonsibles[] = StringFormatter::stringAsLink($this->responsible2Work->peopleWork->getFio(PeopleWork::FIO_SURNAME_INITIALS), Url::to(['dictionaries/people/view', 'id' => $this->responsible2Work->people_id]));
+            $resbonsibles[] = StringFormatter::stringAsLink(
+                    $this->responsible2Work->peopleWork->getFio(PeopleWork::FIO_SURNAME_INITIALS),
+                    Url::to([Yii::$app->frontUrls::PEOPLE_VIEW, 'id' => $this->responsible2Work->people_id]));
         }
 
         return implode('<br>', $resbonsibles);

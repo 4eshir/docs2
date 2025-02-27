@@ -2,7 +2,7 @@
 
 namespace common\repositories\providers\group_project_themes;
 
-use frontend\models\work\educational\training_group\GroupProjectsThemesWork;
+use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 
 class GroupProjectThemesMockProvider implements GroupProjectThemesProviderInterface
 {
@@ -25,7 +25,7 @@ class GroupProjectThemesMockProvider implements GroupProjectThemesProviderInterf
         });
     }
 
-    public function save(GroupProjectsThemesWork $model)
+    public function save(GroupProjectThemesWork $model)
     {
         $model->id = count($this->data);
         $this->data[] = $model;

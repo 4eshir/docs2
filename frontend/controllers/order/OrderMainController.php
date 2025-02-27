@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\order;
 
+use app\events\document_order\DocumentOrderDeleteEvent;
 use app\models\forms\OrderMainForm;
 use common\components\traits\AccessControl;
 use common\repositories\dictionaries\PeopleRepository;
@@ -106,7 +107,7 @@ class OrderMainController extends DocumentController
         if ($form->entity->load($post)) {
             $this->documentOrderService->getPeopleStamps($form->entity);
             if (!$form->entity->validate()) {
-                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($form->entity->getErrors()));
             }
 
             $form->entity->generateOrderNumber();
@@ -146,7 +147,7 @@ class OrderMainController extends DocumentController
                 $this->lockWizard->unlockObject($id, DocumentOrder::tableName());
                 $this->documentOrderService->getPeopleStamps($form->entity);
                 if (!$form->entity->validate()) {
-                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+                    throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($form->entity->getErrors()));
                 }
                 $this->repository->save($form->entity);
                 $this->documentOrderService->getFilesInstances($form->entity);
@@ -175,16 +176,10 @@ class OrderMainController extends DocumentController
         }
     }
     public function actionDelete($id){
-        $model = $this->repository->get($id);
-        $number = $model->order_number;
-        if ($model) {
-            $this->repository->delete($model);
-            Yii::$app->session->setFlash('success', "Документ $number успешно удален");
-            return $this->redirect(['index']);
-        }
-        else {
-            throw new DomainException('Модель не найдена');
-        }
+        $model = $this->documentOrderRepository->get($id);
+        $this->documentOrderService->documentOrderDelete($model);
+        $model->releaseEvents();
+        return $this->redirect(['index']);
     }
     public function actionView($id){
         $modelResponsiblePeople = implode('<br>',

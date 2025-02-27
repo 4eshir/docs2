@@ -88,7 +88,13 @@ class FilesRepository
 
         return $command->getRawSql();
     }
-
+    public function getByDocument($tableName, $tableRowId)
+    {
+        return FilesWork::find()
+            ->where(['table_name' => $tableName])
+            ->andWhere(['table_row_id' => $tableRowId])
+            ->all();
+    }
     public function save(FilesWork $file)
     {
         if (!$file->save()) {
