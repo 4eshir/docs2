@@ -20,7 +20,7 @@ use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
-/** @property PeopleStampWork $authorWork */
+/** @property AuthorProgramWork $authorsProgramWork */
 
 class TrainingProgramWork extends TrainingProgram
 {
@@ -113,11 +113,6 @@ class TrainingProgramWork extends TrainingProgram
                 },
             ],
         ];
-    }
-
-    public function getAuthorWork()
-    {
-        return $this->hasOne(PeopleStampWork::class, ['id' => 'author_id']);
     }
 
     public function beforeSave($insert)
@@ -358,5 +353,10 @@ class TrainingProgramWork extends TrainingProgram
     public function getLastEditorWork()
     {
         return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
+    }
+
+    public function getAuthorsProgramWork()
+    {
+        return $this->hasMany(AuthorProgramWork::class, ['training_program_id' => 'id']);
     }
 }

@@ -56,7 +56,7 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
         $this->focusSearch = $focusSearch;
         $this->allowSearch = $allowSearch;
         $this->levelSearch = $levelSearch;
-        $this->actual = $actual == null ? 1 : $actual;
+        $this->actual = $actual == SearchFieldHelper::EMPTY_FIELD ? 1 : $actual;
     }
 
     /**
@@ -89,8 +89,10 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
 
         $query = TrainingProgramWork::find()
             ->joinWith([
-                'author',
-                'author.people' => function ($query) {
+                'authorsProgramWork' => function ($query) {
+                    $query->alias('author');
+                },
+                'authorsProgramWork.author' => function ($query) {
                     $query->alias('authorPeople');
                 },
                 'branch' => function ($query) {
@@ -226,11 +228,9 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
      * @return void
      */
     private function filterAuthor(ActiveQuery $query) {
-        //var_dump($this->authorSearch);
         if (!empty($this->authorSearch)) {
             $query->andFilterWhere(['like', 'LOWER(authorPeople.surname)', mb_strtolower($this->authorSearch)]);
         }
-        //var_dump($query->createCommand()->getRawSql());die();
     }
 
     /**

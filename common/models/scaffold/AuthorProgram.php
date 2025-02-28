@@ -9,7 +9,7 @@ namespace common\models\scaffold;
  * @property int|null $author_id
  * @property int|null $training_program_id
  *
- * @property People $author
+ * @property PeopleStamp $author
  * @property TrainingProgram $trainingProgram
  */
 class AuthorProgram extends \yii\db\ActiveRecord
@@ -53,7 +53,7 @@ class AuthorProgram extends \yii\db\ActiveRecord
      */
     public function getAuthor()
     {
-        return $this->hasOne(People::class, ['id' => 'author_id']);
+        return $this->hasOne(PeopleStamp::class, ['id' => 'author_id']);
     }
 
     /**

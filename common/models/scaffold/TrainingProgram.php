@@ -97,7 +97,7 @@ class TrainingProgram extends \yii\db\ActiveRecord
      */
     public function getAuthor()
     {
-        return $this->hasOne(PeopleStamp::class, ['id' => 'author_id']);
+        return $this->hasOne(AuthorProgram::class, ['id' => 'author_id']);
     }
 
     /**

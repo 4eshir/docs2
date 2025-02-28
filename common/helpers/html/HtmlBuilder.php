@@ -133,7 +133,7 @@ class HtmlBuilder
 
     /**
      * Создает панель фильтров на _search страницах. Обязательно наличие HtmlCreator::filterToggle() на странице отображения (index)
-     * @param Model $searchModel
+     * @param object $searchModel
      * @param array $searchFields
      * @param ActiveForm $form
      * @param int $valueInRow   // количество элементов поиска в строке
@@ -141,7 +141,7 @@ class HtmlBuilder
      * @return string
      * @throws \Exception
      */
-    public static function createFilterPanel(Model $searchModel, array $searchFields, ActiveForm $form, int $valueInRow, string $resetUrl)
+    public static function createFilterPanel(object $searchModel, array $searchFields, ActiveForm $form, int $valueInRow, string $resetUrl)
     {
         $result = '<div class="filter-panel" id="filterPanel">
                         '.HtmlCreator::filterHeaderForm().'
