@@ -8,10 +8,12 @@ use app\events\act_participant\SquadParticipantDeleteByIdEvent;
 use app\events\document_order\DocumentOrderDeleteEvent;
 use app\events\document_order\OrderEventGenerateDeleteEvent;
 use app\events\educational\training_group\OrderTrainingGroupParticipantByIdDeleteEvent;
+use app\events\educational\training_group\UpdateStatusTrainingGroupParticipantEvent;
 use app\events\expire\ExpireDeleteEvent;
 use app\events\foreign_event\ForeignEventDeleteEvent;
 use app\events\general\OrderPeopleDeleteByIdEvent;
 use app\events\team\TeamNameDeleteEvent;
+use common\components\dictionaries\base\NomenclatureDictionary;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\educational\OrderTrainingGroupParticipantRepository;
 use common\repositories\event\ForeignEventRepository;
@@ -21,7 +23,9 @@ use common\repositories\general\OrderPeopleRepository;
 use common\repositories\general\PeopleStampRepository;
 use common\repositories\team\TeamRepository;
 use common\services\general\PeopleStampService;
+use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
 use frontend\events\general\FileDeleteEvent;
+use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use frontend\models\work\general\FilesWork;
 use frontend\models\work\general\OrderPeopleWork;
 use frontend\models\work\order\DocumentOrderWork;
@@ -30,7 +34,9 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\services\general\files\FileService;
 use frontend\events\general\FileCreateEvent;
+use frontend\models\work\order\OrderTrainingWork;
 use frontend\models\work\team\ActParticipantWork;
+use phpseclib3\Crypt\EC\Curves\brainpoolP160r1;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
@@ -276,13 +282,30 @@ class DocumentOrderService
     }
     public function orderTrainingDelete(DocumentOrderWork $model)
     {
+        /* @var $orderParticipant OrderTrainingGroupParticipantWork */
         $responsiblePeople = $this->orderPeopleRepository->getResponsiblePeople($model->id);
         foreach ($responsiblePeople as $person) {
             $model->recordEvent(new OrderPeopleDeleteByIdEvent($person->id), DocumentOrderWork::class);
         }
+        $status = NomenclatureDictionary::getStatus((explode("/",$model->order_number))[0]);
         $orderParticipants = $this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id);
+        //update & delete TrainingGroupParticipant
         foreach ($orderParticipants as $orderParticipant) {
-            $model->recordEvent(new OrderTrainingGroupParticipantByIdDeleteEvent($orderParticipant->id), DocumentOrderWork::class);
+            switch ($status) {
+                case $status == NomenclatureDictionary::ORDER_ENROLL:
+                    $model->recordEvent(new UpdateStatusTrainingGroupParticipantEvent($orderParticipant->training_group_participant_in_id, $status - 1), DocumentOrderWork::class);
+                    $model->recordEvent(new OrderTrainingGroupParticipantByIdDeleteEvent($orderParticipant->id), DocumentOrderWork::class);
+                    break;
+                case $status == NomenclatureDictionary::ORDER_DEDUCT:
+                    $model->recordEvent(new UpdateStatusTrainingGroupParticipantEvent($orderParticipant->training_group_participant_out_id, $status - 1), DocumentOrderWork::class);
+                    $model->recordEvent(new OrderTrainingGroupParticipantByIdDeleteEvent($orderParticipant->id), DocumentOrderWork::class);
+                    break;
+                case $status == NomenclatureDictionary::ORDER_TRANSFER:
+                    $model->recordEvent(new UpdateStatusTrainingGroupParticipantEvent($orderParticipant->training_group_participant_out_id, $status - 2), DocumentOrderWork::class);
+                    $model->recordEvent(new OrderTrainingGroupParticipantByIdDeleteEvent($orderParticipant->id), DocumentOrderWork::class);
+                    $model->recordEvent(new DeleteTrainingGroupParticipantEvent($orderParticipant->training_group_participant_in_id), DocumentOrderWork::class);
+                    break;
+            }
         }
         $files = $this->filesRepository->getByDocument(DocumentOrderWork::tableName(), $model->id);
         foreach ($files as $file) {

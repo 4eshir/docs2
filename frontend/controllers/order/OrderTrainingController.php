@@ -204,8 +204,11 @@ class OrderTrainingController extends DocumentController
     public function actionDelete($id){
         $model = $this->documentOrderRepository->get($id);
         $this->documentOrderService->documentOrderDelete($model);
-        $model->releaseEvents();
-        return $this->redirect(['index']);
+        if ($this->orderTrainingService->isPossibleToDeleteOrder($model->id)) {
+            $model->releaseEvents();
+            return $this->redirect(['index']);
+        }
+        return $this->redirect(['view', 'id' => $model->id]);
     }
     public function actionGetListByBranch()
     {

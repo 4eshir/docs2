@@ -55,5 +55,7 @@ class OrderTrainingGroupParticipantRepository
     public function getByOrderIds($id){
         return OrderTrainingGroupParticipantWork::find()->where(['order_id' => $id])->all();
     }
-
+    public function getExceptById($id){
+        return OrderTrainingGroupParticipantWork::find()->where(['<>', 'order_id' , $id])->all();
+    }
 }

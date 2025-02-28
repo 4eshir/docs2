@@ -174,4 +174,10 @@ class TrainingGroupParticipantRepository
         }
         return $participants;
     }
+    public function prepareUpdateByStatus($id, $status)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->update(TrainingGroupParticipantWork::tableName(), ['status' => $status], ['id' => $id]);
+        return $command->getRawSql();
+    }
 }

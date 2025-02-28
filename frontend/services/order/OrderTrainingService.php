@@ -243,6 +243,18 @@ class OrderTrainingService
             return true;
         }
     }
+    public function isPossibleToDeleteOrder($id)
+    {
+        $modelIds = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getExceptById($id),'training_group_participant_out_id');
+        foreach ($modelIds as $modelId) {
+            if (!is_null($modelId)) {
+                if (!$this->isPossibleToDeleteOrderTrainingGroupParticipant($modelId)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     public function updateOrderTrainingGroupParticipantEvent(OrderTrainingWork $model, $status, $post){
         $trainingGroupParticipants = $post['group-participant-selection'];
         $error = false;
