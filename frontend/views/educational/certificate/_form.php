@@ -1,7 +1,13 @@
 <?php
 
+use common\repositories\educational\TrainingGroupRepository;
+use frontend\components\GroupParticipantWidget;
 use frontend\forms\certificate\CertificateForm;
 use frontend\models\work\educational\CertificateWork;
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
+use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -30,48 +36,18 @@ if(isset($_GET['group_id'])) {
         'options' => ['target' => '_blank', 'id' => 'form1']
     ]); ?>
 
-
-    <?= $form->field($model, 'certificate_template_id')
-        ->dropDownList(ArrayHelper::map($model->templates,'id','name'))
-        ->label('Шаблон сертификатов'); ?>
-
-
-
-    <?php
-    $params = [
-        'prompt' => '---',
-        'id' => 'groupList',
-        'onchange' => 'changeGroup()',
-    ];
-
-    echo $form->field($model, 'group_id')
-        ->dropDownList($model->groups, $params)
-        ->label('Группа');
-
-    ?>
-
-    <?php
-
-    $cert = \app\models\work\CertificatWork::find()->all();
-
-    $cIds = [];
-    foreach($cert as $one) $cIds[] = $one->training_group_participant_id;
-
-    $tps = TrainingGroupParticipantWork::find()->joinWith(['trainingGroup trainingGroup'])->where(['trainingGroup.archive' => 0])->andWhere(['status' => 0])->andWhere(['NOT IN', 'training_group_participant.id', $cIds])->andWhere(['success' => 1])->all();
-
-    echo '<table class="table table-striped">';
-    foreach($tps as $tp)
-    {
-        echo '<tr>';
-        $style = '';
-        if ($model->group_id != $tp->training_group_id)
-            $style = '" style="display: none"';
-        echo '<td class="parts '.$tp->training_group_id.$style.'>'.$form->field($model, 'participant_id[]')->checkbox(['label' => $tp->participantWork->fullName, 'value' => $tp->id])->label(false).'</td>';
-
-        echo '</tr>';
-    }
-    echo '</table>';
-
+    <?= GroupParticipantWidget::widget([
+        'config' => [
+            'groupUrl' => 'get-groups',
+            'participantUrl' => 'get-participants'
+        ],
+        'dataProviderGroup' => new ActiveDataProvider([
+            'query' => TrainingGroupWork::find()
+        ]),
+        'dataProviderParticipant' => new ActiveDataProvider([
+            'query' => TrainingGroupParticipantWork::find()->where('0=1')
+        ]),
+    ]);
     ?>
 
     <div class="form-group">
@@ -83,29 +59,3 @@ if(isset($_GET['group_id'])) {
     <?php ActiveForm::end(); ?>
 
 </div>
-
-<script type="text/javascript">
-    function changeGroup()
-    {
-        let elem = document.getElementById('groupList');
-        let parts = document.getElementsByClassName('parts');
-        for (let i = 0; i < parts.length; i++)
-            parts[i].style.display = 'none';
-
-        parts = document.getElementsByClassName(elem.value);
-        for (let i = 0; i < parts.length; i++)
-            parts[i].style.display = 'block';
-    }
-
-    document.getElementById("form1").onsubmit = function()
-    {
-        //window.open("https://google.ru", '_blank');
-        //window.location.href = "https://docs/index.php?r=certificat/index";
-        setTimeout(redirectHandler, 500);
-    }
-
-    function redirectHandler()
-    {
-        window.location = "index.php?r=certificat/index";
-    }
-</script>

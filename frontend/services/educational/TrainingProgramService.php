@@ -249,7 +249,7 @@ class TrainingProgramService implements DatabaseServiceInterface
 
         for ($i = 0; $i < count($themes); $i++) {
             if ($themes[$i] !== "") {
-                $model->recordEvent(new CreateThemeInPlanEvent((int)$themes[$i], $model->id, (int)$controls[$i]), ThematicPlanWork::class);
+                $model->recordEvent(new CreateThemeInPlanEvent($themes[$i], $model->id, (int)$controls[$i]), ThematicPlanWork::class);
             }
         }
     }
@@ -257,8 +257,10 @@ class TrainingProgramService implements DatabaseServiceInterface
     public function attachAuthors(TrainingProgramWork $model, array $authors)
     {
         foreach ($authors as $author) {
-            $authorStamp = $this->peopleStampService->createStampFromPeople($author);
-            $model->recordEvent(new CreateAuthorProgramEvent($model->id, $authorStamp), AuthorProgramWork::class);
+            if (!StringFormatter::isEmpty($author)) {
+                $authorStamp = $this->peopleStampService->createStampFromPeople($author);
+                $model->recordEvent(new CreateAuthorProgramEvent($model->id, $authorStamp), AuthorProgramWork::class);
+            }
         }
     }
 }

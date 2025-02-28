@@ -2,6 +2,7 @@
 
 use common\helpers\StringFormatter;
 use frontend\models\search\SearchCertificate;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\educational\CertificateWork;
 use frontend\models\work\general\PeopleWork;
 use kartik\export\ExportMenu;
@@ -40,13 +41,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 return $model->certificateTemplatesWork->name;
             }],
             ['attribute' => 'participant_id', 'format' => 'raw', 'value' => function(CertificateWork $model){
-                return $model->trainingGroupParticipantWork->participantWork->getFIO(PeopleWork::FIO_FULL);
+                if ($model->trainingGroupParticipantWork && $model->trainingGroupParticipantWork->participantWork) {
+                    return $model->trainingGroupParticipantWork->participantWork->getFIO(PersonInterface::FIO_FULL);
+                }
+                return '';
             }],
             ['attribute' => 'training_group_id', 'format' => 'raw', 'value' => function(CertificateWork $model){
-                return $model->trainingGroupParticipantWork->trainingGroupWork->number;
+                if ($model->trainingGroupParticipantWork && $model->trainingGroupParticipantWork->trainingGroupWork) {
+                    return $model->trainingGroupParticipantWork->trainingGroupWork->number;
+                }
+                return '';
             }],
             ['attribute' => 'protection_date', 'format' => 'raw', 'value' => function(CertificateWork $model){
-                return $model->trainingGroupParticipantWork->trainingGroupWork->protection_date;
+                if ($model->trainingGroupParticipantWork && $model->trainingGroupParticipantWork->trainingGroupWork) {
+                    return $model->trainingGroupParticipantWork->trainingGroupWork->protection_date;
+                }
+                return '';
             }],
 
         ];
@@ -77,19 +87,28 @@ $this->params['breadcrumbs'][] = $this->title;
                 );
             }],
             ['attribute' => 'participant_id', 'format' => 'raw', 'value' => function(CertificateWork $model){
-                return StringFormatter::stringAsLink(
-                    $model->trainingGroupParticipantWork->participantWork->getFIO(PeopleWork::FIO_FULL),
-                    Url::to(['/dictionaries/foreign-event-participants/view', 'id' => $model->trainingGroupParticipantWork->participant_id])
-                );
+                if ($model->trainingGroupParticipantWork && $model->trainingGroupParticipantWork->participantWork) {
+                    return StringFormatter::stringAsLink(
+                        $model->trainingGroupParticipantWork->participantWork->getFIO(PersonInterface::FIO_FULL),
+                        Url::to(['/dictionaries/foreign-event-participants/view', 'id' => $model->trainingGroupParticipantWork->participant_id])
+                    );
+                }
+                return '';
             }],
             ['attribute' => 'training_group_id', 'format' => 'raw', 'value' => function(CertificateWork $model){
-                return StringFormatter::stringAsLink(
-                    $model->trainingGroupParticipantWork->trainingGroupWork->number,
-                    Url::to(['/educational/training-group/view', 'id' => $model->trainingGroupParticipantWork->training_group_id])
-                );
+                if ($model->trainingGroupParticipantWork && $model->trainingGroupParticipantWork->trainingGroupWork) {
+                    return StringFormatter::stringAsLink(
+                        $model->trainingGroupParticipantWork->trainingGroupWork->number,
+                        Url::to(['/educational/training-group/view', 'id' => $model->trainingGroupParticipantWork->training_group_id])
+                    );
+                }
+                return '';
             }],
             ['attribute' => 'protection_date', 'format' => 'raw', 'value' => function(CertificateWork $model){
-                return $model->trainingGroupParticipantWork->trainingGroupWork->protection_date;
+                if ($model->trainingGroupParticipantWork && $model->trainingGroupParticipantWork->trainingGroupWork) {
+                    return $model->trainingGroupParticipantWork->trainingGroupWork->protection_date;
+                }
+                return '';
             }],
 
             //['class' => 'yii\grid\ActionColumn'],

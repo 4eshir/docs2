@@ -74,7 +74,10 @@ use yii\widgets\ActiveForm;
                 </div>
                 <div class = "form-label">
                     <div class="panel-body">
-                        <?= $form->field($model, 'authors[]')->dropDownList(ArrayHelper::map($ourPeople, 'id', 'fullFio'))->label('ФИО'); ?>
+                        <?= $form->field($model, 'authors[]')->dropDownList(
+                                ArrayHelper::map($ourPeople, 'id', 'fullFio'),
+                                ['prompt' => '---']
+                            )->label('ФИО'); ?>
                     </div>
                 </div>
             </div>
