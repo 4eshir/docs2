@@ -121,34 +121,43 @@ class VisitCreateData
             new ParticipantLessons(
                 0,
                 [
-                    new VisitLesson(0, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(1, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(2, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(3, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(4, VisitWork::NONE, $repositoryLesson),
+                    new VisitLesson(0, VisitWork::NONE),
+                    new VisitLesson(1, VisitWork::NONE),
+                    new VisitLesson(2, VisitWork::NONE),
+                    new VisitLesson(3, VisitWork::NONE),
+                    new VisitLesson(4, VisitWork::NONE),
                 ],
+                null,
+                null,
+                null,
                 $repositoryParticipant
             ),
             new ParticipantLessons(
                 1,
                 [
-                    new VisitLesson(0, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(1, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(2, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(3, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(4, VisitWork::NONE, $repositoryLesson),
+                    new VisitLesson(0, VisitWork::NONE),
+                    new VisitLesson(1, VisitWork::NONE),
+                    new VisitLesson(2, VisitWork::NONE),
+                    new VisitLesson(3, VisitWork::NONE),
+                    new VisitLesson(4, VisitWork::NONE),
                 ],
+                null,
+                null,
+                null,
                 $repositoryParticipant
             ),
             new ParticipantLessons(
                 2,
                 [
-                    new VisitLesson(0, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(1, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(2, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(3, VisitWork::NONE, $repositoryLesson),
-                    new VisitLesson(4, VisitWork::NONE, $repositoryLesson),
+                    new VisitLesson(0, VisitWork::NONE),
+                    new VisitLesson(1, VisitWork::NONE),
+                    new VisitLesson(2, VisitWork::NONE),
+                    new VisitLesson(3, VisitWork::NONE),
+                    new VisitLesson(4, VisitWork::NONE),
                 ],
+                null,
+                null,
+                null,
                 $repositoryParticipant
             )
         ];
@@ -170,34 +179,43 @@ class VisitCreateData
             new ParticipantLessons(
                 0,
                 [
-                    new VisitLesson(0, VisitWork::ATTENDANCE, $repositoryLesson),
-                    new VisitLesson(3, VisitWork::ATTENDANCE, $repositoryLesson),
-                    new VisitLesson(2, VisitWork::ATTENDANCE, $repositoryLesson),
-                    new VisitLesson(1, VisitWork::NO_ATTENDANCE, $repositoryLesson),
-                    new VisitLesson(4, VisitWork::DISTANCE, $repositoryLesson),
+                    new VisitLesson(0, VisitWork::ATTENDANCE),
+                    new VisitLesson(3, VisitWork::ATTENDANCE),
+                    new VisitLesson(2, VisitWork::ATTENDANCE),
+                    new VisitLesson(1, VisitWork::NO_ATTENDANCE),
+                    new VisitLesson(4, VisitWork::DISTANCE),
                 ],
+                null,
+                null,
+                null,
                 $repositoryParticipant
             ),
             new ParticipantLessons(
                 1,
                 [
-                    new VisitLesson(4, VisitWork::ATTENDANCE, $repositoryLesson),
-                    new VisitLesson(1, VisitWork::ATTENDANCE, $repositoryLesson),
-                    new VisitLesson(2, VisitWork::ATTENDANCE, $repositoryLesson),
-                    new VisitLesson(0, VisitWork::ATTENDANCE, $repositoryLesson),
-                    new VisitLesson(3, VisitWork::ATTENDANCE, $repositoryLesson),
+                    new VisitLesson(4, VisitWork::ATTENDANCE),
+                    new VisitLesson(1, VisitWork::ATTENDANCE),
+                    new VisitLesson(2, VisitWork::ATTENDANCE),
+                    new VisitLesson(0, VisitWork::ATTENDANCE),
+                    new VisitLesson(3, VisitWork::ATTENDANCE),
                 ],
+                null,
+                null,
+                null,
                 $repositoryParticipant
             ),
             new ParticipantLessons(
                 2,
                 [
-                    new VisitLesson(0, VisitWork::DISTANCE, $repositoryLesson),
-                    new VisitLesson(2, VisitWork::DISTANCE, $repositoryLesson),
-                    new VisitLesson(1, VisitWork::DISTANCE, $repositoryLesson),
-                    new VisitLesson(4, VisitWork::NO_ATTENDANCE, $repositoryLesson),
-                    new VisitLesson(3, VisitWork::ATTENDANCE, $repositoryLesson),
+                    new VisitLesson(0, VisitWork::DISTANCE),
+                    new VisitLesson(2, VisitWork::DISTANCE),
+                    new VisitLesson(1, VisitWork::DISTANCE),
+                    new VisitLesson(4, VisitWork::NO_ATTENDANCE),
+                    new VisitLesson(3, VisitWork::ATTENDANCE),
                 ],
+                null,
+                null,
+                null,
                 $repositoryParticipant
             )
         ];

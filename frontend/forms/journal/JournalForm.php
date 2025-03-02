@@ -4,6 +4,7 @@ namespace frontend\forms\journal;
 
 use common\Model;
 use common\repositories\educational\GroupProjectThemesRepository;
+use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\VisitRepository;
 use DomainException;
 use frontend\models\work\educational\journal\ParticipantLessons;
@@ -77,7 +78,8 @@ class JournalForm extends Model
                 foreach ($visitLesson as $lesson) {
                     $lessonArray[] = new VisitLesson(
                         $lesson["lessonId"],
-                        $lesson["status"]
+                        $lesson["status"],
+                        (Yii::createObject(TrainingGroupLessonRepository::class))->get($lesson["lessonId"])
                     );
                 }
 

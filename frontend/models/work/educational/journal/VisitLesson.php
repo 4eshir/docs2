@@ -12,7 +12,7 @@ use Yii;
 
 class VisitLesson extends Model
 {
-    private TrainingGroupLessonRepository $repository;
+    //private TrainingGroupLessonRepository $repository;
 
     public int $lessonId;
     public int $status;
@@ -21,23 +21,14 @@ class VisitLesson extends Model
     public function __construct(
         int $lessonId,
         int $status,
-        TrainingGroupLessonRepository $repository = null,
+        TrainingGroupLessonWork $lesson = null,
         $config = []
     )
     {
         parent::__construct($config);
         $this->lessonId = $lessonId;
         $this->status = $status;
-        if (!$repository) {
-            $repository = Yii::createObject(
-                TrainingGroupLessonRepository::class,
-                ['provider' => Yii::createObject(TrainingGroupLessonProvider::class)]
-            );
-        }
-        /** @var TrainingGroupLessonRepository $repository */
-        $this->repository = $repository;
-
-        $this->lesson = $this->repository->get($this->lessonId);
+        $this->lesson = $lesson;
     }
 
     public function rules()
@@ -55,9 +46,10 @@ class VisitLesson extends Model
     /**
      * Раскладывает json-строку на массив VisitLesson
      * @param string $json
+     * @param TrainingGroupLessonRepository $repository
      * @return array
      */
-    public static function fromString(string $json) : array
+    public static function fromString(string $json, TrainingGroupLessonRepository $repository) : array
     {
         $lessonsArray = json_decode($json, true);
 
@@ -67,7 +59,11 @@ class VisitLesson extends Model
 
         $visitLessons = [];
         foreach ($lessonsArray as $item) {
-            $visitLessons[] = new VisitLesson($item['lesson_id'], $item['status']);
+            $visitLessons[] = new VisitLesson(
+                $item['lesson_id'],
+                $item['status'],
+                $repository->get($item['lesson_id'])
+            );
         }
 
         return $visitLessons;

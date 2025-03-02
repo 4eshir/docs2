@@ -96,7 +96,6 @@ class ReportManHoursService
         $query = $this->repository->filterGroupsBetweenDates($query, $startDate, $endDate);
         $groups = $this->repository->findAll($query);
 
-
         $participants = $this->participantRepository->getParticipantsFromGroups(
             ArrayHelper::getColumn($groups, 'id')
         );

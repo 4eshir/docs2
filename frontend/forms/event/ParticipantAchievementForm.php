@@ -10,7 +10,7 @@ use Yii;
 class ParticipantAchievementForm extends Model
 {
     public $id;
-    public ParticipantAchievementWork $entity;
+    public ?ParticipantAchievementWork $entity;
 
     private ParticipantAchievementRepository $repository;
 
@@ -30,6 +30,7 @@ class ParticipantAchievementForm extends Model
         if (!$repository) {
             $repository = Yii::createObject(ParticipantAchievementRepository::class);
         }
+        /** @var ParticipantAchievementRepository $repository */
         $this->repository = $repository;
 
         $this->id = $achievementId;

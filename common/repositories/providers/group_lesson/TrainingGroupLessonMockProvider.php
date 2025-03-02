@@ -2,11 +2,13 @@
 
 namespace common\repositories\providers\group_lesson;
 
+use frontend\models\mock\TrainingGroupLessonMock;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 
 class TrainingGroupLessonMockProvider implements TrainingGroupLessonProviderInterface
 {
-    private $data = [];
+    /** @var TrainingGroupLessonMock[] $data  */
+    private array $data = [];
 
     public function __construct(array $data = [])
     {
@@ -48,5 +50,27 @@ class TrainingGroupLessonMockProvider implements TrainingGroupLessonProviderInte
         $model->id = count($this->data);
         $this->data[] = $model;
         return $model->id;
+    }
+
+    /**
+     * Конвертер данных из базового ассоциативного массива
+     * @param array $data ассоциативный массив изначальных данных
+     * @param string[] $fields свойства (поля) для заполнения
+     * @return TrainingGroupLessonWork[]
+     */
+    public static function convert(array $data, array $fields)
+    {
+        $result = [];
+        foreach ($data as $item) {
+            $entity = new TrainingGroupLessonMock();
+            foreach ($fields as $field) {
+                if (isset($item[$field])) {
+                    $entity->$field = $item[$field];
+                }
+            }
+            $result[$item['id']] = $entity;
+        }
+
+        return $result;
     }
 }

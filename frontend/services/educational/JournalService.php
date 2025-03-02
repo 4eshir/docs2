@@ -65,7 +65,11 @@ class JournalService
         // Конвертируем занятия
         $newLessons = [];
         foreach ($lessons as $lesson) {
-            $newLessons[] = new VisitLesson($lesson->id, VisitWork::NONE);
+            $newLessons[] = new VisitLesson(
+                $lesson->id,
+                VisitWork::NONE,
+                $this->lessonRepository->get($lesson->id)
+            );
         }
 
         //$this->deleteJournal($groupId);
@@ -118,7 +122,8 @@ class JournalService
         foreach ($addLessons as $lesson) {
             $visitLesson = new VisitLesson(
                 $lesson->id,
-                VisitWork::NONE
+                VisitWork::NONE,
+                $this->lessonRepository->get($lesson->id)
             );
             $curLessonsJson[] = json_decode((string)$visitLesson, true);
         }
