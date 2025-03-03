@@ -7,6 +7,7 @@ use frontend\components\GroupParticipantWidget;
 use frontend\forms\certificate\CertificateForm;
 use frontend\models\search\SearchCertificate;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use frontend\services\educational\CertificateService;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -14,15 +15,18 @@ use yii\web\Controller;
 class CertificateController extends Controller
 {
     private TrainingGroupParticipantRepository $participantRepository;
+    private CertificateService $service;
 
     public function __construct(
         $id,
         $module,
         TrainingGroupParticipantRepository $participantRepository,
+        CertificateService $service,
         $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->participantRepository = $participantRepository;
+        $this->service = $service;
     }
 
     public function actionIndex()
@@ -40,8 +44,9 @@ class CertificateController extends Controller
     {
         $form = new CertificateForm();
 
-        if (!is_array(Yii::$app->request->post())) {
-            //var_dump(Yii::$app->request->post()['group-participant-selection']);die;
+        if ($form->load(Yii::$app->request->post())) {
+            $certificateIds = $this->service->saveAllCertificates($form);
+            var_dump($form);die;
             return $this->redirect(['view', 'id' => $form->id]);
         }
 

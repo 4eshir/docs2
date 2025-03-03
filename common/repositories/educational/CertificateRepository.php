@@ -1,0 +1,36 @@
+<?php
+
+
+namespace common\repositories\educational;
+
+
+use DomainException;
+use frontend\models\work\CertificateTemplatesWork;
+use frontend\models\work\educational\CertificateWork;
+
+class CertificateRepository
+{
+    public function get($id)
+    {
+        return CertificateWork::find()->where(['id' => $id])->one();
+    }
+
+    public function getAll()
+    {
+        return CertificateWork::find()->all();
+    }
+
+    public function getCurrentCertificateNumber()
+    {
+        return CertificateWork::find()->count() + 1;
+    }
+
+    public function save(CertificateWork $model)
+    {
+        if (!$model->save()) {
+            throw new DomainException('Ошибка сохранения темы проекта. Проблемы: '.json_encode($model->getErrors()));
+        }
+
+        return $model->id;
+    }
+}

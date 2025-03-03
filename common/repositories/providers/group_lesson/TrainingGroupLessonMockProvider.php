@@ -56,7 +56,7 @@ class TrainingGroupLessonMockProvider implements TrainingGroupLessonProviderInte
      * Конвертер данных из базового ассоциативного массива
      * @param array $data ассоциативный массив изначальных данных
      * @param string[] $fields свойства (поля) для заполнения
-     * @return TrainingGroupLessonWork[]
+     * @return TrainingGroupLessonMock[]
      */
     public static function convert(array $data, array $fields)
     {

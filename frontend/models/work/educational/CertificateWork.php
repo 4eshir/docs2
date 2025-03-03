@@ -12,6 +12,30 @@ use frontend\models\work\educational\training_group\TrainingGroupParticipantWork
  */
 class CertificateWork extends Certificate
 {
+    const TECHNOSUMMER = 'лето';
+    const INTENSIVE = 'Интенсив';
+    const PRO = 'ПРО';
+    const SCHOOL = 'школа';
+
+    const STATUS_CREATE = 0;
+    const STATUS_SEND = 1;
+
+    public static function fill(
+        string $certificateNumber,
+        int $templateId,
+        int $participantId,
+        int $status
+    )
+    {
+        $entity = new static();
+        $entity->certificate_number = $certificateNumber;
+        $entity->certificate_template_id = $templateId;
+        $entity->training_group_participant_id = $participantId;
+        $entity->status = $status;
+
+        return $entity;
+    }
+
     public function getCertificateTemplatesWork()
     {
         return $this->hasOne(CertificateTemplatesWork::class, ['id' => 'certificate_template_id']);

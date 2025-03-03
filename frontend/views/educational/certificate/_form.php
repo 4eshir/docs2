@@ -36,6 +36,11 @@ if(isset($_GET['group_id'])) {
         'options' => ['target' => '_blank', 'id' => 'form1']
     ]); ?>
 
+    <?= $form->field($model, 'templateId')->dropDownList(
+            ArrayHelper::map($model->templates, 'id', 'name')
+        )
+    ?>
+
     <?= GroupParticipantWidget::widget([
         'config' => [
             'groupUrl' => 'get-groups',

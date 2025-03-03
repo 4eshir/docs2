@@ -19,10 +19,21 @@ class CertificateForm extends Model
     public array $templates;
     public array $groups;
 
+    public int $templateId;
+    public ?array $participants;
+
     public function __construct($config = [])
     {
         parent::__construct($config);
         $this->templates = (Yii::createObject(CertificateTemplatesRepository::class))->getAll();
         $this->groups = (Yii::createObject(TrainingGroupRepository::class))->getGroupsForCertificates();
+
+        $this->templateId = $this->templates[0]->id;
+    }
+
+    public function load($data, $formName = null)
+    {
+        $this->participants = $data['group-participant-selection'];
+        return parent::load($data, $formName);
     }
 }
