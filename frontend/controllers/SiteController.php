@@ -2,8 +2,10 @@
 
 namespace frontend\controllers;
 
+use common\repositories\act_participant\SquadParticipantRepository;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
+use frontend\models\work\team\SquadParticipantWork;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;

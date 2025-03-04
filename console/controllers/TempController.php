@@ -11,6 +11,8 @@ use common\components\logger\search\CrudSearchData;
 use common\components\logger\search\MethodSearchData;
 use common\components\logger\search\SearchLog;
 use common\components\logger\SearchLogFacade;
+use common\repositories\act_participant\SquadParticipantRepository;
+use frontend\models\work\team\SquadParticipantWork;
 use Yii;
 use yii\console\Controller;
 use yii\helpers\ArrayHelper;

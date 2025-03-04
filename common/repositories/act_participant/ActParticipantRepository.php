@@ -2,6 +2,9 @@
 
 namespace common\repositories\act_participant;
 
+use common\components\logger\base\LogInterface;
+use common\components\logger\LogFactory;
+use common\models\work\LogWork;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\team\ActParticipantBranchWork;
 use frontend\models\work\team\ActParticipantWork;
@@ -30,13 +33,17 @@ class ActParticipantRepository
 
     public function getByForeignEventId($foreignEventId)
     {
-        return ActParticipantWork::find()->where(['foreign_event_id' => $foreignEventId])->all();
+        $query = ActParticipantWork::find()->where(['foreign_event_id' => $foreignEventId]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка актов участия по заданному мероприятию', $query->createCommand()->getRawSql());
+        return $query->all();
     }
 
     public function getByParticipantId($participantId)
     {
         $squads = ArrayHelper::getColumn($this->squadParticipantRepository->getAllByParticipantId($participantId), 'act_participant_id');
-        return ActParticipantWork::find()->where(['IN', 'id', $squads])->all();
+        $query = ActParticipantWork::find()->where(['IN', 'id', $squads]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка актов участия по заданному участнику деятельности', $query->createCommand()->getRawSql());
+        return $query->all();
     }
 
     public function prepareCreate($modelAct, $teamNameId, $foreignEventId)
@@ -52,53 +59,71 @@ class ActParticipantRepository
     }
     public function getOneByUniqueAttributes($teamNameId, $nomination, $foreignEventId)
     {
-        return ActParticipantWork::find()
+        $query = ActParticipantWork::find()
             ->andWhere(['foreign_event_id' => $foreignEventId])
             ->andWhere(['team_name_id' => $teamNameId])
-            ->andWhere(['nomination' => $nomination])
-            ->one();
+            ->andWhere(['nomination' => $nomination]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка акта участия по заданным параметрам', $query->createCommand()->getRawSql());
+        return $query->one();
     }
 
     public function getAllByUniqueAttributes($teamNameId, $nomination, $foreignEventId)
     {
-        return ActParticipantWork::find()
+        $query = ActParticipantWork::find()
             ->andWhere(['foreign_event_id' => $foreignEventId])
             ->andWhere(['team_name_id' => $teamNameId])
-            ->andWhere(['nomination' => $nomination])
-            ->all();
+            ->andWhere(['nomination' => $nomination]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка всех актов участия по заданным параметрам', $query->createCommand()->getRawSql());
+        return $query->all();
     }
 
     public function getParticipantBranches($actId)
     {
-        return ActParticipantBranchWork::find()->where(['act_participant_id' => $actId])->all();
+        $query = ActParticipantBranchWork::find()->where(['act_participant_id' => $actId]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка связок акт-отдел по заданному ID акта участия', $query->createCommand()->getRawSql());
+        return $query->all();
     }
 
     public function getByTypeAndForeignEventId($foreignEventId, $type)
     {
-        return ActParticipantWork::find()->andWhere(['foreign_event_id' => $foreignEventId])->andWhere(['type' => $type])->all();
+        $query = ActParticipantWork::find()->andWhere(['foreign_event_id' => $foreignEventId])->andWhere(['type' => $type]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка актов участия по типу и ID мероприятия', $query->createCommand()->getRawSql());
+        return $query->all();
     }
 
     public function checkUniqueAct($foreignEventId, $teamNameId, $focus, $form, $nomination)
     {
-        return count(ActParticipantWork::find()
+        $query = ActParticipantWork::find()
             ->andWhere(['foreign_event_id' => $foreignEventId])
             ->andWhere(['team_name_id' => $teamNameId])
             ->andWhere(['focus' => $focus])
             ->andWhere(['form' => $form])
-            ->andWhere(['nomination' => $nomination])
-            ->all());
+            ->andWhere(['nomination' => $nomination]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка количества уникальных актов участия по заданным параметрам', $query->createCommand()->getRawSql());
+        return $query->count();
     }
 
     public function get($id)
     {
-        return ActParticipantWork::findOne($id);
+        $query = ActParticipantWork::find()->where(['id' => $id]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка акта участия по ID', $query->createCommand()->getRawSql());
+        return $query->one();
     }
 
     public function save(ActParticipantWork $model)
     {
+        if ($model->isNewRecord) {
+            $sql = Yii::$app->db->createCommand()->insert($model->tableName(), $model->attributes)->getSql();
+        } else {
+            $sql = Yii::$app->db->createCommand()->update($model->tableName(), $model->attributes, ['id' => $model->id])->getSql();
+        }
+
         if (!$model->save()) {
+            LogFactory::createCrudLog(LogInterface::LVL_ERROR, 'Ошибка сохранения акта участия', $sql);
             throw new DomainException('Ошибка сохранения. Проблемы: '.json_encode($model->getErrors()));
         }
+
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Сохранение акта участия', $sql);
         return $model->id;
     }
 
@@ -110,8 +135,13 @@ class ActParticipantRepository
                 throw new DomainException('Ошибка удаления. Проблемы: '.json_encode($model->getErrors()));
             }
         }
+
+        $sql = Yii::$app->db->createCommand()->delete($model->tableName(), ['id' => $model->id])->getSql();
         if (!$model->delete()) {
+            LogFactory::createCrudLog(LogInterface::LVL_ERROR, 'Ошибка удаления акта участия', $sql);
             throw new DomainException('Ошибка удаления. Проблемы: '.json_encode($model->getErrors()));
         }
+
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Удаление акта участия', $sql);
     }
 }
