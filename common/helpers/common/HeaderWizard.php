@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\helpers;
+namespace common\helpers\common;
 
 class HeaderWizard
 {

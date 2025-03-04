@@ -2,38 +2,30 @@
 
 namespace frontend\controllers\order;
 
-use app\events\document_order\DocumentOrderDeleteEvent;
 use app\models\forms\OrderMainForm;
 use common\components\traits\AccessControl;
+use common\components\wizards\LockWizard;
+use common\controllers\DocumentController;
+use common\models\scaffold\DocumentOrder;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\expire\ExpireRepository;
+use common\repositories\general\FilesRepository;
+use common\repositories\general\OrderPeopleRepository;
+use common\repositories\general\UserRepository;
+use common\repositories\order\DocumentOrderRepository;
+use common\repositories\order\OrderMainRepository;
+use common\repositories\regulation\RegulationRepository;
+use common\services\general\files\FileService;
+use DomainException;
+use frontend\models\forms\ExpireForm;
+use frontend\models\search\SearchOrderMain;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderMainWork;
 use frontend\services\order\DocumentOrderService;
 use frontend\services\order\OrderMainService;
 use frontend\services\order\OrderPeopleService;
-use common\components\wizards\LockWizard;
-use common\controllers\DocumentController;
-use common\helpers\files\FilesHelper;
-use common\helpers\StringFormatter;
-use common\models\scaffold\DocumentOrder;
-use common\repositories\expire\ExpireRepository;
-use common\repositories\general\FilesRepository;
-use common\repositories\general\OrderPeopleRepository;
-use common\repositories\general\PeopleStampRepository;
-use common\repositories\general\UserRepository;
-use common\repositories\order\DocumentOrderRepository;
-use common\repositories\regulation\RegulationRepository;
-use common\services\general\files\FileService;
-use common\repositories\order\OrderMainRepository;
-use DomainException;
-use frontend\events\general\FileDeleteEvent;
-use frontend\helpers\HeaderWizard;
-use frontend\models\forms\ExpireForm;
-use frontend\models\search\SearchOrderMain;
-use frontend\models\work\general\FilesWork;
 use yii;
 use yii\helpers\ArrayHelper;
-use yii\web\Controller;
 
 class OrderMainController extends DocumentController
 {

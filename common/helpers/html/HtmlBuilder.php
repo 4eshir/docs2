@@ -11,6 +11,8 @@ use DomainException;
 use DOMDocument;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonalDataParticipantWork;
+use frontend\models\work\dictionaries\PersonInterface;
+use frontend\models\work\educational\CertificateWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\team\SquadParticipantWork;

@@ -185,4 +185,14 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
         $this->birthdate = DateFormatter::format($this->birthdate, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         return parent::beforeValidate(); 
     }
+
+    public function isMale()
+    {
+        return $this->sex === 'Мужской';
+    }
+
+    public function isFemale()
+    {
+        return $this->sex === 'Женский';
+    }
 }

@@ -3,22 +3,19 @@
 namespace common\controllers;
 
 use common\components\interfaces\FileInterface;
+use common\helpers\common\HeaderWizard;
 use common\helpers\files\FilePaths;
 use common\helpers\files\FilesHelper;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\general\FileDeleteEvent;
-use frontend\helpers\HeaderWizard;
 use frontend\models\work\general\FilesWork;
 use Hidehalo\Nanoid\Client;
 use ReflectionClass;
-use ReflectionException;
 use RuntimeException;
 use Throwable;
 use Yii;
-use yii\base\Exception;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use ZipArchive;
