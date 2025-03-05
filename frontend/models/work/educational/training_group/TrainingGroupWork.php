@@ -168,6 +168,11 @@ class TrainingGroupWork extends TrainingGroup
         return !is_null($this->training_program_id);
     }
 
+    public function getBranchString()
+    {
+        return Yii::$app->branches->get($this->branch);
+    }
+
     public function getTeachersWork()
     {
         return $this->hasMany(TeacherGroupWork::className(), ['training_group_id' => 'id']);

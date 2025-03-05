@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\educational\training_program;
 
+use common\components\dictionaries\base\CertificateTypeDictionary;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -186,6 +187,26 @@ class TrainingProgramWork extends TrainingProgram
     public function getCertificateType()
     {
         return Yii::$app->certificateType->get($this->certificate_type);
+    }
+
+    public function isProjectCertificate()
+    {
+        return $this->certificate_type === CertificateTypeDictionary::PROJECT_PITCH;
+    }
+
+    public function isControlWorkCertificate()
+    {
+        return $this->certificate_type === CertificateTypeDictionary::CONTROL_WORK;
+    }
+
+    public function isOtherCertificate()
+    {
+        return $this->certificate_type === CertificateTypeDictionary::OTHER_CONTROL;
+    }
+
+    public function isOpenLessonCertificate()
+    {
+        return $this->certificate_type === CertificateTypeDictionary::OPEN_LESSON;
     }
 
     public function getThematicPlaneRaw()

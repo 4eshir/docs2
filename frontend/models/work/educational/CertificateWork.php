@@ -16,9 +16,11 @@ class CertificateWork extends Certificate
     const INTENSIVE = 'Интенсив';
     const PRO = 'ПРО';
     const SCHOOL = 'школа';
+    const PLUS = 'Плюс';
 
     const STATUS_CREATE = 0;
     const STATUS_SEND = 1;
+
 
     public static function fill(
         string $certificateNumber,
@@ -34,6 +36,11 @@ class CertificateWork extends Certificate
         $entity->status = $status;
 
         return $entity;
+    }
+
+    public function getCertificateLongNumber()
+    {
+        return sprintf('%06d', $this->certificate_number);
     }
 
     public function getCertificateTemplatesWork()

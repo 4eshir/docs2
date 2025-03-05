@@ -2,6 +2,8 @@
 
 namespace common\repositories\act_participant;
 
+use common\components\logger\base\LogInterface;
+use common\components\logger\LogFactory;
 use DomainException;
 use frontend\models\work\team\SquadParticipantWork;
 use common\models\scaffold\SquadParticipant;
@@ -37,34 +39,53 @@ class SquadParticipantRepository
 
     public function getAllByParticipantId($participantId)
     {
-        return SquadParticipantWork::find()->where(['participant_id' => $participantId])->all();
+        $query = SquadParticipantWork::find()->where(['participant_id' => $participantId]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка всех записей squad_participant по ID участника деятельности', $query->createCommand()->getRawSql());
+        return $query->all();
     }
 
     public function getCountByActAndParticipantId($actId, $participantId)
     {
-        return count(SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId, 'participant_id' => $participantId])->all());
+        $query = SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId, 'participant_id' => $participantId]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка количества записей squad_participant по ID акта участия и ID участника деятельности', $query->createCommand()->getRawSql());
+        return $query->count();
     }
 
     public function getAllByActId($actId)
     {
-        return SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId])->all();
+        $query = SquadParticipantWork::find()->andWhere(['act_participant_id' => $actId]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка всех записей squad_participant по ID акта участия', $query->createCommand()->getRawSql());
+        return $query->all();
     }
 
     public function getAllByActIds(array $actIds)
     {
-        return SquadParticipantWork::find()->andWhere(['IN', 'act_participant_id', $actIds])->all();
+        $query = SquadParticipantWork::find()->andWhere(['IN', 'act_participant_id', $actIds]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка всех записей squad_participant по ID акта участия', $query->createCommand()->getRawSql());
+        return $query->all();
     }
 
     public function getAllFromEvent($foreignEventId)
     {
-        return SquadParticipantWork::find()->joinWith(['actParticipantWork actParticipantWork'])->where(['actParticipantWork.foreign_event_id' => $foreignEventId])->all();
+        $query = SquadParticipantWork::find()->joinWith(['actParticipantWork actParticipantWork'])->where(['actParticipantWork.foreign_event_id' => $foreignEventId]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка всех записей squad_participant по ID мероприятия', $query->createCommand()->getRawSql());
+        return $query->all();
     }
 
     public function save(SquadParticipantWork $model)
     {
+        if ($model->isNewRecord) {
+            $sql = Yii::$app->db->createCommand()->insert($model->tableName(), $model->attributes)->getRawSql();
+        } else {
+            $sql = Yii::$app->db->createCommand()->update($model->tableName(), $model->attributes, ['id' => $model->id])->getRawSql();
+        }
+
         if (!$model->save()) {
+            LogFactory::createCrudLog(LogInterface::LVL_ERROR, 'Ошибка сохранения записи squad_participant', $sql);
             throw new DomainException('Ошибка сохранения. Проблемы: '.json_encode($model->getErrors()));
         }
+
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Сохранение записи squad_participant', $sql);
         return $model->id;
     }
 }

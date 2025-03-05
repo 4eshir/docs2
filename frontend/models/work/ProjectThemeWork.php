@@ -3,6 +3,7 @@
 namespace frontend\models\work;
 
 use common\models\scaffold\ProjectTheme;
+use Yii;
 
 class ProjectThemeWork extends ProjectTheme
 {
@@ -23,5 +24,10 @@ class ProjectThemeWork extends ProjectTheme
             ['id', 'integer'],
             [['name', 'project_type'], 'required']
         ]);
+    }
+
+    public function getProjectTypeString()
+    {
+        return Yii::$app->projectType->get($this->project_type);
     }
 }

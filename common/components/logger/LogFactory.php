@@ -7,6 +7,7 @@ use common\components\logger\base\LogInterface;
 use common\components\logger\crud\CrudLog;
 use common\components\logger\method\MethodLog;
 use common\components\logger\search\SearchLog;
+use Yii;
 
 class LogFactory
 {
@@ -53,13 +54,21 @@ class LogFactory
     }
 
     public static function createCrudLog(
-        string $datetime,
         int $level,
-        int $userId,
         string $text,
-        string $query
+        string $query,
+        int $userId = -1,
+        string $datetime = ''
     )
     {
+        if ($userId === -1) {
+            $userId = Yii::$app->user->identity->id;
+        }
+
+        if ($datetime === '') {
+            $datetime = date('Y-m-d H:i:s');
+        }
+
         $log = new CrudLog(
             $datetime,
             $level,

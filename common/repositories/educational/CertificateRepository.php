@@ -20,9 +20,9 @@ class CertificateRepository
         return CertificateWork::find()->all();
     }
 
-    public function getCurrentCertificateNumber()
+    public function getCount()
     {
-        return CertificateWork::find()->count() + 1;
+        return CertificateWork::find()->count();
     }
 
     public function save(CertificateWork $model)

@@ -25,7 +25,7 @@ class CertificateService
      */
     public function saveAllCertificates(CertificateForm $form)
     {
-        $currentNumber = $this->repository->getCurrentCertificateNumber();
+        $currentNumber = $this->getCurrentCertificateNumber();
         $ids = [];
         if (is_array($form->participants)) {
             foreach ($form->participants as $participantId) {
@@ -42,5 +42,10 @@ class CertificateService
         }
 
         return $ids;
+    }
+
+    private function getCurrentCertificateNumber()
+    {
+        return $this->repository->getCount() + 1;
     }
 }
