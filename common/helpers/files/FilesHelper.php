@@ -6,6 +6,7 @@ use common\helpers\StringFormatter;
 use common\repositories\general\FilesRepository;
 use frontend\models\work\general\FilesWork;
 use Yii;
+use yii\helpers\FileHelper;
 use yii\helpers\Url;
 
 class FilesHelper
@@ -110,5 +111,15 @@ class FilesHelper
         }
 
         return $links;
+    }
+
+    public static function createDirectory(string $path)
+    {
+        FileHelper::createDirectory($path);
+    }
+
+    public static function removeDirectory(string $path)
+    {
+        FileHelper::removeDirectory($path);
     }
 }

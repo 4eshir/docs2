@@ -130,7 +130,6 @@ class ManHoursReportForm extends Model
             in_array(self::PARTICIPANT_START_BEFORE_FINISH_AFTER, $this->type);
     }
 
-
     public function save()
     {
         return true;

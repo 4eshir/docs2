@@ -2,14 +2,13 @@
 
 namespace frontend\components\wizards;
 
+use common\components\files\CreateDirZip;
 use common\helpers\common\BaseFunctions;
-use common\helpers\files\FilePaths;
 use common\helpers\html\CertificateBuilder;
 use frontend\helpers\CertificateHelper;
 use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\educational\CertificateWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
-use kartik\mpdf\Pdf;
 use Yii;
 
 class CertificateWizard
@@ -18,7 +17,12 @@ class CertificateWizard
     const DESTINATION_DOWNLOAD = 1;
     const DESTINATION_SERVER = 2;
 
-    public static function DownloadCertificate(CertificateWork $certificate, TrainingGroupParticipantWork $participant, int $destination, string $path = null)
+    public static function DownloadCertificate(
+        CertificateWork $certificate,
+        TrainingGroupParticipantWork $participant,
+        int $destination,
+        string $path = null
+    )
     {
         if (strripos($certificate->certificateTemplatesWork->name, CertificateWork::TECHNOSUMMER)) {
             if (
@@ -92,5 +96,19 @@ class CertificateWizard
 
         $content = CertificateBuilder::createIntensiveCertificate($certificate, $participant, $genderVerbs);
         return CertificateBuilder::createPdfClass($content);
+    }
+
+    public static function archiveDownload()
+    {
+        $path = Yii::$app->basePath.'/download/'.Yii::$app->user->identity->getId().'/';
+        $createZip = new CreateDirZip();
+        $createZip->getFilesFromFolder($path, '');
+        $fileName = 'archive_certificates_'.Yii::$app->user->identity->getId().'.zip';
+
+        $fd = fopen($fileName, 'wb');
+        fwrite($fd, $createZip->getZippedfile());
+        fclose($fd);
+        $createZip->forceDownload($fileName);
+        unlink(Yii::$app->basePath.'/web/'.$fileName);
     }
 }

@@ -18,18 +18,21 @@ use yii\helpers\ArrayHelper;
 class DebugReportService
 {
     private TrainingGroupRepository $groupRepository;
+    private TrainingGroupLessonRepository $lessonRepository;
     private LessonThemeRepository $lessonThemeRepository;
     private TrainingGroupParticipantRepository $participantRepository;
     private VisitRepository $visitRepository;
 
     public function __construct(
         TrainingGroupRepository $groupRepository,
+        TrainingGroupLessonRepository $lessonRepository,
         LessonThemeRepository $lessonThemeRepository,
         TrainingGroupParticipantRepository $participantRepository,
         VisitRepository $visitRepository
     )
     {
         $this->groupRepository = $groupRepository;
+        $this->lessonRepository = $lessonRepository;
         $this->lessonThemeRepository = $lessonThemeRepository;
         $this->participantRepository = $participantRepository;
         $this->visitRepository = $visitRepository;
@@ -51,11 +54,13 @@ class DebugReportService
 
     /**
      * @param TrainingGroupWork[] $groups
+     * @param string $startDate
+     * @param string $endDate
      * @param int $calculateType
      * @param int[] $teacherIds
      * @return string[][]
      */
-    public function createManHoursDebugData(array $groups, int $calculateType, array $teacherIds = []) : array
+    public function createManHoursDebugData(array $groups, string $startDate, string $endDate, int $calculateType, array $teacherIds = []) : array
     {
         $data = [];
         foreach ($groups as $group) {
@@ -67,18 +72,18 @@ class DebugReportService
             $visitsCount = 0;
             foreach ($visits as $visit) {
                 /** @var VisitWork $visit */
-                $lessons = VisitLesson::fromString($visit->lessons);
+                $lessons = VisitLesson::fromString($visit->lessons, $this->lessonRepository);
                 foreach ($lessons as $lesson) {
-                    $visitsCount += ReportHelper::checkVisitLesson($lesson, $calculateType, ArrayHelper::getColumn($teacherLesson, 'id'));
+                    $visitsCount += ReportHelper::checkVisitLesson($lesson, $startDate, $endDate, $calculateType, ArrayHelper::getColumn($teacherLesson, 'id'));
                 }
             }
 
             $data[] = [
-                $group->number,
+                addslashes($group->number),
                 count($teacherLesson) > 0 ?: count($allLessons),
                 count($allLessons),
                 count($this->participantRepository->getParticipantsFromGroups([$group->id])),
-                (string)$visitsCount,
+                addslashes((string)$visitsCount),
             ];
         }
 

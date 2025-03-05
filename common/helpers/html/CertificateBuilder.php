@@ -41,7 +41,7 @@ class CertificateBuilder
                     </td>
                 </tr>
                 <tr>
-                    <td style="font-size: 56px; height: 110px; vertical-align: bottom; color: #427fa2;">
+                    <td style="font-size: 56px; height: 110px; vertical-align: bottom; color: #427fa2; text-align: left">
                         СЕРТИФИКАТ
                     </td>
                 </tr>

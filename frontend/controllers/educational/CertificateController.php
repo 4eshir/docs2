@@ -4,6 +4,7 @@ namespace frontend\controllers\educational;
 
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use frontend\components\GroupParticipantWidget;
+use frontend\components\wizards\CertificateWizard;
 use frontend\forms\certificate\CertificateForm;
 use frontend\models\search\SearchCertificate;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
@@ -46,13 +47,19 @@ class CertificateController extends Controller
 
         if ($form->load(Yii::$app->request->post())) {
             $certificateIds = $this->service->saveAllCertificates($form);
-            var_dump($form);die;
-            return $this->redirect(['view', 'id' => $form->id]);
+            $this->service->uploadCertificates($certificateIds);
+            return $this->redirect(['download-archive']);
         }
 
         return $this->render('create', [
             'model' => $form,
         ]);
+    }
+
+    public function actionDownloadArchive()
+    {
+        $this->service->downloadCertificates();
+        return $this->redirect(['index']);
     }
 
     public function actionGetGroups()

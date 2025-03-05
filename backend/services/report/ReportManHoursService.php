@@ -21,6 +21,7 @@ use yii\helpers\ArrayHelper;
 class ReportManHoursService
 {
     private TrainingGroupReportRepository $repository;
+    private TrainingGroupLessonRepository $lessonRepository;
     private LessonThemeRepository $lessonThemeRepository;
     private TrainingGroupParticipantRepository $participantRepository;
     private VisitRepository $visitRepository;
@@ -29,6 +30,7 @@ class ReportManHoursService
 
     public function __construct(
         TrainingGroupReportRepository      $repository,
+        TrainingGroupLessonRepository      $lessonRepository,
         LessonThemeRepository              $lessonThemeRepository,
         TrainingGroupParticipantRepository $participantRepository,
         VisitRepository                    $visitRepository,
@@ -36,6 +38,7 @@ class ReportManHoursService
     )
     {
         $this->repository = $repository;
+        $this->lessonRepository = $lessonRepository;
         $this->lessonThemeRepository = $lessonThemeRepository;
         $this->participantRepository = $participantRepository;
         $this->visitRepository = $visitRepository;
@@ -112,7 +115,7 @@ class ReportManHoursService
         $result = 0;
         foreach ($visits as $visit) {
             /** @var VisitWork $visit */
-            $lessons = VisitLesson::fromString($visit->lessons);
+            $lessons = VisitLesson::fromString($visit->lessons, $this->lessonRepository);
             foreach ($lessons as $lesson) {
                 $result += ReportHelper::checkVisitLesson($lesson, $startDate, $endDate, $calculateType, $teacherLessonIds);
             }
@@ -121,7 +124,7 @@ class ReportManHoursService
         return [
             'result' => $result,
             'debugData' => $mode == ManHoursReportForm::MODE_DEBUG ?
-                $this->debugService->createManHoursDebugData($groups, $calculateType, $teacherIds) :
+                $this->debugService->createManHoursDebugData($groups, $startDate, $endDate, $calculateType, $teacherIds) :
                 ''
         ];
     }
