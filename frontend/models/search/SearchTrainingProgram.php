@@ -8,7 +8,6 @@ use common\helpers\search\SearchFieldHelper;
 use common\helpers\StringFormatter;
 use common\Model;
 use frontend\models\work\educational\training_program\TrainingProgramWork;
-use frontend\models\work\regulation\RegulationWork;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 
@@ -56,7 +55,7 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
         $this->focusSearch = $focusSearch;
         $this->allowSearch = $allowSearch;
         $this->levelSearch = $levelSearch;
-        $this->actual = $actual == SearchFieldHelper::EMPTY_FIELD ? 1 : $actual;
+        $this->actual = $actual;
     }
 
     /**
@@ -161,6 +160,11 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
         $dataProvider->sort->attributes['allowRemote'] = [
             'asc' => ['allow_remote' => SORT_ASC],
             'desc' => ['allow_remote' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['fullDirectionName'] = [
+            'asc' => ['thematic_direction' => SORT_ASC],
+            'desc' => ['thematic_direction' => SORT_DESC],
         ];
     }
 

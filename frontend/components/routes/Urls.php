@@ -24,6 +24,8 @@ class Urls
 
     CONST PROGRAM_INDEX = "educational/training-program/index";
     const PROGRAM_VIEW = "educational/training-program/view";
+    const PROGRAM_RELEVANCE = "educational/training-program/relevance";
+    const PROGRAM_ACTUAL = "educational/training-program/actual";
 
     const PEOPLE_VIEW = "dictionaries/people/view";
 

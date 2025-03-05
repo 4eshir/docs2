@@ -20,6 +20,7 @@ use frontend\models\work\educational\training_program\TrainingProgramWork;
 use frontend\services\educational\TrainingProgramService;
 use Yii;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -66,6 +67,22 @@ class TrainingProgramController extends DocumentController
         ];
     }
 
+    public function actionRelevance()
+    {
+        $searchModel = new SearchTrainingProgram();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->pagination = false;
+
+        $links = ButtonsFormatter::anyOneLink('Сохранить статус', Yii::$app->frontUrls::PROGRAM_ACTUAL, ButtonsFormatter::BTN_PRIMARY);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
+        return $this->render('relevance', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml,
+        ]);
+    }
+
     /**
      * Lists all TrainingProgram models.
      * @return mixed
@@ -74,9 +91,11 @@ class TrainingProgramController extends DocumentController
     {
         $searchModel = new SearchTrainingProgram();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        //$dataProvider->pagination = false;
 
-        $links = ButtonsFormatter::PrimaryCreateLink('программу');
+        $links = array_merge(
+            ButtonsFormatter::anyOneLink('Добавить программу', 'create', 'btn-primary'),
+            ButtonsFormatter::anyOneLink('Изменить актуальность', Yii::$app->frontUrls::PROGRAM_RELEVANCE, ButtonsFormatter::BTN_SUCCESS)
+        );
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('index', [
@@ -94,7 +113,7 @@ class TrainingProgramController extends DocumentController
      */
     public function actionView($id)
     {
-        $links = ButtonsFormatter::UpdateDeleteLinks($id);
+        $links = ButtonsFormatter::updateDeleteLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         /** @var TrainingProgramWork $model */

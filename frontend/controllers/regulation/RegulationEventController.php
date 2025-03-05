@@ -48,7 +48,7 @@ class RegulationEventController extends DocumentController
         $searchModel = new SearchRegulationEvent();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        $links = ButtonsFormatter::PrimaryCreateLink('положение');
+        $links = ButtonsFormatter::primaryCreateLink('положение');
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('index', [
@@ -60,7 +60,7 @@ class RegulationEventController extends DocumentController
 
     public function actionView($id)
     {
-        $links = ButtonsFormatter::UpdateDeleteLinks($id);
+        $links = ButtonsFormatter::updateDeleteLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         /** @var RegulationWork $model */
