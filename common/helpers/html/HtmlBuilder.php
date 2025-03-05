@@ -9,6 +9,7 @@ use common\helpers\StringFormatter;
 use common\Model;
 use DomainException;
 use DOMDocument;
+use Exception;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonalDataParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
@@ -23,6 +24,34 @@ use yii\widgets\ActiveForm;
 
 class HtmlBuilder
 {
+    const DATE_FIELD_TYPE = 'date';
+    const TEXT_FIELD_TYPE = 'text';
+    const DROPDOWN_FIELD_TYPE = 'dropdown';
+
+    /**
+     * Создает красивый переключатель для чекбокса
+     *
+     * @param string $offSwitchText
+     * @param string $onSwitchText
+     * @param string $idElement
+     * @param string|null $nameInput
+     * @return string
+     */
+    public static function createToggle(string $offSwitchText, string $onSwitchText, string $idElement, string $nameInput = null)
+    {
+        return '<div class="toggle-wrapper form-group '.$nameInput.'">
+                    <input type="hidden" value="0" id="'.$idElement.'" name="'.$nameInput.'">
+                    <input type="checkbox" value="1" id="'.$idElement.'" class="toggle-checkbox" name="'.$nameInput.'">
+                    <span class="toggle-icon off">'.$offSwitchText.'</span>
+                    <div class="toggle-container">
+                        <div class="toggle-button"></div>
+                    </div>
+                    <span class="toggle-icon on">'.$onSwitchText.'</span>
+                    <div class="help-block"></div>
+                </div>';
+    }
+
+
     /**
      * Создает красивое представление длинного контента
      * в виде сложенного набора заголовка и кнопки для полного отображения
@@ -161,28 +190,35 @@ class HtmlBuilder
                 'class' => 'form-control',
                 'autocomplete' => 'off',
             ];
-            if ($field['type'] === 'date') {
-                $widgetOptions = [
-                    'dateFormat' => $field['dateFormat'],
-                    'language' => 'ru',
-                    'options' => $options,
-                    'clientOptions' => $field['clientOptions'],
-                ];
-                $result .= $form->field($searchModel, $attribute)->widget(DatePicker::class, $widgetOptions)->label(false);
-            } elseif ($field['type'] === 'text') {
-                $result .= $form->field($searchModel, $attribute)->textInput($options)->label(false);
-            } elseif ($field['type'] === 'dropdown') {
-                $options['prompt'] = $field['prompt'];
-                $options['options'] = $field['options'];
-                $result .= $form->field($searchModel, $attribute)->dropDownList($field['data'], $options)->label(false);
+
+            switch ($field['type']) {
+                case self::DATE_FIELD_TYPE:
+                    $widgetOptions = [
+                        'dateFormat' => $field['dateFormat'],
+                        'language' => 'ru',
+                        'options' => $options,
+                        'clientOptions' => $field['clientOptions'],
+                    ];
+                    $result .= $form->field($searchModel, $attribute)->widget(DatePicker::class, $widgetOptions)->label(false);
+                    break;
+                case self::TEXT_FIELD_TYPE:
+                    $result .= $form->field($searchModel, $attribute)->textInput($options)->label(false);
+                    break;
+                case self::DROPDOWN_FIELD_TYPE:
+                    $options['prompt'] = $field['prompt'];
+                    $options['options'] = $field['options'];
+                    $result .= $form->field($searchModel, $attribute)->dropDownList($field['data'], $options)->label(false);
+                    break;
+                default:
+                    $result .= '<div class="special-field">' . $field['data'] . '</div>';
             }
+
             $result .= '</div>';
 
             if ($counter % $valueInRow == 0 || $counter === $count) {
                 $result .= '</div>';
             }
         }
-
         $result .= self::filterButton($resetUrl) . '</div>
             </div>';
         return $result;

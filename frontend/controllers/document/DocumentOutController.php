@@ -79,7 +79,7 @@ class DocumentOutController extends Controller
             $this->repository->save($model);
         }
 
-        $links = ButtonsFormatter::PrimaryLinkAndModal(Yii::$app->frontUrls::DOC_OUT_CREATE, '#modal-reserve');
+        $links = ButtonsFormatter::primaryLinkAndModal(Yii::$app->frontUrls::DOC_OUT_CREATE, '#modal-reserve');
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('index', [
@@ -92,7 +92,7 @@ class DocumentOutController extends Controller
     }
     public function actionView($id)
     {
-        $links = ButtonsFormatter::UpdateDeleteLinks($id);
+        $links = ButtonsFormatter::updateDeleteLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('view', [

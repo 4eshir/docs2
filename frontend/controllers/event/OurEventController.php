@@ -81,7 +81,7 @@ class OurEventController extends DocumentController
         $searchModel = new SearchEvent();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        $links = ButtonsFormatter::PrimaryCreateLink('мероприятие');
+        $links = ButtonsFormatter::primaryCreateLink('мероприятие');
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('index', [
@@ -99,7 +99,7 @@ class OurEventController extends DocumentController
      */
     public function actionView($id)
     {
-        $links = ButtonsFormatter::UpdateDeleteLinks($id);
+        $links = ButtonsFormatter::updateDeleteLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         /** @var EventWork $model */

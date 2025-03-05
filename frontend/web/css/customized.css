@@ -511,3 +511,95 @@ body {
 .accordion-date ol, .accordion-date ul {
     margin-left: -1em;
 }
+
+input[type="checkbox"] {
+    accent-color: var(--primary-color);
+}
+
+
+.training-program-search-relevance .filter-panel {
+    display: block;
+}
+
+.training-program-search-relevance .grid-view th, .grid-view td:last-child {
+    white-space: normal;
+}
+
+.toggle-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: .25em;
+}
+
+.toggle-checkbox:not(:checked) + .off,
+.toggle-checkbox:checked ~ .on {
+    font-weight: 700;
+}
+
+.toggle-checkbox {
+    -webkit-appearance: none;
+    appearance: none;
+    position: absolute;
+    z-index: 1;
+    border-radius: 3.125em;
+    width: 4.05em;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    margin-left: -2em!important;
+}
+
+.toggle-container {
+    position: relative;
+    border-radius: 3.125em;
+    width: 4.05em;
+    height: 1.5em;
+    background-color: #ccc;
+    background-size: .125em .125em;
+}
+
+.toggle-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: .0625em;
+    left: .0625em;
+    border-radius: inherit;
+    width: 2.55em;
+    height: calc(100% - .125em);
+    background-color: var(--secondary-hover);
+    box-shadow: 0 .125em .25em rgb(0 0 0 / .6);
+    transition: left .2s, background-color 0.15s linear;
+}
+
+.toggle-checkbox:checked ~ .toggle-container > .toggle-button {
+    left: 1.4375em;
+    background-color: var(--primary-color);
+    transition: background-color 0.15s linear;
+}
+
+.toggle-button::before {
+     content: '';
+     position: absolute;
+     top: inherit;
+     border-radius: inherit;
+     width: calc(100% - .375em);
+     height: inherit;
+ }
+
+.toggle-button::after {
+     content: '';
+     position: absolute;
+     width: .5em;
+     height: 38%;
+ }
+
+.special-field {
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    align-content: center;
+}

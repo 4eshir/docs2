@@ -141,6 +141,7 @@ class RulesConfig
                 'delete-theme',
                 'delete-author',
                 'delete-file',
+                'relevance',
             ]
         ],
 

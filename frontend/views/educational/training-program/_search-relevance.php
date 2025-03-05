@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="training-program-search">
+<div class="training-program-search-relevance">
 
     <?php $form = ActiveForm::begin([
         'action' => ['index'], // Действие контроллера для обработки поиска
@@ -26,11 +26,10 @@ use yii\widgets\ActiveForm;
         SearchFieldHelper::textField('authorSearch', 'Составитель', 'Составитель'),
         SearchFieldHelper::dropdownField('levelSearch', 'Уровень сложности', TrainingProgramWork::LEVEL_LIST, 'Уровень сложности'),
         SearchFieldHelper::dropdownField('focusSearch', 'Направленность', Yii::$app->focus->getList(), 'Направленность'),
-        SearchFieldHelper::dropdownField('allowSearch', 'Форма реализации', Yii::$app->allowRemote->getList(), 'Форма реализации'),
-        SearchFieldHelper::dropdownField('actual', 'Актуальность', $searchModel::ACTUAL, 'Актуальность'),
+        SearchFieldHelper::specialHtmlFiled('actual', HtmlBuilder::createToggle('Не актуальные программы', 'Актуальные программы','actual', 'actual')),
     );
 
-    echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::PROGRAM_INDEX); ?>
+    echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::PROGRAM_RELEVANCE); ?>
 
     <?php ActiveForm::end(); ?>
 

@@ -44,7 +44,7 @@ class RegulationController extends DocumentController
         $searchModel = new SearchRegulation();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        $links = ButtonsFormatter::PrimaryCreateLink('положение');
+        $links = ButtonsFormatter::primaryCreateLink('положение');
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('index', [
@@ -56,7 +56,7 @@ class RegulationController extends DocumentController
 
     public function actionView($id)
     {
-        $links = ButtonsFormatter::UpdateDeleteLinks($id);
+        $links = ButtonsFormatter::updateDeleteLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         /** @var RegulationWork $model */

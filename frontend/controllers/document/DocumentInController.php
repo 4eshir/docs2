@@ -77,7 +77,7 @@ class DocumentInController extends DocumentController
             $this->repository->save($model);
         }
 
-        $links = ButtonsFormatter::TwoPrimaryLinks(Yii::$app->frontUrls::DOC_IN_CREATE, Yii::$app->frontUrls::DOC_IN_RESERVE);
+        $links = ButtonsFormatter::twoPrimaryLinks(Yii::$app->frontUrls::DOC_IN_CREATE, Yii::$app->frontUrls::DOC_IN_RESERVE);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('index', [
@@ -90,7 +90,7 @@ class DocumentInController extends DocumentController
 
     public function actionView($id)
     {
-        $links = ButtonsFormatter::UpdateDeleteLinks($id);
+        $links = ButtonsFormatter::updateDeleteLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         /** @var DocumentInWork $model */

@@ -16,25 +16,6 @@ $this->title = 'Образовательные программы';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<script>
-    function archive() {
-        var keys = $('#grid').yiiGridView('getSelectedRows');
-        //var p = getUrlParameter('page');
-        //if (p == false) p = 1;
-        var checkboxes = document.getElementsByClassName('check');
-        var archive = [];
-        var unarchive = [];
-        for (var index = 0; index < checkboxes.length; index++) {
-            if (checkboxes[index].checked)
-                archive.push(checkboxes[index].value);
-            else
-                unarchive.push(checkboxes[index].value);
-        }
-        window.location.href='<?php echo Url::to(['training-program/archive']); ?>&arch='+archive.join()+'&unarch='+unarchive.join();
-        //$('#grid').yiiGridView('getSelectedRows')
-    }
-</script>
-
 <div class="training-program-index">
 
     <div class="substrate">
@@ -87,12 +68,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'summary' => false,
         'columns' => [
-            /*['class' => 'yii\grid\CheckboxColumn', 'header' => 'Акт.',
-                'checkboxOptions' => function ($model, $key, $index, $column) {
-                    $options['checked'] = (bool)$model->actual;
-                    $options['class'] = 'check';
-                    return $options;
-                }],*/
             ['attribute' => 'name'],
             ['attribute' => 'levelNumber', 'encodeLabel' => false, 'format' => 'raw'],
             ['attribute' => 'branchString', 'encodeLabel' => false, 'format' => 'raw'],
@@ -115,21 +90,6 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
-
-    <?php
-    $url = Url::toRoute(['training-program/actual']);
-    $this->registerJs(
-    "function myStatus(id){
-        $.ajax({
-            type: 'GET',
-            url: 'index.php?r=training-program/actual',
-            data: {id: id},
-            success: function(result){
-                console.log(result);
-            }
-        });
-    }", yii\web\View::POS_END);
-    ?>
 
     <?php
     $this->registerJs(<<<JS

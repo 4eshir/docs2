@@ -83,4 +83,20 @@ class SearchFieldHelper
 
         return $result;
     }
+
+    /**
+     * Позволяет разместить html разметку как специальное поле
+     *
+     * @param string $fieldName
+     * @param string $data
+     * @return array[]
+     */
+    public static function specialHtmlFiled(string $fieldName, string $data) {
+        return [
+            $fieldName => [
+                'type' => 'html',
+                'data' => $data,
+            ],
+        ];
+    }
 }
