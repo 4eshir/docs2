@@ -37,13 +37,14 @@ class HtmlBuilder
      * @param string $onSwitchText
      * @param string $idElement
      * @param string|null $nameInput
+     * @param bool $checked
      * @return string
      */
-    public static function createToggle(string $offSwitchText, string $onSwitchText, string $idElement, string $nameInput = null)
+    public static function createToggle(string $offSwitchText, string $onSwitchText, string $idElement, string $nameInput = null, bool $checked = false)
     {
         return '<div class="toggle-wrapper form-group '.$nameInput.'">
                     <input type="hidden" value="0" id="'.$idElement.'" name="'.$nameInput.'">
-                    <input type="checkbox" value="1" id="'.$idElement.'" class="toggle-checkbox" name="'.$nameInput.'">
+                    <input type="checkbox" value="1" id="'.$idElement.'" class="toggle-checkbox" name="'.$nameInput.'" '.($checked ? 'checked' : '').'>
                     <span class="toggle-icon off">'.$offSwitchText.'</span>
                     <div class="toggle-container">
                         <div class="toggle-button"></div>
@@ -52,7 +53,6 @@ class HtmlBuilder
                     <div class="help-block"></div>
                 </div>';
     }
-
 
     /**
      * Создает красивое представление длинного контента

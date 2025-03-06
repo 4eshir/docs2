@@ -8,6 +8,7 @@ use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\ButtonsFormatter;
 use common\helpers\html\HtmlBuilder;
+use common\helpers\search\SearchFieldHelper;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\FilesRepository;
@@ -69,7 +70,8 @@ class TrainingProgramController extends DocumentController
 
     public function actionRelevance()
     {
-        $searchModel = new SearchTrainingProgram();
+        $searchModel = new SearchTrainingProgram(1);
+
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->pagination = false;
 

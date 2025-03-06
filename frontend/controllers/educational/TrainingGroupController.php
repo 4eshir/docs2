@@ -5,7 +5,9 @@ namespace frontend\controllers\educational;
 use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
+use common\helpers\ButtonsFormatter;
 use common\helpers\common\RequestHelper;
+use common\helpers\html\HtmlBuilder;
 use common\Model;
 use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PeopleRepository;
@@ -70,15 +72,21 @@ class TrainingGroupController extends DocumentController
     }
 
 
-    public function actionIndex($archive = null)
+    public function actionIndex()
     {
         $searchModel = new SearchTrainingGroup();
-
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        $links = array_merge(
+            ButtonsFormatter::anyOneLink('Добавить программу', 'create', 'btn-primary'),
+            ButtonsFormatter::anyOneLink('Изменить актуальность', Yii::$app->frontUrls::TRAINING_GROUP_RELEVANCE, ButtonsFormatter::BTN_SUCCESS)
+        );
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml,
         ]);
     }
 

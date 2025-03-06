@@ -2,14 +2,12 @@
 
 namespace frontend\models\search;
 
+use common\components\interfaces\SearchInterfaces;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
-/**
- * SearchTrainingGroup represents the model behind the search form of `app\models\common\TrainingGroup`.
- */
-class SearchTrainingGroup extends TrainingGroupWork
+class SearchTrainingGroup extends Model implements SearchInterfaces
 {
     public $programName;
     public $numberView;

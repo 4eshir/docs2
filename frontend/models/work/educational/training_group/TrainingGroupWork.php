@@ -2,6 +2,8 @@
 
 namespace frontend\models\work\educational\training_group;
 
+use common\helpers\StringFormatter;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\order\OrderTrainingWork;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\events\EventTrait;
@@ -15,6 +17,7 @@ use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 use Yii;
+use yii\helpers\Url;
 
 /**
  * @property TrainingProgramWork $trainingProgramWork
@@ -63,6 +66,21 @@ class TrainingGroupWork extends TrainingGroup
 
         return $entity;
     }
+
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'number' => 'Номер',
+            'programName' => 'Образовательная программа',
+            'branchString' => 'Отдел',
+            'teachersList' => 'Педагог(-и)',
+            'start_date' => 'Дата начала занятий',
+            'finish_date' => 'Дата окончания занятий',
+            'budgetString' => 'Бюджет',
+            'key_words' => 'Ключевые слова',
+        ]);
+    }
+
     public function generateNumber($teacherId)
     {
         $level = $this->trainingProgramWork->level;
@@ -91,9 +109,47 @@ class TrainingGroupWork extends TrainingGroup
         return $this->number;
     }
 
+    /**
+     * Номер учебной группы
+     * @return string|null
+     */
     public function getNumber()
     {
         return $this->number;
+    }
+
+    /**
+     * Наименование образовательной программы
+     * @return string|null
+     */
+    public function getProgramName()
+    {
+        $program = $this->trainingProgramWork;
+        return $program ? $program->name : '---';
+    }
+
+    /**
+     * Возвращает список преподавателей в формате текста или ссылки
+     * @param int|null $formatter
+     * @return string
+     */
+    public function getTeachersList(int $formatter = null)
+    {
+        $newTeachers = [];
+        foreach ($this->teachersWork as $teacher) {
+            /** @var TeacherGroupWork $teacher */
+            if ($formatter == StringFormatter::FORMAT_LINK)
+            {
+                $newTeachers[] = StringFormatter::stringAsLink(
+                    $teacher->teacherWork->getFIO(PersonInterface::FIO_SURNAME_INITIALS),
+                    Url::to([Yii::$app->frontUrls::PEOPLE_VIEW, 'id' => $teacher->teacherWork->people_id])
+                );
+            }
+            else {
+                $newTeachers[] = $teacher->teacherWork->getFIO(PersonInterface::FIO_SURNAME_INITIALS);
+            }
+        }
+        return implode('<br>', $newTeachers);
     }
 
     /**
@@ -131,10 +187,6 @@ class TrainingGroupWork extends TrainingGroup
         return $this->hasOne(TrainingProgramWork::class, ['id' => 'training_program_id']);
     }
 
-    public function getTeacherWork()
-    {
-        return $this->hasOne(PeopleStampWork::class, ['id' => 'teacher_id']);
-    }
     public function getActivity($orderId){
         if ($orderId != NULL) {
             $participants = TrainingGroupParticipantWork::find()->where(['training_group_id' => $this->id])->all();

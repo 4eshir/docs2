@@ -27,8 +27,11 @@ class Urls
     const PROGRAM_RELEVANCE = "educational/training-program/relevance";
     const PROGRAM_ACTUAL = "educational/training-program/actual";
 
-    const PEOPLE_VIEW = "dictionaries/people/view";
-
-    const ORDER_MAIN_VIEW = "order/order-main/view";
+    const TRAINING_GROUP_INDEX = "educational/training-group/index";
     const TRAINING_GROUP_VIEW = "educational/training-group/view";
+    const TRAINING_GROUP_RELEVANCE = "educational/training-group/relevance";
+
+
+    const PEOPLE_VIEW = "dictionaries/people/view";
+    const ORDER_MAIN_VIEW = "order/order-main/view";
 }

@@ -84,11 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
             return ['data-href' => Url::to([Yii::$app->frontUrls::PROGRAM_VIEW, 'id' => $model->id])];
         },
     ]); ?>
-
-    <div class="form-group">
-        <?php echo Html::button('Сохранить статус программ', ['class' => 'btn btn-success', 'onclick' => 'archive()']) ?>
     </div>
-
 </div>
 
     <?php

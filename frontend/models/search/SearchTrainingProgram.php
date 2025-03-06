@@ -23,13 +23,14 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
     public int $allowSearch;
     public int $levelSearch;
     public int $actual;
+    public int $actualRelevance;
 
     public const ACTUAL = [0 => 'Не актуальные программы', 1 => 'Актуальные программы'];
 
     public function rules()
     {
         return [
-            [['branchSearch', 'focusSearch', 'allowSearch', 'levelSearch'], 'integer'],
+            [['branchSearch', 'focusSearch', 'allowSearch', 'levelSearch', 'actualRelevance'], 'integer'],
             [['programName', 'authorSearch'], 'string'],
             [['startDateSearch', 'finishDateSearch'], 'date', 'format' => 'dd.MM.yyyy'],
             [['name', 'startDateSearch', 'finishDateSearch', 'programName', 'authorSearch', 'branchSearch', 'focusSearch', 'allowSearch', 'levelSearch'], 'safe'],
@@ -37,6 +38,7 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
     }
 
     public function __construct(
+        int $activeValidators = SearchFieldHelper::EMPTY_FIELD,
         string $startDateSearch = '',
         string $finishDateSearch = '',
         string $programName = '',
@@ -56,6 +58,7 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
         $this->allowSearch = $allowSearch;
         $this->levelSearch = $levelSearch;
         $this->actual = $actual;
+        $this->actualRelevance = $activeValidators;
     }
 
     /**
@@ -71,6 +74,8 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
             $params['SearchTrainingProgram']['focusSearch'] = StringFormatter::stringAsInt($params['SearchTrainingProgram']['focusSearch']);
             $params['SearchTrainingProgram']['allowSearch'] = StringFormatter::stringAsInt($params['SearchTrainingProgram']['allowSearch']);
             $params['SearchTrainingProgram']['levelSearch'] = StringFormatter::stringAsInt($params['SearchTrainingProgram']['levelSearch']);
+            $params['SearchTrainingProgram']['actual'] = StringFormatter::stringAsInt($params['SearchTrainingProgram']['actual']);
+            $params['SearchTrainingProgram']['actualRelevance'] = StringFormatter::stringAsInt($params['SearchTrainingProgram']['actualRelevance']);
         }
 
         $this->load($params);
@@ -184,6 +189,7 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
         $this->filterFocus($query);
         $this->filterAllowRemote($query);
         $this->filterActual($query);
+        $this->filterActualRelevance($query);
     }
 
     /**
@@ -282,6 +288,18 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
     private function filterActual(ActiveQuery $query) {
         if (!StringFormatter::isEmpty($this->actual) && $this->actual !== SearchFieldHelper::EMPTY_FIELD) {
             $query->andFilterWhere(['actual' => $this->actual]);
+        }
+    }
+
+    /**
+     * Фильтр по актуальности программ для страницы массовой актуализации
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterActualRelevance(ActiveQuery $query) {
+        if (!StringFormatter::isEmpty($this->actualRelevance) && $this->actualRelevance !== SearchFieldHelper::EMPTY_FIELD) {
+            $query->andFilterWhere(['actual' => $this->actualRelevance]);
         }
     }
 }
