@@ -72,6 +72,7 @@ class ReportManHoursMockService
     ) : array
     {
         $groups = $this->getTrainingGroupsQueryByFilters($startDate, $endDate, $branches, $focuses, $allowRemotes, $budgets);
+        $groupIds = ArrayHelper::getColumn($groups, 'id');
 
         $teacherLessonIds = count($teacherIds) > 0 ?
             ArrayHelper::getColumn(
@@ -84,6 +85,10 @@ class ReportManHoursMockService
 
         $result = 0;
         $lessonData = TrainingGroupLessonMockProvider::convert($this->lessons, ['id', 'training_group_id', 'lesson_date']);
+        $lessonData = array_filter($lessonData, function ($lessonMock) use ($groupIds) {
+            return in_array($lessonMock['training_group_id'], $groupIds);
+        });
+
         $mockRepository = Yii::createObject(
             TrainingGroupLessonRepository::class,
             ['provider' => Yii::createObject(
@@ -98,6 +103,7 @@ class ReportManHoursMockService
                 $visit['lessons'],
                 $mockRepository
             );
+
             foreach ($lessons as $lesson) {
                 $result += ReportHelper::checkVisitLesson($lesson, $startDate, $endDate, $calculateType, $teacherLessonIds);
             }

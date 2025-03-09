@@ -26,6 +26,7 @@ class ReportHelper
         }
 
         if (
+            $visitLesson->lesson &&
             ($visitLesson->lesson->lesson_date >= $startDate && $visitLesson->lesson->lesson_date <= $endDate) &&
             (($visitLesson->status == VisitWork::ATTENDANCE || $visitLesson->status == VisitWork::DISTANCE) ||
                 ($calculateType == ManHoursReportForm::MAN_HOURS_ALL && $visitLesson->status == VisitWork::NO_ATTENDANCE)) &&

@@ -192,32 +192,32 @@ class ManHoursReportData
             ['id' => 2, 'training_group_id' => 1, 'lesson_date' => '2010-03-01'],
             // --------
             // Группа 2
-            ['id' => 3, 'training_group_id' => 2],
-            ['id' => 4, 'training_group_id' => 2],
+            ['id' => 3, 'training_group_id' => 2, 'lesson_date' => '2010-01-01'],
+            ['id' => 4, 'training_group_id' => 2, 'lesson_date' => '2010-03-01'],
             // --------
             // Группа 3
-            ['id' => 5, 'training_group_id' => 3],
-            ['id' => 6, 'training_group_id' => 3],
+            ['id' => 5, 'training_group_id' => 3, 'lesson_date' => '2010-01-10'],
+            ['id' => 6, 'training_group_id' => 3, 'lesson_date' => '2010-01-20'],
             // --------
             // Группа 4
             ['id' => 7, 'training_group_id' => 4, 'lesson_date' => '2010-01-01'],
             ['id' => 8, 'training_group_id' => 4, 'lesson_date' => '2010-01-15'],
             // --------
             // Группа 5
-            ['id' => 9, 'training_group_id' => 5],
-            ['id' => 10, 'training_group_id' => 5],
+            ['id' => 9, 'training_group_id' => 5, 'lesson_date' => '2010-04-01'],
+            ['id' => 10, 'training_group_id' => 5, 'lesson_date' => '2010-05-01'],
             // --------
             // Группа 6
-            ['id' => 11, 'training_group_id' => 6],
-            ['id' => 12, 'training_group_id' => 6],
+            ['id' => 11, 'training_group_id' => 6, 'lesson_date' => '2010-04-10'],
+            ['id' => 12, 'training_group_id' => 6, 'lesson_date' => '2010-04-20'],
             // --------
             // Группа 7
-            ['id' => 13, 'training_group_id' => 7],
-            ['id' => 14, 'training_group_id' => 7],
+            ['id' => 13, 'training_group_id' => 7, 'lesson_date' => '2010-02-15'],
+            ['id' => 14, 'training_group_id' => 7, 'lesson_date' => '2010-04-15'],
             // --------
             // Группа 8
-            ['id' => 15, 'training_group_id' => 8],
-            ['id' => 16, 'training_group_id' => 8],
+            ['id' => 15, 'training_group_id' => 8, 'lesson_date' => '2010-02-25'],
+            ['id' => 16, 'training_group_id' => 8, 'lesson_date' => '2010-03-25'],
             // --------
         ];
     }
