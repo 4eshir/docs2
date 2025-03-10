@@ -63,12 +63,12 @@ class GeneralCopyController extends Controller
     }
 
     public function actionCopyAll(){
-        $this->actCopyController->actionCopyAll();
-        $this->foreignEventCopyController->actionCopyAll();
-        $this->localResponsibilityCopyController->actionCopyAll();
-        $this->documentOrderCopyController->actionCopyAll();
         $this->initCopyController->actionCopyAll();
         $this->documentInOutCopyController->actionCopyAll();
+        $this->localResponsibilityCopyController->actionCopyAll();
+        $this->documentOrderCopyController->actionCopyAll();
+        $this->foreignEventCopyController->actionCopyAll();
+        $this->actCopyController->actionCopyAll();
         //$this->peopleTablesCopyController->actionCopyAll();
         $this->regulationCopyController->actionCopyAll();
         $this->personalDataCopyController->actionCopyAll();
