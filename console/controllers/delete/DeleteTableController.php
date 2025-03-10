@@ -140,6 +140,40 @@ class DeleteTableController extends Controller
     {
         Yii::$app->db->createCommand()->delete('act_participant_branch')->execute();
     }
+    public function actionDeleteTrainingGroupParticipant()
+    {
+        Yii::$app->db->createCommand()->delete('training_group_participant')->execute();
+    }
+    public function actionDeleteGroupProjectThemes(){
+        Yii::$app->db->createCommand()->delete('group_project_themes')->execute();
+    }
+    public function actionDeleteTrainingGroupLesson(){
+        Yii::$app->db->createCommand()->delete('training_group_lesson')->execute();
+    }
+    public function actionDeleteTrainingGroupExpert(){
+        Yii::$app->db->createCommand()->delete('training_group_expert')->execute();
+    }
+    public function actionDeleteTeacherGroup(){
+        Yii::$app->db->createCommand()->delete('teacher_group')->execute();
+    }
+    public function actionDeleteTrainingGroup(){
+        Yii::$app->db->createCommand()->delete('training_group')->execute();
+    }
+    public function actionDeleteVisit()
+    {
+        Yii::$app->db->createCommand()->delete('visit')->execute();
+    }
+    public function actionDeleteLessonTheme()
+    {
+        Yii::$app->db->createCommand()->delete('lesson_theme')->execute();
+    }
+    public function actionDeleteParticipantAchievement(){
+        Yii::$app->db->createCommand()->delete('participant_achievement')->execute();
+    }
+    public function actionDeleteCertificate()
+    {
+        Yii::$app->db->createCommand()->delete('certificate')->execute();
+    }
     public function actionDeleteInitCopy()
     {
         $this->actionDeleteBotMessage();
@@ -173,7 +207,6 @@ class DeleteTableController extends Controller
     }
     public function actionDeleteEventCopy()
     {
-
         $this->actionDeleteEventScope();
         $this->actionDeleteEventBranch();
         $this->actionDeleteEvent();
@@ -199,6 +232,15 @@ class DeleteTableController extends Controller
         $this->actionDeleteActParticipant();
         $this->actionDeleteTeamName();
     }
+    public function actionDeleteTrainingGroupCopy()
+    {
+        $this->actionDeleteTrainingGroupParticipant();
+        $this->actionDeleteGroupProjectThemes();
+        $this->actionDeleteTrainingGroupLesson();
+        $this->actionDeleteTrainingGroupExpert();
+        $this->actionDeleteTeacherGroup();
+        $this->actionDeleteTrainingGroup();
+    }
     public function actionDeleteAll()
     {
         $this->actionDeleteActCopy();
@@ -212,5 +254,10 @@ class DeleteTableController extends Controller
         $this->actionDeletePeoplePositionCompanyBranch();
         $this->actionDeleteDocumentInOutCopy();
         $this->actionDeleteInitCopy();
+        $this->actionDeleteTrainingGroupCopy();
+        $this->actionDeleteVisit();
+        $this->actionDeleteLessonTheme();
+        $this->actionDeleteParticipantAchievement();
+        $this->actionDeleteCertificate();
     }
 }
