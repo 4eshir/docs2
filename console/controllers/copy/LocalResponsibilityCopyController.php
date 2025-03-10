@@ -37,6 +37,7 @@ class LocalResponsibilityCopyController extends Controller
                     'auditorium_type' => $record['auditorium_type_id'],
                 ]
             );
+            //add files
             $command->execute();
         }
     }
@@ -56,6 +57,7 @@ class LocalResponsibilityCopyController extends Controller
                     'regulation_id' => $record['regulation_id'],
                 ]
             );
+            //add files
             $command->execute();
         }
     }

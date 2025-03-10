@@ -44,6 +44,7 @@ class ForeignEventCopyController extends Controller
                     'last_edit_id' => $record['last_edit_id']
                 ]
             );
+            //add files
             $command->execute();
         }
     }
