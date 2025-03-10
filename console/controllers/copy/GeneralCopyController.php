@@ -69,7 +69,7 @@ class GeneralCopyController extends Controller
         $this->documentOrderCopyController->actionCopyAll();
         $this->initCopyController->actionCopyAll();
         $this->documentInOutCopyController->actionCopyAll();
-        $this->peopleTablesCopyController->actionCopyAll();
+        //$this->peopleTablesCopyController->actionCopyAll();
         $this->regulationCopyController->actionCopyAll();
         $this->personalDataCopyController->actionCopyAll();
         $this->eventCopyController->actionCopyAll();
