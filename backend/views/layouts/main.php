@@ -40,7 +40,7 @@ AppAsset::register($this);
             'label' => 'Отчеты',
             'items' => [
                 ['label' => 'Отчеты по обучающимся', 'url' => ['/report/query/man-hours-report/man-hours']],
-                ['label' => 'Отчеты по мероприятиям', 'url' => ['/report/query/foreign-event']],
+                ['label' => 'Отчеты по мероприятиям', 'url' => ['/report/query/foreign-event-report/foreign-event']],
                 ['label' => 'Отчеты по формам', 'url' => ['/report/form-report/choose-form']],
             ],
         ],

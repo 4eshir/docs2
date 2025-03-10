@@ -31,9 +31,9 @@ class ActParticipantRepository
         $this->foreignEventRepository = $foreignEventRepository;
     }
 
-    public function getByForeignEventId($foreignEventId)
+    public function getByForeignEventIds(array $foreignEventIds)
     {
-        $query = ActParticipantWork::find()->where(['foreign_event_id' => $foreignEventId]);
+        $query = ActParticipantWork::find()->where(['IN', 'foreign_event_id', $foreignEventIds]);
         LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка актов участия по заданному мероприятию', $query->createCommand()->getRawSql());
         return $query->all();
     }

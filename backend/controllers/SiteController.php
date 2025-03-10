@@ -4,6 +4,8 @@ namespace backend\controllers;
 
 use backend\forms\report\ManHoursReportForm;
 use backend\helpers\DebugReportHelper;
+use backend\services\report\ReportFacade;
+use backend\services\report\ReportForeignEventService;
 use backend\services\report\ReportManHoursService;
 use common\components\dictionaries\base\BranchDictionary;
 use common\helpers\common\HeaderWizard;
@@ -87,19 +89,21 @@ class SiteController extends Controller
 
     public function actionTest()
     {
-        $service = Yii::createObject(ReportManHoursService::class);
-        $res = $service->calculateManHours(
-            '2025-01-01',
-            '2025-02-02',
-            [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM],
+        $service = Yii::createObject(ReportForeignEventService::class);
+        $res = $service->calculateEventParticipants(
+            '2024-01-01',
+            '2026-02-02',
             [1, 2, 3, 4, 5],
-            [1, 2],
+            [1, 2, 3, 4, 5],
             [0, 1],
-            ManHoursReportForm::MAN_HOURS_FAIR,
-            []
+            [1, 2, 3, 4, 5, 6, 7, 8]
         );
 
-        HeaderWizard::setCsvLoadHeaders((Yii::createObject(Client::class))->generateId(10) . '.csv');
+        echo '<pre>';
+        var_dump($res);
+        echo '</pre>';
+
+        /*HeaderWizard::setCsvLoadHeaders((Yii::createObject(Client::class))->generateId(10) . '.csv');
 
         $writer = new Csv(
             ExcelCreator::createCsvFile(
@@ -110,6 +114,6 @@ class SiteController extends Controller
         $writer->setDelimiter(';');
         $writer->setOutputEncoding('windows-1251');
         $writer->save('php://output');
-        exit;
+        exit;*/
     }
 }

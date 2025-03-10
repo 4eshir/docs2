@@ -140,7 +140,7 @@ class ForeignEventForm extends Model
         $this->minAge = $event->min_age;
         $this->maxAge = $event->max_age;
         $this->orderParticipant = $order;
-        $this->actsParticipantModel = $this->actParticipantRepository->getByForeignEventId($foreignEventId);
+        $this->actsParticipantModel = $this->actParticipantRepository->getByForeignEventIds([$foreignEventId]);
         $this->squadParticipantsModel = $this->squadParticipantRepository->getAllFromEvent($foreignEventId);
         $this->squadParticipants = $this->fillActParticipants($foreignEventId);
         $this->oldAchievements = $this->fillOldAchievements($foreignEventId);
@@ -165,7 +165,7 @@ class ForeignEventForm extends Model
     public function fillActParticipants($foreignEventId)
     {
         $actIds = ArrayHelper::getColumn(
-            (Yii::createObject(ActParticipantRepository::class))->getByForeignEventId($foreignEventId),
+            (Yii::createObject(ActParticipantRepository::class))->getByForeignEventIds([$foreignEventId]),
             'id'
         );
 

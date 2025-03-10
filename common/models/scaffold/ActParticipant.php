@@ -20,6 +20,8 @@ use Yii;
  * @property PeopleStamp $teacher
  * @property PeopleStamp $teacher2
  * @property TeamName $teamName
+ * @property ActParticipantBranch[] $actParticipantBranch
+ * @property ParticipantAchievement[] $participantAchievement
  */
 class ActParticipant extends \yii\db\ActiveRecord
 {
@@ -104,5 +106,15 @@ class ActParticipant extends \yii\db\ActiveRecord
     public function getTeamName()
     {
         return $this->hasOne(TeamName::class, ['id' => 'team_name_id']);
+    }
+
+    public function getActParticipantBranch()
+    {
+        return $this->hasMany(ActParticipantBranch::class, ['act_participant_id' => 'id']);
+    }
+
+    public function getParticipantAchievement()
+    {
+        return $this->hasMany(ParticipantAchievement::class, ['act_participant_id' => 'id']);
     }
 }

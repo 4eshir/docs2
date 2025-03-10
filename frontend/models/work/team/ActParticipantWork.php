@@ -2,7 +2,10 @@
 
 namespace frontend\models\work\team;
 
+use common\models\scaffold\ActParticipantBranch;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
+use frontend\models\work\dictionaries\PersonInterface;
+use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\team\TeamNameWork;
 use frontend\models\work\event\ForeignEventWork;
 use common\events\EventTrait;
@@ -20,6 +23,9 @@ use yii\helpers\Url;
  * @property PeopleStampWork $teacher2Work
  * @property TeamNameWork $teamNameWork
  * @property ForeignEventWork $foreignEventWork
+ *
+ * @property ActParticipantBranchWork[] $actParticipantBranchWork
+ * @property ParticipantAchievementWork[] $participantAchievementWork
  */
 class ActParticipantWork extends ActParticipant
 {
@@ -208,7 +214,7 @@ class ActParticipantWork extends ActParticipant
     {
         return 'Редактировать: ' . $this->team_name_id ?
             'Команда ' . $this->teamNameWork->name :
-            $this->getParticipants()[0]->participantWork->getFIO(PeopleWork::FIO_FULL);
+            $this->getParticipants()[0]->participantWork->getFIO(PersonInterface::FIO_FULL);
     }
 
     public function getBranches()
@@ -239,5 +245,15 @@ class ActParticipantWork extends ActParticipant
     public function getForeignEventWork()
     {
         return $this->hasOne(ForeignEventWork::class, ['id' => 'foreign_event_id']);
+    }
+
+    public function getActParticipantBranchWork()
+    {
+        return $this->hasMany(ActParticipantBranchWork::class, ['act_participant_id' => 'id']);
+    }
+
+    public function getParticipantAchievementWork()
+    {
+        return $this->hasMany(ParticipantAchievementWork::class, ['act_participant_id' => 'id']);
     }
 }

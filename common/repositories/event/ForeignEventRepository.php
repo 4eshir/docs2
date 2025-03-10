@@ -23,6 +23,27 @@ class ForeignEventRepository
         return ForeignEventWork::find()->where(['order_participant_id' => $id])->one();
     }
 
+    /**
+     * Возвращает все мероприятия, завершившиеся в промежуток [$startDate; $endDate]
+     * и соответствующие уровням из $levels
+     *
+     * @param string $startDate
+     * @param string $endDate
+     * @param array $levels
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getByDatesAndLevels(string $startDate, string $endDate, array $levels = [])
+    {
+        $query = ForeignEventWork::find()->where(['>=', 'end_date', $startDate])->andWhere(['<=', 'end_date', $endDate]);
+        if (count($levels) > 0) {
+            $query = $query->andWhere(['IN', 'level', $levels]);
+        }
+
+        var_dump($query->createCommand()->getRawSql());
+
+        return $query->all();
+    }
+
     public function delete($id)
     {
         return ForeignEventWork::deleteAll(['id' => $id]);

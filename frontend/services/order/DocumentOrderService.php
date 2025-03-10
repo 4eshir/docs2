@@ -257,7 +257,7 @@ class DocumentOrderService
         //order_event_generate
         $model->recordEvent(new OrderEventGenerateDeleteEvent($model->id), DocumentOrderWork::class);
         $event = $this->foreignEventRepository->getByDocOrderId($model->id);
-        $acts = $this->actParticipantRepository->getByForeignEventId($event->id);
+        $acts = $this->actParticipantRepository->getByForeignEventIds([$event->id]);
         foreach ($acts as $act) {
             //files(act_participant)
             $files = $this->filesRepository->getByDocument(ActParticipantWork::tableName(), $act->id);

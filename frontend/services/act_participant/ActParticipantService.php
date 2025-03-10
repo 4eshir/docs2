@@ -207,7 +207,7 @@ class ActParticipantService
     }
     public function createActTable($id)
     {
-        $model = $this->actParticipantRepository->getByForeignEventId($id) ;
+        $model = $this->actParticipantRepository->getByForeignEventIds([$id]) ;
         return HtmlBuilder::createTableWithActionButtons(
             [
                 array_merge(['#'], ArrayHelper::getColumn($model, 'id')),

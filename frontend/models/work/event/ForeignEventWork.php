@@ -93,7 +93,7 @@ class ForeignEventWork extends ForeignEvent
 
     public function getTeachers($type = self::EXPORT_TYPE)
     {
-        $acts = (Yii::createObject(ActParticipantRepository::class))->getByForeignEventId($this->id);
+        $acts = (Yii::createObject(ActParticipantRepository::class))->getByForeignEventIds([$this->id]);
         $teacherIds = array_merge(ArrayHelper::getColumn($acts, 'teacher_id'), ArrayHelper::getColumn($acts, 'teacher2_id'));
         $stamps = (Yii::createObject(PeopleStampRepository::class))->getStamps($teacherIds);
         $result = '';

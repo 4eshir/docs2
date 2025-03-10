@@ -39,7 +39,7 @@ class ActParticipantFacade
         $modelAct = $this->actParticipantService->createForms($act);
         $people = $this->peopleRepository->getOrderedList();
         $participants = $this->foreignEventParticipantsRepository->getAll();
-        $nominations = array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($act[0]->foreign_event_id), 'nomination'));
+        $nominations = array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventIds([$act[0]->foreign_event_id]), 'nomination'));
         $teams = $this->teamService->getNamesByForeignEventId($act[0]->foreign_event_id);
         $defaultTeam = $this->teamRepository->getById($act[0]->team_name_id);
         $tables = $this->actParticipantService->createActFileTable($act[0]);

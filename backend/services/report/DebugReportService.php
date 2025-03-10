@@ -89,4 +89,9 @@ class DebugReportService
 
         return $data;
     }
+
+    public function createEventDebugData(array $events)
+    {
+        return '';
+    }
 }

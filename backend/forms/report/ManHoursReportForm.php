@@ -11,10 +11,6 @@ use yii\helpers\ArrayHelper;
 
 class ManHoursReportForm extends Model
 {
-    // Режим формирования отчета
-    const MODE_PURE = 1; // формирование только отчетных данных. работает быстро
-    const MODE_DEBUG = 2; // формирование отчетных данных вместе с подробным исходными данными. работает сильно медленнее MODE_PURE
-
     // Тип отчета
     const MAN_HOURS_REPORT = 1;
     // Типы отчетов по обучающимся
@@ -88,31 +84,6 @@ class ManHoursReportForm extends Model
             [['type', 'branch', 'budget', 'focus', 'allowRemote'], 'safe'],
             [['method', 'teacher', 'unic', 'mode'], 'integer']
         ];
-    }
-
-
-    private function generateView($data, $type)
-    {
-        $result = '';
-
-        if ($type == ManHoursReportForm::MAN_HOURS_REPORT)
-        {
-            $result .= '<tr><td>Количество человеко-часов за период с '.$this->start_date.' по '.$this->end_date.
-                '</td><td>'.count($data).' ч/ч'.'</td></tr>';
-        }
-        else if ($type == ManHoursReportForm::PARTICIPANTS_REPORT)
-        {
-            $result .= $data[0] == -1 ? '' : '<tr><td><b>1</b></td><td>Количество обучающихся, начавших обучение до '.$this->start_date.' и завершивших обучение в период с '.$this->start_date.' по '.$this->end_date.'</td><td>'.$data[0]. ' чел.'.'</td></tr>';
-            $result .= $data[1] == -1 ? '' : '<tr><td><b>2</b></td><td>Количество обучающихся, начавших обучение в период с '.$this->start_date.' по '.$this->end_date.' и завершивших обучение после '.$this->start_date.' по '.$this->end_date.'</td><td>'.$data[1]. ' чел.'.'</td></tr>';
-            $result .= $data[2] == -1 ? '' : '<tr><td><b>3</b></td><td>Количество обучающихся, начавших обучение после '.$this->start_date.' и завершивших до '.$this->start_date.' по '.$this->end_date.'</td><td>'.$data[2]. ' чел.'.'</td></tr>';
-            $result .= $data[3] == -1 ? '' : '<tr><td><b>4</b></td><td>Количество обучающихся, начавших обучение до '.$this->start_date.' и завершивших после '.$this->start_date.' по '.$this->end_date.'</td><td>'.$data[3]. ' чел.'.'</td></tr>';
-        }
-        else if ($type == ManHoursReportForm::PARTICIPANTS_UNIQUE_REPORT)
-        {
-            $result .= '<tr><td>Общее количество уникальных обучающихся</td><td>'.count($data).'</td></tr>';
-        }
-
-        return $result;
     }
 
 

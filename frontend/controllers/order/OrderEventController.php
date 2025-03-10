@@ -248,7 +248,7 @@ class OrderEventController extends DocumentController
                 $this->peopleRepository->getOrderedList(),
                 [new ActParticipantForm],
                 $this->teamService->getNamesByForeignEventId($modelForeignEvent->id),
-                array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventId($modelForeignEvent->id), 'nomination')),
+                array_unique(ArrayHelper::getColumn($this->actParticipantRepository->getByForeignEventIds([$modelForeignEvent->id]), 'nomination')),
                 $this->foreignEventParticipantsRepository->getSortedList(),
                 $this->companyRepository->getList(),
                 $this->actParticipantService->createActTable($modelForeignEvent->id),

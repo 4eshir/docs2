@@ -1,6 +1,7 @@
 <?php
 
 use backend\forms\report\ManHoursReportForm;
+use backend\services\report\ReportFacade;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -67,7 +68,7 @@ $this->title = 'Генерация отчета по обучающимся';
     <div class="panel-body" style="padding: 0; margin: 0"></div>
     <div style="max-width: 100%">
         <div class="col-xs-8 block-report">
-            <?= $form->field($model, 'branch')->checkboxList(Yii::$app->branches->getList(), ['item' => function ($index, $label, $name, $checked, $value) {
+            <?= $form->field($model, 'branch')->checkboxList(Yii::$app->branches->getOnlyEducational(), ['item' => function ($index, $label, $name, $checked, $value) {
                 return
                     '<div class="checkbox" style="font-size: 16px; font-family: Arial; color: black;">
                         <label for="branch-'. $index .'">
@@ -183,13 +184,13 @@ $this->title = 'Генерация отчета по обучающимся';
     </div>
     <div class="col-xs-8 block-report" id="mode">
         <?php
-        $arr = [ManHoursReportForm::MODE_PURE => 'Только отчетные данные', ManHoursReportForm::MODE_DEBUG => 'Отчетные данные и детализация в csv-файле'];
+        $arr = [ReportFacade::MODE_PURE => 'Только отчетные данные', ReportFacade::MODE_DEBUG => 'Отчетные данные и детализация в csv-файле'];
         echo $form->field($model, 'mode')->radioList($arr, [
             'item' => function($index, $label, $name, $checked, $value)
             {
                 return '<div class="checkbox" style="font-size: 16px; font-family: Arial; color: black">
-                            <label for="interview-'. $index .'">
-                                <input onchange="showHours()" id="interview-'. $index .'" name="'. $name .'" type="checkbox" '. $checked .' value="'. $value .'">
+                            <label for="mode-'. $index .'">
+                                <input onchange="showHours()" id="mode-'. $index .'" name="'. $name .'" type="radio" '. $checked .' value="'. $value .'">
                                 <span></span>
                                 '. $label .'
                             </label>

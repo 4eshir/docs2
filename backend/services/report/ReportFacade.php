@@ -2,12 +2,17 @@
 
 namespace backend\services\report;
 
+use backend\forms\report\ForeignEventReportForm;
 use backend\forms\report\ManHoursReportForm;
 use Yii;
 use yii\base\InvalidConfigException;
 
 class ReportFacade
 {
+    // Режим формирования отчета
+    const MODE_PURE = 1; // формирование только отчетных данных. работает быстро
+    const MODE_DEBUG = 2; // формирование отчетных данных вместе с подробным исходными данными. работает сильно медленнее MODE_PURE
+
     /**
      * @param ManHoursReportForm $form
      * @return array
@@ -33,6 +38,7 @@ class ReportFacade
         }
 
         if ($form->isParticipants()) {
+            array_shift($form->type);
             $manHoursResult['participants'] =
                 $service->calculateParticipantsByPeriod(
                     $form->startDate,
@@ -49,5 +55,11 @@ class ReportFacade
         }
 
         return $manHoursResult;
+    }
+
+    public static function generateParticipantsReport(ForeignEventReportForm $form)
+    {
+        $service = Yii::createObject(ReportForeignEventService::class);
+
     }
 }
