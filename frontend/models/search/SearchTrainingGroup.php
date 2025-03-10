@@ -3,116 +3,255 @@
 namespace frontend\models\search;
 
 use common\components\interfaces\SearchInterfaces;
+use common\helpers\DateFormatter;
+use common\helpers\search\SearchFieldHelper;
+use common\helpers\StringFormatter;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 
 class SearchTrainingGroup extends Model implements SearchInterfaces
 {
-    public $programName;
-    public $numberView;
-    public $budgetText;
-    public $branchId;
-    public $teacherId;
-    public $startDateSearch;
-    public $finishDateSearch;
-    /**
-     * {@inheritdoc}
-     */
+    public string $startDateSearch;
+    public string $finishDateSearch;
+    public int $branch;
+    public string $number;
+    public string $teacher;
+    public string $program;
+    public int $budget;
+    public int $archive;
+
+    public const BUDGET = [0 => 'Бюджет', 1 => 'Внебюджет'];
+    public const ARCHIVE = [0 => 'Актуальные', 1 => 'Архивные'];
+
     public function rules()
     {
         return [
-            [['id', 'number', 'training_program_id', 'teacher_id', 'open', 'budgetText'], 'integer'],
-            [['start_date', 'finish_date', 'photos', 'present_data', 'work_data', 'branchId', 'teacherId', 'startDateSearch', 'finishDateSearch'], 'safe'],
-            [['programName', 'numberView'], 'string'],
+            [['id', 'branch', 'budget', 'archive'], 'integer'],
+            [['number', 'teacher', 'startDateSearch', 'finishDateSearch', 'branch', 'program', 'budget', 'archive'], 'safe'],
+            [['startDateSearch', 'finishDateSearch', 'number', 'teacher', 'program'], 'string'],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function scenarios()
-    {
-        // bypass scenarios() implementation in the parent class
-        return Model::scenarios();
+    public function __construct(
+        string $startDateSearch = '',
+        string $finishDateSearch = '',
+        int $branch = SearchFieldHelper::EMPTY_FIELD,
+        string $number = '',
+        string $teacher = '',
+        string $program = '',
+        int $budget = SearchFieldHelper::EMPTY_FIELD,
+        int $archive = SearchFieldHelper::EMPTY_FIELD
+    ) {
+        $this->startDateSearch = $startDateSearch;
+        $this->finishDateSearch = $finishDateSearch;
+        $this->branch = $branch;
+        $this->number = $number;
+        $this->teacher = $teacher;
+        $this->program = $program;
+        $this->budget = $budget;
+        $this->archive = $archive;
     }
 
     /**
-     * Creates data provider instance with search query applied
+     * Определение параметров загрузки данных
      *
-     * @param array $params
+     * @param $params
+     * @return void
+     */
+    public function loadParams($params)
+    {
+        if (count($params) > 1) {
+            $params['SearchTrainingGroup']['branch'] = StringFormatter::stringAsInt($params['SearchTrainingGroup']['branch']);
+            $params['SearchTrainingGroup']['budget'] = StringFormatter::stringAsInt($params['SearchTrainingGroup']['budget']);
+            $params['SearchTrainingGroup']['archive'] = StringFormatter::stringAsInt($params['SearchTrainingGroup']['archive']);
+        }
+
+        $this->load($params);
+    }
+
+    /**
+     * Создает экземпляр DataProvider с учетом поискового запроса (фильтров или сортировки)
      *
+     * @param $params
      * @return ActiveDataProvider
      */
     public function search($params)
     {
-        /*if (array_key_exists("SearchTrainingGroup", $params))
-        {
-            if ($params["SearchTrainingGroup"]["branchId"] !== null && $params["SearchTrainingGroup"]["branchId"] !== "")
-            {
-                $groups = $groups->andWhere(['IN', 'training_group.id', (new Query())->select('id')->from('training_group')->where(['branch_id' => $params ["SearchTrainingGroup"]["branchId"]])]);
+        $this->loadParams($params);
 
-            }
-            if ($params["SearchTrainingGroup"]["teacherId"] !== null && $params["SearchTrainingGroup"]["teacherId"] !== "")
-            {
-                $tg = TeacherGroupWork::find()->where(['teacher_id' => $params["SearchTrainingGroup"]["teacherId"]])->all();
-                $tgIds = [];
-                foreach ($tg as $oneTg) $tgIds[] = $oneTg->training_group_id;
-                $groups = $groups->andWhere(['IN', 'training_group.id', (new Query())->select('id')->from('training_group')->where(['IN', 'training_group.id', $tgIds])]);
-            }
-            if ($params["SearchTrainingGroup"]["startDateSearch"] !== null && $params["SearchTrainingGroup"]["finishDateSearch"] !== null &&
-                $params["SearchTrainingGroup"]["startDateSearch"] !== "" && $params["SearchTrainingGroup"]["finishDateSearch"] !== "")
-            {
-                $groups = $groups->andWhere(['IN', 'training_group.id', (new Query())->select('id')->from('training_group')
-                    ->where(['<=', 'start_date', $params["SearchTrainingGroup"]["finishDateSearch"]])->andWhere(['>=', 'finish_date', $params["SearchTrainingGroup"]["startDateSearch"]])
-                    ->orWhere(['>=', 'finish_date', $params["SearchTrainingGroup"]["startDateSearch"]])->andWhere(['<=', 'start_date', $params["SearchTrainingGroup"]["finishDateSearch"]])]);
-
-            }
-        }*/
-
-
-        $query = TrainingGroupWork::find();
-        //$query = $groups;
-        $query->joinWith(['trainingProgram trainingProgram']);
-
-        // add conditions that should always apply here
+        $query = TrainingGroupWork::find()
+            ->joinWith([
+                'trainingProgramWork' => function ($query) {
+                    $query->alias('trainingProgram');
+                },
+                'teachersWork' => function ($query) {
+                    $query->alias('teachersGroup');
+                },
+                'teachersWork.teacherWork' => function ($query) {
+                    $query->alias('teacherGroup');
+                },
+            ]);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort'=> ['defaultOrder' => ['start_date' => SORT_DESC, 'number' => SORT_ASC]]
         ]);
 
-        /*$dataProvider->sort->attributes['programName'] = [
+        $this->sortAttributes($dataProvider);
+        $this->filterQueryParams($query);
+
+        return $dataProvider;
+    }
+
+    /**
+     * Сортировка по полям таблицы
+     *
+     * @param ActiveDataProvider $dataProvider
+     * @return void
+     */
+    public function sortAttributes(ActiveDataProvider $dataProvider)
+    {
+        $dataProvider->sort->attributes['number'] = [
+            'asc' => ['number' => SORT_ASC],
+            'desc' => ['number' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['programName'] = [
             'asc' => ['trainingProgram.name' => SORT_ASC],
             'desc' => ['trainingProgram.name' => SORT_DESC],
         ];
 
+        $dataProvider->sort->attributes['branchString'] = [
+            'asc' => ['branch' => SORT_ASC],
+            'desc' => ['branch' => SORT_DESC],
+        ];
 
-        $this->load($params);
+        $dataProvider->sort->attributes['teachersList'] = [
+            'asc' => ['teacherGroup.surname' => SORT_ASC],
+            'desc' => ['teacherGroup.surname' => SORT_DESC],
+        ];
 
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
+        $dataProvider->sort->attributes['start_date'] = [
+            'asc' => ['start_date' => SORT_ASC],
+            'desc' => ['start_date' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['finish_date'] = [
+            'asc' => ['finish_date' => SORT_ASC],
+            'desc' => ['finish_date' => SORT_DESC],
+        ];
+
+        $dataProvider->sort->attributes['budgetString'] = [
+            'asc' => ['budget' => SORT_ASC],
+            'desc' => ['budget' => SORT_DESC],
+        ];
+    }
+
+    /**
+     * Вызов функций фильтров по параметрам запроса
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    public function filterQueryParams(ActiveQuery $query) {
+        $this->filterDate($query);
+        $this->filterBranch($query);
+        $this->filterNumber($query);
+        $this->filterTeacher($query);
+        $this->filterProgram($query);
+        $this->filterBudget($query);
+        $this->filterArchive($query);
+    }
+
+    /**
+     * Фильтрация по диапазону дат
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterDate(ActiveQuery $query) {
+        if (!empty($this->startDateSearch) || !empty($this->finishDateSearch)) {
+            $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
+            $dateTo = $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
+
+            $query->andWhere(['or',
+                ['between', 'start_date', $dateFrom, $dateTo],
+                ['between', 'finish_date', $dateFrom, $dateTo],
+            ]);
         }
+    }
 
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'number' => $this->number,
-            'training_program_id' => $this->training_program_id,
-            'teacher_id' => $this->teacher_id,
-            'start_date' => $this->start_date,
-            'finish_date' => $this->finish_date,
-            'open' => $this->open,
-            'budget' => $this->budget,
-        ]);
+    /**
+     * Поиск по отделам (месту реализации)
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterBranch(ActiveQuery $query) {
+        if (!StringFormatter::isEmpty($this->branch) && $this->branch !== SearchFieldHelper::EMPTY_FIELD) {
+            $query->andFilterWhere(['branch' => $this->branch]);
+        }
+    }
 
-        $query->andFilterWhere(['like', 'photos', $this->photos])
-            ->andFilterWhere(['like', 'present_data', $this->present_data])
-            ->andFilterWhere(['like', 'number', $this->numberView])
-            ->andFilterWhere(['like', 'budget', $this->budgetText])
-            ->andFilterWhere(['like', 'trainingProgram.name', $this->programName])
-            ->andFilterWhere(['like', 'work_data', $this->work_data]);*/
+    /**
+     * Поиск по названию
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterNumber(ActiveQuery $query) {
+        if (!empty($this->number)) {
+            $query->andFilterWhere(['like', 'LOWER(number)', $this->number]);
+        }
+    }
 
-        return $dataProvider;
+    /**
+     * Поиск по преподавателям
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterTeacher(ActiveQuery $query) {
+        if (!empty($this->teacher)) {
+            $query->andFilterWhere(['like', 'LOWER(teacherGroup.surname)', mb_strtolower($this->teacher)]);
+        }
+    }
+
+    /**
+     * Поиск по программе
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterProgram(ActiveQuery $query) {
+        if (!empty($this->program)) {
+            $query->andFilterWhere(['like', 'LOWER(trainingProgram.name)', $this->program]);
+        }
+    }
+
+    /**
+     * Поиск по источнику финансирования
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterBudget(ActiveQuery $query) {
+        if (!StringFormatter::isEmpty($this->budget) && $this->budget !== SearchFieldHelper::EMPTY_FIELD) {
+            $query->andFilterWhere(['budget' => $this->budget]);
+        }
+    }
+
+    /**
+     * Поиск по статусу
+     *
+     * @param ActiveQuery $query
+     * @return void
+     */
+    private function filterArchive(ActiveQuery $query) {
+        if (!StringFormatter::isEmpty($this->archive) && $this->archive !== SearchFieldHelper::EMPTY_FIELD) {
+            $query->andFilterWhere(['archive' => $this->archive]);
+        }
     }
 }

@@ -18,15 +18,14 @@ use yii\widgets\ActiveForm;
 
     <?php
     $searchFields = array_merge(
-        SearchFieldHelper::dateField('startDateSearch', 'Дата пед.совета с', 'Дата пед.совета с'),
-        SearchFieldHelper::dateField('finishDateSearch', 'Дата пед.совета по', 'Дата пед.совета по'),
-        SearchFieldHelper::dropdownField('branchSearch', 'Место реализации', Yii::$app->branches->getOnlyEducational(), 'Место реализации'),
-        /*SearchFieldHelper::textField('programName', 'Наименование программы', 'Наименование программы'),
-        SearchFieldHelper::textField('authorSearch', 'Составитель', 'Составитель'),
-        SearchFieldHelper::dropdownField('levelSearch', 'Уровень сложности', TrainingProgramWork::LEVEL_LIST, 'Уровень сложности'),
-        SearchFieldHelper::dropdownField('focusSearch', 'Направленность', Yii::$app->focus->getList(), 'Направленность'),
-        SearchFieldHelper::dropdownField('allowSearch', 'Форма реализации', Yii::$app->allowRemote->getList(), 'Форма реализации'),
-        SearchFieldHelper::dropdownField('actual', 'Актуальность', $searchModel::ACTUAL, 'Актуальность'),*/
+        SearchFieldHelper::dateField('startDateSearch', 'Дата обучения с', 'Дата обучения с'),
+        SearchFieldHelper::dateField('finishDateSearch', 'Дата обучения по', 'Дата обучения по'),
+        SearchFieldHelper::dropdownField('branch', 'Отдел', Yii::$app->branches->getOnlyEducational(), 'Отдел'),
+        SearchFieldHelper::textField('number', 'Номер или часть номера группы', 'Номер или часть номера группы'),
+        SearchFieldHelper::textField('teacher', 'Преподаватель', 'Преподаватель'),
+        SearchFieldHelper::textField('program', 'Образовательная программа', 'Образовательная программа'),
+        SearchFieldHelper::dropdownField('budget', 'Источник финансирования', $searchModel::BUDGET, 'Источник финансирования'),
+        SearchFieldHelper::dropdownField('archive', 'Статус', $searchModel::ARCHIVE, 'Статус'),
     );
 
     echo HtmlBuilder::createFilterPanel($searchModel, $searchFields, $form, 3, Yii::$app->frontUrls::TRAINING_GROUP_INDEX); ?>
