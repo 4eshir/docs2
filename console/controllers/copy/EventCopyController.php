@@ -92,6 +92,21 @@ class EventCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeleteEvent(){
+        Yii::$app->db->createCommand()->delete('event')->execute();
+    }
+    public function actionDeleteEventBranch(){
+        Yii::$app->db->createCommand()->delete('event_branch')->execute();
+    }
+    public function actionDeleteEventScope(){
+        Yii::$app->db->createCommand()->delete('event_scope')->execute();
+    }
+    public function actionDeleteAll()
+    {
+        $this->actionDeleteEventScope();
+        $this->actionDeleteEventBranch();
+        $this->actionDeleteEvent();
+    }
     public function actionCopyAll()
     {
         $this->actionCopyEvent();

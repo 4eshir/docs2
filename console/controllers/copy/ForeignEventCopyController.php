@@ -44,8 +44,16 @@ class ForeignEventCopyController extends Controller
                     'last_edit_id' => $record['last_edit_id']
                 ]
             );
+            //add files
             $command->execute();
         }
+    }
+    public function actionDeleteForeignEvent()
+    {
+        Yii::$app->db->createCommand()->delete('foreign_event')->execute();
+    }
+    public function actionDeleteAll(){
+        $this->actionDeleteForeignEvent();
     }
     public function actionCopyAll(){
         $this->actionForeignEventCopy();

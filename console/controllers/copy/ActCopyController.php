@@ -6,6 +6,7 @@ use common\repositories\act_participant\ActParticipantRepository;
 use common\services\general\PeopleStampService;
 use frontend\models\work\team\ActParticipantWork;
 use Yii;
+use yii\console\Application;
 use yii\console\Controller;
 
 class ActCopyController extends Controller
@@ -96,5 +97,28 @@ class ActCopyController extends Controller
     public function actionCopyAll(){
         $this->actionTeamNameCopy();
         $this->actionActCopy();
+    }
+    public function actionDeleteTeamName()
+    {
+        Yii::$app->db->createCommand()->delete('team_name')->execute();
+    }
+    public function actionDeleteActParticipant()
+    {
+        Yii::$app->db->createCommand()->delete('act_participant')->execute();
+    }
+    public function actionDeleteSquadParticipant()
+    {
+        Yii::$app->db->createCommand()->delete('squad_participant')->execute();
+    }
+    public function actionDeleteActParticipantBranch()
+    {
+        Yii::$app->db->createCommand()->delete('act_participant_branch')->execute();
+    }
+    public function actionDeleteAll()
+    {
+        $this->actionDeleteActParticipantBranch();
+        $this->actionDeleteSquadParticipant();
+        $this->actionDeleteActParticipant();
+        $this->actionDeleteTeamName();
     }
 }

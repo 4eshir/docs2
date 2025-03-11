@@ -37,6 +37,7 @@ class LocalResponsibilityCopyController extends Controller
                     'auditorium_type' => $record['auditorium_type_id'],
                 ]
             );
+            //add files
             $command->execute();
         }
     }
@@ -56,6 +57,7 @@ class LocalResponsibilityCopyController extends Controller
                     'regulation_id' => $record['regulation_id'],
                 ]
             );
+            //add files
             $command->execute();
         }
     }
@@ -79,6 +81,23 @@ class LocalResponsibilityCopyController extends Controller
             );
             $command->execute();
         }
+    }
+    public function actionDeleteAuditorium()
+    {
+        Yii::$app->db->createCommand()->delete('auditorium')->execute();
+    }
+    public function actionDeleteLocalResponsibility()
+    {
+        Yii::$app->db->createCommand()->delete('local_responsibility')->execute();
+    }
+    public function actionDeleteLegacyResponsible(){
+        Yii::$app->db->createCommand()->delete('legacy_responsible')->execute();
+    }
+    public function actionDeleteAll()
+    {
+        $this->actionDeleteLocalResponsibility();
+        $this->actionDeleteLegacyResponsible();
+        $this->actionDeleteAuditorium();
     }
     public function actionCopyAll(){
         $this->actionCopyAuditorium();
