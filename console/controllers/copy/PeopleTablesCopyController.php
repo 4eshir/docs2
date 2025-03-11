@@ -36,6 +36,12 @@ class PeopleTablesCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeletePeoplePositionCompanyBranch(){
+        Yii::$app->db->createCommand()->delete('people_position_company_branch')->execute();
+    }
+    public function actionDeleteAll(){
+        $this->actionDeletePeoplePositionCompanyBranch();
+    }
     public function actionCopyAll(){
         $this->actionCopyPeoplePositionCompanyBranch();
     }

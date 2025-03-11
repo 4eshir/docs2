@@ -6,6 +6,7 @@ use common\repositories\act_participant\ActParticipantRepository;
 use common\services\general\PeopleStampService;
 use frontend\models\work\team\ActParticipantWork;
 use Yii;
+use yii\console\Application;
 use yii\console\Controller;
 
 class ActCopyController extends Controller
@@ -55,7 +56,7 @@ class ActCopyController extends Controller
                     $teacherParticipants[0]['nomination'],
                     $teacherParticipants[0]['allow_remote_id']
                 );
-                $this->actParticipantRepository->save($actModel);
+                $this->actParticipantRepository->saveph($actModel);
                 //act_participant_branch
                 $branches = Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant_branch WHERE teacher_participant_id = $teacherParticipantId")->queryAll();
                 foreach ($branches as $branch) {
@@ -96,5 +97,28 @@ class ActCopyController extends Controller
     public function actionCopyAll(){
         $this->actionTeamNameCopy();
         $this->actionActCopy();
+    }
+    public function actionDeleteTeamName()
+    {
+        Yii::$app->db->createCommand()->delete('team_name')->execute();
+    }
+    public function actionDeleteActParticipant()
+    {
+        Yii::$app->db->createCommand()->delete('act_participant')->execute();
+    }
+    public function actionDeleteSquadParticipant()
+    {
+        Yii::$app->db->createCommand()->delete('squad_participant')->execute();
+    }
+    public function actionDeleteActParticipantBranch()
+    {
+        Yii::$app->db->createCommand()->delete('act_participant_branch')->execute();
+    }
+    public function actionDeleteAll()
+    {
+        $this->actionDeleteActParticipantBranch();
+        $this->actionDeleteSquadParticipant();
+        $this->actionDeleteActParticipant();
+        $this->actionDeleteTeamName();
     }
 }

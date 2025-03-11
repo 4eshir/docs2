@@ -100,10 +100,32 @@ class TrainingProgramCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeleteTrainingProgram(){
+        Yii::$app->db->createCommand()->delete('training_program')->execute();
+    }
+    public function actionDeleteThematicPlan(){
+        Yii::$app->db->createCommand()->delete('thematic_plan')->execute();
+    }
+    public function actionDeleteBranchProgram()
+    {
+        Yii::$app->db->createCommand()->delete('branch_program')->execute();
+    }
+    public function actionDeleteAuthorProgram()
+    {
+        Yii::$app->db->createCommand()->delete('author_program')->execute();
+    }
     public function actionCopyAll(){
         $this->actionCopyTrainingProgram();
         $this->actionCopyThematicPlan();
         $this->actionCopyAuthorProgram();
         $this->actionCopyBranchProgram();
+    }
+
+    public function actionDeleteAll()
+    {
+        $this->actionDeleteAuthorProgram();
+        $this->actionDeleteBranchProgram();
+        $this->actionDeleteThematicPlan();
+        $this->actionDeleteTrainingProgram();
     }
 }

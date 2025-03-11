@@ -22,6 +22,14 @@ class VisitCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeleteVisit()
+    {
+        Yii::$app->db->createCommand()->delete('visit')->execute();
+    }
+    public function actionDeleteAll()
+    {
+        $this->actionDeleteVisit();
+    }
     public function actionCopyAll(){
         $this->actionCopyVisit();
     }

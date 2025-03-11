@@ -22,6 +22,8 @@ class GeneralCopyController extends Controller
     private LessonThemeCopyController $lessonThemeCopyController;
     private ParticipantAchievementCopyController $participantAchievementCopyController;
     private CertificateCopyController $certificateCopyController;
+    private LogCopyController $logCopyController;
+    private EventTrainingGroupCopyController $eventTrainingGroupCopyController;
     public function __construct(
         $id,
         $module,
@@ -41,6 +43,8 @@ class GeneralCopyController extends Controller
         LessonThemeCopyController $lessonThemeCopyController,
         ParticipantAchievementCopyController $participantAchievementCopyController,
         CertificateCopyController $certificateCopyController,
+        LogCopyController $logCopyController,
+        EventTrainingGroupCopyController $eventTrainingGroupCopyController,
         $config = [])
     {
         $this->initCopyController = $initCopyController;
@@ -59,6 +63,8 @@ class GeneralCopyController extends Controller
         $this->lessonThemeCopyController = $lessonThemeCopyController;
         $this->participantAchievementCopyController = $participantAchievementCopyController;
         $this->certificateCopyController = $certificateCopyController;
+        $this->logCopyController = $logCopyController;
+        $this->eventTrainingGroupCopyController = $eventTrainingGroupCopyController;
         parent::__construct($id, $module, $config);
     }
 
@@ -79,5 +85,28 @@ class GeneralCopyController extends Controller
         $this->lessonThemeCopyController->actionCopyAll();
         $this->participantAchievementCopyController->actionCopyAll();
         $this->certificateCopyController->actionCopyAll();
+        $this->logCopyController->actionCopyAll();
+        $this->eventTrainingGroupCopyController->actionCopyAll();
+    }
+    public function actionDeleteAll()
+    {
+        $this->actCopyController->actionDeleteAll();
+        $this->foreignEventCopyController->actionDeleteAll();
+        $this->localResponsibilityCopyController->actionDeleteAll();
+        $this->documentOrderCopyController->actionDeleteAll();
+        $this->trainingProgramCopyController->actionDeleteAll();
+        $this->eventCopyController->actionDeleteAll();
+        $this->personalDataCopyController->actionDeleteAll();
+        $this->regulationCopyController->actionDeleteAll();
+        $this->peopleTablesCopyController->actionDeleteAll();
+        $this->documentInOutCopyController->actionDeleteAll();
+        $this->initCopyController->actionDeleteAll();
+        $this->trainingGroupCopyController->actionDeleteAll();
+        $this->visitCopyController->actionDeleteAll();
+        $this->lessonThemeCopyController->actionDeleteAll();
+        $this->certificateCopyController->actionDeleteAll();
+        $this->participantAchievementCopyController->actionDeleteAll();
+        $this->logCopyController->actionDeleteAll();
+        $this->eventTrainingGroupCopyController->actionDeleteAll();
     }
 }

@@ -19,6 +19,12 @@ class ParticipantAchievementCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeleteParticipantAchievement(){
+        Yii::$app->db->createCommand()->delete('participant_achievement')->execute();
+    }
+    public function actionDeleteAll(){
+        $this->actionCopyParticipantAchievement();
+    }
     public function actionCopyAll(){
         $this->actionCopyParticipantAchievement();
     }

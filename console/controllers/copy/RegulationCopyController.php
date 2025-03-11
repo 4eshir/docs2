@@ -50,6 +50,12 @@ class RegulationCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeleteRegulation(){
+        Yii::$app->db->createCommand()->delete('regulation')->execute();
+    }
+    public function actionDeleteAll(){
+        $this->actionDeleteRegulation();
+    }
     public function actionCopyAll(){
         $this->actionCopyRegulation();
     }

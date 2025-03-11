@@ -35,6 +35,13 @@ class LessonThemeCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeleteLessonTheme()
+    {
+        Yii::$app->db->createCommand()->delete('lesson_theme')->execute();
+    }
+    public function actionDeleteAll(){
+        $this->actionDeleteLessonTheme();
+    }
     public function actionCopyAll(){
         $this->actionCopyLessonTheme();
     }

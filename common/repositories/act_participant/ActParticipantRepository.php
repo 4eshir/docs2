@@ -14,6 +14,7 @@ use common\repositories\event\ForeignEventRepository;
 use common\repositories\order\OrderEventRepository;
 use DomainException;
 use Yii;
+use yii\console\Application;
 use yii\helpers\ArrayHelper;
 
 class ActParticipantRepository
@@ -117,13 +118,16 @@ class ActParticipantRepository
         } else {
             $sql = Yii::$app->db->createCommand()->update($model->tableName(), $model->attributes, ['id' => $model->id])->getSql();
         }
-
         if (!$model->save()) {
-            LogFactory::createCrudLog(LogInterface::LVL_ERROR, 'Ошибка сохранения акта участия', $sql);
-            throw new DomainException('Ошибка сохранения. Проблемы: '.json_encode($model->getErrors()));
-        }
+            if (!(Yii::$app instanceof Application)) {
+                LogFactory::createCrudLog(LogInterface::LVL_ERROR, 'Ошибка сохранения акта участия', $sql);
+            }
+            throw new DomainException('Ошибка сохранения. Проблемы: ' . json_encode($model->getErrors()));
 
-        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Сохранение акта участия', $sql);
+        }
+        if (!(Yii::$app instanceof Application)) {
+            LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Сохранение акта участия', $sql);
+        }
         return $model->id;
     }
 

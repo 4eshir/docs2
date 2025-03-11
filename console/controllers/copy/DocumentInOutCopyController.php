@@ -191,6 +191,42 @@ class DocumentInOutCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeleteCompany(){
+        Yii::$app->db->createCommand()->delete('company')->execute();
+    }
+    public function actionDeletePeople(){
+        Yii::$app->db->createCommand()->delete('people')->execute();
+    }
+    public function deletePeopleStamp()
+    {
+        Yii::$app->db->createCommand()->delete('people_stamp')->execute();
+    }
+    public function actionDeleteUser(){
+        Yii::$app->db->createCommand()->delete('user')->execute();
+    }
+    public function actionDeleteDocumentIn(){
+        Yii::$app->db->createCommand()->delete('document_in')->execute();
+    }
+    public function actionDeleteDocumentOut(){
+        Yii::$app->db->createCommand()->delete('document_out')->execute();
+    }
+    public function actionDeleteInOutDocuments(){
+        Yii::$app->db->createCommand()->delete('in_out_documents')->execute();
+    }
+    public function actionDeleteFiles()
+    {
+        Yii::$app->db->createCommand()->delete('files')->execute();
+    }
+    public function actionDeleteAll(){
+        $this->actionDeleteFiles();
+        $this->actionDeleteInOutDocuments();
+        $this->actionDeleteDocumentIn();
+        $this->actionDeleteDocumentOut();
+        $this->deletePeopleStamp();
+        $this->actionDeleteUser();
+        $this->actionDeletePeople();
+        $this->actionDeleteCompany();
+    }
     public function actionCopyAll(){
         $this->actionCopyCompany();
         $this->actionCopyPeople();

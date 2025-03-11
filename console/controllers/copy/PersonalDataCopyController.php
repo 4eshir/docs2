@@ -21,6 +21,12 @@ class PersonalDataCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeletePersonalData(){
+        Yii::$app->db->createCommand()->delete('personal_data_participant')->execute();
+    }
+    public function actionDeleteAll(){
+        $this->actionDeletePersonalData();
+    }
     public function actionCopyAll(){
         $this->actionCopyPersonalDataParticipant();
     }

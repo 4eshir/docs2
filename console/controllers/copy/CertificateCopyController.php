@@ -23,6 +23,13 @@ class CertificateCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeleteCertificate()
+    {
+        Yii::$app->db->createCommand()->delete('certificate')->execute();
+    }
+    public function actionDeleteAll(){
+        $this->actionDeleteCertificate();
+    }
     public function actionCopyAll(){
         $this->actionCopyCertificate();
     }

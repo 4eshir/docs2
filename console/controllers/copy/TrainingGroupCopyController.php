@@ -148,6 +148,34 @@ class TrainingGroupCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeleteTrainingGroupParticipant()
+    {
+        Yii::$app->db->createCommand()->delete('training_group_participant')->execute();
+    }
+    public function actionDeleteGroupProjectThemes(){
+        Yii::$app->db->createCommand()->delete('group_project_themes')->execute();
+    }
+    public function actionDeleteTrainingGroupLesson(){
+        Yii::$app->db->createCommand()->delete('training_group_lesson')->execute();
+    }
+    public function actionDeleteTrainingGroupExpert(){
+        Yii::$app->db->createCommand()->delete('training_group_expert')->execute();
+    }
+    public function actionDeleteTeacherGroup(){
+        Yii::$app->db->createCommand()->delete('teacher_group')->execute();
+    }
+    public function actionDeleteTrainingGroup(){
+        Yii::$app->db->createCommand()->delete('training_group')->execute();
+    }
+    public function actionDeleteAll()
+    {
+        $this->actionDeleteTrainingGroupParticipant();
+        $this->actionDeleteGroupProjectThemes();
+        $this->actionDeleteTrainingGroupLesson();
+        $this->actionDeleteTrainingGroupExpert();
+        $this->actionDeleteTeacherGroup();
+        $this->actionDeleteTrainingGroup();
+    }
     public function actionCopyAll(){
         $this->CopyTrainingGroup();
         $this->CopyTeacherGroup();

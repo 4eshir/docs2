@@ -48,6 +48,13 @@ class ForeignEventCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionDeleteForeignEvent()
+    {
+        Yii::$app->db->createCommand()->delete('foreign_event')->execute();
+    }
+    public function actionDeleteAll(){
+        $this->actionDeleteForeignEvent();
+    }
     public function actionCopyAll(){
         $this->actionForeignEventCopy();
     }
