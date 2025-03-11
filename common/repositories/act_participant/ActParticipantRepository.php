@@ -103,7 +103,7 @@ class ActParticipantRepository
             ->andWhere(['form' => $form])
             ->andWhere(['nomination' => $nomination]);
         LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка количества уникальных актов участия по заданным параметрам', $query->createCommand()->getRawSql());
-        return $query->count();
+        return count($query->all());
     }
 
     public function get($id)
@@ -130,6 +130,7 @@ class ActParticipantRepository
         if (!(Yii::$app instanceof Application)) {
             LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Сохранение акта участия', $sql);
         }
+
         return $model->id;
     }
 

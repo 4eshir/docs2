@@ -141,7 +141,7 @@ class ActParticipantService
                 );
                 $this->setPeopleStamp($modelAct);
                 $modelAct->actFiles = $modelActParticipantForm->actFiles;
-                if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == null) {
+                if ($this->actParticipantRepository->checkUniqueAct($foreignEventId, $teamNameId, $modelAct->focus, $modelAct->form, $modelAct->nomination) == 0) {
                     $this->actParticipantRepository->save($modelAct);
                 }
                 if (!is_null($modelAct->id)) {
@@ -234,7 +234,7 @@ class ActParticipantService
     }
     public function createActFileTable(ActParticipantWork $model)
     {
-        $links = $model->getFileLinks(FilesHelper::TYPE_SCAN);
+        $links = $model->getFileLinks(FilesHelper::TYPE_MATERIAL);
         $file = HtmlBuilder::createTableWithActionButtons(
             [
                 array_merge(['Название файла'], ArrayHelper::getColumn($links, 'link'))
@@ -243,7 +243,7 @@ class ActParticipantService
                 HtmlBuilder::createButtonsArray(
                     'Удалить',
                     Url::to('delete-file'),
-                    ['modelId' => array_fill(0, count($links), $model->id), 'fileId' => ArrayHelper::getColumn($links, 'id')])
+                    ['modelId' => array_fill(0, count($links), $model->foreignEventWork->order_participant_id), 'fileId' => ArrayHelper::getColumn($links, 'id')])
             ]
         );
         return $file;

@@ -12,12 +12,14 @@ use app\models\work\order\OrderEventGenerateWork;
 use app\services\order\OrderEventGenerateService;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\traits\AccessControl;
+use common\helpers\files\FilesHelper;
 use common\models\scaffold\OrderEventGenerate;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\order\DocumentOrderRepository;
 use common\repositories\order\OrderEventGenerateRepository;
 use frontend\events\general\FileDeleteEvent;
 use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\general\FilesWork;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderEventWork;
 use frontend\models\work\team\ActParticipantWork;
@@ -68,6 +70,7 @@ class OrderEventController extends DocumentController
     private OrderEventGenerateService $orderEventGenerateService;
     private TeamService $teamService;
     private DocumentOrderRepository $documentOrderRepository;
+    private FilesRepository $filesRepository;
 
     public function __construct(
         $id, $module,
@@ -91,6 +94,7 @@ class OrderEventController extends DocumentController
         OrderEventGenerateRepository $orderEventGenerateRepository,
         OrderEventGenerateService $orderEventGenerateService,
         DocumentOrderRepository $documentOrderRepository,
+        FilesRepository $filesRepository,
         $config = []
     )
     {
@@ -112,6 +116,7 @@ class OrderEventController extends DocumentController
         $this->orderEventGenerateService = $orderEventGenerateService;
         $this->teamService = $teamService;
         $this->documentOrderRepository = $documentOrderRepository;
+        $this->filesRepository = $fileRepository;
         parent::__construct($id, $module, $fileService, $fileRepository, $config);
     }
     public function actionIndex() {
@@ -419,6 +424,7 @@ class OrderEventController extends DocumentController
         $model->recordEvent(new SquadParticipantDeleteByIdEvent($model->id), DocumentOrderWork::class);
         //act_participant
         $model->recordEvent(new ActParticipantDeleteEvent($model->id), DocumentOrderWork::class);
+        $model->releaseEvents();
         return $this->redirect(['update', 'id' => $order->id]);
     }
     public function actionDelete($id){
@@ -426,6 +432,24 @@ class OrderEventController extends DocumentController
         $this->documentOrderService->documentOrderDelete($model);
         $model->releaseEvents();
         return $this->redirect(['index']);
+    }
+    public function actionDeleteActFile($modelId, $fileId)
+    {
+        try {
+            $file = $this->filesRepository->getById($fileId);
+
+            /** @var FilesWork $file */
+            $filepath = $file ? basename($file->filepath) : '';
+            $this->fileService->deleteFile(FilesHelper::createAdditionalPath($file->table_name, $file->file_type) . $file->filepath);
+            $file->recordEvent(new FileDeleteEvent($fileId), get_class($file));
+            $file->releaseEvents();
+
+            Yii::$app->session->setFlash('success', "Файл $filepath успешно удален");
+            return $this->redirect(['act', 'id' => $modelId]);
+        }
+        catch (DomainException $e) {
+            return $e->getMessage();
+        }
     }
     public function beforeAction($action)
     {
