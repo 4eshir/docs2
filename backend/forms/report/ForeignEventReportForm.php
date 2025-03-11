@@ -13,12 +13,14 @@ class ForeignEventReportForm extends Model
     public $allowRemotes;
     public $prizeTypes;
     public $levels;
+    public $mode;
 
     public function rules()
     {
         return [
             [['startDate', 'endDate'], 'string'],
-            [['branches', 'focuses', 'allowRemotes', 'prizeTypes', 'levels'], 'safe']
+            [['branches', 'focuses', 'allowRemotes', 'prizeTypes', 'levels', 'prizeTypes'], 'safe'],
+            [['mode'], 'integer']
         ];
     }
 }

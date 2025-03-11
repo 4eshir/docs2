@@ -10,7 +10,7 @@ class LogWork extends Log
         string $datetime,
         int $level,
         int $type,
-        int $userId,
+        ?int $userId,
         string $text,
         string $addData = ''
     )

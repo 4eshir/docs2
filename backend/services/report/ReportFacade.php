@@ -60,6 +60,14 @@ class ReportFacade
     public static function generateParticipantsReport(ForeignEventReportForm $form)
     {
         $service = Yii::createObject(ReportForeignEventService::class);
-
+        return $service->calculateEventParticipants(
+            $form->startDate,
+            $form->endDate,
+            $form->branches,
+            $form->focuses,
+            $form->allowRemotes,
+            $form->levels,
+            $form->mode
+        );
     }
 }

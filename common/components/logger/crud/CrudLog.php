@@ -14,7 +14,7 @@ class CrudLog extends BaseLog implements LogInterface
         string $datetime,
         int $level,
         int $type,
-        int $userId,
+        ?int $userId,
         string $text,
         string $query,
         LogRepository $repository = null

@@ -51,10 +51,10 @@ class ReportForeignEventService
             $prizeQuery = $this->participantReportRepository->filterByPrizes(clone $participantQuery, [ParticipantAchievementWork::TYPE_PRIZE]);
             $wineQuery = $this->participantReportRepository->filterByPrizes(clone $participantQuery, [ParticipantAchievementWork::TYPE_WINNER]);
 
-            $result[$level] = [
-                'participant' => $this->participantReportRepository->getAll($participantQuery),
-                'winners' => $this->participantReportRepository->getAll($wineQuery),
-                'prizes' => $this->participantReportRepository->getAll($prizeQuery)
+            $result['levels'][$level] = [
+                'participant' => count($this->participantReportRepository->getAll($participantQuery)),
+                'winners' => count($this->participantReportRepository->getAll($wineQuery)),
+                'prizes' => count($this->participantReportRepository->getAll($prizeQuery))
             ];
         }
 

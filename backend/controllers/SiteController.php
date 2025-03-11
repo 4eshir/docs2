@@ -96,11 +96,12 @@ class SiteController extends Controller
             [1, 2, 3, 4, 5],
             [1, 2, 3, 4, 5],
             [0, 1],
-            [1, 2, 3, 4, 5, 6, 7, 8]
+            [1, 2, 3, 4, 5, 6, 7, 8],
+            ReportFacade::MODE_DEBUG
         );
 
         echo '<pre>';
-        var_dump($res);
+        var_dump($res['result']);
         echo '</pre>';
 
         /*HeaderWizard::setCsvLoadHeaders((Yii::createObject(Client::class))->generateId(10) . '.csv');

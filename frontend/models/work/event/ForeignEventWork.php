@@ -9,6 +9,7 @@ use common\models\scaffold\ForeignEvent;
 use common\models\work\UserWork;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\general\PeopleStampRepository;
+use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
@@ -18,6 +19,7 @@ use yii\helpers\ArrayHelper;
 /**
  * @property UserWork $creatorWork
  * @property UserWork $lastEditWork
+ * @property CompanyWork $organizerWork
  */
 class ForeignEventWork extends ForeignEvent
 {
@@ -148,5 +150,10 @@ class ForeignEventWork extends ForeignEvent
     public function getLastEditWork()
     {
         return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
+    }
+
+    public function getOrganizerWork()
+    {
+        return $this->hasOne(CompanyWork::class, ['id' => 'organizer_id']);
     }
 }

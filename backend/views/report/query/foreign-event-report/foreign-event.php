@@ -1,6 +1,7 @@
 <?php
 
 use backend\forms\report\ForeignEventReportForm;
+use backend\services\report\ReportFacade;
 use frontend\models\work\event\ParticipantAchievementWork;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -132,6 +133,24 @@ $this->title = 'Генерация отчета по мероприятиям';
                     </label>
                 </div>';
         }])->label('Уровень мероприятия');
+        ?>
+    </div>
+
+    <div class="col-xs-8 block-report" id="mode">
+        <?php
+        $arr = [ReportFacade::MODE_PURE => 'Только отчетные данные', ReportFacade::MODE_DEBUG => 'Отчетные данные и детализация в csv-файле'];
+        echo $form->field($model, 'mode')->radioList($arr, [
+            'item' => function($index, $label, $name, $checked, $value)
+            {
+                return '<div class="checkbox" style="font-size: 16px; font-family: Arial; color: black">
+                            <label for="mode-'. $index .'">
+                                <input onchange="showHours()" id="mode-'. $index .'" name="'. $name .'" type="radio" '. $checked .' value="'. $value .'">
+                                <span></span>
+                                '. $label .'
+                            </label>
+                        </div>';
+            }
+        ])->label('Режим формирования отчета');
         ?>
     </div>
 

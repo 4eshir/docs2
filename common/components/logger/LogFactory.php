@@ -62,7 +62,7 @@ class LogFactory
     )
     {
         if ($userId === -1) {
-            $userId = Yii::$app->user->identity->id;
+            $userId = Yii::$app->user->identity->id ?: null;
         }
 
         if ($datetime === '') {

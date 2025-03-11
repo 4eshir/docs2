@@ -30,8 +30,13 @@ use yii\helpers\Url;
 class ActParticipantWork extends ActParticipant
 {
     use EventTrait;
+
     public $actFiles;
     public $branch;
+
+    const TYPE_TEAM = 1;
+    const TYPE_SOLO = 0;
+
     public static function fill(
         $teacherId,
         $teacher2Id,

@@ -11,7 +11,7 @@ class BaseLog implements LogInterface
     public string $datetime;
     public int $level;
     public int $type;
-    public int $userId;
+    public ?int $userId;
     public string $text;
 
     protected LogRepository $repository;
@@ -20,7 +20,7 @@ class BaseLog implements LogInterface
         string $datetime,
         int $level,
         int $type,
-        int $userId,
+        ?int $userId,
         string $text,
         LogRepository $repository = null
     )

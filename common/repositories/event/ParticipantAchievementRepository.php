@@ -7,6 +7,7 @@ namespace common\repositories\event;
 use DomainException;
 use frontend\forms\event\ParticipantAchievementForm;
 use frontend\models\work\event\ParticipantAchievementWork;
+use frontend\models\work\team\ActParticipantWork;
 use Yii;
 
 class ParticipantAchievementRepository
@@ -20,14 +21,22 @@ class ParticipantAchievementRepository
     {
         return ParticipantAchievementWork::find()
             ->joinWith(['actParticipantWork actParticipantWork'])
-            ->where(['actParticipantWork.foreign_event_id' => $foreignEventId])->all();
+            ->joinWith(['actParticipantWork.squadParticipantWork squadParticipantWork'])
+            ->where(['squadParticipantWork.participant_id' => $participantId])->all();
     }
 
-    public function getByForeignEvent($foreignEventId)
+    public function getByForeignEvent(
+        int $foreignEventId,
+        array $prizeTypes = [ParticipantAchievementWork::TYPE_PRIZE, ParticipantAchievementWork::TYPE_WINNER],
+        array $participantTypes = [ActParticipantWork::TYPE_SOLO, ActParticipantWork::TYPE_TEAM]
+    )
     {
         return ParticipantAchievementWork::find()
             ->joinWith(['actParticipantWork actParticipantWork'])
-            ->where(['actParticipantWork.foreign_event_id' => $foreignEventId])->all();
+            ->where(['actParticipantWork.foreign_event_id' => $foreignEventId])
+            ->andWhere(['IN', 'participant_achievement.type', $prizeTypes])
+            ->andWhere(['IN', 'actParticipantWork.type', $participantTypes])
+            ->all();
     }
 
     public function prepareCreate($actParticipantId, $achievement, $type, $certNumber, $nomination, $date)
