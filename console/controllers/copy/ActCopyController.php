@@ -56,7 +56,7 @@ class ActCopyController extends Controller
                     $teacherParticipants[0]['nomination'],
                     $teacherParticipants[0]['allow_remote_id']
                 );
-                $this->actParticipantRepository->saveph($actModel);
+                $this->actParticipantRepository->save($actModel);
                 //act_participant_branch
                 $branches = Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant_branch WHERE teacher_participant_id = $teacherParticipantId")->queryAll();
                 foreach ($branches as $branch) {
