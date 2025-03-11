@@ -37,6 +37,8 @@ $this->title = 'Результат отчета по мероприятиям';
     <?php endforeach; ?>
 </table>
 
+<p><?= $eventResult['result']['percent'] ?></p>
+
 
 <?php $form1 = ActiveForm::begin(['method' => 'post', 'action' => ['download-debug-csv']]); ?>
     <input type="hidden" name="debugData" value="<?= htmlspecialchars(json_encode($eventResult['debugData'], JSON_UNESCAPED_UNICODE)) ?>">

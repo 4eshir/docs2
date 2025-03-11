@@ -5,6 +5,7 @@ namespace backend\services\report;
 use backend\repositories\report\ParticipantReportRepository;
 use common\repositories\event\ForeignEventRepository;
 use frontend\models\work\event\ParticipantAchievementWork;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 class ReportForeignEventService
@@ -46,6 +47,8 @@ class ReportForeignEventService
         $actsQuery = $this->participantReportRepository->filterByAllowRemote($actsQuery, $allowRemotes);
 
         $result = [];
+        $tempSumPart = 0;
+        $tempSumAchieve = 0;
         foreach ($levels as $level) {
             $participantQuery = $this->participantReportRepository->filterByEventLevels(clone $actsQuery, [$level]);
             $prizeQuery = $this->participantReportRepository->filterByPrizes(clone $participantQuery, [ParticipantAchievementWork::TYPE_PRIZE]);
@@ -56,7 +59,16 @@ class ReportForeignEventService
                 'winners' => count($this->participantReportRepository->getAll($wineQuery)),
                 'prizes' => count($this->participantReportRepository->getAll($prizeQuery))
             ];
+
+            if (in_array($level, Yii::$app->eventLevel->getReportLevels())) {
+                $tempSumPart += count($this->participantReportRepository->getAll($participantQuery));
+                $tempSumAchieve +=
+                    count($this->participantReportRepository->getAll($wineQuery)) +
+                    count($this->participantReportRepository->getAll($prizeQuery));
+            }
         }
+
+        $result['percent'] = $tempSumAchieve / $tempSumPart;
 
         return [
             'result' => $result,
