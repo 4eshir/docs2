@@ -45,7 +45,7 @@ class JournalForm extends Model
 
             foreach ($this->visits as $visit) {
                 /** @var VisitWork $visit */
-                $lessons = VisitLesson::fromString($visit->lessons);
+                $lessons = VisitLesson::fromString($visit->lessons, Yii::createObject(TrainingGroupLessonRepository::class));
                 $this->participantLessons[] = new ParticipantLessons(
                     $visit->training_group_participant_id,
                     $lessons,

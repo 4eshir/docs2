@@ -13,6 +13,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model TrainingGroupCombinedForm */
 /* @var $journalState */
+/* @var $buttonsAct */
 
 $this->title = $model->number;
 $this->params['breadcrumbs'][] = ['label' => 'Учебные группы', 'url' => ['index']];
@@ -20,43 +21,172 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 
-<style>
-
-    .accordion {
-        background-color: #3680b1;
-        color: white;
-        cursor: pointer;
-        padding: 8px;
-        width: 100%;
-        text-align: left;
-        border: none;
-        outline: none;
-        transition: 0.4s;
-        border-radius: 5px;
-    }
-
-    /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-    .active, .accordion:hover {
-
-    }
-
-    /* Style the accordion panel. Note: hidden by default */
-    .panel {
-        padding: 0 18px;
-        background-color: white;
-        display: none;
-        overflow: hidden;
-    }
-
-    .hoverless:hover {
-        cursor: default;
-    }
-</style>
-
-
 <div class="training-group-view">
 
-    <h1><?= Html::encode('Группа '.$this->title) ?>
+    <div class="substrate">
+        <h1><?= Html::encode($this->title) ?></h1>
+
+        <div class="flexx space">
+            <div class="flexx">
+                <?= $buttonsAct; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-block-1">
+            <div class="card-set">
+                <div class="card-head">Основное</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Отдел
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Педагоги
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Период обучения
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Программа и форма обучения</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Образ. программа
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Форма обучения
+                    </div>
+                    <div class="field-date">
+                        <?= 'Бюджет сетвевая' ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Приказы</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Загрузка приказов
+                    </div>
+                    <div class="field-date">
+                        <?= 'разрешена/запрещена' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Документы
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Дополнительная информация</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Выработка чел/ч
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Кол-во детей
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Кол-во занятий
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-2">
+            <div class="card-set">
+                <div class="card-head">Учебный график и состав</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Расписание
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Состав группы
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Итоговый контроль
+                    </div>
+                    <div class="field-date">
+                        <?= '' ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Файлы</div>
+                <div class="flexx files-section space-around">
+                    <div class="file-block-center"><?= '' ?><div>Документ программы</div></div>
+                    <div class="file-block-center"><?= '' ?><div>Редактируемый документ</div></div>
+                    <div class="file-block-center"><?= '' ?><div>Договор о сетевой форме</div></div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Свойства</div>
+                <div class="flexx">
+                    <div class="card-field flexx">
+                        <div class="field-title field-option">
+                            Создатель карточки
+                        </div>
+                        <div class="field-date">
+                            <?= '$model->getCreatorName();' ?>
+                        </div>
+                    </div>
+                    <div class="card-field flexx">
+                        <div class="field-title field-option">
+                            Последний редактор
+                        </div>
+                        <div class="field-date">
+                            <?= '$model->getLastEditorName();' ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <p>
         <?= Html::a('Перенести темы занятий из ОП', ['create-lesson-themes', 'groupId' => $model->id], ['class' => 'btn btn-secondary']) ?>
@@ -166,25 +296,3 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
     ]) ?>
 
 </div>
-
-
-<script>
-    var acc = document.getElementsByClassName("accordion");
-    var i;
-
-    for (i = 0; i < acc.length; i++) {
-        acc[i].addEventListener("click", function() {
-            /* Toggle between adding and removing the "active" class,
-            to highlight the button that controls the panel */
-            this.classList.toggle("active");
-
-            /* Toggle between hiding and showing the active panel */
-            var panel = this.nextElementSibling;
-            if (panel.style.display === "block") {
-                panel.style.display = "none";
-            } else {
-                panel.style.display = "block";
-            }
-        });
-    }
-</script>

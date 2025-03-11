@@ -152,6 +152,11 @@ class TrainingGroupWork extends TrainingGroup
         return implode('<br>', $newTeachers);
     }
 
+    public function getBranch()
+    {
+        return $model->branch ? Yii::$app->branches->get($model->branch) : '---';
+    }
+
     /**
      * Возвращает массив
      * link => форматированная ссылка на документ

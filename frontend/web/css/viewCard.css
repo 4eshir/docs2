@@ -70,15 +70,21 @@ select option[value=""] {
     font-size: 0.9em;
 }
 
-.event-view .card-block-1, .event-view .card-block-2, .training-program-view .card-block-1, .training-program-view .card-block-2 {
+.event-view .card-block-1, .event-view .card-block-2,
+.training-program-view .card-block-1, .training-program-view .card-block-2,
+.training-group-view .card-block-1, .training-group-view .card-block-2 {
     flex-basis: 50%;
 }
 
-.event-view .field-title, .training-program-view .field-title {
+.event-view .field-title,
+.training-program-view .field-title,
+.training-group-view .field-title {
     flex: 2;
 }
 
-.event-view .field-date, .training-program-view .field-date {
+.event-view .field-date,
+.training-program-view .field-date,
+.training-group-view .field-date {
     flex: 3;
 }
 

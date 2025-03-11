@@ -1,9 +1,7 @@
 <?php
 
-use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use frontend\models\work\educational\training_program\TrainingProgramWork;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */

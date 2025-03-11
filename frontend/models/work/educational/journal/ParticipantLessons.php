@@ -27,7 +27,7 @@ class ParticipantLessons extends Model
     public ?int $points;
     public ?int $successFinishing;
 
-    public GroupProjectThemesWork $groupProjectThemesWork;
+    public ?GroupProjectThemesWork $groupProjectThemesWork;
 
     public function __construct(
         int $trainingGroupParticipantId,

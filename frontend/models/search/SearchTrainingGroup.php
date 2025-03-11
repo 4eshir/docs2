@@ -22,7 +22,7 @@ class SearchTrainingGroup extends Model implements SearchInterfaces
     public int $budget;
     public int $archive;
 
-    public const BUDGET = [0 => 'Бюджет', 1 => 'Внебюджет'];
+    public const BUDGET = [0 => 'Внебюджет', 1 => 'Бюджет'];
     public const ARCHIVE = [0 => 'Актуальные', 1 => 'Архивные'];
 
     public function rules()
