@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Отдел
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getBranch(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Педагоги
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getTeachersRaw(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Период обучения
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getTrainingPeriod(); ?>
                     </div>
                 </div>
             </div>
@@ -69,7 +69,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Образ. программа
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getTrainingProgramRaw(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Форма обучения
                     </div>
                     <div class="field-date">
-                        <?= 'Бюджет сетвевая' ?>
+                        <?= $model->getFormStudy(); ?>
                     </div>
                 </div>
             </div>
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Загрузка приказов
                     </div>
                     <div class="field-date">
-                        <?= 'разрешена/запрещена' ?>
+                        <?= $model->getConsentOrders(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -96,7 +96,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Документы
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getOrdersRaw(); ?>
                     </div>
                 </div>
             </div>
@@ -107,7 +107,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Выработка чел/ч
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getManHoursPercent(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -115,7 +115,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Кол-во детей
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getCountParticipants(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -123,7 +123,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Кол-во занятий
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getCountLessons(); ?>
                     </div>
                 </div>
             </div>
@@ -136,7 +136,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Расписание
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getPrettyLessons() ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -172,7 +172,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                             Создатель карточки
                         </div>
                         <div class="field-date">
-                            <?= '$model->getCreatorName();' ?>
+                            <?= $model->getCreatorName(); ?>
                         </div>
                     </div>
                     <div class="card-field flexx">
@@ -180,7 +180,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                             Последний редактор
                         </div>
                         <div class="field-date">
-                            <?= '$model->getLastEditorName();' ?>
+                            <?= $model->getLastEditorName(); ?>
                         </div>
                     </div>
                 </div>
@@ -208,36 +208,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            ['attribute' => 'branch', 'label' => 'Отдел производящий учет', 'format' => 'html', 'value' => function (TrainingGroupCombinedForm $model){
-                return $model->branch ? Yii::$app->branches->get($model->branch) : '';
-            }],
-            ['attribute' => 'number', 'label' => 'Номер группы'],
-            ['attribute' => 'budget', 'label' => 'Форма обучения', 'value' => function (TrainingGroupCombinedForm $model){
-                return $model->budget == 1 ? 'Бюджет' : 'Внебюджет';
-            }],
-            ['attribute' => 'trainingProgram', 'format' => 'html', 'value' => function (TrainingGroupCombinedForm $model){
-                return $model->trainingProgram ?
-                    StringFormatter::stringAsLink(
-                        $model->trainingProgram->name,
-                        Url::to(['educational/training-program/view', 'id' => $model->trainingProgram->id])
-                    ) : '';
-            }],
-            ['attribute' => 'network', 'label' => 'Сетевая форма обучения', 'value' => function (TrainingGroupCombinedForm $model){
-                return $model->network == 1 ? 'Да' : 'Нет';
-            }],
-            ['attribute' => 'teachersList', 'format' => 'html', 'value' => function (TrainingGroupCombinedForm $model){
-                $newTeachers = [];
-                foreach ($model->teachers as $teacher) {
-                    /** @var TeacherGroupWork $teacher */
-                    $newTeachers[] = StringFormatter::stringAsLink(
-                            $teacher->teacherWork->getFIO(PersonInterface::FIO_FULL),
-                            Url::to(['dictionaries/people/view', 'id' => $teacher->teacherWork->people_id])
-                    );
-                }
-                return implode('<br>', $newTeachers);
-            }],
-            ['attribute' => 'startDate', 'label' => 'Дата начала занятий'],
-            ['attribute' => 'endDate', 'label' => 'Дата окончания занятий'],
+
             ['attribute' => 'photoFiles', 'value' => function (TrainingGroupCombinedForm $model) {
                 return $model->photoFiles;
             }, 'format' => 'raw'],
@@ -267,16 +238,6 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
         'attributes' => [
             ['attribute' => 'participants', 'format' => 'raw', 'value' => function (TrainingGroupCombinedForm $model) {
                 return implode('<br>', $model->getPrettyParticipants());
-            }],
-        ],
-    ]) ?>
-
-    <h4><u>Занятия</u></h4>
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            ['attribute' => 'lessons', 'format' => 'raw', 'value' => function (TrainingGroupCombinedForm $model) {
-                return implode('<br>', $model->getPrettyLessons());
             }],
         ],
     ]) ?>

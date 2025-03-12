@@ -68,9 +68,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
         'columns' => [
             ['attribute' => 'number', 'format' => 'html'],
-            ['attribute' => 'programName', 'encodeLabel' => false, 'label' => 'Образовательная<br>программа'],
-            ['attribute' => 'branchString', 'encodeLabel' => false, 'format' => 'raw'],
             ['attribute' => 'teachersList', 'encodeLabel' => false, 'format' => 'raw'],
+            ['attribute' => 'branchString', 'encodeLabel' => false, 'format' => 'raw'],
+            ['attribute' => 'programName', 'encodeLabel' => false, 'label' => 'Образовательная<br>программа'],
             ['attribute' => 'start_date',
                 'value' => function(TrainingGroupWork $model){
                     return DateFormatter::format($model->start_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
