@@ -3,6 +3,7 @@
 namespace frontend\models\work\educational\training_group;
 
 use common\helpers\StringFormatter;
+use common\models\work\UserWork;
 use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\order\OrderTrainingWork;
 use common\components\dictionaries\base\NomenclatureDictionary;
@@ -152,11 +153,6 @@ class TrainingGroupWork extends TrainingGroup
         return implode('<br>', $newTeachers);
     }
 
-    public function getBranch()
-    {
-        return $model->branch ? Yii::$app->branches->get($model->branch) : '---';
-    }
-
     /**
      * Возвращает массив
      * link => форматированная ссылка на документ
@@ -238,5 +234,21 @@ class TrainingGroupWork extends TrainingGroup
     public function getExpertsWork()
     {
         return $this->hasMany(TrainingGroupExpertWork::className(), ['training_group_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCreatorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getLastEditorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
     }
 }

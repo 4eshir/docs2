@@ -20,4 +20,20 @@ class OrderTrainingGroupParticipantWork extends OrderTrainingGroupParticipant
         $entity->order_id = $orderId;
         return $entity;
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTrainingGroupParticipantOutWork()
+    {
+        return $this->hasOne(TrainingGroupParticipantWork::class, ['id' => 'training_group_participant_out_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTrainingGroupParticipantInWork()
+    {
+        return $this->hasOne(TrainingGroupParticipantWork::class, ['id' => 'training_group_participant_in_id']);
+    }
 }

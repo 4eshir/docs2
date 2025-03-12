@@ -32,6 +32,8 @@ class Urls
     const TRAINING_GROUP_RELEVANCE = "educational/training-group/relevance";
 
 
+
     const PEOPLE_VIEW = "dictionaries/people/view";
     const ORDER_MAIN_VIEW = "order/order-main/view";
+    const ORDER_TRAINING_VIEW = "order/order-training/view";
 }
