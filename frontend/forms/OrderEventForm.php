@@ -101,8 +101,8 @@ class OrderEventForm extends Model {
         ]);
     }
     public static function fill(
-        OrderEventWork $modelOrderEvent,
-        ForeignEventWork $foreignEvent
+        OrderEventWork $modelOrderEvent = NULL,
+        ForeignEventWork $foreignEvent = NULL
     )
     {
         $entity = new static();
@@ -164,7 +164,7 @@ class OrderEventForm extends Model {
         */
         return $entity;
     }
-    public function fillExtraInfo(OrderEventGenerateWork $model){
+    public function fillExtraInfo(OrderEventGenerateWork $model = NULL){
         $this->purpose = $model->purpose;
         $this->docEvent = $model->doc_event;
         $this->respPeopleInfo = (PeopleStampWork::findOne($model->resp_people_info_id))->people_id;
