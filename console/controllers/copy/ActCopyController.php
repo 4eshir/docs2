@@ -33,6 +33,51 @@ class ActCopyController extends Controller
             $command->execute();
         }
     }
+    public function actionTestCopy()
+    {
+        $participants = Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant")->queryAll();
+        foreach ($participants as $participant) {
+            $participantId = $participant['id'];
+            if (count(Yii::$app->old_db->createCommand("SELECT * FROM team WHERE teacher_participant_id = $participantId")->queryAll()) > 0){
+                $actModel = ActParticipantWork::fill(
+                    $participant['teacher_id'] != '' ? $this->peopleStampService->createStampFromPeople($participant['teacher_id']) : NULL,
+                    $participant['teacher2_id'] != '' ? $this->peopleStampService->createStampFromPeople($participant['teacher2_id']) : NULL,
+                    NULL,
+                    $participant['foreign_event_id'],
+                    $participant['focus'],
+                    NULL,
+                    $participant['allow_remote_id'],
+                    $participant['nomination'],
+                    $participant['allow_remote_id']
+                );
+                $members = Yii::$app->old_db->createCommand("SELECT * FROM team WHERE teacher_participant_id = $participantId")->queryAll();
+            }
+            else {
+                /*$actModel = ActParticipantWork::fill(
+                    $participant['teacher_id'] != '' ? $this->peopleStampService->createStampFromPeople($participant['teacher_id']) : NULL,
+                    $participant['teacher2_id'] != '' ? $this->peopleStampService->createStampFromPeople($participant['teacher2_id']) : NULL,
+                    NULL,
+                    $participant['foreign_event_id'],
+                    $participant['focus'],
+                    NULL,
+                    $participant['allow_remote_id'],
+                    $participant['nomination'],
+                    $participant['allow_remote_id']
+                );
+
+                $this->actParticipantRepository->save($actModel);
+                $command = Yii::$app->db->createCommand();
+                $command->insert('squad_participant',
+                    [
+                        'id' => $participant['id'],
+                        'act_participant_id' => $actModel->id,
+                        'participant_id' => $participant['participant_id'],
+                    ]
+                );
+                $command->execute();*/
+            }
+        }
+    }
     public function actionActCopy()
     {
         $query = Yii::$app->old_db->createCommand("SELECT * FROM team_name");
