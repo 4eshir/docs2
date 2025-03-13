@@ -9,24 +9,24 @@ use frontend\models\work\event\ParticipantAchievementWork;
 use Yii;
 use yii\helpers\ArrayHelper;
 
-class ReportForeignEventService
+class ReportForeignEventMockService
 {
-    private ForeignEventRepository $repository;
-    private ParticipantReportBuilder $builder;
-    private ActParticipantRepository $actRepository;
-    private DebugReportService $debugService;
+    public array $events;
+    public array $acts;
+    public array $actsBranch;
+    public array $achieves;
 
     public function __construct(
-        ForeignEventRepository   $repository,
-        ParticipantReportBuilder $builder,
-        ActParticipantRepository $actRepository,
-        DebugReportService       $debugService
+        array $events = [],
+        array $acts = [],
+        array $actsBranch = [],
+        array $achieves = []
     )
     {
-        $this->repository = $repository;
-        $this->builder = $builder;
-        $this->actRepository = $actRepository;
-        $this->debugService = $debugService;
+        $this->events = $events;
+        $this->acts = $acts;
+        $this->actsBranch = $actsBranch;
+        $this->achieves = $achieves;
     }
 
     public function calculateEventParticipants(
