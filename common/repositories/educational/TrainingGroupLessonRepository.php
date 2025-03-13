@@ -5,8 +5,6 @@ namespace common\repositories\educational;
 use common\repositories\providers\group_lesson\TrainingGroupLessonProvider;
 use common\repositories\providers\group_lesson\TrainingGroupLessonProviderInterface;
 use DomainException;
-use frontend\events\visit\AddLessonToVisitEvent;
-use frontend\events\visit\DeleteLessonFromVisitEvent;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use Yii;
 

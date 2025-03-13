@@ -12,6 +12,7 @@ use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\services\general\files\FileService;
 use frontend\events\foreign_event_participants\PersonalDataParticipantAttachEvent;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
+use frontend\models\work\dictionaries\PersonInterface;
 use Yii;
 use yii\base\Model;
 use yii\web\UploadedFile;
@@ -49,10 +50,13 @@ class LoadParticipants extends Model
         );
 
         for ($i = 0; $i < count($data['Фамилия обучающегося']); $i++) {
+            $birthdate = $data['Дата рождения (л)'][$i] ?
+                DateFormatter::format($data['Дата рождения (л)'][$i], DateFormatter::mdY_slash, DateFormatter::Ymd_dash) :
+                PersonInterface::BASE_BIRTHDATE;
             $participant = ForeignEventParticipantsWork::fill(
-                $data['Фамилия обучающегося'][$i],
                 $data['Имя обучающегося'][$i],
-                DateFormatter::format($data['Дата рождения (л)'][$i], DateFormatter::mdY_slash, DateFormatter::Ymd_dash),
+                $data['Фамилия обучающегося'][$i],
+                $birthdate,
                 CompareHelper::isEmail($data['Контакт: Рабочий e-mail'][$i]) == CompareHelper::RESULT_CORRECT ? $data['Контакт: Рабочий e-mail'][$i] : '',
                 $this->participantRepository->getSexByName($data['Имя обучающегося'][$i]),
                 $data['Отчество обучающегося'][$i]

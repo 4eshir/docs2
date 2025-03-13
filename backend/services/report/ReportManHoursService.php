@@ -2,25 +2,23 @@
 
 namespace backend\services\report;
 
+use backend\builders\TrainingGroupReportBuilder;
 use backend\forms\report\ManHoursReportForm;
 use backend\helpers\ReportHelper;
-use backend\invokables\report\CheckVisitLesson;
-use backend\repositories\report\TrainingGroupReportRepository;
 use common\repositories\educational\LessonThemeRepository;
-use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\VisitRepository;
 use frontend\models\work\educational\journal\VisitLesson;
 use frontend\models\work\educational\journal\VisitWork;
-use InvalidArgumentException;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 
 class ReportManHoursService
 {
-    private TrainingGroupReportRepository $repository;
+    private TrainingGroupReportBuilder $builder;
+    private TrainingGroupRepository $repository;
     private TrainingGroupLessonRepository $lessonRepository;
     private LessonThemeRepository $lessonThemeRepository;
     private TrainingGroupParticipantRepository $participantRepository;
@@ -29,7 +27,8 @@ class ReportManHoursService
     private DebugReportService $debugService;
 
     public function __construct(
-        TrainingGroupReportRepository      $repository,
+        TrainingGroupReportBuilder         $builder,
+        TrainingGroupRepository            $repository,
         TrainingGroupLessonRepository      $lessonRepository,
         LessonThemeRepository              $lessonThemeRepository,
         TrainingGroupParticipantRepository $participantRepository,
@@ -37,6 +36,7 @@ class ReportManHoursService
         DebugReportService                 $debugService
     )
     {
+        $this->builder = $builder;
         $this->repository = $repository;
         $this->lessonRepository = $lessonRepository;
         $this->lessonThemeRepository = $lessonThemeRepository;
@@ -62,11 +62,11 @@ class ReportManHoursService
         array $budgets
     ) : ActiveQuery
     {
-        $query = $this->repository->query();
-        $query = $this->repository->filterGroupsByBranches($query, $branches);
-        $query = $this->repository->filterGroupsByFocuses($query, $focuses);
-        $query = $this->repository->filterGroupsByAllowRemote($query, $allowRemotes);
-        return $this->repository->filterGroupsByBudget($query, $budgets);
+        $query = $this->builder->query();
+        $query = $this->builder->filterGroupsByBranches($query, $branches);
+        $query = $this->builder->filterGroupsByFocuses($query, $focuses);
+        $query = $this->builder->filterGroupsByAllowRemote($query, $allowRemotes);
+        return $this->builder->filterGroupsByBudget($query, $budgets);
     }
 
     /**
@@ -96,7 +96,7 @@ class ReportManHoursService
     {
         $query = $this->getTrainingGroupsQueryByFilters($branches, $focuses, $allowRemotes, $budgets);
 
-        $query = $this->repository->filterGroupsBetweenDates($query, $startDate, $endDate);
+        $query = $this->builder->filterGroupsBetweenDates($query, $startDate, $endDate);
         $groups = $this->repository->findAll($query);
 
         $participants = $this->participantRepository->getParticipantsFromGroups(
@@ -160,8 +160,8 @@ class ReportManHoursService
         $query = $this->getTrainingGroupsQueryByFilters($branches, $focuses, $allowRemotes, $budgets);
         // для подсчета уникальных игнорируем разделы (по таймингам)
         if ($calculateSubtype === ManHoursReportForm::PARTICIPANTS_UNIQUE) {
-            $tempQuery = $this->repository->filterGroupsByDates(clone $query, $startDate, $endDate, $calculateTypes);
-            $tempQuery = $this->repository->filterGroupsByTeachers($tempQuery, $teacherIds);
+            $tempQuery = $this->builder->filterGroupsByDates(clone $query, $startDate, $endDate, $calculateTypes);
+            $tempQuery = $this->builder->filterGroupsByTeachers($tempQuery, $teacherIds);
             $groups = $this->repository->findAll($tempQuery);
 
             $participants = $this->participantRepository->getParticipantsFromGroups(
@@ -189,8 +189,8 @@ class ReportManHoursService
             $result = [];
             $participants = [];
             foreach ($calculateTypes as $calculateType) {
-                $tempQuery = $this->repository->filterGroupsByDates(clone $query, $startDate, $endDate, [$calculateType]);
-                $tempQuery = $this->repository->filterGroupsByTeachers($tempQuery, $teacherIds);
+                $tempQuery = $this->builder->filterGroupsByDates(clone $query, $startDate, $endDate, [$calculateType]);
+                $tempQuery = $this->builder->filterGroupsByTeachers($tempQuery, $teacherIds);
                 $groups = $this->repository->findAll($tempQuery);
 
                 $tempParticipants = $this->participantRepository->getParticipantsFromGroups(

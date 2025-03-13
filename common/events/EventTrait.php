@@ -63,6 +63,7 @@ trait EventTrait
             $this->clearEvents();
         }
         catch (Exception $e) {
+            var_dump($e->getMessage());die;
             Yii::error('Произошла ошибка в releaseEvents - ' . $e->getMessage());
         }
 

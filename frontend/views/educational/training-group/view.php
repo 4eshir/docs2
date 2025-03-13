@@ -107,7 +107,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Выработка чел/ч
                     </div>
                     <div class="field-date">
-                        <?= $model->getManHoursPercent(); ?>
+                        <?= $model->getPrettyManHoursPercent(); ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -144,7 +144,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Состав группы
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getPrettyParticipants() ?>
                     </div>
                 </div>
                 <div class="card-field flexx">
@@ -152,16 +152,16 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Итоговый контроль
                     </div>
                     <div class="field-date">
-                        <?= '' ?>
+                        <?= $model->getPrettyFinalControl(); ?>
                     </div>
                 </div>
             </div>
             <div class="card-set">
                 <div class="card-head">Файлы</div>
                 <div class="flexx files-section space-around">
-                    <div class="file-block-center"><?= '' ?><div>Документ программы</div></div>
-                    <div class="file-block-center"><?= '' ?><div>Редактируемый документ</div></div>
-                    <div class="file-block-center"><?= '' ?><div>Договор о сетевой форме</div></div>
+                    <div class="file-block-center"><?= $model->getFullPhotoFiles(); ?><div>Фотоматериалы</div></div>
+                    <div class="file-block-center"><?= $model->getFullPresentationFiles(); ?><div>Презентационные материалы</div></div>
+                    <div class="file-block-center"><?= $model->getFullWorkFiles(); ?><div>Рабочие материалы</div></div>
                 </div>
             </div>
             <div class="card-set">
@@ -204,56 +204,5 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                 'method' => 'post',
             ],
         ]) ?>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-
-            ['attribute' => 'photoFiles', 'value' => function (TrainingGroupCombinedForm $model) {
-                return $model->photoFiles;
-            }, 'format' => 'raw'],
-            ['attribute' => 'presentationFiles', 'value' => function (TrainingGroupCombinedForm $model) {
-                return $model->presentationFiles;
-            }, 'format' => 'raw'],
-            ['attribute' => 'workFiles', 'value' => function (TrainingGroupCombinedForm $model) {
-                return $model->workMaterialFiles;
-            }, 'format' => 'raw'],
-            /*
-            ['attribute' => 'countParticipants', 'label' => 'Количество учеников', 'format' => 'html'],
-            ['attribute' => 'participantNames', 'value' => '<button class="accordion">Показать состав группы</button><div class="panel">'.$model->participantNames.'</div>', 'format' => 'raw'],
-            ['attribute' => 'countLessons', 'label' => 'Количество занятий в расписании', 'format' => 'html'],
-            ['attribute' => 'lessonDates', 'value' => '<button class="accordion">Показать расписание группы</button><div class="panel">'.$model->lessonDates.'</div>', 'format' => 'raw'],
-            ['attribute' => 'manHoursPercent', 'format' => 'raw', 'label' => 'Выработка человеко-часов'],
-            ['attribute' => 'journalLink', 'format' => 'raw', 'label' => 'Журнал'],
-            ['attribute' => 'ordersName', 'format' => 'raw'],
-            */
-
-            //['attribute' => 'openText', 'label' => 'Темы занятий перенесены (при наличии)'],
-        ],
-    ]) ?>
-
-    <h4><u>Ученики</u></h4>
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            ['attribute' => 'participants', 'format' => 'raw', 'value' => function (TrainingGroupCombinedForm $model) {
-                return implode('<br>', $model->getPrettyParticipants());
-            }],
-        ],
-    ]) ?>
-
-    <h4><u>Сведения о защите работ</u></h4>
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            ['attribute' => 'protection_date'],
-            ['attribute' => 'themes', 'format' => 'raw', 'value' => function (TrainingGroupCombinedForm $model) {
-                return implode('<br>', $model->getPrettyThemes());
-            }],
-            ['attribute' => 'experts', 'format' => 'raw', 'value' => function (TrainingGroupCombinedForm $model) {
-                return implode('<br>', $model->getPrettyExperts());
-            }],
-        ],
-    ]) ?>
 
 </div>

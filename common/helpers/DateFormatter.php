@@ -14,7 +14,11 @@ class DateFormatter
     const dmy_dash = 5;
     const dmy_dot = 6;
     const mdY_slash = 7;
+    const His_colon = 8;
+    const Hi_colon = 9;
     const Ymd_without_separator = 10;
+    const dm_dot = 11;
+
     const DEFAULT_YEAR_RANGE = '2018:2030';     // заданная по умолчанию ограничения по дате
     const DEFAULT_YEAR_START = '2018-01-01';    // заданная по умолчанию ограничение по начальной дате
 
@@ -29,6 +33,9 @@ class DateFormatter
             self::dmy_dot => 'd.m.y',
             self::mdY_slash => 'm/d/Y',
             self::Ymd_without_separator => 'Ymd',
+            self::Hi_colon => 'H:i',
+            self::His_colon => 'H:i:s',
+            self::dm_dot => 'd.m',
         ];
     }
 

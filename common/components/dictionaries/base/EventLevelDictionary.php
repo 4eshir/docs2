@@ -35,4 +35,13 @@ class EventLevelDictionary extends BaseDictionary
             $this->list[self::INTERNATIONAL],
         ];
     }
+
+    public function getReportLevels()
+    {
+        return [
+            self::REGIONAL,
+            self::FEDERAL,
+            self::INTERNATIONAL
+        ];
+    }
 }

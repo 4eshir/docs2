@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 $this->title = 'Результат отчета по мероприятиям';
 ?>
 
-<table>
+<table class="table table-bordered">
     <tr>
         <th>Показатель</th>
         <th>Уровень</th>
@@ -35,6 +35,18 @@ $this->title = 'Результат отчета по мероприятиям';
             <td><?= $result['winners'] ?></td>
         </tr>
     <?php endforeach; ?>
+</table>
+
+<h5>Дополнительно</h5>
+<table class="table table-bordered">
+    <tr>
+        <th>Показатель</th>
+        <th>Значение</th>
+    </tr>
+    <tr>
+        <td>Доля учащихся, являющихся победителями и призерами мероприятий, не ниже регионального уровня</td>
+        <td><?= $eventResult['result']['percent'] ?></td>
+    </tr>
 </table>
 
 

@@ -43,4 +43,13 @@ class AuditoriumWork extends Auditorium
 
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
+
+    /**
+     * Вывод номера и названия аудитории
+     * @return string
+     */
+    public function getFullName()
+    {
+        return '№' . '$this->number' . ' (' . $this->name . ')';
+    }
 }

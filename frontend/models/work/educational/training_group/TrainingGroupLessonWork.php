@@ -3,6 +3,7 @@
 namespace frontend\models\work\educational\training_group;
 
 use common\events\EventTrait;
+use common\helpers\DateFormatter;
 use common\models\scaffold\TrainingGroupLesson;
 use common\repositories\dictionaries\AuditoriumRepository;
 use frontend\models\work\dictionaries\AuditoriumWork;
@@ -12,6 +13,7 @@ use Yii;
 
 /**
  * @property AuditoriumWork $auditoriumWork
+ * @property TrainingGroupWork $trainingGroupWork
  */
 
 class TrainingGroupLessonWork extends TrainingGroupLesson
@@ -46,6 +48,21 @@ class TrainingGroupLessonWork extends TrainingGroupLesson
         }
 
         return $entity;
+    }
+
+    /**
+     * Создает форматирование для строки одного занятия
+     * в формате "d.m c H:s до H:s в ауд. N"
+     * @return string
+     */
+    public function getLessonPrettyString()
+    {
+        $datePretty = DateFormatter::format($this->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot);
+        $lessonStartTime = DateFormatter::format($this->lesson_start_time, DateFormatter::His_colon, DateFormatter::Hi_colon);
+        $lessonEndTime = DateFormatter::format($this->lesson_end_time, DateFormatter::His_colon, DateFormatter::Hi_colon);
+        $auditorium = $this->auditoriumWork ? $this->auditoriumWork->getFullName() : '---';
+
+        return "$datePretty с {$lessonStartTime} до {$lessonEndTime} в ауд. {$auditorium}";
     }
 
     /**
@@ -91,6 +108,11 @@ class TrainingGroupLessonWork extends TrainingGroupLesson
     public function getAuditoriumWork()
     {
         return $this->hasOne(AuditoriumWork::class, ['id' => 'auditorium_id']);
+    }
+
+    public function getTrainingGroupWork()
+    {
+        return $this->hasOne(TrainingGroupWork::class, ['id' => 'training_group_id']);
     }
 
     /**

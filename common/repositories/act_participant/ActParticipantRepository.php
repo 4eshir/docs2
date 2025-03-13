@@ -15,6 +15,7 @@ use common\repositories\order\OrderEventRepository;
 use DomainException;
 use Yii;
 use yii\console\Application;
+use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 
 class ActParticipantRepository
@@ -30,6 +31,11 @@ class ActParticipantRepository
         $this->squadParticipantRepository = $squadParticipantRepository;
         $this->orderEventRepository = $orderEventRepository;
         $this->foreignEventRepository = $foreignEventRepository;
+    }
+
+    public function findAll(ActiveQuery $query): array
+    {
+        return $query->all();
     }
 
     public function getByForeignEventIds(array $foreignEventIds, array $types = [ActParticipantWork::TYPE_TEAM, ActParticipantWork::TYPE_SOLO])

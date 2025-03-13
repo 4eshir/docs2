@@ -101,3 +101,18 @@ select option[value=""] {
     padding: 1em;
     text-align: center;
 }
+
+.card-block-2 .accordion-block {
+    background: var(--accordion-dark);
+}
+
+.card-block-2 .accordion-block,
+.card-block-2 .accordion-btn,
+.card-block-2 .accordion-btn-close {
+    border-color: var(--accordion-btn-dark);
+}
+
+.card-block-2 .accordion-btn,
+.card-block-2 .accordion-btn-close {
+    background: var(--accordion-btn-dark);
+}

@@ -31,6 +31,18 @@ class HtmlBuilder
     const DROPDOWN_FIELD_TYPE = 'dropdown';
 
     /**
+     * Добавляет начертание шрифта для подзаголовка и уточнения
+     *
+     * @param string $subtitle
+     * @param string $clarification
+     * @return string
+     */
+    public static function createSubtitleAndClarification(string $subtitle, string $clarification)
+    {
+        return '<span class="fnt-wght-5">' . $subtitle . '</span><span class="fnt-wght-2">'. $clarification . '</span>';
+    }
+
+    /**
      * Создает красивый переключатель для чекбокса
      *
      * @param string $offSwitchText
@@ -80,6 +92,21 @@ class HtmlBuilder
     }
 
     /**
+     * Превращает массив в разметку с разделителем <br>
+     * и возвращает их в виде аккордиона
+     * @param array $content
+     * @param int $lengthPrev
+     * @param string $textBtnOpen
+     * @param string $textBtnClose
+     * @return string
+     */
+    public static function arrayToAccordion(array $content, int $lengthPrev = 20, string $textBtnOpen = 'Развернуть', string $textBtnClose = 'Скрыть')
+    {
+        $content = implode('<br>', $content);
+        return self::createAccordion($content, $lengthPrev, $textBtnOpen, $textBtnClose);
+    }
+
+    /**
      * Метод создания массива option-s для select
      * $items должен иметь поля $id и $name
      * @param $items
@@ -95,12 +122,13 @@ class HtmlBuilder
     }
 
     /**
-     * Добавляет пустое знчание в список выпадающего списка
+     * Добавляет пустое значение в список выпадающего списка
+     * @param string $text
      * @return string
      */
-    public static function createEmptyOption()
+    public static function createEmptyOption(string $text = '---')
     {
-        return "<option value>---</option>";
+        return "<option value>{$text}</option>";
     }
 
     /**
@@ -142,8 +170,14 @@ class HtmlBuilder
             $url = $linkOptions['url'];
             $class = $linkOptions['class'] ?? 'btn-secondary'; // Класс по умолчанию
             $data = $linkOptions['data'] ?? [];
+            $id = $linkOptions['id'] ?? '';
 
-            $result .= Html::a($label, $url, ['class' => [$class], 'data' => $data,]);
+            $options = ['class' => [$class], 'data' => $data];
+            if ($id !== '') {
+                $options['id'] = $id;
+            }
+
+            $result .= Html::a($label, $url, $options);
         }
 
         $result .= '</div>';

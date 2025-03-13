@@ -22,6 +22,7 @@ use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
+use common\repositories\educational\VisitRepository;
 use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
@@ -41,6 +42,7 @@ use frontend\events\educational\training_group\UpdateGroupExpertEvent;
 use frontend\events\educational\training_group\UpdateProjectThemeEvent;
 use frontend\events\educational\training_group\UpdateTrainingGroupParticipantEvent;
 use frontend\events\general\FileCreateEvent;
+use frontend\events\visit\AddLessonToVisitEvent;
 use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
@@ -343,7 +345,12 @@ class TrainingGroupService implements DatabaseServiceInterface
         $newLessons = array_unique($newLessons);
 
         foreach ($newLessons as $lesson) {
+            $form->recordEvent(
+                new AddLessonToVisitEvent($form->trainingGroup->id, [$lesson]),
+                TrainingGroupLessonWork::class
+            );
             $this->trainingGroupLessonRepository->save($lesson);
+            $form->releaseEvents();
         }
     }
 
