@@ -189,7 +189,7 @@ class JournalService
         $visits = $this->visitRepository->getByTrainingGroup($groupId);
         foreach ($visits as $visit) {
             /** @var VisitWork $visit */
-            $lessons = VisitLesson::fromString($visit->lessons);
+            $lessons = VisitLesson::fromString($visit->lessons, $this->lessonRepository);
             $lessons = array_filter($lessons, function($lesson) use ($lessonId) {
                 /** @var VisitLesson $lesson */
                 return $lesson->lessonId !== $lessonId;

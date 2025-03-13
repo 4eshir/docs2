@@ -17,6 +17,7 @@ use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
+use frontend\events\visit\DeleteLessonFromVisitEvent;
 use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
@@ -322,6 +323,10 @@ class TrainingGroupController extends DocumentController
     {
         /** @var TrainingGroupLessonWork $model */
         $model = $this->groupLessonRepository->get($entityId);
+        $model->recordEvent(
+            new DeleteLessonFromVisitEvent($groupId, [$model]),
+            TrainingGroupLessonWork::class
+        );
         $result = $this->groupLessonRepository->delete($model);
 
         if ($result) {
@@ -331,6 +336,7 @@ class TrainingGroupController extends DocumentController
             Yii::$app->session->setFlash('danger', 'Ошибка удаления занятия');
         }
 
+        $model->releaseEvents();
         return $this->redirect(['schedule-form', 'id' => $groupId]);
     }
 
@@ -391,7 +397,12 @@ class TrainingGroupController extends DocumentController
         foreach ($data as $item) {
             /** @var TrainingGroupLessonWork $entity */
             $entity = $this->groupLessonRepository->get($item);
+            $entity->recordEvent(
+                new DeleteLessonFromVisitEvent($id, [$entity]),
+                TrainingGroupLessonWork::class
+            );
             $this->groupLessonRepository->delete($entity);
+            $entity->releaseEvents();
         }
 
         return $this->redirect(['schedule-form', 'id' => $id]);
