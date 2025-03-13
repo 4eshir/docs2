@@ -63,6 +63,7 @@ class TrainingProgramController extends DocumentController
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                    'relevance-save' => ['POST'],
                 ],
             ],
         ];
@@ -75,13 +76,43 @@ class TrainingProgramController extends DocumentController
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->pagination = false;
 
-        $links = ButtonsFormatter::anyOneLink('Сохранить статус', Yii::$app->frontUrls::PROGRAM_ACTUAL, ButtonsFormatter::BTN_PRIMARY);
+        $links = ButtonsFormatter::anyOneLink('Сохранить статус', '#'/*Yii::$app->frontUrls::PROGRAM_ACTUAL*/, ButtonsFormatter::BTN_PRIMARY, 'relevance-save');
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('relevance', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'buttonsAct' => $buttonHtml,
+        ]);
+    }
+
+    public function actionRelevanceSave()
+    {
+        $ids = Yii::$app->request->post('ids');
+
+        return json_encode([
+            'success' => true,
+        ]);
+
+        if (!empty($ids)) {
+            // Выполняем необходимые операции с моделями
+            /*foreach ($ids as $id) {
+                $model = ModelName::findOne($id);
+
+                if ($model !== null) {
+                    // Делаем какие-то изменения в модели
+                    $model->actual = true; // Пример обновления поля actual
+                    $model->save();
+                }
+            }*/
+
+            // Возвращаем ответ клиенту с URL для перенаправления
+
+        }
+
+        return json_encode([
+            'success' => false,
+            'message' => 'No data received',
         ]);
     }
 
@@ -290,11 +321,11 @@ class TrainingProgramController extends DocumentController
 
     public function beforeAction($action)
     {
-        $result = $this->checkActionAccess($action);
+        /*$result = $this->checkActionAccess($action);
         if ($result['url'] !== '') {
             $this->redirect($result['url']);
             return $result['status'];
-        }
+        }*/
 
         return parent::beforeAction($action);
     }

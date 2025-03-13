@@ -107,12 +107,13 @@ class ButtonsFormatter
      * @param string $link
      * @return array[]
      */
-    public static function anyOneLink (string $nameButton, string $link, string $nameClasses)
+    public static function anyOneLink(string $nameButton, string $link, string $nameClasses, string $id = '')
     {
         return [
             $nameButton => [
                 'url' => Url::to([$link]),
                 'class' => $nameClasses,
+                'id' => $id
             ]
         ];
     }

@@ -6,6 +6,7 @@ use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\Url;
+use yii\web\View;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\search\SearchTrainingProgram */
@@ -15,25 +16,6 @@ use yii\helpers\Url;
 $this->title = 'Образовательные программы';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-
-<script>
-    function archive() {
-        var keys = $('#grid').yiiGridView('getSelectedRows');
-        //var p = getUrlParameter('page');
-        //if (p == false) p = 1;
-        var checkboxes = document.getElementsByClassName('check');
-        var archive = [];
-        var unarchive = [];
-        for (var index = 0; index < checkboxes.length; index++) {
-            if (checkboxes[index].checked)
-                archive.push(checkboxes[index].value);
-            else
-                unarchive.push(checkboxes[index].value);
-        }
-        window.location.href='<?php echo Url::to(['training-program/archive']); ?>&arch='+archive.join()+'&unarch='+unarchive.join();
-        //$('#grid').yiiGridView('getSelectedRows')
-    }
-</script>
 
 
 <div class="training-program-index">
@@ -80,16 +62,42 @@ var_dump(Yii::$app->request->queryParams['r']);
 </div>
 
     <?php
-    $url = Url::toRoute(['training-program/actual']);
-    $this->registerJs(
-    "function myStatus(id){
-        $.ajax({
-            type: 'GET',
-            url: 'index.php?r=training-program/actual',
-            data: {id: id},
-            success: function(result){
-                console.log(result);
-            }
+    $url = Url::toRoute('relevance-save');
+    $urlBack = Url::toRoute(['relevance']);
+
+    $this->registerJs(<<<JS
+        $(document).ready(function () {
+            $('#relevance-save').on('click', function () {
+                /*var selectedIds = [];
+                
+                $('input.check:checked').each(function () {
+                    selectedIds.push($(this).val());
+                });*/
+                
+                if (true /* selectedIds.length > 0 */) {
+                    // Отправляем POST-запрос на экшен контроллера
+                    $.ajax({
+                        type: 'POST',
+                        url: "$url",
+                        data: {/*ids: selectedIds*/},
+                        success: function(response) {
+                            let parsedResponse = JSON.parse(response); // Преобразуем строку JSON в объект
+                            console.log(parsedResponse.success);
+                            if (parsedResponse.success) {
+                                window.location.href = "$urlBack";
+                            } else {
+                                alert('Ошибка: ' + parsedResponse.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            alert('Произошла ошибка: ' + xhr.responseText);
+                        }
+                    });
+                } else {
+                    alert('Не выбрано ни одного элемента!');
+                }
+            });
         });
-    }", yii\web\View::POS_END);
+        JS
+    , View::POS_END);
     ?>
