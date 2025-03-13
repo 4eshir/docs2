@@ -88,7 +88,7 @@ class DocumentOrderCopyController extends Controller
     }
     public function actionDeleteDocumentOrderSupplement()
     {
-        Yii::$app->db->createCommand()->delete('document_order_supplement')->execute();
+        Yii::$app->db->createCommand()->delete('order_event_generate')->execute();
     }
     public function actionDeleteAll()
     {

@@ -3,14 +3,9 @@
 namespace common\repositories\order;
 use frontend\models\work\order\OrderTrainingWork;
 use frontend\services\order\OrderTrainingService;
-use common\components\dictionaries\base\NomenclatureDictionary;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use DomainException;
-use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
-use frontend\models\work\educational\training_group\TrainingGroupWork;
-use yii\data\ActiveDataProvider;
-use yii\helpers\ArrayHelper;
 
 class OrderTrainingRepository
 {
@@ -38,5 +33,24 @@ class OrderTrainingRepository
             throw new DomainException('Ошибка сохранения документа. Проблемы: '.json_encode($model->getErrors()));
         }
         return $model->id;
+    }
+
+    /**
+     * Поиск всех приказов по группе
+     * @param int $idGroup
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getAllByGroup(int $idGroup)
+    {
+        return OrderTrainingWork::find()
+                    ->joinWith([
+                        'orderTrainingGroupParticipantWork' => function ($query) {
+                            $query->joinWith('trainingGroupParticipantInWork', true, 'INNER JOIN')
+                            ->joinWith('trainingGroupParticipantOutWork', true, 'INNER JOIN');
+                        }
+                    ], true, 'INNER JOIN')
+                    ->where(['training_group_participant.training_group_id' => $idGroup])
+                    ->groupBy('id')
+                    ->all();
     }
 }

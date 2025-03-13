@@ -40,7 +40,7 @@ class ActParticipantRepository
 
     public function getByForeignEventIds(array $foreignEventIds, array $types = [ActParticipantWork::TYPE_TEAM, ActParticipantWork::TYPE_SOLO])
     {
-        $query = ActParticipantWork::find()->where(['IN', 'foreign_event_id', $foreignEventIds])->andWhere(['IN', 'type', $types]);
+        $query = ActParticipantWork::find()->where(['IN', 'foreign_event_id', $foreignEventIds]);
         LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка актов участия по заданному мероприятию', $query->createCommand()->getRawSql());
         return $query->all();
     }
@@ -109,7 +109,7 @@ class ActParticipantRepository
             ->andWhere(['form' => $form])
             ->andWhere(['nomination' => $nomination]);
         LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка количества уникальных актов участия по заданным параметрам', $query->createCommand()->getRawSql());
-        return $query->count();
+        return count($query->all());
     }
 
     public function get($id)
@@ -136,6 +136,7 @@ class ActParticipantRepository
         if (!(Yii::$app instanceof Application)) {
             LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Сохранение акта участия', $sql);
         }
+
         return $model->id;
     }
 

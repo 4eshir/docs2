@@ -8,6 +8,7 @@ use frontend\models\work\team\ActParticipantWork;
 use Yii;
 use yii\console\Application;
 use yii\console\Controller;
+use yii\helpers\ArrayHelper;
 
 class ActCopyController extends Controller
 {
@@ -33,66 +34,110 @@ class ActCopyController extends Controller
             $command->execute();
         }
     }
-    public function actionActCopy()
+    public function actionPersonalActCopy()
     {
-        $query = Yii::$app->old_db->createCommand("SELECT * FROM team_name");
-        foreach ($query->queryAll() as $record) {
-            $teamNameId  = $record['id'];
-            $acts = Yii::$app->old_db->createCommand("SELECT * FROM team WHERE team_name_id = $teamNameId")->queryAll();
-            if (count($acts) > 0) {
-                $act = $acts[0];
-                $teacherParticipantId = $act['teacher_participant_id'];
-                $team = is_null($act['participant_id']) ? NULL : $teamNameId;
-                $teacherParticipants = Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant WHERE id = $teacherParticipantId")->queryAll();
-                //act_participant
+        //act_participant
+        $participants = Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant")->queryAll();
+        foreach ($participants as $participant) {
+            $participantId = $participant['id'];
+            if (count(Yii::$app->old_db->createCommand("SELECT * FROM team WHERE teacher_participant_id = $participantId")->queryAll()) == 0) {
                 $actModel = ActParticipantWork::fill(
-                    $teacherParticipants[0]['teacher_id'] != '' ? $this->peopleStampService->createStampFromPeople($teacherParticipants[0]['teacher_id']) : NULL,
-                    $teacherParticipants[0]['teacher2_id'] != '' ? $this->peopleStampService->createStampFromPeople($teacherParticipants[0]['teacher2_id']) : NULL,
-                    $team,
-                    $record['foreign_event_id'],
-                    $teacherParticipants[0]['focus'],
+                    $participant['teacher_id'] != '' ? $this->peopleStampService->createStampFromPeople($participant['teacher_id']) : NULL,
+                    $participant['teacher2_id'] != '' ? $this->peopleStampService->createStampFromPeople($participant['teacher2_id']) : NULL,
                     NULL,
-                    $teacherParticipants[0]['allow_remote_id'],
-                    $teacherParticipants[0]['nomination'],
-                    $teacherParticipants[0]['allow_remote_id']
+                    $participant['foreign_event_id'],
+                    $participant['focus'],
+                    NULL,
+                    $participant['allow_remote_id'],
+                    $participant['nomination'],
+                    $participant['allow_remote_id']
                 );
                 $this->actParticipantRepository->save($actModel);
+                //squad_participant
+                $command = Yii::$app->db->createCommand();
+                $command->insert('squad_participant',
+                    [
+                        'id' => $participant['id'],
+                        'act_participant_id' => $actModel->id,
+                        'participant_id' => $participant['participant_id'],
+                    ]
+                );
+                $command->execute();
                 //act_participant_branch
-                $branches = Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant_branch WHERE teacher_participant_id = $teacherParticipantId")->queryAll();
+                $branches = Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant_branch WHERE teacher_participant_id = $participantId")->queryAll();
                 foreach ($branches as $branch) {
                     $command = Yii::$app->db->createCommand();
                     $command->insert('act_participant_branch',
                         [
                             'act_participant_id' => $actModel->id,
-                            'branch' => $branch,
+                            'branch' => $branch['branch_id'],
                         ]
                     );
                     $command->execute();
                 }
-                //squad_participant
-                foreach ($acts as $act) {
-                    $command = Yii::$app->db->createCommand();
-                    $partId = $act['teacher_participant_id'];
-                    $part = Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant WHERE id = $partId")->queryAll();
-                    if (is_null($team)) {
-                        $command->insert('squad_participant',
-                            [
-                                'id' => $act['id'],
-                                'act_participant_id' => $actModel->id,
-                                'participant_id' => $part[0]['participant_id'],
-                            ]
-                        );
-                    } else {
-                        $command->insert('squad_participant', [
-                            'id' => $act['id'],
-                            'act_participant_id' => $actModel->id,
-                            'participant_id' => $part[0]['participant_id'],
-                        ]);
-                    }
-                    $command->execute();
-                }
             }
         }
+    }
+    public function actionTeamActCopy()
+    {
+        $groupedArray = [];
+        $inputArray = Yii::$app->old_db->createCommand("SELECT * FROM team WHERE team_name_id IS NOT NULL")->queryAll();
+        foreach ($inputArray as $item) {
+            $teamNameId = $item['team_name_id'];
+            if (!isset($groupedArray[$teamNameId])) {
+                $groupedArray[$teamNameId] = [];
+            }
+            $groupedArray[$teamNameId][] = $item;
+        }
+        $groupedArray = array_values($groupedArray);
+        //act_participant
+        foreach ($groupedArray as $act) {
+            $participantId = $act[0]['teacher_participant_id'];
+            $participant = Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant WHERE id = $participantId")->queryOne();
+            $actModel = ActParticipantWork::fill(
+                $participant['teacher_id'] != '' ? $this->peopleStampService->createStampFromPeople($participant['teacher_id']) : NULL,
+                $participant['teacher2_id'] != '' ? $this->peopleStampService->createStampFromPeople($participant['teacher2_id']) : NULL,
+                $act[0]['team_name_id'],
+                $participant['foreign_event_id'],
+                $participant['focus'],
+                1,
+                $participant['allow_remote_id'],
+                $participant['nomination'],
+                $participant['allow_remote_id']
+            );
+            $this->actParticipantRepository->save($actModel);
+            //squad_participant
+            foreach($act as $participant){
+                $participantId = $participant['teacher_participant_id'];
+                $command = Yii::$app->db->createCommand();
+                $command->insert('squad_participant',
+                    [
+                        'act_participant_id' => $actModel->id,
+                        'participant_id' => (Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant WHERE id = $participantId")->queryOne())['participant_id']
+                    ]
+                );
+                $command->execute();
+            }
+            //act_participant_branch
+            $participants = ArrayHelper::getColumn($act, 'teacher_participant_id');
+            $participantIds = implode(',', $participants);
+            $branches = array_unique(Yii::$app->old_db->createCommand("SELECT branch_id FROM teacher_participant_branch WHERE teacher_participant_id IN ($participantIds)")->queryColumn());
+            foreach ($branches as $branch) {
+                $command = Yii::$app->db->createCommand();
+                $command->insert('act_participant_branch',
+                    [
+                        'act_participant_id' => $actModel->id,
+                        'branch' => $branch,
+                    ]
+                );
+            }
+            $command->execute();
+        }
+    }
+    public function actionActCopy()
+    {
+        $this->actionTeamActCopy();
+        $this->actionPersonalActCopy();
     }
     public function actionCopyAll(){
         $this->actionTeamNameCopy();
