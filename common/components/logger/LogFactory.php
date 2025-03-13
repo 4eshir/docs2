@@ -61,23 +61,25 @@ class LogFactory
         string $datetime = ''
     )
     {
-        if ($userId === -1) {
-            $userId = Yii::$app->user->identity->id ?: null;
+        if (!Yii::$app->redis->executeCommand('EXISTS', ['BLOCK_LOG'])) {
+            if ($userId === -1) {
+                $userId = Yii::$app->user->identity->id ?: null;
+            }
+
+            if ($datetime === '') {
+                $datetime = date('Y-m-d H:i:s');
+            }
+
+            $log = new CrudLog(
+                $datetime,
+                $level,
+                LogInterface::TYPE_METHOD,
+                $userId,
+                $text,
+                $query
+            );
+            return $log->write();
         }
-
-        if ($datetime === '') {
-            $datetime = date('Y-m-d H:i:s');
-        }
-
-        $log = new CrudLog(
-            $datetime,
-            $level,
-            LogInterface::TYPE_METHOD,
-            $userId,
-            $text,
-            $query
-        );
-
-        return $log->write();
+        return NULL;
     }
 }

@@ -140,6 +140,8 @@ class ActCopyController extends Controller
         $this->actionPersonalActCopy();
     }
     public function actionCopyAll(){
+        Yii::$app->redis->executeCommand('SET' , ['BLOCK_LOG' , 1]);
+        Yii::$app->redis->executeCommand('EXPIRE', ['BLOCK_LOG', 360]);
         $this->actionTeamNameCopy();
         $this->actionActCopy();
     }
