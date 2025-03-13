@@ -14,8 +14,10 @@ use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
+use common\repositories\educational\VisitRepository;
 use common\repositories\order\OrderTrainingRepository;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
@@ -40,13 +42,24 @@ class TrainingGroupCombinedForm extends Model
 {
     use EventTrait;
 
-    public $id;                 // учебной группы
-    public $number;             // номер группы
-    public $trainingGroup;      // учебная группа
+    private TrainingGroupRepository $groupRepository;
+    private TrainingProgramRepository $programRepository;
+    private OrderTrainingRepository $orderRepository;
+    private TeacherGroupRepository $teacherRepository;
+    private TrainingGroupParticipantRepository $participantRepository;
+    private TrainingGroupLessonRepository $lessonRepository;
+    private GroupProjectThemesRepository $groupProjectRepository;
+    private TrainingGroupExpertRepository $groupExpertRepository;
+    private VisitRepository $visitRepository;
 
-    public $trainingProgram;    // образовательная программа
-    public $teachers;           // педагоги
-    public $orders;             // приказы группы
+
+    public int $id;                 // учебной группы
+    public string $number;             // номер группы
+    public TrainingGroupWork $trainingGroup;      // учебная группа
+
+    public TrainingProgramWork $trainingProgram;    // образовательная программа
+    public array $teachers;           // педагоги
+    public array $orders;             // приказы группы
 
 
     public $photoFiles;
@@ -57,11 +70,11 @@ class TrainingGroupCombinedForm extends Model
     // ----------------------------
 
     // Информация об учениках группы
-    public $participants;
+    public array $participants;
     // -----------------------------
 
     // Информация о занятиях группы
-    public $lessons;
+    public array $lessons;
     // -----------------------------
 
     // Информация о защитах
@@ -71,12 +84,62 @@ class TrainingGroupCombinedForm extends Model
 
     // -----------------------------
 
-    public function __construct($id = -1, $config = [])
+    public function __construct(
+        $id = -1,
+        TrainingGroupRepository $groupRepository = null,
+        TrainingProgramRepository $programRepository = null,
+        OrderTrainingRepository $orderRepository = null,
+        TeacherGroupRepository $teacherRepository = null,
+        TrainingGroupParticipantRepository $participantRepository = null,
+        TrainingGroupLessonRepository $lessonRepository = null,
+        GroupProjectThemesRepository $groupProjectRepository = null,
+        TrainingGroupExpertRepository $groupExpertRepository = null,
+        VisitRepository $visitRepository = null,
+        $config = []
+    )
     {
         parent::__construct($config);
+        if (is_null($groupRepository)) {
+            $groupRepository = Yii::createObject(TrainingGroupRepository::class);
+        }
+        if (is_null($programRepository)) {
+            $programRepository = Yii::createObject(TrainingProgramRepository::class);
+        }
+        if (is_null($orderRepository)) {
+            $orderRepository = Yii::createObject(OrderTrainingRepository::class);
+        }
+        if (is_null($teacherRepository)) {
+            $teacherRepository = Yii::createObject(TeacherGroupRepository::class);
+        }
+        if (is_null($participantRepository)) {
+            $participantRepository = Yii::createObject(TrainingGroupParticipantRepository::class);
+        }
+        if (is_null($lessonRepository)) {
+            $lessonRepository = Yii::createObject(TrainingGroupLessonRepository::class);
+        }
+        if (is_null($groupProjectRepository)) {
+            $groupProjectRepository = Yii::createObject(GroupProjectThemesRepository::class);
+        }
+        if (is_null($groupExpertRepository)) {
+            $groupExpertRepository = Yii::createObject(TrainingGroupExpertRepository::class);
+        }
+        if (is_null($visitRepository)) {
+            $visitRepository = Yii::createObject(VisitRepository::class);
+        }
+
+        $this->groupRepository = $groupRepository;
+        $this->programRepository = $programRepository;
+        $this->orderRepository = $orderRepository;
+        $this->teacherRepository = $teacherRepository;
+        $this->participantRepository = $participantRepository;
+        $this->lessonRepository = $lessonRepository;
+        $this->groupProjectRepository = $groupProjectRepository;
+        $this->groupExpertRepository = $groupExpertRepository;
+        $this->visitRepository = $visitRepository;
+
         if ($id !== -1) {
             /** @var TrainingGroupWork $model */
-            $model = (Yii::createObject(TrainingGroupRepository::class))->get($id);
+            $model = $this->groupRepository->get($id);
             $this->fillBaseInfo($model);
             $this->fillParticipantsInfo($model);
             $this->fillLessonsInfo($model);
@@ -89,10 +152,10 @@ class TrainingGroupCombinedForm extends Model
         $this->id = $model->id;
         $this->number = $model->number;
         $this->trainingGroup = $model;
-        $this->trainingProgram = (Yii::createObject(TrainingProgramRepository::class))->get($model->training_program_id);
-        $this->orders = (Yii::createObject(OrderTrainingRepository::class))->getAllByGroup($this->id);
+        $this->trainingProgram = $this->programRepository->get($model->training_program_id);
+        $this->orders = $this->orderRepository->getAllByGroup($this->id);
 
-        $this->teachers = (Yii::createObject(TeacherGroupRepository::class))->getAllTeachersFromGroup($model->id);
+        $this->teachers = $this->teacherRepository->getAllTeachersFromGroup($model->id);
 
         $this->photoFiles = implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_PHOTO), 'link'));
         $this->presentationFiles = implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_PRESENTATION), 'link'));
@@ -101,19 +164,19 @@ class TrainingGroupCombinedForm extends Model
 
     private function fillParticipantsInfo(TrainingGroupWork $model)
     {
-        $this->participants = (Yii::createObject(TrainingGroupParticipantRepository::class))->getParticipantsFromGroups([$model->id]);
+        $this->participants = $this->participantRepository->getParticipantsFromGroups([$model->id]);
     }
 
     private function fillLessonsInfo(TrainingGroupWork $model)
     {
-        $this->lessons = (Yii::createObject(TrainingGroupLessonRepository::class))->getLessonsFromGroup($model->id);
+        $this->lessons = $this->lessonRepository->getLessonsFromGroup($model->id);
     }
 
     private function fillPitchInfo(TrainingGroupWork $model)
     {
         $this->protectionDate = $model->protection_date;
-        $this->themes = (Yii::createObject(GroupProjectThemesRepository::class))->getProjectThemesFromGroup($model->id);
-        $this->experts = (Yii::createObject(TrainingGroupExpertRepository::class))->getExpertsFromGroup($model->id);
+        $this->themes = $this->groupProjectRepository->getProjectThemesFromGroup($model->id);
+        $this->experts = $this->groupExpertRepository->getExpertsFromGroup($model->id);
     }
 
     public function getPrettyParticipants()
@@ -123,7 +186,7 @@ class TrainingGroupCombinedForm extends Model
             foreach ($this->participants as $participant) {
                 /** @var TrainingGroupParticipantWork $participant */
                 $result[] = StringFormatter::stringAsLink(
-                    $participant->participantWork->getFIO(ForeignEventParticipantsWork::FIO_FULL),
+                    $participant->participantWork->getFIO(PersonInterface::FIO_FULL),
                     Url::to(['/dictionaries/foreign-event-participants/view', 'id' => $participant->participant_id])
                 );
             }
@@ -166,7 +229,7 @@ class TrainingGroupCombinedForm extends Model
         if (is_array($this->experts)) {
             foreach ($this->experts as $expert) {
                 /** @var TrainingGroupExpertWork $expert */
-                $result[] = "({$expert->getExpertTypeString()}) {$expert->expertWork->getFIO(PeopleWork::FIO_WITH_POSITION)}";
+                $result[] = "({$expert->getExpertTypeString()}) {$expert->expertWork->getFIO(PersonInterface::FIO_WITH_POSITION)}";
             }
         }
 
