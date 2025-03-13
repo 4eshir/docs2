@@ -168,7 +168,7 @@ class JournalService
     {
         /** @var VisitWork $visit */
         $visit = $this->visitRepository->getByTrainingGroupParticipant($trainingGroupParticipantId);
-        $lessons = VisitLesson::fromString($visit->lessons);
+        $lessons = VisitLesson::fromString($visit->lessons, $this->lessonRepository);
         $lessonsString = $visit->lessons;
         if (VisitLesson::equalArrays($lessons, $statuses)) {
             $lessonsString = VisitLesson::toString($statuses);

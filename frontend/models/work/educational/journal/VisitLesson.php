@@ -47,7 +47,7 @@ class VisitLesson extends Model
      * Раскладывает json-строку на массив VisitLesson
      * @param string $json
      * @param TrainingGroupLessonRepository $repository
-     * @return array
+     * @return VisitLesson[]
      */
     public static function fromString(string $json, TrainingGroupLessonRepository $repository) : array
     {
@@ -141,6 +141,20 @@ class VisitLesson extends Model
                 return 'Н';
             case VisitWork::DISTANCE:
                 return 'Д';
+            default:
+                return '?';
         }
+    }
+
+    /**
+     * Функция, определяющая, присутствовал ли на занятии обучающийся
+     *
+     * @return bool
+     */
+    public function isPresence() : bool
+    {
+        return
+            $this->status == VisitWork::ATTENDANCE ||
+            $this->status == VisitWork::DISTANCE;
     }
 }

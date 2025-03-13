@@ -107,7 +107,8 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         Выработка чел/ч
                     </div>
                     <div class="field-date">
-                        <?= $model->getManHoursPercent(); ?>
+                        <?php $manHours = $model->getManHoursPercent(); ?>
+                        <?= "{$manHours[0]} / {$manHours[1]}" ?>
                     </div>
                 </div>
                 <div class="card-field flexx">

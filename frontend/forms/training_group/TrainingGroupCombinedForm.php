@@ -16,6 +16,7 @@ use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\educational\VisitRepository;
 use common\repositories\order\OrderTrainingRepository;
+use frontend\invokables\CalculateAttendance;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\educational\training_group\GroupProjectThemesWork;
@@ -26,6 +27,7 @@ use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\educational\training_program\TrainingProgramWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\order\OrderTrainingWork;
+use frontend\services\educational\TrainingGroupService;
 use Yii;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
@@ -51,6 +53,8 @@ class TrainingGroupCombinedForm extends Model
     private GroupProjectThemesRepository $groupProjectRepository;
     private TrainingGroupExpertRepository $groupExpertRepository;
     private VisitRepository $visitRepository;
+
+    private TrainingGroupService $service;
 
 
     public int $id;                 // учебной группы
@@ -182,14 +186,12 @@ class TrainingGroupCombinedForm extends Model
     public function getPrettyParticipants()
     {
         $result = [];
-        if (is_array($this->participants)) {
-            foreach ($this->participants as $participant) {
-                /** @var TrainingGroupParticipantWork $participant */
-                $result[] = StringFormatter::stringAsLink(
-                    $participant->participantWork->getFIO(PersonInterface::FIO_FULL),
-                    Url::to(['/dictionaries/foreign-event-participants/view', 'id' => $participant->participant_id])
-                );
-            }
+        foreach ($this->participants as $participant) {
+            /** @var TrainingGroupParticipantWork $participant */
+            $result[] = StringFormatter::stringAsLink(
+                $participant->participantWork->getFIO(PersonInterface::FIO_FULL),
+                Url::to(['/dictionaries/foreign-event-participants/view', 'id' => $participant->participant_id])
+            );
         }
 
         return $result;
@@ -325,26 +327,16 @@ class TrainingGroupCombinedForm extends Model
 
     public function getManHoursPercent()
     {
-        /*
-        $lessons = TrainingGroupLessonWork::find()->where(['training_group_id' => $this->id])->all();
-        $lessonsId = [];
-        foreach ($lessons as $lesson)
-            $lessonsId[] = $lesson->id;
-        $visits = count(VisitWork::find()->where(['IN', 'training_group_lesson_id', $lessonsId])->andWhere(['status' => 0])->all()) + count(VisitWork::find()->where(['IN', 'training_group_lesson_id', $lessonsId])->andWhere(['status' => 2])->all());
-        $maximum = count(TrainingGroupParticipantWork::find()->where(['training_group_id' => $this->id])->all()) * count(TrainingGroupLessonWork::find()->where(['training_group_id' => $this->id])->all());
-        $percent = (($visits * 1.0) / ($maximum * 1.0)) * 100;
-        $numbPercent = $percent;
-        $percent = round($percent, 2);
-        if ($numbPercent > 75.0)
-            $percent = '<p style="color: #1e721e; display: inline">'.$percent;
-        else if ($numbPercent > 50.0)
-            $percent = '<p style="color: #d49939; display: inline">' .$percent;
-        else
-            $percent = '<p style="color: #c34444; display: inline">' .$percent;
-            $percent = '<p style="color: #c34444; display: inline">' .$percent;
-        $result = $visits.' / '.$maximum.' (<b>'.$percent.'%</b></p>)';
-        return $result;
-         */
+        $max =
+            count($this->lessonRepository->getLessonsFromGroup($this->id)) *
+            count($this->participantRepository->getParticipantsFromGroups([$this->id]));
+
+        $currentCalc = new CalculateAttendance(
+            $this->visitRepository->getByTrainingGroup($this->id),
+            $this->lessonRepository
+        );
+
+        return [$currentCalc(), $max];
     }
 
     /**
