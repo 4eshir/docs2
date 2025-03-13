@@ -143,8 +143,14 @@ class HtmlBuilder
             $url = $linkOptions['url'];
             $class = $linkOptions['class'] ?? 'btn-secondary'; // Класс по умолчанию
             $data = $linkOptions['data'] ?? [];
+            $id = $linkOptions['id'] ?? '';
 
-            $result .= Html::a($label, $url, ['class' => [$class], 'data' => $data,]);
+            $options = ['class' => [$class], 'data' => $data];
+            if ($id !== '') {
+                $options['id'] = $id;
+            }
+
+            $result .= Html::a($label, $url, $options);
         }
 
         $result .= '</div>';
