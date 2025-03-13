@@ -12,6 +12,7 @@ use Yii;
 
 /**
  * @property AuditoriumWork $auditoriumWork
+ * @property TrainingGroupWork $trainingGroupWork
  */
 
 class TrainingGroupLessonWork extends TrainingGroupLesson
@@ -91,6 +92,11 @@ class TrainingGroupLessonWork extends TrainingGroupLesson
     public function getAuditoriumWork()
     {
         return $this->hasOne(AuditoriumWork::class, ['id' => 'auditorium_id']);
+    }
+
+    public function getTrainingGroupWork()
+    {
+        return $this->hasOne(TrainingGroupWork::class, ['id' => 'training_group_id']);
     }
 
     /**

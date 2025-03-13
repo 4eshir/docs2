@@ -51,7 +51,10 @@ class RulesConfig
                 'pitch-form',
                 'group-deletion',
                 'delete-file',
-                'create-lesson-themes'
+                'create-lesson-themes',
+                'delete-lesson',
+                'update-lesson',
+                'sub-auds'
             ]
         ],
 
@@ -63,7 +66,10 @@ class RulesConfig
                 'pitch-form',
                 'group-deletion',
                 'delete-file',
-                'create-lesson-themes'
+                'create-lesson-themes',
+                'delete-lesson',
+                'update-lesson',
+                'sub-auds'
             ]
         ],
 
@@ -75,7 +81,10 @@ class RulesConfig
                 'pitch-form',
                 'group-deletion',
                 'delete-file',
-                'create-lesson-themes'
+                'create-lesson-themes',
+                'delete-lesson',
+                'update-lesson',
+                'sub-auds'
             ]
         ],
 

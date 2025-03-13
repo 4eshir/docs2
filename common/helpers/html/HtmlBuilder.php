@@ -95,12 +95,13 @@ class HtmlBuilder
     }
 
     /**
-     * Добавляет пустое знчание в список выпадающего списка
+     * Добавляет пустое значение в список выпадающего списка
+     * @param string $text
      * @return string
      */
-    public static function createEmptyOption()
+    public static function createEmptyOption(string $text = '---')
     {
-        return "<option value>---</option>";
+        return "<option value>{$text}</option>";
     }
 
     /**
