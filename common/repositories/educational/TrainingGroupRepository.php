@@ -9,6 +9,8 @@ use common\repositories\providers\training_group\TrainingGroupProviderInterface;
 use DomainException;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 class TrainingGroupRepository
@@ -19,9 +21,9 @@ class TrainingGroupRepository
     private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
     private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
     public function __construct(
-        TrainingGroupProviderInterface $provider = null,
         OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository,
-        TrainingGroupParticipantRepository $trainingGroupParticipantRepository
+        TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
+        TrainingGroupProviderInterface $provider = null
     )
     {
         if (!$provider) {
@@ -31,6 +33,24 @@ class TrainingGroupRepository
         $this->provider = $provider;
         $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
         $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
+    }
+
+    /**
+     * @param ActiveQuery $query
+     * @return array|ActiveRecord[]
+     */
+    public function findAll(ActiveQuery $query) : array
+    {
+        return $query->all();
+    }
+
+    /**
+     * @param ActiveQuery $query
+     * @return array|ActiveRecord|null
+     */
+    public function findOne(ActiveQuery $query) : array
+    {
+        return $query->one();
     }
 
     public function get($id)

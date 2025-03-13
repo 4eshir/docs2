@@ -126,12 +126,12 @@ class DebugReportService
                 Yii::$app->eventLevel->get($event->level),
                 DateFormatter::format($event->begin_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot),
                 DateFormatter::format($event->end_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot),
-                count($soloParts),
-                count($teamParts),
-                count($soloPrizes),
-                count($teamPrizes),
-                count($soloWinners),
-                count($teamWinners),
+                (string)count($soloParts),
+                (string)count($teamParts),
+                (string)count($soloPrizes),
+                (string)count($teamPrizes),
+                (string)count($soloWinners),
+                (string)count($teamWinners),
             ];
         }
 

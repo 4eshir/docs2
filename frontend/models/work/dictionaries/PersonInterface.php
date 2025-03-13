@@ -12,5 +12,7 @@ interface PersonInterface
     const FIO_WITH_POSITION = 3;
     const FIO_SURNAME_INITIALS_WITH_POSITION = 4;
 
+    const BASE_BIRTHDATE = '1900-01-01';
+
     public function getFIO(int $type) : string;
 }

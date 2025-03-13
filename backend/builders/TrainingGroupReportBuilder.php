@@ -1,19 +1,17 @@
 <?php
 
-namespace backend\repositories\report;
+namespace backend\builders;
 
 use backend\forms\report\ManHoursReportForm;
 use common\helpers\common\QueryHelper;
-use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\TeacherGroupRepository;
-use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
-class TrainingGroupReportRepository
+class TrainingGroupReportBuilder
 {
     private TrainingProgramRepository $programRepository;
     private TeacherGroupRepository $teacherGroupRepository;
@@ -25,24 +23,6 @@ class TrainingGroupReportRepository
     {
         $this->programRepository = $programRepository;
         $this->teacherGroupRepository = $teacherGroupRepository;
-    }
-
-    /**
-     * @param ActiveQuery $query
-     * @return array|ActiveRecord[]
-     */
-    public function findAll(ActiveQuery $query) : array
-    {
-        return $query->all();
-    }
-
-    /**
-     * @param ActiveQuery $query
-     * @return array|ActiveRecord|null
-     */
-    public function findOne(ActiveQuery $query) : array
-    {
-        return $query->one();
     }
 
     /**

@@ -32,9 +32,8 @@ class ExcelWizard
 
         $data = [];
         $mainIndex = 0;
-        while ($mainIndex < $highestRow - $headerRow &&
-            strlen($row = $worksheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . ($headerRow + $mainIndex + 1))->getFormattedValue()) > 0) {
-            $data[] = $row;
+        while ($mainIndex < $highestRow - $headerRow) {
+            $data[] = $worksheet->getCell(Coordinate::stringFromColumnIndex($columnIndex) . ($headerRow + $mainIndex + 1))->getFormattedValue()/*$row*/;
             $mainIndex++;
         }
 

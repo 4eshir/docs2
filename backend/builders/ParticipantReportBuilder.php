@@ -1,20 +1,14 @@
 <?php
-
-namespace backend\repositories\report;
+namespace backend\builders;
 
 use frontend\models\work\team\ActParticipantWork;
 use yii\db\ActiveQuery;
 
-class ParticipantReportRepository
+class ParticipantReportBuilder
 {
     public function query() : ActiveQuery
     {
         return ActParticipantWork::find();
-    }
-
-    public function getAll(ActiveQuery $query): array
-    {
-        return $query->all();
     }
 
     public function joinWith(ActiveQuery $query, string $relation) : ActiveQuery
