@@ -88,6 +88,11 @@ class TrainingGroupCombinedForm extends Model
 
     // -----------------------------
 
+    //Информация о существовании файлов
+    public $photoExist;
+    public $presentationExist;
+    public $workExist;
+
     public function __construct(
         $id = -1,
         TrainingGroupRepository $groupRepository = null,
@@ -148,6 +153,7 @@ class TrainingGroupCombinedForm extends Model
             $this->fillParticipantsInfo($model);
             $this->fillLessonsInfo($model);
             $this->fillPitchInfo($model);
+            $this->checkFilesExist();
         }
     }
 
@@ -161,9 +167,9 @@ class TrainingGroupCombinedForm extends Model
 
         $this->teachers = $this->teacherRepository->getAllTeachersFromGroup($model->id);
 
-        $this->photoFiles = implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_PHOTO), 'link'));
-        $this->presentationFiles = implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_PRESENTATION), 'link'));
-        $this->workMaterialFiles = implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_WORK), 'link'));
+        $this->photoFiles = $model->getFileLinks(FilesHelper::TYPE_PHOTO);
+        $this->presentationFiles = $model->getFileLinks(FilesHelper::TYPE_PRESENTATION);
+        $this->workMaterialFiles = $model->getFileLinks(FilesHelper::TYPE_WORK);
     }
 
     private function fillParticipantsInfo(TrainingGroupWork $model)
@@ -183,6 +189,10 @@ class TrainingGroupCombinedForm extends Model
         $this->experts = $this->groupExpertRepository->getExpertsFromGroup($model->id);
     }
 
+    /**
+     * Выводит красивый список учеников
+     * @return string
+     */
     public function getPrettyParticipants()
     {
         $result = [];
@@ -190,27 +200,53 @@ class TrainingGroupCombinedForm extends Model
             /** @var TrainingGroupParticipantWork $participant */
             $result[] = StringFormatter::stringAsLink(
                 $participant->participantWork->getFIO(PersonInterface::FIO_FULL),
-                Url::to(['/dictionaries/foreign-event-participants/view', 'id' => $participant->participant_id])
+                Url::to([Yii::$app->frontUrls::PARTICIPANT_VIEW, 'id' => $participant->participant_id])
             );
         }
 
-        return $result;
+        return HtmlBuilder::arrayToAccordion($result);
     }
 
+    /**
+     * Выводит красивое расписание
+     * @return string
+     */
     public function getPrettyLessons()
     {
         $result = [];
         if (is_array($this->lessons)) {
             foreach ($this->lessons as $lesson) {
                 /** @var TrainingGroupLessonWork $lesson */
-                $date = DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
-                $result[] = "$date с $lesson->lesson_start_time до $lesson->lesson_end_time в ауд. {$lesson->auditoriumWork->name}";
+                $result[] = $lesson->getLessonPrettyString();
             }
         }
-        $result = implode('<br>', $result);
-        return HtmlBuilder::createAccordion($result);
+        return HtmlBuilder::arrayToAccordion($result);
     }
 
+    /**
+     * Выводит сведения о защите работ: дату и тип контроля,
+     * а также темы и экспертов при их наличии
+     * @return string
+     */
+    public function getPrettyFinalControl()
+    {
+        $date = $this->protectionDate ? $this->protectionDate : '---';
+        $result[] = HtmlBuilder::createSubtitleAndClarification('Выдача сертификатов: ' . $date, ' (' . $this->trainingProgram->getCertificateType() . ')');
+        if ($this->themes) {
+            $result[] = HtmlBuilder::createSubtitleAndClarification('Темы проектов: ', implode(', ', $this->getPrettyThemes()));
+        }
+        if ($this->experts) {
+            $result[] = HtmlBuilder::createSubtitleAndClarification('Эксперты: ', implode(', ', $this->getPrettyExperts()));
+        }
+
+        return HtmlBuilder::arrayToAccordion($result);
+    }
+
+    /**
+     * Текстовый массив тем проектов в формате
+     * 'Название-проекта' ('Тип-проекта' проект)
+     * @return array
+     */
     public function getPrettyThemes()
     {
         $result = [];
@@ -221,10 +257,14 @@ class TrainingGroupCombinedForm extends Model
                 $result[] = "{$theme->projectThemeWork->name} ($type проект)";
             }
         }
-
         return $result;
     }
 
+    /**
+     * Текстовый массив экспертов в формате
+     * (Внешний/Внутренний) ФИО
+     * @return array
+     */
     public function getPrettyExperts()
     {
         $result = [];
@@ -234,7 +274,6 @@ class TrainingGroupCombinedForm extends Model
                 $result[] = "({$expert->getExpertTypeString()}) {$expert->expertWork->getFIO(PersonInterface::FIO_WITH_POSITION)}";
             }
         }
-
         return $result;
     }
 
@@ -325,6 +364,10 @@ class TrainingGroupCombinedForm extends Model
         return substr($result, 0, -4);
     }
 
+    /**
+     * Подсчет данных для человеко-часов группы
+     * @return array
+     */
     public function getManHoursPercent()
     {
         $max =
@@ -337,6 +380,16 @@ class TrainingGroupCombinedForm extends Model
         );
 
         return [$currentCalc(), $max];
+    }
+
+    /**
+     * Красивый вывод выработки человеко часов
+     * @return string
+     */
+    public function getPrettyManHoursPercent()
+    {
+        $manHours = $this->getManHoursPercent();
+        return "{$manHours[0]} / {$manHours[1]}";
     }
 
     /**
@@ -358,7 +411,60 @@ class TrainingGroupCombinedForm extends Model
     }
 
     /**
-     * Создаьедб учебной группы
+     * Проверка существования файлов для скачивания
+     * @return void
+     */
+    public function checkFilesExist()
+    {
+        $this->photoExist = count($this->photoFiles) > 0;
+        $this->presentationExist = count($this->presentationFiles) > 0;
+        $this->workExist = count($this->workMaterialFiles) > 0;
+    }
+
+    /**
+     * Вывод всех рабочих материалов учебной группы
+     * @return string
+     */
+    public function getFullWorkFiles()
+    {
+        $link = '#';
+        if ($this->workExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_WORK, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
+    }
+
+    /**
+     * Вывод всех презентационных материалов учебной группы
+     * @return string
+     */
+    public function getFullPresentationFiles()
+    {
+        $link = '#';
+        if ($this->presentationExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_PRESENTATION, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
+    }
+
+    /**
+     * Вывод всех фотоматериалов учебной группы
+     * @return string
+     */
+    public function getFullPhotoFiles()
+    {
+        $link = '#';
+        if ($this->photoExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_PHOTO, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
+    }
+
+    /**
+     * Создатель учебной группы
      * @return string
      */
     public function getCreatorName()

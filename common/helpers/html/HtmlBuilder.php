@@ -31,6 +31,18 @@ class HtmlBuilder
     const DROPDOWN_FIELD_TYPE = 'dropdown';
 
     /**
+     * Добавляет начертание шрифта для подзаголовка и уточнения
+     *
+     * @param string $subtitle
+     * @param string $clarification
+     * @return string
+     */
+    public static function createSubtitleAndClarification(string $subtitle, string $clarification)
+    {
+        return '<span class="fnt-wght-5">' . $subtitle . '</span><span class="fnt-wght-2">'. $clarification . '</span>';
+    }
+
+    /**
      * Создает красивый переключатель для чекбокса
      *
      * @param string $offSwitchText
@@ -77,6 +89,21 @@ class HtmlBuilder
                         <button class="accordion-btn-close btn-secondary">'. $textBtnClose .'</button>
                    </div>';
         return $result;
+    }
+
+    /**
+     * Превращает массив в разметку с разделителем <br>
+     * и возвращает их в виде аккордиона
+     * @param array $content
+     * @param int $lengthPrev
+     * @param string $textBtnOpen
+     * @param string $textBtnClose
+     * @return string
+     */
+    public static function arrayToAccordion(array $content, int $lengthPrev = 20, string $textBtnOpen = 'Развернуть', string $textBtnClose = 'Скрыть')
+    {
+        $content = implode('<br>', $content);
+        return self::createAccordion($content, $lengthPrev, $textBtnOpen, $textBtnClose);
     }
 
     /**

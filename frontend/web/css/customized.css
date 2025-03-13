@@ -26,6 +26,9 @@
     --secondary-light-color: #E8EDF1;
     --secondary-color: #DCE3E9;
     --secondary-hover: #CAD4DE;
+
+    --accordion-dark: #F7FAFC;
+    --accordion-btn-dark: #BAC1C9;
 }
 
 *, :after, :before {
@@ -602,4 +605,12 @@ input[type="checkbox"] {
     width: 100%;
     align-items: center;
     align-content: center;
+}
+
+.fnt-wght-5 {
+    font-weight: 500;
+}
+
+.fnt-wght-2 {
+    font-weight: 200;
 }
