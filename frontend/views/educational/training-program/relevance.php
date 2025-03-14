@@ -63,26 +63,34 @@ var_dump(Yii::$app->request->queryParams['r']);
 
     <?php
     $url = Url::toRoute('relevance-save');
-    $urlBack = Url::toRoute(['relevance']);
+    $urlBack = Url::toRoute(['index']);
 
     $this->registerJs(<<<JS
         $(document).ready(function () {
             $('#relevance-save').on('click', function () {
-                /*var selectedIds = [];
+                let actual = [];
+                let unactual = [];
+                let checkboxes = document.getElementsByClassName('check');
+        
+                for (let index = 0; index < checkboxes.length; index++) {
+                    if (checkboxes[index].checked) {
+                        actual.push(checkboxes[index].value);
+                    } else {
+                        unactual.push(checkboxes[index].value);
+                    }
+                }
                 
-                $('input.check:checked').each(function () {
-                    selectedIds.push($(this).val());
-                });*/
-                
-                if (true /* selectedIds.length > 0 */) {
+                if (actual.length > 0 || unactual.length > 0) {
                     // Отправляем POST-запрос на экшен контроллера
                     $.ajax({
                         type: 'POST',
                         url: "$url",
-                        data: {/*ids: selectedIds*/},
+                        data: {
+                            actual: actual,
+                            unactual: unactual
+                        },
                         success: function(response) {
-                            let parsedResponse = JSON.parse(response); // Преобразуем строку JSON в объект
-                            console.log(parsedResponse.success);
+                            let parsedResponse = JSON.parse(response);
                             if (parsedResponse.success) {
                                 window.location.href = "$urlBack";
                             } else {
@@ -101,3 +109,4 @@ var_dump(Yii::$app->request->queryParams['r']);
         JS
     , View::POS_END);
     ?>
+

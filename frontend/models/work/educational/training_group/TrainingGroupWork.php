@@ -226,6 +226,11 @@ class TrainingGroupWork extends TrainingGroup
         return Yii::$app->branches->get($this->branch);
     }
 
+    public function setProtectionDate(string $protectionDate)
+    {
+        $this->protection_date = $protectionDate;
+    }
+
     public function beforeSave($insert)
     {
         if (!(Yii::$app instanceof yii\console\Application)) {
