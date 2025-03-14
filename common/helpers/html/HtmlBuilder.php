@@ -35,11 +35,13 @@ class HtmlBuilder
      *
      * @param string $subtitle
      * @param string $clarification
+     * @param string $classSubtitle
+     * @param string $classClarification
      * @return string
      */
-    public static function createSubtitleAndClarification(string $subtitle, string $clarification)
+    public static function createSubtitleAndClarification(string $subtitle, string $clarification, string $classSubtitle = 'fnt-wght-5', string $classClarification = 'fnt-wght-2')
     {
-        return '<span class="fnt-wght-5">' . $subtitle . '</span><span class="fnt-wght-2">'. $clarification . '</span>';
+        return '<span class="' . $classSubtitle . '">' . $subtitle . '</span><span class="' . $classClarification . '">'. $clarification . '</span>';
     }
 
     /**

@@ -17,6 +17,7 @@ use Yii;
 class TrainingGroupParticipantWork extends TrainingGroupParticipant
 {
     private const INIT_STATUS = 0;
+
     public static function fill(
         $groupId,
         $participantId,

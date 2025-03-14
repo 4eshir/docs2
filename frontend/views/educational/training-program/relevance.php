@@ -33,9 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $this->render('_search-relevance', ['searchModel' => $searchModel]) ?>
 
     <div style="margin-bottom: 10px">
-<?php
-var_dump(Yii::$app->request->queryParams['r']);
-?>
+
     <?= GridView::widget([
         'id'=>'grid',
         'dataProvider' => $dataProvider,

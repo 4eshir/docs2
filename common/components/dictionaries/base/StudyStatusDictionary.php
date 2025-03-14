@@ -15,11 +15,11 @@ class StudyStatusDictionary extends BaseDictionary
     {
         parent::__construct();
         $this->list = [
-            self::INACTIVE => 'Не состоит в группе',
-            self::ACTIVE => 'Зачислен в группу',
-            self::DEDUCT => 'Отчислен из группы',
-            self::TRANSFER_IN => 'Переведён в группу',
-            self::TRANSFER_OUT => 'Переведён из группу',
+            self::INACTIVE => 'Не зачислен',
+            self::ACTIVE => 'Зачислен',
+            self::DEDUCT => 'Отчислен',
+            self::TRANSFER_IN => 'Зачислен переводом',
+            self::TRANSFER_OUT => 'Отчислен переводом',
             self::ERROR => 'Ошибка статуса'
         ];
     }
