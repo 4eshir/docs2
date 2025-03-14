@@ -100,9 +100,6 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
             return $this->training_group_id;
         }
     }
-    public function getSimpleStatus(){
-
-    }
     // NULL - для подробной информации
     // not NULL - для информации из справочника
     public function getFullStatusInfo($type = NULL){
