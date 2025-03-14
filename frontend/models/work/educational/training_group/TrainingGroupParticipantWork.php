@@ -2,9 +2,12 @@
 
 namespace frontend\models\work\educational\training_group;
 use common\components\dictionaries\base\NomenclatureDictionary;
+use common\components\dictionaries\base\StudyStatusDictionary;
 use common\models\scaffold\TrainingGroupParticipant;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\general\PeopleStampWork;
+use Yii;
+
 /**
  * @property ForeignEventParticipantsWork $participantWork
  * @property TrainingGroupWork $trainingGroupWork
@@ -97,7 +100,12 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
             return $this->training_group_id;
         }
     }
-    public function getFullStatusInfo(){
+    public function getSimpleStatus(){
+
+    }
+    // NULL - для подробной информации
+    // not NULL - для информации из справочника
+    public function getFullStatusInfo($type = NULL){
         $linkIn = OrderTrainingGroupParticipantWork::find()
             ->andWhere(['training_group_participant_in_id' => $this->id])
             ->andWhere(['<>' ,'training_group_participant_out_id' , ''])
@@ -108,26 +116,26 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
             ->one();
         switch ($this->status) {
             case NomenclatureDictionary::ORDER_INIT:
-                return 'Не зачислен';
+                return is_null($type) ? 'Не зачислен' : Yii::$app->studyStatus->get(StudyStatusDictionary::INACTIVE);
             case NomenclatureDictionary::ORDER_ENROLL;
                 if (is_null($linkIn)) {
-                    return 'Состоит в группе' . ' ' . $this->trainingGroupWork->number ;
+                    return  is_null($type) ? 'Состоит в группе' . ' ' . $this->trainingGroupWork->number : Yii::$app->studyStatus->get(StudyStatusDictionary::ACTIVE);
                 }
                 else  {
                     $participant = TrainingGroupParticipantWork::findOne($linkIn->training_group_participant_out_id);
-                    return 'Состоит в группе ' . $this->trainingGroupWork->number. ' Переведён из группы ' . $participant->trainingGroupWork->number . ' в группу ' . $this->trainingGroupWork->number;
+                    return is_null($type) ? 'Состоит в группе ' . $this->trainingGroupWork->number. ' Переведён из группы ' . $participant->trainingGroupWork->number . ' в группу ' . $this->trainingGroupWork->number : Yii::$app->studyStatus->get(StudyStatusDictionary::TRANSFER_IN);
                 }
             case NomenclatureDictionary::ORDER_DEDUCT:
                 if (is_null($linkOut)) {
-                    return 'Отчислен из группы ' . $this->trainingGroupWork->number;
+                    return is_null($type) ? 'Отчислен из группы ' . $this->trainingGroupWork->number : Yii::$app->studyStatus->get(StudyStatusDictionary::DEDUCT);
                 }
                 else
                 {
                     $participant = TrainingGroupParticipantWork::findOne($linkOut->training_group_participant_in_id);
-                    return 'Не состоит в группе ' . $this->trainingGroupWork->number . ' Переведён из группы ' . $this->trainingGroupWork->number. ' в группу ' .  $participant->trainingGroupWork->number;
+                    return is_null($type) ? 'Не состоит в группе ' . $this->trainingGroupWork->number . ' Переведён из группы ' . $this->trainingGroupWork->number. ' в группу ' .  $participant->trainingGroupWork->number : Yii::$app->studyStatus->get(StudyStatusDictionary::TRANSFER_OUT);
                 }
             default:
-                return 'Ошибка статуса';
+                return Yii::$app->studyStatus->get(StudyStatusDictionary::ERROR);
         }
     }
 

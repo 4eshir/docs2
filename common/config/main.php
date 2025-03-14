@@ -100,5 +100,8 @@ return [
         'frontUrls' => [
             'class' => 'frontend\\components\\routes\\Urls',
         ],
+        'studyStatus' => [
+            'class' => 'common\\components\\dictionaries\\base\\StudyStatusDictionary',
+        ]
     ],
 ];
