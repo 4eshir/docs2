@@ -82,11 +82,6 @@ class OrderTrainingService
     }
     public function getGroupParticipantTable(OrderTrainingWork $model, $status)
     {
-        $model = TrainingGroupParticipantWork::find()->all();
-        foreach ($model as $item) {
-            var_dump($item->getFullStatusInfo(1));
-        }
-
         /* @var $order OrderTrainingGroupParticipantWork */
         /* @var $participant ForeignEventParticipantsWork */
         $inId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id), 'training_group_participant_in_id');
