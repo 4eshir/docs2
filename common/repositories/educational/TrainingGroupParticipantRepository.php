@@ -12,6 +12,7 @@ use frontend\models\work\educational\training_group\TrainingGroupParticipantWork
 use Mpdf\Tag\Tr;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 
 class TrainingGroupParticipantRepository
@@ -29,6 +30,16 @@ class TrainingGroupParticipantRepository
 
         $this->provider = $provider;
         $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
+    }
+
+    public function findAll(ActiveQuery $query)
+    {
+        return $query->all();
+    }
+
+    public function findOne(ActiveQuery $query)
+    {
+        return $query->one();
     }
 
     public function get($id)
