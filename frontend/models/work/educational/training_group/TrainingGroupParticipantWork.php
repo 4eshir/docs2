@@ -1,6 +1,7 @@
 <?php
 
 namespace frontend\models\work\educational\training_group;
+use common\components\dictionaries\base\NomenclatureDictionary;
 use common\models\scaffold\TrainingGroupParticipant;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\general\PeopleStampWork;
@@ -94,6 +95,39 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
         }
         else {
             return $this->training_group_id;
+        }
+    }
+    public function getFullStatusInfo(){
+        $linkIn = OrderTrainingGroupParticipantWork::find()
+            ->andWhere(['training_group_participant_in_id' => $this->id])
+            ->andWhere(['<>' ,'training_group_participant_out_id' , ''])
+            ->one();
+        $linkOut = OrderTrainingGroupParticipantWork::find()
+            ->andWhere(['training_group_participant_out_id' => $this->id])
+            ->andWhere(['<>' ,'training_group_participant_in_id' , ''])
+            ->one();
+        switch ($this->status) {
+            case NomenclatureDictionary::ORDER_INIT:
+                return 'Не зачислен';
+            case NomenclatureDictionary::ORDER_ENROLL;
+                if (is_null($linkIn)) {
+                    return 'Состоит в группе' . ' ' . $this->trainingGroupWork->number ;
+                }
+                else  {
+                    $participant = TrainingGroupParticipantWork::findOne($linkIn->training_group_participant_out_id);
+                    return 'Состоит в группе ' . $this->trainingGroupWork->number. ' Переведён из группы ' . $participant->trainingGroupWork->number . ' в группу ' . $this->trainingGroupWork->number;
+                }
+            case NomenclatureDictionary::ORDER_DEDUCT:
+                if (is_null($linkOut)) {
+                    return 'Отчислен из группы ' . $this->trainingGroupWork->number;
+                }
+                else
+                {
+                    $participant = TrainingGroupParticipantWork::findOne($linkOut->training_group_participant_in_id);
+                    return 'Не состоит в группе ' . $this->trainingGroupWork->number . ' Переведён из группы ' . $this->trainingGroupWork->number. ' в группу ' .  $participant->trainingGroupWork->number;
+                }
+            default:
+                return 'Ошибка статуса';
         }
     }
 
