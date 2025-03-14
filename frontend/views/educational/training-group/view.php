@@ -126,6 +126,14 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
                         <?= $model->getCountLessons(); ?>
                     </div>
                 </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Допущена к итоговому контролю
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getProtectionConfirm(); ?>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="card-block-2">

@@ -198,10 +198,12 @@ class TrainingGroupCombinedForm extends Model
         $result = [];
         foreach ($this->participants as $participant) {
             /** @var TrainingGroupParticipantWork $participant */
-            $result[] = StringFormatter::stringAsLink(
-                $participant->participantWork->getFIO(PersonInterface::FIO_FULL),
-                Url::to([Yii::$app->frontUrls::PARTICIPANT_VIEW, 'id' => $participant->participant_id])
-            );
+            $partLink = StringFormatter::stringAsLink($participant->participantWork->getFIO(PersonInterface::FIO_FULL),
+                Url::to([Yii::$app->frontUrls::PARTICIPANT_VIEW, 'id' => $participant->participant_id]));
+            $result[] = HtmlBuilder::createSubtitleAndClarification(
+                $partLink,
+                ' (' . Yii::$app->studyStatus->get($participant->status) . ')',
+                '');
         }
 
         return HtmlBuilder::arrayToAccordion($result);
@@ -224,14 +226,23 @@ class TrainingGroupCombinedForm extends Model
     }
 
     /**
+     * Информация о готовности учебной группы к итоговому контролю
+     * @return string
+     */
+    public function getProtectionConfirm()
+    {
+        return $this->trainingGroup->protection_confirm == 1 ? 'Да' : 'Нет';
+    }
+
+    /**
      * Выводит сведения о защите работ: дату и тип контроля,
      * а также темы и экспертов при их наличии
      * @return string
      */
     public function getPrettyFinalControl()
     {
-        $date = $this->protectionDate ? $this->protectionDate : '---';
-        $result[] = HtmlBuilder::createSubtitleAndClarification('Выдача сертификатов: ' . $date, ' (' . $this->trainingProgram->getCertificateType() . ')');
+        $date = $this->protectionDate ? DateFormatter::format($this->protectionDate, DateFormatter::Ymd_dash, DateFormatter::dmY_dot): '---';
+        $result[] = HtmlBuilder::createSubtitleAndClarification('Выдача сертификатов: ', $date . ' (' . $this->trainingProgram->getCertificateType() . ')');
         if ($this->themes) {
             $result[] = HtmlBuilder::createSubtitleAndClarification('Темы проектов: ', implode(', ', $this->getPrettyThemes()));
         }

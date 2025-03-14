@@ -24,6 +24,7 @@ use common\components\dictionaries\base\ProjectTypeDictionary;
 use common\components\dictionaries\base\RegulationTypeDictionary;
 use common\components\dictionaries\base\ResponsibilityTypeDictionary;
 use common\components\dictionaries\base\SendMethodDictionary;
+use common\components\dictionaries\base\StudyStatusDictionary;
 use common\components\dictionaries\base\ThematicDirectionDictionary;
 use common\components\dictionaries\TableDictionary;
 use common\components\RedisComponent;
@@ -79,6 +80,7 @@ class Yii {
  * @property ProjectTypeDictionary $projectType
  * @property RubacComponent $rubac
  * @property Urls $frontUrls
+ * @property StudyStatusDictionary $studyStatus
  */
 class __Application {
 }
