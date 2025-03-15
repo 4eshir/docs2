@@ -13,6 +13,7 @@ use InvalidArgumentException;
 class DocumentOrderWork extends DocumentOrder
 {
     use EventTrait;
+    public const ORDER_INIT = 0;
     public const ORDER_MAIN = 1;
     public const ORDER_EVENT = 2;
     public const ORDER_TRAINING = 3;
