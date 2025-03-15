@@ -182,10 +182,10 @@ class TrainingGroupCopyController extends Controller
         else {
             $query = Yii::$app->old_db->createCommand("SELECT * FROM order_group_participant WHERE status = 0 AND link_id IS NOT NULL");
             foreach ($query->queryAll() as $record) {
-                $previousId = $record['link_id'];
+                $transferId = $record['link_id'];
                 $orderGroupId = $record['order_group_id'];
                 $orderGroup = Yii::$app->old_db->createCommand("SELECT * FROM order_group WHERE id = $orderGroupId")->queryOne();
-                $participant = Yii::$app->old_db->createCommand("SELECT * FROM order_group_participant WHERE id = $previousId")->queryOne();
+                $participant = Yii::$app->old_db->createCommand("SELECT * FROM order_group_participant WHERE id = $transferId")->queryOne();
                 $command = Yii::$app->db->createCommand();
                 $command->insert('order_training_group_participant',
                     [
