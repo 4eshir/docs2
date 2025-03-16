@@ -72,7 +72,7 @@ class ReportForeignEventService
             }
         }
 
-        $result['percent'] = $tempSumAchieve / $tempSumPart;
+        $result['percent'] = $tempSumPart != 0 ? round($tempSumAchieve / $tempSumPart, 2) : 0;
 
         return [
             'result' => $result,
