@@ -12,12 +12,20 @@ use Yii;
 class LogFactory
 {
     public static function createBaseLog(
-        string $datetime,
         int $level,
-        int $userId,
-        string $text
+        string $text,
+        int $userId = -1,
+        string $datetime = ''
     )
     {
+        if ($userId === -1) {
+            $userId = Yii::$app->user->identity->id ?: null;
+        }
+
+        if ($datetime === '') {
+            $datetime = date('Y-m-d H:i:s');
+        }
+
         $log = new BaseLog(
             $datetime,
             $level,

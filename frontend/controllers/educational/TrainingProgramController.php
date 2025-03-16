@@ -3,12 +3,15 @@
 namespace frontend\controllers\educational;
 
 use app\components\DynamicWidget;
+use common\components\logger\base\LogInterface;
+use common\components\logger\LogFactory;
 use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\ButtonsFormatter;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\search\SearchFieldHelper;
+use common\models\work\LogWork;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\FilesRepository;
@@ -76,7 +79,7 @@ class TrainingProgramController extends DocumentController
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->pagination = false;
 
-        $links = ButtonsFormatter::anyOneLink('Сохранить статус', '#'/*Yii::$app->frontUrls::PROGRAM_ACTUAL*/, ButtonsFormatter::BTN_PRIMARY, 'relevance-save');
+        $links = ButtonsFormatter::anyOneLink('Сохранить статус', '', ButtonsFormatter::BTN_PRIMARY, 'relevance-save');
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('relevance', [
@@ -88,32 +91,15 @@ class TrainingProgramController extends DocumentController
 
     public function actionRelevanceSave()
     {
-        $ids = Yii::$app->request->post('ids');
+        $actual = Yii::$app->request->post('actual');
+        $unactual = Yii::$app->request->post('unactual');
 
-        return json_encode([
-            'success' => true,
-        ]);
+        $actual = is_array($actual) ? $actual : [];
+        $unactual = is_array($unactual) ? $unactual : [];
 
-        if (!empty($ids)) {
-            // Выполняем необходимые операции с моделями
-            /*foreach ($ids as $id) {
-                $model = ModelName::findOne($id);
+        $this->service->setProgramRelevance($actual, $unactual);
 
-                if ($model !== null) {
-                    // Делаем какие-то изменения в модели
-                    $model->actual = true; // Пример обновления поля actual
-                    $model->save();
-                }
-            }*/
-
-            // Возвращаем ответ клиенту с URL для перенаправления
-
-        }
-
-        return json_encode([
-            'success' => false,
-            'message' => 'No data received',
-        ]);
+        return json_encode(['success' => true]);
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace frontend\services\educational;
 
+use common\components\logger\base\LogInterface;
+use common\components\logger\LogFactory;
 use common\components\wizards\ExcelWizard;
 use common\helpers\files\filenames\TrainingProgramFileNameGenerator;
 use common\helpers\files\FilePaths;
@@ -261,6 +263,30 @@ class TrainingProgramService implements DatabaseServiceInterface
                 $authorStamp = $this->peopleStampService->createStampFromPeople($author);
                 $model->recordEvent(new CreateAuthorProgramEvent($model->id, $authorStamp), AuthorProgramWork::class);
             }
+        }
+    }
+
+    /**
+     * Метод актуализации образовательных программ
+     *
+     * @param array $actual список id образовательных программ, которые требуется сделать актуальными
+     * @param array $unactual список id образовательных программ, которые требуется сделать неактуальными
+     * @return void
+     */
+    public function setProgramRelevance(array $actual, array $unactual)
+    {
+        foreach ($actual as $actualId) {
+            /** @var TrainingProgramWork $program */
+            $program = $this->repository->get($actualId);
+            $program->setActual(TrainingProgramWork::ACTUAL);
+            $this->repository->save($program);
+        }
+
+        foreach ($unactual as $unactualId) {
+            /** @var TrainingProgramWork $program */
+            $program = $this->repository->get($unactualId);
+            $program->setActual(TrainingProgramWork::NON_ACTUAL);
+            $this->repository->save($program);
         }
     }
 }

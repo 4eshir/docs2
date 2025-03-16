@@ -34,6 +34,9 @@ class TrainingGroupWork extends TrainingGroup
     const ERROR_NO_PROGRAM = 1;
     const ERROR_THEMES_MISMATCH = 2;
 
+    const NO_NETWORK = 0;
+    const IS_NETWORK = 1;
+
     public static function fill(
         $startDate,
         $endDate,
@@ -224,6 +227,11 @@ class TrainingGroupWork extends TrainingGroup
     public function getBranchString()
     {
         return Yii::$app->branches->get($this->branch);
+    }
+
+    public function setProtectionDate(string $protectionDate)
+    {
+        $this->protection_date = $protectionDate;
     }
 
     public function beforeSave($insert)

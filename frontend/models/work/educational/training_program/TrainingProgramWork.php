@@ -41,7 +41,9 @@ class TrainingProgramWork extends TrainingProgram
     public $mainExist;
     public $docExist;
     public $contractExist;
-    public const LEVEL_LIST = [1, 2, 3];
+    const LEVEL_LIST = [1, 2, 3];
+    const ACTUAL = 1;
+    const NON_ACTUAL = 0;
 
     private FileService $fileService;
     private TrainingProgramRepository $repository;
@@ -364,6 +366,11 @@ class TrainingProgramWork extends TrainingProgram
                 'branch'
             );
         }
+    }
+
+    public function setActual(int $actual)
+    {
+        $this->actual = $actual;
     }
 
     public function getCreatorWork()

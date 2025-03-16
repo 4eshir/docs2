@@ -479,7 +479,11 @@ body {
 }
 
 .accordion-block {
-    padding: 0.5em;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.5em 1em;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .accordion-btn {
@@ -497,18 +501,15 @@ body {
 }
 
 .accordion-btn-close {
-    margin: 1em auto auto;
-    border-radius: var(--border-radius);
+    margin: 0.5em -1em -0.5em;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    width: 110.5%;
+    align-self: stretch;     /* Растягиваем кнопку по всей ширине */
+    text-align: center;
 }
 
 .accordion-date {
     text-align: justify;
-}
-
-.accordion-block {
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 0.5em 1em;
 }
 
 .accordion-date ol, .accordion-date ul {

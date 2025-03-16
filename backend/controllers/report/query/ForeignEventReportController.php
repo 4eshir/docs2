@@ -3,15 +3,9 @@
 namespace backend\controllers\report\query;
 
 use backend\forms\report\ForeignEventReportForm;
-use backend\forms\report\ManHoursReportForm;
 use backend\helpers\DebugReportHelper;
-use backend\services\report\QueryReportService;
+use backend\invokables\CsvLoader;
 use backend\services\report\ReportFacade;
-use backend\services\report\ReportForeignEventService;
-use common\helpers\common\HeaderWizard;
-use common\helpers\creators\ExcelCreator;
-use Hidehalo\Nanoid\Client;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\web\BadRequestHttpException;
@@ -19,19 +13,6 @@ use yii\web\Controller;
 
 class ForeignEventReportController extends Controller
 {
-    private QueryReportService $service;
-
-    public function __construct(
-        $id,
-        $module,
-        QueryReportService $service,
-        $config = []
-    )
-    {
-        parent::__construct($id, $module, $config);
-        $this->service = $service;
-    }
-
     /**
      * @throws InvalidConfigException
      */
@@ -55,7 +36,8 @@ class ForeignEventReportController extends Controller
     {
         if (Yii::$app->request->isPost) {
             $csvHeader = DebugReportHelper::getEventReportHeaders();
-            $this->service->downloadCsvDebugFile(Yii::$app->request->post()['debugData'], $csvHeader);
+            $loader = new CsvLoader($csvHeader, Yii::$app->request->post()['debugData']);
+            $loader();
         }
         else {
             throw new BadRequestHttpException('Для данного эндпоинта допустимы только POST-запросы');

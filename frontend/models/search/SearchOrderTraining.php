@@ -39,7 +39,8 @@ class SearchOrderTraining extends OrderTrainingWork
     {
         $this->load($params);
         $query = OrderEventWork::find()
-            ->where(['type' => DocumentOrderWork::ORDER_TRAINING])
+            ->where(['type' => DocumentOrderWork::ORDER_INIT])
+            ->andWhere(['IS NOT','study_type' , NULL])
             ->joinWith('bring');
         if ($this->Date !== '' && $this->Date !== null) {
             $dates = DateFormatter::splitDates($this->Date);

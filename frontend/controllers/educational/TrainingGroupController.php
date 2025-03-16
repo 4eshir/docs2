@@ -290,6 +290,7 @@ class TrainingGroupController extends DocumentController
                 $this->service->attachThemes($formPitch);
                 $this->service->attachExperts($formPitch);
                 $formPitch->releaseEvents();
+                $formPitch->save();
 
                 return $this->redirect(['view', 'id' => $formPitch->id]);
             }

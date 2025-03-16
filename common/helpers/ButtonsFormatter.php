@@ -111,7 +111,7 @@ class ButtonsFormatter
     {
         return [
             $nameButton => [
-                'url' => Url::to([$link]),
+                'url' => StringFormatter::isEmpty($link) ? '#' : Url::to([$link]),
                 'class' => $nameClasses,
                 'id' => $id
             ]

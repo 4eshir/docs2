@@ -28,7 +28,7 @@ class TrainingGroupReportBuilder
     /**
      * @return ActiveQuery
      */
-    public function query()
+    public function query() : ActiveQuery
     {
         return TrainingGroupWork::find();
     }
@@ -40,7 +40,7 @@ class TrainingGroupReportBuilder
      * @param int[] $branches
      * @return ActiveQuery
      */
-    public function filterGroupsByBranches(ActiveQuery $query, array $branches)
+    public function filterGroupsByBranches(ActiveQuery $query, array $branches) : ActiveQuery
     {
         return $query->andWhere(['IN', 'branch', $branches]);
     }
@@ -52,7 +52,7 @@ class TrainingGroupReportBuilder
      * @param int[] $budget
      * @return ActiveQuery
      */
-    public function filterGroupsByBudget(ActiveQuery $query, array $budget)
+    public function filterGroupsByBudget(ActiveQuery $query, array $budget) : ActiveQuery
     {
         return $query->andWhere(['IN', 'budget', $budget]);
     }
@@ -64,7 +64,7 @@ class TrainingGroupReportBuilder
      * @param int[] $focuses
      * @return ActiveQuery
      */
-    public function filterGroupsByFocuses(ActiveQuery $query, array $focuses)
+    public function filterGroupsByFocuses(ActiveQuery $query, array $focuses) : ActiveQuery
     {
         $programIds = ArrayHelper::getColumn(
             $this->programRepository->getByFocuses($focuses),
@@ -81,7 +81,7 @@ class TrainingGroupReportBuilder
      * @param int[] $allowRemotes
      * @return ActiveQuery
      */
-    public function filterGroupsByAllowRemote(ActiveQuery $query, array $allowRemotes)
+    public function filterGroupsByAllowRemote(ActiveQuery $query, array $allowRemotes) : ActiveQuery
     {
         $programIds = ArrayHelper::getColumn(
             $this->programRepository->getByAllowRemotes($allowRemotes),
@@ -100,7 +100,7 @@ class TrainingGroupReportBuilder
      * @param string $date2
      * @return ActiveQuery
      */
-    public function filterGroupsBetweenDates(ActiveQuery $query, string $date1, string $date2)
+    public function filterGroupsBetweenDates(ActiveQuery $query, string $date1, string $date2) : ActiveQuery
     {
         return $query->andWhere(['BETWEEN', 'start_date', $date1, $date2])
             ->orWhere(['BETWEEN', 'finish_date', $date1, $date2])
@@ -110,7 +110,7 @@ class TrainingGroupReportBuilder
             ]);
     }
 
-    public function filterGroupsByDates(ActiveQuery $query, string $date1, string $date2, array $types = [])
+    public function filterGroupsByDates(ActiveQuery $query, string $date1, string $date2, array $types = []) : ActiveQuery
     {
         $conditions = ['or'];
         if (in_array(ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_IN, $types)) {
@@ -136,7 +136,7 @@ class TrainingGroupReportBuilder
      * @param int[] $teacherIds
      * @return ActiveQuery
      */
-    public function filterGroupsByTeachers(ActiveQuery $query, array $teacherIds)
+    public function filterGroupsByTeachers(ActiveQuery $query, array $teacherIds) : ActiveQuery
     {
         if (count($teacherIds) === 0) {
             return $query;
@@ -148,5 +148,10 @@ class TrainingGroupReportBuilder
         );
 
         return $query->andWhere(['IN', 'id', $groupIds]);
+    }
+
+    public function filterGroupsByNetwork(ActiveQuery $query, array $networks = [TrainingGroupWork::NO_NETWORK, TrainingGroupWork::IS_NETWORK]) : ActiveQuery
+    {
+        return $query->andWhere(['IN', 'is_network', $networks]);
     }
 }
