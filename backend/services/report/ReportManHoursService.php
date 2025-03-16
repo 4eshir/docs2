@@ -5,6 +5,7 @@ namespace backend\services\report;
 use backend\builders\TrainingGroupReportBuilder;
 use backend\forms\report\ManHoursReportForm;
 use backend\helpers\ReportHelper;
+use backend\services\report\interfaces\ManHoursServiceInterface;
 use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
@@ -15,7 +16,7 @@ use frontend\models\work\educational\journal\VisitWork;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 
-class ReportManHoursService
+class ReportManHoursService implements ManHoursServiceInterface
 {
     private TrainingGroupReportBuilder $builder;
     private TrainingGroupRepository $repository;

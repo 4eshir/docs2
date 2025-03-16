@@ -2,11 +2,13 @@
 
 namespace backend\forms\report;
 
+use backend\services\report\ReportFacade;
 use common\Model;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\general\PeopleStampRepository;
 use frontend\models\work\general\PeopleWork;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 class ManHoursReportForm extends Model
@@ -86,6 +88,32 @@ class ManHoursReportForm extends Model
         ];
     }
 
+    public static function fill(
+        string $startDate,
+        string $endDate,
+        array $branch,
+        array $focus,
+        array $allowRemote,
+        array $budget,
+        array $method,
+        array $teacherIds = [],
+        int $mode = ReportFacade::MODE_PURE
+    )
+    {
+        $entity = Yii::createObject(ManHoursReportForm::class);
+        $entity->startDate = $startDate;
+        $entity->endDate = $endDate;
+        $entity->branch = $branch;
+        $entity->focus = $focus;
+        $entity->allowRemote = $allowRemote;
+        $entity->budget = $budget;
+        $entity->method = $method;
+        $entity->teacherIds = $teacherIds;
+        $entity->mode = $mode;
+
+        return $entity;
+
+    }
 
     public function isManHours()
     {

@@ -3,6 +3,8 @@
 namespace backend\services\report\mock;
 
 use backend\builders\ParticipantReportBuilder;
+use backend\services\report\interfaces\ForeignEventServiceInterface;
+use backend\services\report\ReportFacade;
 use common\components\dictionaries\base\EventLevelDictionary;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\event\ForeignEventRepository;
@@ -11,7 +13,7 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use function Clue\StreamFilter\fun;
 
-class ReportForeignEventMockService
+class ReportForeignEventMockService implements ForeignEventServiceInterface
 {
     public array $events;
     public array $acts;
@@ -50,7 +52,8 @@ class ReportForeignEventMockService
         array $branches,
         array $focuses,
         array $allowRemotes,
-        array $levels = []
+        array $levels = [],
+        int $mode = ReportFacade::MODE_PURE
     )
     {
         $events = $this->getEventsByFilters($startDate, $endDate, $levels);

@@ -4,6 +4,8 @@ namespace backend\services\report;
 
 use backend\forms\report\ForeignEventReportForm;
 use backend\forms\report\ManHoursReportForm;
+use backend\services\report\interfaces\ForeignEventServiceInterface;
+use backend\services\report\interfaces\ManHoursServiceInterface;
 use Yii;
 use yii\base\InvalidConfigException;
 
@@ -18,9 +20,8 @@ class ReportFacade
      * @return array
      * @throws InvalidConfigException
      */
-    public static function generateManHoursReport(ManHoursReportForm $form)
+    public static function generateManHoursReport(ManHoursReportForm $form, ManHoursServiceInterface $service)
     {
-        $service = Yii::createObject(ReportManHoursService::class);
         $manHoursResult = [];
         if ($form->isManHours()) {
             $manHoursResult['manHours'] =
@@ -57,9 +58,8 @@ class ReportFacade
         return $manHoursResult;
     }
 
-    public static function generateParticipantsReport(ForeignEventReportForm $form)
+    public static function generateParticipantsReport(ForeignEventReportForm $form, ForeignEventServiceInterface $service)
     {
-        $service = Yii::createObject(ReportForeignEventService::class);
         return $service->calculateEventParticipants(
             $form->startDate,
             $form->endDate,

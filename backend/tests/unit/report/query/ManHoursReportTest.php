@@ -4,6 +4,7 @@ namespace backend\tests\unit\report\query;
 
 use backend\forms\report\ManHoursReportForm;
 use backend\services\report\mock\ReportManHoursMockService;
+use backend\services\report\ReportFacade;
 use backend\tests\UnitTester;
 use common\components\dictionaries\base\AllowRemoteDictionary;
 use common\components\dictionaries\base\BranchDictionary;
