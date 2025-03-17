@@ -11,6 +11,7 @@ use frontend\models\work\dictionaries\AuditoriumWork;
 use frontend\models\work\dictionaries\PositionWork;
 use frontend\models\work\general\FilesWork;
 use frontend\models\work\general\PeoplePositionCompanyBranchWork;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
@@ -26,6 +27,16 @@ class AuditoriumRepository
     {
         $this->fileService = $fileService;
         $this->filesRepository = $filesRepository;
+    }
+
+    public function findAll(ActiveQuery $query)
+    {
+        return $query->all();
+    }
+
+    public function findOne(ActiveQuery $query)
+    {
+        return $query->one();
     }
 
     public function get($id)

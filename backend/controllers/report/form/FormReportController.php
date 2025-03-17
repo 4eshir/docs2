@@ -2,8 +2,12 @@
 
 namespace backend\controllers\report\form;
 
+use backend\forms\report\DodForm;
+use backend\invokables\ReportDodLoader;
 use backend\services\report\form\DodReportService;
 use backend\services\report\form\StateAssignmentReportService;
+use backend\services\report\ReportFacade;
+use Yii;
 use yii\web\Controller;
 
 class FormReportController extends Controller
@@ -29,8 +33,21 @@ class FormReportController extends Controller
         return $this->render('form-list');
     }
 
-    public function actionStateAssignment()
+    public function actionDod()
     {
+        $model = new DodForm();
 
+        if ($model->load(Yii::$app->request->post())) {
+            $loader = new ReportDodLoader(
+                'report_DOD.xlsx',
+                'report_test.xlsx',
+                ReportFacade::generateDod($model, $this->dodReportService)
+            );
+            $loader();
+        }
+
+        return $this->render('dod', [
+            'model' => $model
+        ]);
     }
 }

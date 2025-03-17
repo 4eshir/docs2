@@ -31,4 +31,11 @@ class HeaderWizard
         header("Content-Transfer-Encoding: binary");
         header("Content-Length: ".filesize($archiveName));
     }
+
+    public static function setDodReportHeaders(string $filename)
+    {
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'. $filename .'"');
+        header('Cache-Control: max-age=0');
+    }
 }

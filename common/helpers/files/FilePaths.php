@@ -11,5 +11,6 @@ class FilePaths
 
     public const FILE_DOWNLOAD_SVG = 'svg/download-file.svg';
     public const FILE_NO_DOWNLOAD_SVG = 'svg/no-download-file.svg';
-    public const CERTIFICATE_TEMPLATES = '/upload/files/certificate-templates/';
+    public const CERTIFICATE_TEMPLATES = self::BASE_FILEPATH . '/certificate-templates/';
+    public const REPORT_TEMPLATES = self::BASE_FILEPATH . '/report-templates/';
 }

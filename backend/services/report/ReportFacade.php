@@ -2,8 +2,10 @@
 
 namespace backend\services\report;
 
+use backend\forms\report\DodForm;
 use backend\forms\report\ForeignEventReportForm;
 use backend\forms\report\ManHoursReportForm;
+use backend\services\report\form\DodReportService;
 use Yii;
 use yii\base\InvalidConfigException;
 
@@ -69,5 +71,24 @@ class ReportFacade
             $form->levels,
             $form->mode
         );
+    }
+
+    /**
+     * Основная функция генерации отчета типа ДОД
+     *
+     * @param DodForm $form
+     * @param DodReportService $service
+     * @return array
+     */
+    public static function generateDod(DodForm $form, DodReportService $service) : array
+    {
+        $result = [];
+        $result['section3'] = $service->fillSection3($form->startDate, $form->endDate);
+        $result['section4'] = $service->fillSection4($form->startDate, $form->endDate);
+        $result['section5'] = $service->fillSection5($form->startDate, $form->endDate);
+        $result['section10'] = $service->fillSection10();
+        $result['section11'] = $service->fillSection11();
+
+        return $result;
     }
 }

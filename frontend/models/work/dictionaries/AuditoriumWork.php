@@ -11,6 +11,12 @@ class AuditoriumWork extends Auditorium
 {
     use EventTrait;
 
+    const NO_EDUCATION = 0;
+    const IS_EDUCATION = 1;
+
+    const NO_INCLUDE = 0;
+    const IS_INCLUDE = 1;
+
     public $filesList;
 
     public function rules()
@@ -50,6 +56,6 @@ class AuditoriumWork extends Auditorium
      */
     public function getFullName()
     {
-        return '№' . '$this->number' . ' (' . $this->name . ')';
+        return "$this->name ($this->text)";
     }
 }
