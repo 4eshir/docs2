@@ -2,6 +2,7 @@
 
 namespace console\controllers\copy;
 
+use common\components\access\LogRecordComponent;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\services\general\PeopleStampService;
 use frontend\models\work\team\ActParticipantWork;
@@ -12,6 +13,7 @@ use yii\helpers\ArrayHelper;
 
 class ActCopyController extends Controller
 {
+    private const BLOCK_TIME = 360;
     private ActParticipantRepository $actParticipantRepository;
     private PeopleStampService $peopleStampService;
     public function __construct(
@@ -140,10 +142,10 @@ class ActCopyController extends Controller
         $this->actionPersonalActCopy();
     }
     public function actionCopyAll(){
-        Yii::$app->redis->executeCommand('SET' , ['BLOCK_LOG' , 1]);
-        Yii::$app->redis->executeCommand('EXPIRE', ['BLOCK_LOG', 360]);
+        Yii::$app->logRecord->block('BLOCK_LOG', self::BLOCK_TIME);
         $this->actionTeamNameCopy();
         $this->actionActCopy();
+        Yii::$app->logRecord->unblock('BLOCK_LOG');
     }
     public function actionDeleteTeamName()
     {

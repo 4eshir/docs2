@@ -3,13 +3,14 @@
 namespace backend\services\report;
 
 use backend\builders\ParticipantReportBuilder;
+use backend\services\report\interfaces\ForeignEventServiceInterface;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\event\ForeignEventRepository;
 use frontend\models\work\event\ParticipantAchievementWork;
 use Yii;
 use yii\helpers\ArrayHelper;
 
-class ReportForeignEventService
+class ReportForeignEventService implements ForeignEventServiceInterface
 {
     private ForeignEventRepository $repository;
     private ParticipantReportBuilder $builder;
@@ -72,7 +73,7 @@ class ReportForeignEventService
             }
         }
 
-        $result['percent'] = $tempSumAchieve / $tempSumPart;
+        $result['percent'] = $tempSumPart != 0 ? round($tempSumAchieve / $tempSumPart, 2) : 0;
 
         return [
             'result' => $result,

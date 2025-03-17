@@ -3,13 +3,15 @@
 namespace backend\services\report\mock;
 
 use backend\helpers\ReportHelper;
+use backend\services\report\interfaces\ManHoursServiceInterface;
+use backend\services\report\ReportFacade;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\providers\group_lesson\TrainingGroupLessonMockProvider;
 use frontend\models\work\educational\journal\VisitLesson;
 use Yii;
 use yii\helpers\ArrayHelper;
 
-class ReportManHoursMockService
+class ReportManHoursMockService implements ManHoursServiceInterface
 {
     private array $groups;
     private array $participants;
@@ -68,7 +70,8 @@ class ReportManHoursMockService
         array $allowRemotes,
         array $budgets,
         int $calculateType,
-        array $teacherIds = []
+        array $teacherIds = [],
+        int $mode = ReportFacade::MODE_PURE
     ) : array
     {
         $groups = $this->getTrainingGroupsQueryByFilters($startDate, $endDate, $branches, $focuses, $allowRemotes, $budgets);

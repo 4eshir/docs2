@@ -21,9 +21,12 @@ class ForeignEventReportData
     public array $actsBranch = [];
     public array $achieves = [];
 
+    public array $expectedValues = [];
+
     public function __construct()
     {
         $this->fillData();
+        $this->fillExpectedValues();
     }
 
     private function fillData()
@@ -32,6 +35,117 @@ class ForeignEventReportData
         $this->fillActs();
         $this->fillActsBranch();
         $this->fillAchieves();
+    }
+
+    private function fillExpectedValues()
+    {
+        $this->expectedValues = [
+            [
+                'levels' => [
+                    EventLevelDictionary::INTERIOR => [
+                        'participant' => 3,
+                        'winners' => 0,
+                        'prizes' => 1
+                    ],
+                    EventLevelDictionary::DISTRICT => [
+                        'participant' => 4,
+                        'winners' => 1,
+                        'prizes' => 1
+                    ],
+                    EventLevelDictionary::URBAN => [
+                        'participant' => 0,
+                        'winners' => 0,
+                        'prizes' => 0
+                    ],
+                    EventLevelDictionary::REGIONAL => [
+                        'participant' => 10,
+                        'winners' => 3,
+                        'prizes' => 3
+                    ],
+                    EventLevelDictionary::FEDERAL => [
+                        'participant' => 2,
+                        'winners' => 0,
+                        'prizes' => 1
+                    ],
+                    EventLevelDictionary::INTERNATIONAL => [
+                        'participant' => 3,
+                        'winners' => 2,
+                        'prizes' => 0
+                    ]
+                ],
+                'percent' => 0.6
+            ],
+            [
+                'levels' => [
+                    EventLevelDictionary::INTERIOR => [
+                        'participant' => 1,
+                        'winners' => 0,
+                        'prizes' => 0
+                    ],
+                    EventLevelDictionary::DISTRICT => [
+                        'participant' => 3,
+                        'winners' => 1,
+                        'prizes' => 1
+                    ],
+                    EventLevelDictionary::URBAN => [
+                        'participant' => 0,
+                        'winners' => 0,
+                        'prizes' => 0
+                    ],
+                    EventLevelDictionary::REGIONAL => [
+                        'participant' => 4,
+                        'winners' => 2,
+                        'prizes' => 0
+                    ],
+                    EventLevelDictionary::FEDERAL => [
+                        'participant' => 0,
+                        'winners' => 0,
+                        'prizes' => 0
+                    ],
+                    EventLevelDictionary::INTERNATIONAL => [
+                        'participant' => 3,
+                        'winners' => 2,
+                        'prizes' => 0
+                    ]
+                ],
+                'percent' => 0.57
+            ],
+            [
+                'levels' => [
+                    EventLevelDictionary::INTERIOR => [
+                        'participant' => 0,
+                        'winners' => 0,
+                        'prizes' => 0
+                    ],
+                    EventLevelDictionary::DISTRICT => [
+                        'participant' => 4,
+                        'winners' => 1,
+                        'prizes' => 1
+                    ],
+                    EventLevelDictionary::URBAN => [
+                        'participant' => 0,
+                        'winners' => 0,
+                        'prizes' => 0
+                    ],
+                    EventLevelDictionary::REGIONAL => [
+                        'participant' => 6,
+                        'winners' => 2,
+                        'prizes' => 2
+                    ],
+                    EventLevelDictionary::FEDERAL => [
+                        'participant' => 0,
+                        'winners' => 0,
+                        'prizes' => 0
+                    ],
+                    EventLevelDictionary::INTERNATIONAL => [
+                        'participant' => 0,
+                        'winners' => 0,
+                        'prizes' => 0
+                    ]
+                ],
+                'percent' => 0.67
+            ],
+        ];
     }
 
     /**
@@ -63,6 +177,12 @@ class ForeignEventReportData
                 'start_date' => '2010-02-01',
                 'finish_date' => '2010-02-15',
                 'level' => EventLevelDictionary::FEDERAL
+            ],
+            [
+                'id' => 5,
+                'start_date' => '2010-02-01',
+                'finish_date' => '2010-02-15',
+                'level' => EventLevelDictionary::REGIONAL
             ],
             [
                 'id' => 6,
@@ -174,8 +294,8 @@ class ForeignEventReportData
             ['id' => 10, 'act_participant_id' => 19, 'type' => ParticipantAchievementWork::TYPE_PRIZE],
             // --------
             // Мероприятие 6
-            ['id' => 11, 'act_participant_id' => 21, 'type' => ParticipantAchievementWork::TYPE_PRIZE],
-            ['id' => 12, 'act_participant_id' => 22, 'type' => ParticipantAchievementWork::TYPE_PRIZE],
+            ['id' => 11, 'act_participant_id' => 21, 'type' => ParticipantAchievementWork::TYPE_WINNER],
+            ['id' => 12, 'act_participant_id' => 22, 'type' => ParticipantAchievementWork::TYPE_WINNER],
             // --------
         ];
     }

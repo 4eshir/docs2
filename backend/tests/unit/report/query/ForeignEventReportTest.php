@@ -3,19 +3,23 @@
 namespace backend\tests\unit\report\query;
 
 use backend\forms\report\ManHoursReportForm;
-use backend\services\report\mock\ReportManHoursMockService;
+use backend\services\report\mock\ReportForeignEventMockService;
 use backend\tests\UnitTester;
 use common\components\dictionaries\base\AllowRemoteDictionary;
 use common\components\dictionaries\base\BranchDictionary;
+use common\components\dictionaries\base\EventLevelDictionary;
 use common\components\dictionaries\base\FocusDictionary;
+use frontend\forms\event\ForeignEventForm;
+use frontend\models\work\event\ForeignEventWork;
+use Throwable;
 use Yii;
 
 class ForeignEventReportTest extends \Codeception\Test\Unit
 {
-    protected ReportManHoursMockService $manHoursMockService;
+    protected ReportForeignEventMockService $foreignEventMockService;
 
-    // Набор ожидаемых значений для теста testManHoursReport
-    private array $expValManHoursReport = [48, 33, 15, 24, 12, 6, 29];
+    // Набор ожидаемых значений для теста testForeignEventReport
+    private array $expValForeignEventReport;
 
     /**
      * @var UnitTester
@@ -24,8 +28,8 @@ class ForeignEventReportTest extends \Codeception\Test\Unit
     
     protected function _before()
     {
-        $this->manHoursMockService = Yii::createObject(
-            ReportManHoursMockService::class
+        $this->foreignEventMockService = Yii::createObject(
+            ReportForeignEventMockService::class
         );
     }
 
@@ -35,102 +39,96 @@ class ForeignEventReportTest extends \Codeception\Test\Unit
 
 
     /**
-     * @dataProvider getManHoursReportData
+     * @dataProvider getForeignEventReportData
      */
-    public function testManHoursReport(ManHoursReportData $data)
+    public function testForeignEventReport(ForeignEventReportData $data)
     {
-        $this->manHoursMockService->setMockData(
-            $data->groups,
-            $data->participants,
-            $data->themes,
-            $data->lessons,
-            $data->visits
+        $this->foreignEventMockService->setMockData(
+            $data->events,
+            $data->acts,
+            $data->actsBranch,
+            $data->achieves
         );
 
+        $this->expValForeignEventReport = $data->expectedValues;
+
         $tasks = [
-            $this->manHoursMockService->calculateManHours(
+            $this->foreignEventMockService->calculateEventParticipants(
                 '2010-01-01',
                 '2010-12-31',
-                [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM],
+                [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM, BranchDictionary::CDNTT, BranchDictionary::COD, BranchDictionary::MOBILE_QUANTUM],
+                [FocusDictionary::TECHNICAL, FocusDictionary::SCIENCE, FocusDictionary::ART, FocusDictionary::SPORT],
+                [AllowRemoteDictionary::ONLY_PERSONAL, AllowRemoteDictionary::PERSONAL_WITH_REMOTE],
+                [
+                    EventLevelDictionary::INTERIOR,
+                    EventLevelDictionary::DISTRICT,
+                    EventLevelDictionary::URBAN,
+                    EventLevelDictionary::REGIONAL,
+                    EventLevelDictionary::FEDERAL,
+                    EventLevelDictionary::INTERNATIONAL
+                ]
+            ),
+            $this->foreignEventMockService->calculateEventParticipants(
+                '2010-01-01',
+                '2010-12-31',
+                [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM, BranchDictionary::MOBILE_QUANTUM],
                 [FocusDictionary::TECHNICAL, FocusDictionary::SCIENCE],
-                [AllowRemoteDictionary::ONLY_PERSONAL, AllowRemoteDictionary::PERSONAL_WITH_REMOTE],
-                [0, 1],
-                ManHoursReportForm::MAN_HOURS_ALL
-            ),
-
-            $this->manHoursMockService->calculateManHours(
-                '2010-01-01',
-                '2010-03-31',
-                [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM],
-                [FocusDictionary::TECHNICAL, FocusDictionary::SCIENCE],
-                [AllowRemoteDictionary::ONLY_PERSONAL, AllowRemoteDictionary::PERSONAL_WITH_REMOTE],
-                [0, 1],
-                ManHoursReportForm::MAN_HOURS_ALL
-            ),
-
-            $this->manHoursMockService->calculateManHours(
-                '2010-03-31',
-                '2010-12-31',
-                [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM],
-                [FocusDictionary::TECHNICAL, FocusDictionary::SCIENCE],
-                [AllowRemoteDictionary::ONLY_PERSONAL, AllowRemoteDictionary::PERSONAL_WITH_REMOTE],
-                [0, 1],
-                ManHoursReportForm::MAN_HOURS_ALL
-            ),
-
-            $this->manHoursMockService->calculateManHours(
-                '2010-01-01',
-                '2010-12-31',
-                [BranchDictionary::QUANTORIUM],
-                [FocusDictionary::TECHNICAL, FocusDictionary::SCIENCE],
-                [AllowRemoteDictionary::ONLY_PERSONAL, AllowRemoteDictionary::PERSONAL_WITH_REMOTE],
-                [0, 1],
-                ManHoursReportForm::MAN_HOURS_ALL
-            ),
-
-            $this->manHoursMockService->calculateManHours(
-                '2010-01-01',
-                '2010-12-31',
-                [BranchDictionary::QUANTORIUM],
-                [FocusDictionary::TECHNICAL],
-                [AllowRemoteDictionary::ONLY_PERSONAL, AllowRemoteDictionary::PERSONAL_WITH_REMOTE],
-                [0, 1],
-                ManHoursReportForm::MAN_HOURS_ALL
-            ),
-
-            $this->manHoursMockService->calculateManHours(
-                '2010-01-01',
-                '2010-12-31',
-                [BranchDictionary::QUANTORIUM],
-                [FocusDictionary::TECHNICAL],
                 [AllowRemoteDictionary::ONLY_PERSONAL],
-                [0, 1],
-                ManHoursReportForm::MAN_HOURS_ALL
+                [
+                    EventLevelDictionary::INTERIOR,
+                    EventLevelDictionary::DISTRICT,
+                    EventLevelDictionary::URBAN,
+                    EventLevelDictionary::REGIONAL,
+                    EventLevelDictionary::FEDERAL,
+                    EventLevelDictionary::INTERNATIONAL
+                ]
             ),
-
-            $this->manHoursMockService->calculateManHours(
+            $this->foreignEventMockService->calculateEventParticipants(
                 '2010-01-01',
-                '2010-12-31',
-                [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM],
-                [FocusDictionary::TECHNICAL, FocusDictionary::SCIENCE],
+                '2010-01-16',
+                [BranchDictionary::TECHNOPARK, BranchDictionary::QUANTORIUM, BranchDictionary::CDNTT, BranchDictionary::COD, BranchDictionary::MOBILE_QUANTUM],
+                [FocusDictionary::TECHNICAL, FocusDictionary::SCIENCE, FocusDictionary::ART, FocusDictionary::SPORT],
                 [AllowRemoteDictionary::ONLY_PERSONAL, AllowRemoteDictionary::PERSONAL_WITH_REMOTE],
-                [0, 1],
-                ManHoursReportForm::MAN_HOURS_FAIR
-            )
+                [
+                    EventLevelDictionary::INTERIOR,
+                    EventLevelDictionary::DISTRICT,
+                    EventLevelDictionary::URBAN,
+                    EventLevelDictionary::REGIONAL,
+                    EventLevelDictionary::FEDERAL
+                ]
+            ),
         ];
 
         foreach ($tasks as $index => $task) {
+            foreach ($task['result']['levels'] as $indexLevel => $level) {
+                $levelName = (new EventLevelDictionary())->get($indexLevel);
+                $this->assertEquals(
+                    $this->expValForeignEventReport[$index]['levels'][$indexLevel]['participant'],
+                    $level['participant'],
+                    "В задаче $index обнаружено несоответствие кол-ва участников в $levelName уровне"
+                );
+                $this->assertEquals(
+                    $this->expValForeignEventReport[$index]['levels'][$indexLevel]['winners'],
+                    $level['winners'],
+                    "В задаче $index обнаружено несоответствие кол-ва победителей в $levelName уровне"
+                );
+                $this->assertEquals(
+                    $this->expValForeignEventReport[$index]['levels'][$indexLevel]['prizes'],
+                    $level['prizes'],
+                    "В задаче $index обнаружено несоответствие кол-ва призеров в $levelName уровне"
+                );
+            }
             $this->assertEquals(
-                $this->expValManHoursReport[$index],
-                $task['result'],
-                "В задаче $index обнаружено несоответствие ожидаемого и полученного значений"
+                $this->expValForeignEventReport[$index]['percent'],
+                $task['result']['percent'],
+                "В задаче $index обнаружено несоответствие процентного соотношения"
             );
         }
     }
 
-    public function getManHoursReportData()
+    public function getForeignEventReportData()
     {
-        $data = new ManHoursReportData();
+        $data = new ForeignEventReportData();
 
         return [
             [

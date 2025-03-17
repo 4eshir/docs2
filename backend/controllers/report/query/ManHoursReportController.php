@@ -5,7 +5,9 @@ namespace backend\controllers\report\query;
 use backend\forms\report\ManHoursReportForm;
 use backend\helpers\DebugReportHelper;
 use backend\invokables\CsvLoader;
+use backend\services\report\mock\ReportManHoursMockService;
 use backend\services\report\ReportFacade;
+use backend\services\report\ReportManHoursService;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\web\BadRequestHttpException;
@@ -13,6 +15,19 @@ use yii\web\Controller;
 
 class ManHoursReportController extends Controller
 {
+    private ReportManHoursService $service;
+
+    public function __construct(
+        $id,
+        $module,
+        ReportManHoursService $service,
+        $config = []
+    )
+    {
+        parent::__construct($id, $module, $config);
+        $this->service = $service;
+    }
+
     /**
      * @throws InvalidConfigException
      */
@@ -20,7 +35,7 @@ class ManHoursReportController extends Controller
     {
         $form = Yii::createObject(ManHoursReportForm::class);
         if ($form->load(Yii::$app->request->post())) {
-            $result = ReportFacade::generateManHoursReport($form);
+            $result = ReportFacade::generateManHoursReport($form, $this->service);
 
             return $this->render('man-hours-result', [
                 'manHoursResult' => $result['manHours'] ?? [],
