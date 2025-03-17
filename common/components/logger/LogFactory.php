@@ -2,6 +2,7 @@
 
 namespace common\components\logger;
 
+use common\components\access\LogRecordComponent;
 use common\components\logger\base\BaseLog;
 use common\components\logger\base\LogInterface;
 use common\components\logger\crud\CrudLog;
@@ -69,7 +70,7 @@ class LogFactory
         string $datetime = ''
     )
     {
-        if (!Yii::$app->redis->executeCommand('EXISTS', ['BLOCK_LOG'])) {
+        if (Yii::$app->logRecord->checkBlock('BLOCK_LOG')) {
             if ($userId === -1) {
                 $userId = Yii::$app->user->identity->id ?: null;
             }

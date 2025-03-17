@@ -97,7 +97,7 @@ class TrainingGroupCopyController extends Controller
         }
     }
     public function actionCopyTrainingGroupLesson(){
-        $query = Yii::$app->old_db->createCommand("SELECT * FROM training_group_lesson");
+        $query = Yii::$app->old_db->createCommand("SELECT * FROM training_group_lesson WHERE id < 50000");
         $command = Yii::$app->db->createCommand();
         foreach ($query->queryAll() as $record) {
             $command->insert('training_group_lesson',
@@ -114,7 +114,57 @@ class TrainingGroupCopyController extends Controller
             );
             $command->execute();
         }
-
+        $query = Yii::$app->old_db->createCommand("SELECT * FROM training_group_lesson WHERE id < 100000 AND id >= 50000");
+        $command = Yii::$app->db->createCommand();
+        foreach ($query->queryAll() as $record) {
+            $command->insert('training_group_lesson',
+                [
+                    'id' => $record['id'],
+                    'lesson_date' => $record['lesson_date'],
+                    'lesson_start_time' => $record['lesson_start_time'],
+                    'lesson_end_time' => $record['lesson_end_time'],
+                    'duration' => $record['duration'],
+                    'branch' => $record['branch_id'],
+                    'auditorium_id' => $record['auditorium_id'],
+                    'training_group_id' => $record['training_group_id'],
+                ]
+            );
+            $command->execute();
+        }
+        $query = Yii::$app->old_db->createCommand("SELECT * FROM training_group_lesson WHERE id < 150000 AND id >= 100000");
+        $command = Yii::$app->db->createCommand();
+        foreach ($query->queryAll() as $record) {
+            $command->insert('training_group_lesson',
+                [
+                    'id' => $record['id'],
+                    'lesson_date' => $record['lesson_date'],
+                    'lesson_start_time' => $record['lesson_start_time'],
+                    'lesson_end_time' => $record['lesson_end_time'],
+                    'duration' => $record['duration'],
+                    'branch' => $record['branch_id'],
+                    'auditorium_id' => $record['auditorium_id'],
+                    'training_group_id' => $record['training_group_id'],
+                ]
+            );
+            $command->execute();
+        }
+        $query = Yii::$app->old_db->createCommand("SELECT * FROM training_group_lesson WHERE id < 220000 AND id >= 150000");
+        $command = Yii::$app->db->createCommand();
+        foreach ($query->queryAll() as $record) {
+            $command->insert('training_group_lesson',
+                [
+                    'id' => $record['id'],
+                    'lesson_date' => $record['lesson_date'],
+                    'lesson_start_time' => $record['lesson_start_time'],
+                    'lesson_end_time' => $record['lesson_end_time'],
+                    'duration' => $record['duration'],
+                    'branch' => $record['branch_id'],
+                    'auditorium_id' => $record['auditorium_id'],
+                    'training_group_id' => $record['training_group_id'],
+                ]
+            );
+            $command->execute();
+        }
     }
     public function actionCopyGroupProjectThemes(){
         $query = Yii::$app->old_db->createCommand("SELECT * FROM group_project_themes");
@@ -139,7 +189,7 @@ class TrainingGroupCopyController extends Controller
                 [
                     'id' => $record['id'],
                     'participant_id' => $record['participant_id'],
-                    'certificat_number' => $record['certificate_number'],
+                    'certificat_number' => $record['certificat_number'],
                     'send_method' => $record['send_method_id'],
                     'training_group_id' => $record['training_group_id'],
                     'status' => $this->transferStatus($record['status']), //???
