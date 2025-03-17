@@ -5,6 +5,7 @@ use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\dictionaries\base\StudyStatusDictionary;
 use common\models\scaffold\TrainingGroupParticipant;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
+use frontend\models\work\educational\CertificateWork;
 use frontend\models\work\general\PeopleStampWork;
 use Yii;
 
@@ -12,6 +13,7 @@ use Yii;
  * @property ForeignEventParticipantsWork $participantWork
  * @property TrainingGroupWork $trainingGroupWork
  * @property GroupProjectThemesWork $groupProjectThemesWork
+ * @property CertificateWork $certificateWork
  */
 
 class TrainingGroupParticipantWork extends TrainingGroupParticipant
@@ -55,6 +57,11 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
     public function getTrainingGroupWork()
     {
         return $this->hasOne(TrainingGroupWork::class, ['id' => 'training_group_id']);
+    }
+
+    public function getCertificateWork()
+    {
+        return $this->hasOne(CertificateWork::class, ['training_group_participant_id' => 'id']);
     }
 
     public function getFullFio()

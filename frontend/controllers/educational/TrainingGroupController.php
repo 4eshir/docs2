@@ -367,9 +367,13 @@ class TrainingGroupController extends DocumentController
     {
         $form = new TrainingGroupCombinedForm($id);
 
+        $links = ButtonsFormatter::updateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('view', [
             'model' => $form,
-            'journalState' => $this->journalService->checkJournalStatus($id)
+            'journalState' => $this->journalService->checkJournalStatus($id),
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

@@ -38,6 +38,25 @@ class CertificateWork extends Certificate
         return $entity;
     }
 
+    /**
+     * Вывод человекочитаемого статуса сертификата
+     * @return string
+     */
+    public function getPrettyStatus()
+    {
+        switch ($this->status) {
+            case self::STATUS_CREATE:
+                $statusString = 'не отправлен';
+                break;
+            case self::STATUS_SEND:
+                $statusString = 'отправлен';
+                break;
+            default:
+                $statusString = 'ошибка отправки';
+        }
+        return $statusString;
+    }
+
     public function getCertificateLongNumber()
     {
         return sprintf('%06d', $this->certificate_number);

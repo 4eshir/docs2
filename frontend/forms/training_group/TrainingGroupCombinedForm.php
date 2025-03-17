@@ -19,6 +19,7 @@ use common\repositories\order\OrderTrainingRepository;
 use frontend\invokables\CalculateAttendance;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonInterface;
+use frontend\models\work\educational\CertificateWork;
 use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
@@ -153,17 +154,23 @@ class TrainingGroupCombinedForm extends Model
             $this->fillParticipantsInfo($model);
             $this->fillLessonsInfo($model);
             $this->fillPitchInfo($model);
+            $this->fillOrderInfo($model);
             $this->checkFilesExist();
         }
     }
 
+    /**
+     * Заполнение базовой информации об учебной группе и её файлах
+     * @param TrainingGroupWork $model
+     * @return void
+     * @throws \yii\base\InvalidConfigException
+     */
     private function fillBaseInfo(TrainingGroupWork $model)
     {
         $this->id = $model->id;
         $this->number = $model->number;
         $this->trainingGroup = $model;
         $this->trainingProgram = $this->programRepository->get($model->training_program_id);
-        $this->orders = $this->orderRepository->getAllByGroup($this->id);
 
         $this->teachers = $this->teacherRepository->getAllTeachersFromGroup($model->id);
 
@@ -172,21 +179,46 @@ class TrainingGroupCombinedForm extends Model
         $this->workMaterialFiles = $model->getFileLinks(FilesHelper::TYPE_WORK);
     }
 
+    /**
+     * Заполнение поля состав группы
+     * @param TrainingGroupWork $model
+     * @return void
+     */
     private function fillParticipantsInfo(TrainingGroupWork $model)
     {
         $this->participants = $this->participantRepository->getParticipantsFromGroups([$model->id]);
     }
 
+    /**
+     * Заполнение поля расписания
+     * @param TrainingGroupWork $model
+     * @return void
+     */
     private function fillLessonsInfo(TrainingGroupWork $model)
     {
         $this->lessons = $this->lessonRepository->getLessonsFromGroup($model->id);
     }
 
+    /**
+     * Заполнение полей дата защиты, темы и эксперты
+     * @param TrainingGroupWork $model
+     * @return void
+     */
     private function fillPitchInfo(TrainingGroupWork $model)
     {
         $this->protectionDate = $model->protection_date;
         $this->themes = $this->groupProjectRepository->getProjectThemesFromGroup($model->id);
         $this->experts = $this->groupExpertRepository->getExpertsFromGroup($model->id);
+    }
+
+    /**
+     * Заполнение поля приказы
+     * @param TrainingGroupWork $model
+     * @return void
+     */
+    private function fillOrderInfo(TrainingGroupWork $model)
+    {
+        $this->orders = $this->orderRepository->getAllByGroup($model->id);
     }
 
     /**
@@ -200,9 +232,17 @@ class TrainingGroupCombinedForm extends Model
             /** @var TrainingGroupParticipantWork $participant */
             $partLink = StringFormatter::stringAsLink($participant->participantWork->getFIO(PersonInterface::FIO_FULL),
                 Url::to([Yii::$app->frontUrls::PARTICIPANT_VIEW, 'id' => $participant->participant_id]));
+            $certificateLink = '';
+
+            if ($certificate = $participant->certificateWork) {
+                /** @var CertificateWork $certificate */
+                $certificateLink = '; Сертификат № ' . StringFormatter::stringAsLink($certificate->getCertificateLongNumber(),
+                    Url::to([Yii::$app->frontUrls::CERTIFICATE_VIEW, 'id' => $certificate->id])) . ' ' . $certificate->getPrettyStatus();
+            }
+
             $result[] = HtmlBuilder::createSubtitleAndClarification(
                 $partLink,
-                ' (' . Yii::$app->studyStatus->get($participant->status) . ')',
+                ' (' . Yii::$app->studyStatus->get($participant->status) . $certificateLink . ')',
                 '');
         }
 

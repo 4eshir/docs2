@@ -11,5 +11,7 @@ class FilePaths
 
     public const FILE_DOWNLOAD_SVG = 'svg/download-file.svg';
     public const FILE_NO_DOWNLOAD_SVG = 'svg/no-download-file.svg';
+    public const INFO_SVG = 'svg/information-circle.svg';
+
     public const CERTIFICATE_TEMPLATES = '/upload/files/certificate-templates/';
 }

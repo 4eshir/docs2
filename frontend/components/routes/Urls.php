@@ -31,6 +31,7 @@ class Urls
     const TRAINING_GROUP_VIEW = "educational/training-group/view";
     const TRAINING_GROUP_RELEVANCE = "educational/training-group/relevance";
 
+    const CERTIFICATE_VIEW = "educational/certificate/view";
 
     const PARTICIPANT_VIEW = "dictionaries/foreign-event-participants/view";
     const PEOPLE_VIEW = "dictionaries/people/view";

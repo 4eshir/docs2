@@ -31,6 +31,27 @@ class HtmlBuilder
     const DROPDOWN_FIELD_TYPE = 'dropdown';
 
     /**
+     * Создает подсказчик с нужной иконкой и внутренним сообщением которое отображается при наведении
+     *
+     * @param string $content
+     * @param string|null $svgLink
+     * @return string
+     */
+    public static function createTooltip(string $content, string $svgLink = FilePaths::INFO_SVG)
+    {
+        $svgContent = file_get_contents($svgLink);
+        return '<span class="tooltip-span">'
+                    . $svgContent .
+                    '<div class="ant-tooltip">
+                        <div class="ant-tooltip-arrow"></div>
+                        <div class="ant-tooltip-content">
+                            '.$content.'
+                        </div>
+                    </div>
+                </span>';
+    }
+
+    /**
      * Добавляет начертание шрифта для подзаголовка и уточнения
      *
      * @param string $subtitle
@@ -229,6 +250,7 @@ class HtmlBuilder
                 'autocomplete' => 'off',
             ];
 
+            /** @var Model $searshModel */
             switch ($field['type']) {
                 case self::DATE_FIELD_TYPE:
                     $widgetOptions = [

@@ -7,7 +7,6 @@ use common\helpers\DateFormatter;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\ForeignEventParticipants;
 use common\models\scaffold\PersonalDataParticipant;
-use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -194,5 +193,10 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
     public function isFemale()
     {
         return $this->sex === 'Женский';
+    }
+
+    public function getPersonalDataParticipantWork()
+    {
+        return $this->hasMany(PersonalDataParticipantWork::class, ['participant_id' => 'id']);
     }
 }
