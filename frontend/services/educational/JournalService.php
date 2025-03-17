@@ -232,4 +232,12 @@ class JournalService
             $this->lessonThemeRepository->save($lessonTheme);
         }
     }
+
+    public function deleteThematicPlan(int $groupId)
+    {
+        $themes = $this->lessonThemeRepository->getByTrainingGroupId($groupId);
+        foreach ($themes as $theme) {
+            $this->lessonThemeRepository->delete($theme);
+        }
+    }
 }

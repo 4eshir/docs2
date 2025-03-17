@@ -6,6 +6,7 @@ use backend\forms\report\ForeignEventReportForm;
 use backend\helpers\DebugReportHelper;
 use backend\invokables\CsvLoader;
 use backend\services\report\ReportFacade;
+use backend\services\report\ReportForeignEventService;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\web\BadRequestHttpException;
@@ -13,6 +14,19 @@ use yii\web\Controller;
 
 class ForeignEventReportController extends Controller
 {
+    private ReportForeignEventService $service;
+
+    public function __construct(
+        $id,
+        $module,
+        ReportForeignEventService $service,
+        $config = []
+    )
+    {
+        parent::__construct($id, $module, $config);
+        $this->service = $service;
+    }
+
     /**
      * @throws InvalidConfigException
      */
@@ -20,7 +34,7 @@ class ForeignEventReportController extends Controller
     {
         $form = Yii::createObject(ForeignEventReportForm::class);
         if ($form->load(Yii::$app->request->post())) {
-            $result = ReportFacade::generateParticipantsReport($form);
+            $result = ReportFacade::generateParticipantsReport($form, $this->service);
 
             return $this->render('foreign-event-result', [
                 'eventResult' => $result ?? []

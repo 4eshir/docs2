@@ -116,7 +116,47 @@ class ReportDodLoader
 
     public function setSection10(Spreadsheet $inputData, array $data)
     {
+        $inputData->getSheet(3)->setCellValue('C9', 2);
+        $inputData->getSheet(3)->setCellValue('D9', 2);
+        $inputData->getSheet(3)->setCellValue('C10', 2);
+        $inputData->getSheet(3)->setCellValue('D10', 2);
+        $inputData->getSheet(3)->setCellValue('C15', 2);
+        $inputData->getSheet(3)->setCellValue('D15', 2);
+        $inputData->getSheet(3)->setCellValue('C16', 2);
+        $inputData->getSheet(3)->setCellValue('D16', 2);
+        $inputData->getSheet(3)->setCellValue('C17', 2);
+        $inputData->getSheet(3)->setCellValue('D17', 2);
+        $inputData->getSheet(3)->setCellValue('C18', 2);
+        $inputData->getSheet(3)->setCellValue('D18', 2);
+        $inputData->getSheet(3)->setCellValue('C19', 2);
+        $inputData->getSheet(3)->setCellValue('D19', 2);
+        $inputData->getSheet(3)->setCellValue('C22', 2);
+        $inputData->getSheet(3)->setCellValue('D22', 2);
+        $inputData->getSheet(3)->setCellValue('C23', 2);
+        $inputData->getSheet(3)->setCellValue('D23', 2);
+        $inputData->getSheet(3)->setCellValue('C24', 2);
+        $inputData->getSheet(3)->setCellValue('D24', 2);
+        $inputData->getSheet(3)->setCellValue('C25', 2);
+        $inputData->getSheet(3)->setCellValue('D25', 2);
+        $inputData->getSheet(3)->setCellValue('C26', 2);
+        $inputData->getSheet(3)->setCellValue('D26', 2);
+        $inputData->getSheet(3)->setCellValue('C27', 2);
+        $inputData->getSheet(3)->setCellValue('D27', 2);
+        $inputData->getSheet(3)->setCellValue('C28', 2);
+        $inputData->getSheet(3)->setCellValue('D28', 2);
 
+        $inputData->getSheet(3)->setCellValue('C8', $data['hall']['owner']);
+        $inputData->getSheet(3)->setCellValue('D8', $data['hall']['rent']);
+        $inputData->getSheet(3)->setCellValue('C12', $data['study']['owner']);
+        $inputData->getSheet(3)->setCellValue('D12', $data['study']['rent']);
+        $inputData->getSheet(3)->setCellValue('C13', $data['laboratory']['owner']);
+        $inputData->getSheet(3)->setCellValue('D13', $data['laboratory']['rent']);
+        $inputData->getSheet(2)->setCellValue('C14', $data['work']['owner']);
+        $inputData->getSheet(2)->setCellValue('D14', $data['work']['rent']);
+        $inputData->getSheet(2)->setCellValue('C20', $data['lecture']['owner']);
+        $inputData->getSheet(2)->setCellValue('D20', $data['lecture']['rent']);
+        $inputData->getSheet(2)->setCellValue('C21', $data['computer']['owner']);
+        $inputData->getSheet(2)->setCellValue('D21', $data['computer']['rent']);
     }
 
     public function setSection11(Spreadsheet $inputData, array $data)

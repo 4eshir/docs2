@@ -143,28 +143,28 @@ class DodReportService
 
         return [
             'laboratory' => [
-                $this->auditoriumRepository->findOne($labsOwner) ? 1 : 2,
-                $this->auditoriumRepository->findOne($labsRent) ? 1 : 2
+                'owner' => $this->auditoriumRepository->findOne($labsOwner) ? 1 : 2,
+                'rent' => $this->auditoriumRepository->findOne($labsRent) ? 1 : 2
             ],
             'workshop' => [
-                $this->auditoriumRepository->findOne($workOwner) ? 1 : 2,
-                $this->auditoriumRepository->findOne($workRent) ? 1 : 2
+                'owner' => $this->auditoriumRepository->findOne($workOwner) ? 1 : 2,
+                'rent' => $this->auditoriumRepository->findOne($workRent) ? 1 : 2
             ],
             'study' => [
-                $this->auditoriumRepository->findOne($studyOwner) ? 1 : 2,
-                $this->auditoriumRepository->findOne($studyRent) ? 1 : 2
+                'owner' => $this->auditoriumRepository->findOne($studyOwner) ? 1 : 2,
+                'rent' => $this->auditoriumRepository->findOne($studyRent) ? 1 : 2
             ],
             'lecture' => [
-                $this->auditoriumRepository->findOne($lectOwner) ? 1 : 2,
-                $this->auditoriumRepository->findOne($lectRent) ? 1 : 2
+                'owner' => $this->auditoriumRepository->findOne($lectOwner) ? 1 : 2,
+                'rent' => $this->auditoriumRepository->findOne($lectRent) ? 1 : 2
             ],
             'computer' => [
-                $this->auditoriumRepository->findOne($compOwner) ? 1 : 2,
-                $this->auditoriumRepository->findOne($compRent) ? 1 : 2
+                'owner' => $this->auditoriumRepository->findOne($compOwner) ? 1 : 2,
+                'rent' => $this->auditoriumRepository->findOne($compRent) ? 1 : 2
             ],
             'hall' => [
-                $this->auditoriumRepository->findOne($hallOwner) ? 1 : 2,
-                $this->auditoriumRepository->findOne($hallRent) ? 1 : 2
+                'owner' => $this->auditoriumRepository->findOne($hallOwner) ? 1 : 2,
+                'rent' => $this->auditoriumRepository->findOne($hallRent) ? 1 : 2
             ],
         ];
     }

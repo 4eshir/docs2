@@ -40,6 +40,7 @@ use yii\helpers\Html;
     </table>
 
     <?= Html::a('Редактировать тематический план', ['edit-plan', 'id' => $model->groupId], ['class' => 'btn btn-primary']) ?>
+    <?= Html::a('Очистить тематический план', ['delete-plan', 'id' => $model->groupId], ['class' => 'btn btn-danger']) ?>
     <table class="table table-bordered">
         <?php foreach ($plan->lessonThemes as $index => $lessonTheme): ?>
             <tr>

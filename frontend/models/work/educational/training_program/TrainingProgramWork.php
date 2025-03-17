@@ -124,7 +124,6 @@ class TrainingProgramWork extends TrainingProgram
             $this->creator_id = Yii::$app->user->identity->getId();
         }
         $this->last_edit_id = Yii::$app->user->identity->getId();
-
         return parent::beforeSave($insert);
     }
 

@@ -76,4 +76,10 @@ class JournalController extends Controller
             'model' => $form
         ]);
     }
+
+    public function actionDeletePlan($id)
+    {
+        $this->service->deleteThematicPlan($id);
+        return $this->redirect(['view', 'id' => $id]);
+    }
 }
