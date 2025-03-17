@@ -151,12 +151,12 @@ class ReportDodLoader
         $inputData->getSheet(3)->setCellValue('D12', $data['study']['rent']);
         $inputData->getSheet(3)->setCellValue('C13', $data['laboratory']['owner']);
         $inputData->getSheet(3)->setCellValue('D13', $data['laboratory']['rent']);
-        $inputData->getSheet(2)->setCellValue('C14', $data['work']['owner']);
-        $inputData->getSheet(2)->setCellValue('D14', $data['work']['rent']);
-        $inputData->getSheet(2)->setCellValue('C20', $data['lecture']['owner']);
-        $inputData->getSheet(2)->setCellValue('D20', $data['lecture']['rent']);
-        $inputData->getSheet(2)->setCellValue('C21', $data['computer']['owner']);
-        $inputData->getSheet(2)->setCellValue('D21', $data['computer']['rent']);
+        $inputData->getSheet(3)->setCellValue('C14', $data['work']['owner']);
+        $inputData->getSheet(3)->setCellValue('D14', $data['work']['rent']);
+        $inputData->getSheet(3)->setCellValue('C20', $data['lecture']['owner']);
+        $inputData->getSheet(3)->setCellValue('D20', $data['lecture']['rent']);
+        $inputData->getSheet(3)->setCellValue('C21', $data['computer']['owner']);
+        $inputData->getSheet(3)->setCellValue('D21', $data['computer']['rent']);
     }
 
     public function setSection11(Spreadsheet $inputData, array $data)
