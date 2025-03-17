@@ -37,6 +37,9 @@ class TrainingGroupWork extends TrainingGroup
     const NO_NETWORK = 0;
     const IS_NETWORK = 1;
 
+    const NO_BUDGET = 0;
+    const IS_BUDGET = 1;
+
     public static function fill(
         $startDate,
         $endDate,

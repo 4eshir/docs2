@@ -24,6 +24,7 @@ class GeneralCopyController extends Controller
     private CertificateCopyController $certificateCopyController;
     private LogCopyController $logCopyController;
     private EventTrainingGroupCopyController $eventTrainingGroupCopyController;
+    private OrderPeopleCopyController $orderPeopleCopyController;
     public function __construct(
         $id,
         $module,
@@ -45,6 +46,7 @@ class GeneralCopyController extends Controller
         CertificateCopyController $certificateCopyController,
         LogCopyController $logCopyController,
         EventTrainingGroupCopyController $eventTrainingGroupCopyController,
+        OrderPeopleCopyController $orderPeopleCopyController,
         $config = [])
     {
         $this->initCopyController = $initCopyController;
@@ -65,6 +67,7 @@ class GeneralCopyController extends Controller
         $this->certificateCopyController = $certificateCopyController;
         $this->logCopyController = $logCopyController;
         $this->eventTrainingGroupCopyController = $eventTrainingGroupCopyController;
+        $this->orderPeopleCopyController = $orderPeopleCopyController;
         parent::__construct($id, $module, $config);
     }
 
@@ -73,6 +76,7 @@ class GeneralCopyController extends Controller
         $this->documentInOutCopyController->actionCopyAll();
         $this->localResponsibilityCopyController->actionCopyAll();
         $this->documentOrderCopyController->actionCopyAll();
+        $this->orderPeopleCopyController->actionCopyAll();
         $this->foreignEventCopyController->actionCopyAll();
         $this->actCopyController->actionCopyAll();
         //$this->peopleTablesCopyController->actionCopyAll();
@@ -88,8 +92,10 @@ class GeneralCopyController extends Controller
         $this->logCopyController->actionCopyAll();
         $this->eventTrainingGroupCopyController->actionCopyAll();
     }
+
     public function actionDeleteAll()
     {
+        $this->orderPeopleCopyController->actionDeleteAll();
         $this->actCopyController->actionDeleteAll();
         $this->foreignEventCopyController->actionDeleteAll();
         $this->localResponsibilityCopyController->actionDeleteAll();
@@ -108,5 +114,6 @@ class GeneralCopyController extends Controller
         $this->participantAchievementCopyController->actionDeleteAll();
         $this->logCopyController->actionDeleteAll();
         $this->eventTrainingGroupCopyController->actionDeleteAll();
+
     }
 }

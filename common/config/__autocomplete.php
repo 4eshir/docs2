@@ -1,5 +1,6 @@
 <?php
 
+use common\components\access\LogRecordComponent;
 use common\components\access\RubacComponent;
 use common\components\access\RulesConfig;
 use common\components\dictionaries\base\AllowRemoteDictionary;
@@ -81,6 +82,7 @@ class Yii {
  * @property RubacComponent $rubac
  * @property Urls $frontUrls
  * @property StudyStatusDictionary $studyStatus
+ * @property LogRecordComponent $logRecord
  */
 class __Application {
 }

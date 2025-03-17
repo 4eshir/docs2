@@ -102,6 +102,9 @@ return [
         ],
         'studyStatus' => [
             'class' => 'common\\components\\dictionaries\\base\\StudyStatusDictionary',
+        ],
+        'logRecord' => [
+            'class' => 'common\\components\\access\\LogRecordComponent',
         ]
     ],
 ];
