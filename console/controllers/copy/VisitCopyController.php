@@ -11,8 +11,7 @@ use yii\helpers\ArrayHelper;
 class VisitCopyController extends Controller
 {
     public function actionCopyVisitWithoutParticipant(){
-        $visits = Yii::$app->old_db->createCommand("SELECT * FROM visit WHERE training_group_participant_id IS NULL AND id < 1700000")->queryAll();
-        var_dump(count($visits));
+        $visits = Yii::$app->old_db->createCommand("SELECT * FROM visit WHERE training_group_participant_id IS NULL")->queryAll();
         foreach ($visits as $visit){
             $foreignEventParticipantId = $visit['foreign_event_participant_id'];
             $lessonId = $visit['training_group_lesson_id'];
@@ -20,10 +19,9 @@ class VisitCopyController extends Controller
             $lesson = Yii::$app->old_db->createCommand("SELECT * FROM training_group_lesson WHERE id = $lessonId")->queryOne();
             $trainingGroupId = $lesson['training_group_id'];
             $trainingGroupParticipantId = (Yii::$app->old_db->createCommand("SELECT * FROM training_group_participant WHERE training_group_id = $trainingGroupId AND participant_id = $participantId")->queryOne())['id'];
-            var_dump($trainingGroupParticipantId);
-            /*$trainingGroupParticipantId = Yii::$app->db->createCommand()->update('visit', [
+            Yii::$app->old_db->createCommand()->update('visit', [
                 'training_group_participant_id' => $trainingGroupParticipantId,
-            ] , ['id' => $visit['id']])->execute();*/
+            ] , ['id' => $visit['id']])->execute();
         }
     }
     public function actionCopyVisit(){
@@ -54,7 +52,7 @@ class VisitCopyController extends Controller
         $this->actionDeleteVisit();
     }
     public function actionCopyAll(){
+        $this->actionCopyVisitWithoutParticipant();
         $this->actionCopyVisit();
-       // $this->actionCopyVisitWithoutParticipant();
     }
 }
