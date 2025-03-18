@@ -4,12 +4,18 @@ namespace frontend\models\work\dictionaries;
 
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
+use common\helpers\files\FilePaths;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\ForeignEventParticipants;
 use common\models\scaffold\PersonalDataParticipant;
 use InvalidArgumentException;
+use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+
+/**
+* @property PersonalDataParticipantWork $personalDataParticipantWork
+*/
 
 class ForeignEventParticipantsWork extends ForeignEventParticipants implements PersonInterface
 {
@@ -45,7 +51,7 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
                     ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
                     ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
                 ],
-                'value' => function() {
+                'value' => function () {
                     return date('Y-m-d H:i:s');
                 },
             ],
@@ -105,7 +111,7 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
         ]);
     }
 
-    public function getFIO(int $type) : string
+    public function getFIO(int $type): string
     {
         switch ($type) {
             case self::FIO_FULL:
@@ -162,6 +168,26 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
             default:
                 return 'Другое';
         }
+    }
+
+    public function createRawDisclosurePDProhibited()
+    {
+        $result = [];
+        foreach ($this->personalDataParticipantWork as $pd) {
+            /** @var PersonalDataParticipantWork $pd */
+            if ($pd->isRestrict())
+            {
+                $result[] = Yii::$app->personalData->get($pd->personal_data);
+            }
+        }
+
+        if (count($result)) {
+            $content = '<b>Запрещено</b> к разглашению: <br> • ';
+            $content .= implode('<br> • ', $result);
+        } else {
+            $content = '<b>Запретов нет</b>';
+        }
+        return HtmlBuilder::createTooltip($content, FilePaths::PERSONAL_DATE_SVG);
     }
 
     public function createRawPersonalData()
