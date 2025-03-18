@@ -59,7 +59,6 @@ class ActCopyController extends Controller
                 $command = Yii::$app->db->createCommand();
                 $command->insert('squad_participant',
                     [
-                        'id' => $participant['id'],
                         'act_participant_id' => $actModel->id,
                         'participant_id' => $participant['participant_id'],
                     ]

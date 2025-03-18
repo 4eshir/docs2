@@ -15,7 +15,7 @@ class CertificateCopyController extends Controller
                 [
                     'id' => $record['id'],
                     'certificate_number' => $record['certificat_number'],
-                    'certificate_template' => $record['certificat_template'],
+                    'certificate_template_id' => $record['certificat_template'],
                     'training_group_participant_id' => $record['training_group_participant_id'],
                     'status' => $record['status'],
                 ]
