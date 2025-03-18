@@ -7,7 +7,6 @@ namespace common\models\scaffold;
  *
  * @property int $id
  * @property int|null $participant_id
- * @property string|null $certificat_number
  * @property int|null $send_method
  * @property int|null $training_group_id
  * @property int|null $status
@@ -36,7 +35,6 @@ class  TrainingGroupParticipant extends \yii\db\ActiveRecord
     {
         return [
             [['participant_id', 'send_method', 'training_group_id', 'status', 'success', 'points', 'group_project_themes_id'], 'integer'],
-            [['certificat_number'], 'string', 'max' => 11],
             [['participant_id'], 'exist', 'skipOnError' => true, 'targetClass' => ForeignEventParticipants::class, 'targetAttribute' => ['participant_id' => 'id']],
             [['training_group_id'], 'exist', 'skipOnError' => true, 'targetClass' => TrainingGroup::class, 'targetAttribute' => ['training_group_id' => 'id']],
             [['group_project_themes_id'], 'exist', 'skipOnError' => true, 'targetClass' => GroupProjectThemes::class, 'targetAttribute' => ['group_project_themes_id' => 'id']],
@@ -51,7 +49,6 @@ class  TrainingGroupParticipant extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'participant_id' => 'Participant ID',
-            'certificat_number' => 'Certificat Number',
             'send_method' => 'Send Method',
             'training_group_id' => 'Training Group ID',
             'status' => 'Status',

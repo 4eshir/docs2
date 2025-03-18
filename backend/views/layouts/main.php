@@ -36,6 +36,7 @@ AppAsset::register($this);
     ]);
     $menuItems = [
         ['label' => 'Пользователи', 'url' => ['/user/index']],
+        ['label' => 'Сертификаты', 'url' => ['/certificate/index']],
         [
             'label' => 'Отчеты',
             'items' => [

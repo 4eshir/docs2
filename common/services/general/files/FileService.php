@@ -6,6 +6,8 @@ use common\helpers\files\FilesHelper;
 use common\services\general\files\download\FileDownloadServer;
 use common\services\general\files\download\FileDownloadYandexDisk;
 use DomainException;
+use Imagine\Image\ImagineInterface;
+use Imagine\Image\ManipulatorInterface;
 use Yii;
 
 class FileService
@@ -38,6 +40,7 @@ class FileService
     /**
      * Функция загрузки файла на сервер или ЯД
      * в $params необходимо передать либо filepath, либо пару tableName + fileType
+     *
      * @param $file
      * @param $filename
      * @param $params ['filepath' => %относительный_путь_к_файлу%, 'tableName' => %имя_таблицы%, 'fileType' => %тип_файла%]
@@ -60,6 +63,19 @@ class FileService
         if ($file) {
             $file->saveAs(Yii::$app->basePath . $finalPath . $filename);
         }
+    }
+
+    /**
+     * Функция загрузки файла на сервер (с измененным размером)
+     *
+     * @param ManipulatorInterface $object объект библиотеки Imagine
+     * @param string $path
+     * @param string $filename
+     * @return void
+     */
+    public function uploadFileFromImagine(ManipulatorInterface $object, string $path, string $filename)
+    {
+        $object->save(Yii::$app->basePath . $path . $filename);
     }
 
     public function deleteFile($filepath)

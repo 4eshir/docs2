@@ -4,6 +4,7 @@
 namespace common\repositories\educational;
 
 
+use DomainException;
 use frontend\models\work\CertificateTemplatesWork;
 
 class CertificateTemplatesRepository
@@ -16,5 +17,14 @@ class CertificateTemplatesRepository
     public function getAll()
     {
         return CertificateTemplatesWork::find()->all();
+    }
+
+    public function save(CertificateTemplatesWork $model)
+    {
+        if (!$model->save()) {
+            throw new DomainException('Ошибка сохранения темы проекта. Проблемы: '.json_encode($model->getErrors()));
+        }
+
+        return $model->id;
     }
 }
