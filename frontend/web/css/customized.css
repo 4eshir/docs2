@@ -613,6 +613,72 @@ input[type="checkbox"] {
     font-weight: 500;
 }
 
+.fnt-wght-4 {
+    font-weight: 400;
+}
+
 .fnt-wght-2 {
     font-weight: 200;
 }
+
+.tooltip-span svg {
+    height: 1.5em;
+}
+
+.tooltip-span {
+    position: relative;
+    display: inline-block;
+}
+
+.ant-tooltip {
+    max-width: 15em;
+    display: none;
+    width: max-content;
+    position: absolute;
+    bottom: calc(100% + 1em);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    font-size: 0.8em;
+    background: white;
+    box-shadow: 0 0 2em 2px rgba(0, 0, 0, 0.35);
+    z-index: 1;
+}
+
+.tooltip-span:hover .ant-tooltip {
+    display: block;
+}
+
+.ant-tooltip-arrow {
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%) rotate(180deg);
+    width: 2em;
+    height: 2em;
+}
+
+.ant-tooltip-arrow::after {
+    content: "";
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    bottom: 0;
+    inset-inline: 0;
+    margin: auto;
+    border-radius: 0 0 2px 0;
+    transform: translateY(50%) rotate(-135deg);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
+    z-index: 0;
+    background: white;
+}
+
+.ant-tooltip-content {
+    text-align: left;
+}
+
+/*
+svg path
+    stroke: var(--primary-light-color); //Окрашивает SVG в цвет текста ссылки
+*/

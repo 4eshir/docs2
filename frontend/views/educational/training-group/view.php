@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
 
     <div class="substrate">
         <h1><?= Html::encode($this->title) ?></h1>
-<?= \common\helpers\html\HtmlBuilder::createTooltip($this->title); ?>
+<?= \common\helpers\html\HtmlBuilder::createTooltip('В своём стремлении улучшить пользовательский опыт мы упускаем'); ?>
         <div class="flexx space">
             <div class="flexx">
                 <?= $buttonsAct; ?>

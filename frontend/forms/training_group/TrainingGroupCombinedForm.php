@@ -241,7 +241,7 @@ class TrainingGroupCombinedForm extends Model
             }
 
             $result[] = HtmlBuilder::createSubtitleAndClarification(
-                $partLink,
+                $participant->participantWork->createRawDisclosurePDProhibited() . ' ' . $partLink,
                 ' (' . Yii::$app->studyStatus->get($participant->status) . $certificateLink . ')',
                 '');
         }
