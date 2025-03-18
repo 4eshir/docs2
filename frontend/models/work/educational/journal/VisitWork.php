@@ -10,10 +10,10 @@ use frontend\models\work\educational\training_group\TrainingGroupParticipantWork
  */
 class VisitWork extends Visit
 {
-    const NONE = 0;
-    const ATTENDANCE = 1;
-    const NO_ATTENDANCE = 2;
-    const DISTANCE = 3;
+    const ATTENDANCE = 0;
+    const NO_ATTENDANCE = 1;
+    const DISTANCE = 2;
+    const NONE = 3;
 
     /** @var VisitLesson[] $visitLessons */
     public array $visitLessons;
