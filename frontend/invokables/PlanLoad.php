@@ -34,6 +34,7 @@ class PlanLoad
         $inputData = IOFactory::load(Yii::$app->basePath . FilePaths::TEMPLATE_FILEPATH . '/' . self::TEMPLATE_FILENAME);
 
         $this->fill($inputData);
+        $this->setStyles($inputData);
 
         HeaderWizard::setExcelLoadHeaders("КУГ_$this->groupNumber.xlsx");
         $writer = new Xlsx($inputData);
@@ -44,17 +45,6 @@ class PlanLoad
     public function fill(Spreadsheet $inputData)
     {
         $c = 1;
-        $styleArray = array('fill' => array(
-            'type' => 'solid',
-            'color' => array('rgb' => 'FFFFFF')
-        ),
-            'borders' => array(
-                'bottom' => array('style' => 'thin'),
-                'right' => array('style' => 'thin'),
-                'top' => array('style' => 'thin'),
-                'left' => array('style' => 'thin')
-            )
-        );
 
         foreach ($this->lessonThemes as $lessonTheme) {
             $inputData->getActiveSheet()->setCellValue('A' . (11 + $c), $c);
@@ -70,6 +60,21 @@ class PlanLoad
             $inputData->getActiveSheet()->setCellValue('G' . (11 + $c), Yii::$app->controlType->get($lessonTheme->thematicPlanWork->control_type));
             $c++;
         }
+    }
+
+    private function setStyles(Spreadsheet $inputData)
+    {
+        $styleArray = array('fill' => array(
+            'type' => 'solid',
+            'color' => array('rgb' => 'FFFFFF')
+        ),
+            'borders' => array(
+                'bottom' => array('style' => 'thin'),
+                'right' => array('style' => 'thin'),
+                'top' => array('style' => 'thin'),
+                'left' => array('style' => 'thin')
+            )
+        );
 
         for ($i = 11; $i < 11 + count($this->lessonThemes); $i++) {
             $inputData->getActiveSheet()->getStyle('A'.$i.':B'.($i+1))->applyFromArray($styleArray);
