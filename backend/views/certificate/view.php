@@ -2,6 +2,7 @@
 
 use backend\forms\CertificateTemplatesForm;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -30,13 +31,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'name',
+            'entity.name',
             [
                 'attribute' => 'templateFile',
                 'format' => 'raw',
                 'value' => function (CertificateTemplatesForm $model) {
-                    $imageUrl = 'http://docs2.back/index.php?r=certificate/get-image&filename=Шаблон_еее.png';
-                    return Html::img($imageUrl, ['alt' => 'Изображение', 'style' => 'max-width:100%;']);
+                    $imageUrl = Url::to(['certificate/get-image', 'filepath' => $model->entity->path]);
+                    return Html::img($imageUrl, ['alt' => 'Изображение', 'style' => 'max-width:70%;']);
                 },
             ],
         ],

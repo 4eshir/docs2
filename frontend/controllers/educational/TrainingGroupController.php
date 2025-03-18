@@ -12,6 +12,7 @@ use common\Model;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
@@ -23,6 +24,7 @@ use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
+use frontend\invokables\PlanLoad;
 use frontend\models\search\SearchTrainingGroup;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
@@ -46,6 +48,7 @@ class TrainingGroupController extends DocumentController
     private ForeignEventParticipantsRepository $participantsRepository;
     private PeopleRepository $peopleRepository;
     private AuditoriumRepository $auditoriumRepository;
+    private LessonThemeRepository $lessonThemeRepository;
     private LockWizard $lockWizard;
 
     public function __construct(
@@ -61,6 +64,7 @@ class TrainingGroupController extends DocumentController
         ForeignEventParticipantsRepository $participantsRepository,
         PeopleRepository $peopleRepository,
         AuditoriumRepository $auditoriumRepository,
+        LessonThemeRepository $lessonThemeRepository,
         LockWizard $lockWizard,
         $config = [])
     {
@@ -73,6 +77,7 @@ class TrainingGroupController extends DocumentController
         $this->participantsRepository = $participantsRepository;
         $this->peopleRepository = $peopleRepository;
         $this->auditoriumRepository = $auditoriumRepository;
+        $this->lessonThemeRepository = $lessonThemeRepository;
         $this->lockWizard = $lockWizard;
     }
 
@@ -433,6 +438,18 @@ class TrainingGroupController extends DocumentController
         }
 
         return $this->redirect(['schedule-form', 'id' => $id]);
+    }
+
+    public function actionDownloadPlan($id)
+    {
+        /** @var TrainingGroupWork $group */
+        $group = $this->trainingGroupRepository->get($id);
+        $lessonThemes = $this->lessonThemeRepository->getByTrainingGroupId($id);
+        $loader = new PlanLoad(
+            $lessonThemes,
+            $group->number
+        );
+        $loader();
     }
 
     public function actionArchive()

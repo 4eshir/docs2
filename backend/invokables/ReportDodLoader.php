@@ -42,7 +42,7 @@ class ReportDodLoader
         $this->setSection10($inputData, $this->data['section10']);
         $this->setSection11($inputData, $this->data['section11']);
 
-        HeaderWizard::setDodReportHeaders($this->filename);
+        HeaderWizard::setExcelLoadHeaders($this->filename);
         $writer = new Xlsx($inputData);
         $writer->save('php://output');
         exit;

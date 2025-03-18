@@ -57,9 +57,8 @@ class CertificateTemplatesForm extends Model
         $res = mb_ereg_replace('[ ]{1,}', '_', $filename);
         $res = mb_ereg_replace('[^а-яА-Я0-9._]{1}', '', $res);
         $res = StringFormatter::CutFilename($res) . '.' . $this->templateFile->extension;
-        $this->entity->path .= $res;
-
         $loadedPath = '\\..\\' . $this->entity->path;
+        $this->entity->path .= $res;
 
         if (!ImageHelper::checkImgSize(
             $this->templateFile,

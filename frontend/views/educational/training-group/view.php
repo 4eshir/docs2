@@ -198,6 +198,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
 
     <p>
         <?= Html::a('Перенести темы занятий из ОП', ['create-lesson-themes', 'groupId' => $model->id], ['class' => 'btn btn-secondary']) ?>
+        <?= Html::a('Скачать КУГ', ['download-plan', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Редактировать', ['base-form', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?php if ($journalState == JournalService::JOURNAL_EMPTY): ?>
             <?= Html::a('Создать журнал', ['generate-journal', 'id' => $model->id], ['class' => 'btn btn-success']) ?>

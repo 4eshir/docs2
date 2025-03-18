@@ -68,13 +68,13 @@ class CertificateController extends Controller
         ]);
     }
 
-    public function actionGetImage($filename)
+    public function actionGetImage($filepath)
     {
-        $path = Yii::getAlias('@app/../frontend/upload/files/certificate-templates/') . $filename;
+        $path = Yii::getAlias('@app/../') . $filepath;
         if (file_exists($path)) {
             return Yii::$app->response->sendFile($path);
         } else {
-            throw new NotFoundHttpException('File not found.');
+            throw new NotFoundHttpException('Файл не найден');
         }
     }
 }

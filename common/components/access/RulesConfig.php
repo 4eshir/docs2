@@ -21,7 +21,8 @@ class RulesConfig
                 'index',
                 'view',
                 'get-file',
-                'get-files'
+                'get-files',
+                'download-plan'
             ]
         ],
 
@@ -30,7 +31,8 @@ class RulesConfig
                 'index',
                 'view',
                 'get-file',
-                'get-files'
+                'get-files',
+                'download-plan'
             ]
         ],
 
@@ -39,7 +41,8 @@ class RulesConfig
                 'index',
                 'view',
                 'get-file',
-                'get-files'
+                'get-files',
+                'download-plan'
             ]
         ],
 
