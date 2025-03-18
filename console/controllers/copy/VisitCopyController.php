@@ -57,7 +57,7 @@ class VisitCopyController extends Controller
         $this->actionDeleteVisit();
     }
     public function actionCopyAll(){
-        //$this->actionCopyVisitWithoutParticipant();
+        $this->actionCopyVisitWithoutParticipant();
         $this->actionCopyVisit();
     }
 }
