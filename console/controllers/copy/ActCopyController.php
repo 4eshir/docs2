@@ -16,15 +16,18 @@ class ActCopyController extends Controller
     private const BLOCK_TIME = 360;
     private ActParticipantRepository $actParticipantRepository;
     private PeopleStampService $peopleStampService;
+    private ParticipantAchievementCopyController $participantAchievementCopyController;
     public function __construct(
         $id,
         $module,
         ActParticipantRepository $actParticipantRepository,
         PeopleStampService $peopleStampService,
+        ParticipantAchievementCopyController $participantAchievementCopyController,
         $config = [])
     {
         $this->actParticipantRepository = $actParticipantRepository;
         $this->peopleStampService = $peopleStampService;
+        $this->participantAchievementCopyController = $participantAchievementCopyController;
         parent::__construct($id, $module, $config);
     }
 
@@ -77,6 +80,8 @@ class ActCopyController extends Controller
                     $command->execute();
                 }
             }
+            //participant_achievement
+            $this->participantAchievementCopyController->actionCopyParticipantAchievement($participantId, $actModel->id);
         }
     }
     public function actionTeamActCopy()
@@ -107,6 +112,10 @@ class ActCopyController extends Controller
                 $participant['allow_remote_id']
             );
             $this->actParticipantRepository->save($actModel);
+            //participant_achievement
+            foreach (Yii::$app->old_db->createCommand("SELECT * FROM teacher_participant WHERE id = $participantId")->queryAll() as $item) {
+                //$this->participantAchievementCopyController->actionCopyParticipantAchievement($item['id'], $actModel->id);
+            }
             //squad_participant
             foreach($act as $participant){
                 $participantId = $participant['teacher_participant_id'];
@@ -164,6 +173,7 @@ class ActCopyController extends Controller
     }
     public function actionDeleteAll()
     {
+        $this->participantAchievementCopyController->actionDeleteAll();
         $this->actionDeleteActParticipantBranch();
         $this->actionDeleteSquadParticipant();
         $this->actionDeleteActParticipant();
