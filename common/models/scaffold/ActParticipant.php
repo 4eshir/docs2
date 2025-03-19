@@ -113,6 +113,11 @@ class ActParticipant extends \yii\db\ActiveRecord
         return $this->hasMany(ActParticipantBranch::class, ['act_participant_id' => 'id']);
     }
 
+    public function getSquadParticipant()
+    {
+        return $this->hasMany(SquadParticipant::class, ['act_participant_id' => 'id']);
+    }
+
     public function getParticipantAchievement()
     {
         return $this->hasMany(ParticipantAchievement::class, ['act_participant_id' => 'id']);

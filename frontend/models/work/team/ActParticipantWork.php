@@ -3,6 +3,7 @@
 namespace frontend\models\work\team;
 
 use common\models\scaffold\ActParticipantBranch;
+use common\models\scaffold\SquadParticipant;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\event\ParticipantAchievementWork;
@@ -26,6 +27,7 @@ use yii\helpers\Url;
  *
  * @property ActParticipantBranchWork[] $actParticipantBranchWork
  * @property ParticipantAchievementWork[] $participantAchievementWork
+ * @property SquadParticipantWork[] $squadParticipantWorks
  */
 class ActParticipantWork extends ActParticipant
 {
@@ -260,5 +262,10 @@ class ActParticipantWork extends ActParticipant
     public function getParticipantAchievementWork()
     {
         return $this->hasMany(ParticipantAchievementWork::class, ['act_participant_id' => 'id']);
+    }
+
+    public function getSquadParticipantWork()
+    {
+        return $this->hasMany(SquadParticipantWork::class, ['act_participant_id' => 'id']);
     }
 }

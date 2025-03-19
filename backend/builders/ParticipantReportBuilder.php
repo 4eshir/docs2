@@ -45,4 +45,9 @@ class ParticipantReportBuilder
     {
         return $query->andWhere(['IN', 'foreign_event.level', $levels]);
     }
+
+    public function filterByParticipantIds(ActiveQuery $query, array $participantIds = []) : ActiveQuery
+    {
+        return $query->andWhere(['IN', 'squad_participant.participant_id', $participantIds]);
+    }
 }

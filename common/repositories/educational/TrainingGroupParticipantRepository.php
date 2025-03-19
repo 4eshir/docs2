@@ -42,6 +42,11 @@ class TrainingGroupParticipantRepository
         return $query->one();
     }
 
+    public function count(ActiveQuery $query)
+    {
+        return $query->count();
+    }
+
     public function get($id)
     {
         return $this->provider->get($id);

@@ -4,7 +4,6 @@ namespace backend\services\report\form;
 
 use backend\builders\AuditoriumReportBuilder;
 use backend\builders\GroupParticipantReportBuilder;
-use backend\builders\ParticipantReportBuilder;
 use backend\builders\TrainingGroupReportBuilder;
 use common\components\dictionaries\base\AllowRemoteDictionary;
 use common\components\dictionaries\base\AuditoriumTypeDictionary;
@@ -16,7 +15,6 @@ use frontend\models\work\dictionaries\AuditoriumWork;
 use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use Yii;
-use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 
 class DodReportService

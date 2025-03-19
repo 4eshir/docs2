@@ -38,6 +38,11 @@ class ActParticipantRepository
         return $query->all();
     }
 
+    public function count(ActiveQuery $query)
+    {
+        return $query->count();
+    }
+
     public function getByForeignEventIds(array $foreignEventIds, array $types = [ActParticipantWork::TYPE_TEAM, ActParticipantWork::TYPE_SOLO])
     {
         $query = ActParticipantWork::find()

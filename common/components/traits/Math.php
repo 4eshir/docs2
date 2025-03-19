@@ -23,4 +23,14 @@ trait Math
 
         return array_udiff($set1, $set2, [$compareModel, 'compare']);
     }
+
+    public function percent($numb1, $numb2, int $precision = 0)
+    {
+        if ($numb1 == 0 || $numb2 == 0) {
+            return 0;
+        }
+
+        return round(($numb1 / $numb2) * 100, $precision);
+    }
+
 }

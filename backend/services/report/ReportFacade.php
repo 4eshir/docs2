@@ -5,7 +5,9 @@ namespace backend\services\report;
 use backend\forms\report\DodForm;
 use backend\forms\report\ForeignEventReportForm;
 use backend\forms\report\ManHoursReportForm;
+use backend\forms\report\SAForm;
 use backend\services\report\form\DodReportService;
+use backend\services\report\form\StateAssignmentReportService;
 use backend\services\report\interfaces\ForeignEventServiceInterface;
 use backend\services\report\interfaces\ManHoursServiceInterface;
 use Yii;
@@ -88,6 +90,21 @@ class ReportFacade
         $result['section5'] = $service->fillSection5($form->startDate, $form->endDate);
         $result['section10'] = $service->fillSection10();
         $result['section11'] = $service->fillSection11();
+
+        return $result;
+    }
+
+    /**
+     * Основная функция генерации отчета типа Гос. Задание
+     *
+     * @param SAForm $form
+     * @param StateAssignmentReportService $service
+     * @return array
+     */
+    public static function generateSA(SAForm $form, StateAssignmentReportService $service) : array
+    {
+        $result = [];
+        $result['section31'] = $service->fillSection31($form->startDate, $form->endDate);
 
         return $result;
     }

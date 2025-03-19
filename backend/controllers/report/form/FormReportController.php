@@ -3,6 +3,7 @@
 namespace backend\controllers\report\form;
 
 use backend\forms\report\DodForm;
+use backend\forms\report\SAForm;
 use backend\invokables\ReportDodLoader;
 use backend\services\report\form\DodReportService;
 use backend\services\report\form\StateAssignmentReportService;
@@ -47,6 +48,27 @@ class FormReportController extends Controller
         }
 
         return $this->render('dod', [
+            'model' => $model
+        ]);
+    }
+
+    public function actionStateAssignment()
+    {
+        $model = new SAForm();
+
+        if ($model->load(Yii::$app->request->post())) {
+            echo '<pre>';
+            var_dump(ReportFacade::generateSA($model, $this->stateAssignmentService));
+            echo '</pre>';
+            /*$loader = new ReportSALoader(
+                'report_GZ.xlsx',
+                'report_test.xlsx',
+                ReportFacade::generateSA($model, $this->stateAssignmentService)
+            );
+            $loader();*/
+        }
+
+        return $this->render('state-assignment', [
             'model' => $model
         ]);
     }
