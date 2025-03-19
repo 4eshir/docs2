@@ -99,7 +99,7 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
                 'authorsProgramWork.author' => function ($query) {
                     $query->alias('authorPeople');
                 },
-                'branch' => function ($query) {
+                'branchWork' => function ($query) {
                     $query->alias('branch');
                 },
             ]);
@@ -122,7 +122,7 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
      * @return void
      */
     public function sortAttributes(ActiveDataProvider $dataProvider) {
-        $dataProvider->sort->attributes['name'] = [
+        $dataProvider->sort->attributes['namePretty'] = [
             'asc' => ['name' => SORT_ASC],
             'desc' => ['name' => SORT_DESC],
         ];

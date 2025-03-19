@@ -8,6 +8,7 @@ use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\Regulation;
 use common\models\work\UserWork;
+use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderMainWork;
 use InvalidArgumentException;
 use Yii;
@@ -168,6 +169,11 @@ class RegulationWork extends Regulation
     public function getLastEditorWork()
     {
         return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
+    }
+
+    public function getDocumentOrderWork()
+    {
+        return $this->hasOne(DocumentOrderWork::class, ['id' => 'order_id']);
     }
 
     public function getOrderWork()

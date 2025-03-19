@@ -622,7 +622,7 @@ input[type="checkbox"] {
 }
 
 .tooltip-span svg {
-    height: 1.5em;
+    height: 1.3em;
 }
 
 .tooltip-span {
@@ -678,7 +678,12 @@ input[type="checkbox"] {
     text-align: left;
 }
 
-/*
-svg path
-    stroke: var(--primary-light-color); //Окрашивает SVG в цвет текста ссылки
-*/
+.svg-primary svg path, .svg-primary svg ellipse  {
+    fill: var(--primary-color);
+}
+
+.svg-critical svg path, .svg-critical svg ellipse {
+    fill: var(--critical-color);
+}
+
+

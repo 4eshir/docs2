@@ -67,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'summary' => false,
 
         'columns' => [
-            ['attribute' => 'number', 'format' => 'html'],
+            ['attribute' => 'numberPretty', 'format' => 'raw'],
             ['attribute' => 'teachersList', 'encodeLabel' => false, 'format' => 'raw'],
             ['attribute' => 'branchString', 'encodeLabel' => false, 'format' => 'raw'],
             ['attribute' => 'programName', 'encodeLabel' => false, 'label' => 'Образовательная<br>программа'],

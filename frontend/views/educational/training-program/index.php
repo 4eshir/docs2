@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'summary' => false,
         'columns' => [
-            ['attribute' => 'name'],
+            ['attribute' => 'namePretty', 'format' => 'raw'],
             ['attribute' => 'levelNumber', 'encodeLabel' => false, 'format' => 'raw'],
             ['attribute' => 'branchString', 'encodeLabel' => false, 'format' => 'raw'],
             ['attribute' => 'pedCouncilDate', 'encodeLabel' => false, 'label' => 'Дата<br>пед. сов.'],

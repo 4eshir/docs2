@@ -221,6 +221,11 @@ class TrainingGroupCombinedForm extends Model
         $this->orders = $this->orderRepository->getAllByGroup($model->id);
     }
 
+    public function getRawArchive()
+    {
+        return $this->trainingGroup->getRawArchive();
+    }
+
     /**
      * Выводит красивый список учеников
      * @return string
@@ -232,17 +237,14 @@ class TrainingGroupCombinedForm extends Model
             /** @var TrainingGroupParticipantWork $participant */
             $partLink = StringFormatter::stringAsLink($participant->participantWork->getFIO(PersonInterface::FIO_FULL),
                 Url::to([Yii::$app->frontUrls::PARTICIPANT_VIEW, 'id' => $participant->participant_id]));
-            $certificateLink = '';
-
-            if ($certificate = $participant->certificateWork) {
-                /** @var CertificateWork $certificate */
-                $certificateLink = '; Сертификат № ' . StringFormatter::stringAsLink($certificate->getCertificateLongNumber(),
-                    Url::to([Yii::$app->frontUrls::CERTIFICATE_VIEW, 'id' => $certificate->id])) . ' ' . $certificate->getPrettyStatus();
-            }
+            $certificateLink = StringFormatter::stringAsLink($participant->getRawCertificate(),
+                Url::to([Yii::$app->frontUrls::CERTIFICATE_VIEW, 'id' => $participant->certificateWork->id]));
 
             $result[] = HtmlBuilder::createSubtitleAndClarification(
-                $participant->participantWork->createRawDisclosurePDProhibited() . ' ' . $partLink,
-                ' (' . Yii::$app->studyStatus->get($participant->status) . $certificateLink . ')',
+                $partLink,
+                ' ' . $participant->participantWork->createRawDisclosurePDProhibited()
+                . ' ' . $participant->getRawStatus()
+                . ' ' . $certificateLink,
                 '');
         }
 

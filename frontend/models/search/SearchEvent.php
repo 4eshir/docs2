@@ -95,22 +95,28 @@ class SearchEvent extends Model implements SearchInterfaces
 
         $query = EventWork::find()
                 ->joinWith([
-                    'documentOrder' => function ($query) {
+                    'documentOrderWork' => function ($query) {
                         $query->alias('orderMain');
                     },
-                    'regulation',
-                    'scopes',
-                    'branches',
-                    'responsible1' => function ($query) {
+                    'regulationWork' => function ($query) {
+                        $query->alias('regulation');
+                    },
+                    'scopesWork' => function ($query) {
+                        $query->alias('scopes');
+                    },
+                    'branchesWork' => function ($query) {
+                        $query->alias('branches');
+                    },
+                    'responsible1Work' => function ($query) {
                         $query->alias('resp1');
                     },
-                    'responsible1.people' => function ($query) {
+                    'responsible1Work.peopleWork' => function ($query) {
                         $query->alias('responsibleOne');
                     },
-                    'responsible2' => function ($query) {
+                    'responsible2Work' => function ($query) {
                         $query->alias('resp2');
                     },
-                    'responsible2.people' => function ($query) {
+                    'responsible2Work.peopleWork' => function ($query) {
                         $query->alias('responsibleTwo');
                     },
                 ]);

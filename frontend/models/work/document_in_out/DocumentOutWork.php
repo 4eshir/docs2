@@ -29,6 +29,7 @@ use yii\helpers\Url;
  * @property UserWork $creatorWork
  * @property UserWork $lastEditorWork
  * @property PeopleStampWork $executorWork
+ * @property PeopleStampWork $signedWork
  */
 class DocumentOutWork extends DocumentOut implements FileInterface
 {
@@ -277,6 +278,7 @@ class DocumentOutWork extends DocumentOut implements FileInterface
         $executorName = $this->executorWork;
         return $executorName ? $executorName->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '---';
     }
+
     public function getExecutorWork()
     {
         return $this->hasOne(PeopleStampWork::class, ['id' => 'executor_id']);
@@ -287,6 +289,7 @@ class DocumentOutWork extends DocumentOut implements FileInterface
         $signedName = $this->signedWork;
         return $signedName ? $signedName->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '---';
     }
+
     public function getSignedWork()
     {
         return $this->hasOne(PeopleStampWork::class, ['id' => 'signed_id']);

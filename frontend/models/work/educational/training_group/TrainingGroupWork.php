@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\educational\training_group;
 
+use common\helpers\html\HtmlCreator;
 use common\helpers\StringFormatter;
 use common\models\work\UserWork;
 use frontend\models\work\dictionaries\PersonInterface;
@@ -40,6 +41,9 @@ class TrainingGroupWork extends TrainingGroup
     const NO_BUDGET = 0;
     const IS_BUDGET = 1;
 
+    const NO_ARCHIVE = 0;
+    const IS_ARCHIVE = 1;
+
     public static function fill(
         $startDate,
         $endDate,
@@ -77,7 +81,7 @@ class TrainingGroupWork extends TrainingGroup
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
-            'number' => 'Номер',
+            'numberPretty' => 'Номер',
             'programName' => 'Образовательная программа',
             'branchString' => 'Отдел',
             'teachersList' => 'Педагог(-и)',
@@ -86,6 +90,32 @@ class TrainingGroupWork extends TrainingGroup
             'budgetString' => 'Бюджет',
             'key_words' => 'Ключевые слова',
         ]);
+    }
+
+    public function isArchive()
+    {
+        return $this->archive == self::IS_ARCHIVE;
+    }
+
+    /**
+     * Иконка архивного статуса
+     * @return string
+     */
+    public function getRawArchive()
+    {
+        if ($this->isArchive()) {
+            return HtmlCreator::archiveTooltip();
+        }
+        return '';
+    }
+
+    /**
+     * Вывод названия учебной группы и иконки архива (если группа в архиве)
+     * @return string
+     */
+    public function getNumberPretty()
+    {
+        return '<div class=flexx>' . $this->number . ' ' . $this->getRawArchive() . '</div>';
     }
 
     public function generateNumber($teacherId)

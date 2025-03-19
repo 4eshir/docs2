@@ -19,12 +19,13 @@ class SearchRegulationEvent extends RegulationSearch implements SearchInterfaces
         return parent::rules();
     }
 
-    public function __construct(string $startDateSearch = '',
-                                string $finishDateSearch = '',
-                                string $nameRegulation = '',
-                                string $orderName = '',
-                                int $status = SearchFieldHelper::EMPTY_FIELD)
-    {
+    public function __construct(
+        string $startDateSearch = '',
+        string $finishDateSearch = '',
+        string $nameRegulation = '',
+        string $orderName = '',
+        int $status = SearchFieldHelper::EMPTY_FIELD
+    ) {
         parent::__construct($startDateSearch, $finishDateSearch, $nameRegulation, $orderName, $status);
     }
 
@@ -54,7 +55,7 @@ class SearchRegulationEvent extends RegulationSearch implements SearchInterfaces
         $this->load($params);
         $query = RegulationWork::find()
                 ->joinWith([
-                    'documentOrder' => function ($query) {
+                    'documentOrderWork' => function ($query) {
                         $query->alias('orderMain');
                     },
                 ])

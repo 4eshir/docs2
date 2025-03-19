@@ -16,7 +16,14 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="training-program-view">
     <div class="substrate">
-        <h1><?= Html::encode($this->title) ?></h1>
+        <div class="flexx">
+            <h1>
+                <?= Html::encode($this->title) ?>
+            </h1>
+            <h3>
+                <?= $model->getRawActual(); ?>
+            </h3>
+        </div>
 
         <div class="flexx space">
             <div class="flexx">

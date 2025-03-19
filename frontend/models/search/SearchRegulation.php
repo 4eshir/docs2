@@ -69,7 +69,7 @@ class SearchRegulation extends RegulationSearch implements SearchInterfaces
 
         $query = RegulationWork::find()
             ->joinWith([
-                'documentOrder' => function ($query) {
+                'documentOrderWork' => function ($query) {
                     $query->alias('orderMain');
                 },
             ])
