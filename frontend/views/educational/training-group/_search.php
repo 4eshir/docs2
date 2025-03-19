@@ -21,7 +21,7 @@ use yii\widgets\ActiveForm;
         SearchFieldHelper::dateField('startDateSearch', 'Дата обучения с', 'Дата обучения с'),
         SearchFieldHelper::dateField('finishDateSearch', 'Дата обучения по', 'Дата обучения по'),
         SearchFieldHelper::dropdownField('branch', 'Отдел', Yii::$app->branches->getOnlyEducational(), 'Отдел'),
-        SearchFieldHelper::textField('number', 'Номер или часть номера группы', 'Номер или часть номера группы'),
+        SearchFieldHelper::textField('numberPretty', 'Номер или часть номера группы', 'Номер или часть номера группы'),
         SearchFieldHelper::textField('teacher', 'Преподаватель', 'Преподаватель'),
         SearchFieldHelper::textField('program', 'Образовательная программа', 'Образовательная программа'),
         SearchFieldHelper::dropdownField('budget', 'Источник финансирования', $searchModel::BUDGET, 'Источник финансирования'),

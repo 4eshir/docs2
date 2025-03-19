@@ -170,6 +170,10 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
         }
     }
 
+    /**
+     * Выводит информацию о персональных данных учащегося через подсказчик и иконку
+     * @return string
+     */
     public function createRawDisclosurePDProhibited()
     {
         $result = [];
@@ -184,10 +188,12 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
         if (count($result)) {
             $content = '<b>Запрещено</b> к разглашению: <br> • ';
             $content .= implode('<br> • ', $result);
+            $svgColor = HtmlBuilder::SVG_CRITICAL_COLOR;
         } else {
-            $content = '<b>Запретов нет</b>';
+            $content = '<b>Запретов на разглашение ПД нет</b>';
+            $svgColor = HtmlBuilder::SVG_PRIMARY_COLOR;
         }
-        return HtmlBuilder::createTooltip($content, FilePaths::PERSONAL_DATE_SVG);
+        return HtmlBuilder::createTooltip($content, FilePaths::SVG_PERSONAL_DATE, $svgColor);
     }
 
     public function createRawPersonalData()

@@ -13,7 +13,9 @@ use common\repositories\event\EventRepository;
 use common\repositories\regulation\RegulationRepository;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderMainWork;
+use frontend\models\work\regulation\RegulationWork;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -451,5 +453,25 @@ class EventWork extends Event
         }
 
         return HtmlBuilder::createSVGLink($link);
+    }
+
+    public function getDocumentOrderWork()
+    {
+        return $this->hasOne(DocumentOrderWork::class, ['id' => 'order_id']);
+    }
+
+    public function getRegulationWork()
+    {
+        return $this->hasOne(RegulationWork::class, ['id' => 'regulation_id']);
+    }
+
+    public function getScopesWork()
+    {
+        return $this->hasMany(EventScopeWork::class, ['event_id' => 'id']);
+    }
+
+    public function getBranchesWork()
+    {
+        return $this->hasMany(EventBranchWork::class, ['event_id' => 'id']);
     }
 }

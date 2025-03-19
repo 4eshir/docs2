@@ -7,18 +7,14 @@ use common\helpers\DateFormatter;
 use common\helpers\files\FilePaths;
 use common\helpers\StringFormatter;
 use common\Model;
-use DomainException;
-use DOMDocument;
+use common\widgets\select_search\SelectSearch;
 use Exception;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonalDataParticipantWork;
-use frontend\models\work\dictionaries\PersonInterface;
-use frontend\models\work\educational\CertificateWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\team\SquadParticipantWork;
 use Yii;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\jui\DatePicker;
@@ -30,6 +26,12 @@ class HtmlBuilder
     const TEXT_FIELD_TYPE = 'text';
     const DROPDOWN_FIELD_TYPE = 'dropdown';
 
+    const SVG_PRIMARY_COLOR = 'svg-primary';
+    const SVG_CRITICAL_COLOR = 'svg-critical';
+
+    const TYPE_WARNING = 'warning';
+    const TYPE_INFO = 'info';
+
     /**
      * Создает подсказчик с нужной иконкой и внутренним сообщением которое отображается при наведении
      *
@@ -38,7 +40,7 @@ class HtmlBuilder
      * @param string|null $svgColorClass
      * @return string
      */
-    public static function createTooltip(string $content, string $svgLink = FilePaths::INFO_SVG, string $svgColorClass = '')
+    public static function createTooltip(string $content, string $svgLink = FilePaths::SVG_INFO, string $svgColorClass = '')
     {
         $svgContent = file_get_contents($svgLink);
         return '<span class="tooltip-span">
@@ -457,29 +459,37 @@ class HtmlBuilder
     }
 
     /**
-     * Создает предупреждающее сообщение
-     * @param $boldMessage
-     * @param $regularMessage
-     * @return string
-     */
-    public static function createWarningMessage($boldMessage, $regularMessage)
-    {
-        return "<div class='alert alert-warning alert-dismissible fade show' role='alert'>
-                    <strong>$boldMessage</strong> $regularMessage
-                </div>";
-    }
-
-    /**
      * Создает информационное сообщение
-     * @param $regularMessage
+     *
+     * @param string $typeMessage
+     * @param string $regularMessage
+     * @param string $boldMessage
      * @return string
+     * @throws Exception
      */
-    public static function createInfoMessage($regularMessage)
+    public static function createMessage(string $typeMessage, string $regularMessage, string $boldMessage = '')
     {
-        return "<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                    $regularMessage
-                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                </div>";
+        switch ($typeMessage) {
+            case self::TYPE_WARNING:
+                $htmlClass = 'alert-warning';
+                $content = '<strong>'. $boldMessage .'</strong> ' . $regularMessage;
+                $svgContent = file_get_contents(FilePaths::SVG_ALERT_WARNING);
+                $svgColorClass = '';
+                break;
+            case self::TYPE_INFO:
+                $htmlClass = 'alert-info';
+                $content = $regularMessage . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+                $svgContent = file_get_contents(FilePaths::SVG_ALERT_INFO);
+                $svgColorClass = '';
+                break;
+            default:
+                throw new Exception('Message type not recognized');
+        }
+
+        return '<div class="alert alert-dismissible fade show ' . $htmlClass . '"  role="alert">
+                    <span class="'.$svgColorClass.'">'. $svgContent . '</span>
+                    '.$content.'
+                </div>';
     }
 
     /**
@@ -490,9 +500,9 @@ class HtmlBuilder
     public static function createSVGLink($url)
     {
         $title = 'скачать файл';
-        $svgFile = FilePaths::FILE_DOWNLOAD_SVG;
+        $svgFile = FilePaths::SVG_FILE_DOWNLOAD;
         if ($url === '#') {
-            $svgFile = FilePaths::FILE_NO_DOWNLOAD_SVG;
+            $svgFile = FilePaths::SVG_FILE_NO_DOWNLOAD;
             $title = 'файл отсутствует';
         }
         $svgContent = file_get_contents($svgFile);

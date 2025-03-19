@@ -7,6 +7,7 @@ use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
+use common\helpers\html\HtmlCreator;
 use common\helpers\StringFormatter;
 use common\models\scaffold\TrainingProgram;
 use common\models\work\UserWork;
@@ -73,7 +74,7 @@ class TrainingProgramWork extends TrainingProgram
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
-            'name' => 'Название',
+            'namePretty' => 'Название',
             'thematic_direction' => 'Тематическое направление',
             'level' => 'Уровень сложности',
             'levelNumber' => 'Уровень<br>сложности',
@@ -140,7 +141,33 @@ class TrainingProgramWork extends TrainingProgram
 
     public function getActual()
     {
-        return $this->actual == 0 ? 'Нет' : 'Да';
+        return $this->isActual() ? 'Да' : 'Нет';
+    }
+
+    public function isActual()
+    {
+        return $this->actual == self::ACTUAL;
+    }
+
+    /**
+     * Иконка не акутального статуса
+     * @return string
+     */
+    public function getRawActual()
+    {
+        if (!$this->isActual()) {
+            return HtmlCreator::archiveTooltip();
+        }
+        return '';
+    }
+
+    /**
+     * Отображает название и иконки архива (если программа в архиве)
+     * @return string
+     */
+    public function getNamePretty()
+    {
+        return '<div class=flexx>' . $this->name . ' ' . $this->getRawActual() . '</div>';
     }
 
     public function getLevelNumber()
@@ -385,5 +412,10 @@ class TrainingProgramWork extends TrainingProgram
     public function getAuthorsProgramWork()
     {
         return $this->hasMany(AuthorProgramWork::class, ['training_program_id' => 'id']);
+    }
+
+    public function getBranchWork()
+    {
+        return $this->hasMany(BranchProgramWork::class, ['training_program_id' => 'id']);
     }
 }

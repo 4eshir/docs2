@@ -87,15 +87,19 @@ class SearchDocumentIn extends DocumentSearch implements SearchInterfaces
 
         $query = DocumentInWork::find()
             ->joinWith([
-                'company',
-                'correspondent',
-                'correspondent.people' => function ($query) {
+                'companyWork' => function ($query) {
+                    $query->alias('company');
+                },
+                'correspondentWork' => function ($query) {
+                    $query->alias('correspondent');
+                },
+                'correspondentWork.peopleWork' => function ($query) {
                     $query->alias('correspondentPeople');
                 },
-                'inOutDocument.responsible' => function ($query) {
+                'inOutDocumentWork.responsibleWork' => function ($query) {
                     $query->alias('responsible');
                 },
-                'inOutDocument.responsible.people' => function ($query) {
+                'inOutDocumentWork.responsibleWork.peopleWork' => function ($query) {
                     $query->alias('responsiblePeople');
                 }
             ]);

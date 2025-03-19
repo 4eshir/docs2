@@ -27,10 +27,10 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
     <?php
         switch ($error) {
             case DocumentOrderWork::ERROR_DATE_PARTICIPANT:
-                echo HtmlBuilder::createWarningMessage('Невозможно применить действие к ученикам.', 'Ошибка выбора даты приказа');
+                echo HtmlBuilder::createMessage(HtmlBuilder::TYPE_WARNING, 'Ошибка выбора даты приказа','Невозможно применить действие к ученикам.');
                 break;
             case DocumentOrderWork::ERROR_RELATION:
-                echo HtmlBuilder::createWarningMessage('Невозможно применить действие к ученикам.', 'Выбранные обучающиеся задействованы в других приказах');
+                echo HtmlBuilder::createMessage(HtmlBuilder::TYPE_WARNING, 'Выбранные обучающиеся задействованы в других приказах','Невозможно применить действие к ученикам.');
                 break;
         }
     ?>

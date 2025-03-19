@@ -83,27 +83,31 @@ class SearchDocumentOut extends DocumentSearch implements SearchInterfaces
         $this->loadParams($params);
         $query = DocumentOutWork::find()
             ->joinWith([
-                'company',
-                'correspondent',
-                'correspondent.people' => function ($query) {
+                'companyWork' => function ($query) {
+                    $query->alias('company');
+                },
+                'correspondentWork' => function ($query) {
+                    $query->alias('correspondent');
+                },
+                'correspondentWork.peopleWork' => function ($query) {
                     $query->alias('correspondentPeople');
                 },
-                'inOutDocument.responsible' => function ($query) {
+                'inOutDocumentWork.responsibleWork' => function ($query) {
                     $query->alias('responsible');
                 },
-                'inOutDocument.responsible.people' => function ($query) {
+                'inOutDocumentWork.responsibleWork.peopleWork' => function ($query) {
                     $query->alias('responsiblePeople');
                 },
-                'executor' => function ($query) {
+                'executorWork' => function ($query) {
                     $query->alias('executor');
                 },
-                'executor.people' => function ($query) {
+                'executorWork.peopleWork' => function ($query) {
                     $query->alias('executorPeople');
                 },
-                'signed' => function ($query) {
+                'signedWork' => function ($query) {
                     $query->alias('signed');
                 },
-                'signed.people' => function ($query) {
+                'signedWork.peopleWork' => function ($query) {
                     $query->alias('signedPeople');
                 }
             ]);

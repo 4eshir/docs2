@@ -39,6 +39,15 @@ class CertificateWork extends Certificate
     }
 
     /**
+     * Возвращает инфу был ли отправлен сертификат
+     * @return bool
+     */
+    public function isSend()
+    {
+        return $this->status === self::STATUS_SEND;
+    }
+
+    /**
      * Вывод человекочитаемого статуса сертификата
      * @return string
      */

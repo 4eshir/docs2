@@ -1,14 +1,8 @@
 <?php
 
-use common\helpers\StringFormatter;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
-use frontend\models\work\dictionaries\PersonInterface;
-use frontend\models\work\educational\training_group\TeacherGroupWork;
-use frontend\models\work\general\PeopleWork;
 use frontend\services\educational\JournalService;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model TrainingGroupCombinedForm */
@@ -24,8 +18,15 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
 <div class="training-group-view">
 
     <div class="substrate">
-        <h1><?= Html::encode($this->title) ?></h1>
-<?= \common\helpers\html\HtmlBuilder::createTooltip('В своём стремлении улучшить пользовательский опыт мы упускаем'); ?>
+        <div class="flexx">
+            <h1>
+                <?= Html::encode($this->title) ?>
+            </h1>
+            <h3>
+                <?= $model->getRawArchive(); ?>
+            </h3>
+        </div>
+
         <div class="flexx space">
             <div class="flexx">
                 <?= $buttonsAct; ?>

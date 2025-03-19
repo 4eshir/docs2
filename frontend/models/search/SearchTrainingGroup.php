@@ -16,7 +16,7 @@ class SearchTrainingGroup extends Model implements SearchInterfaces
     public string $startDateSearch;
     public string $finishDateSearch;
     public int $branch;
-    public string $number;
+    public string $numberPretty;
     public string $teacher;
     public string $program;
     public int $budget;
@@ -29,7 +29,7 @@ class SearchTrainingGroup extends Model implements SearchInterfaces
     {
         return [
             [['id', 'branch', 'budget', 'archive'], 'integer'],
-            [['number', 'teacher', 'startDateSearch', 'finishDateSearch', 'branch', 'program', 'budget', 'archive'], 'safe'],
+            [['numberPretty', 'teacher', 'startDateSearch', 'finishDateSearch', 'branch', 'program', 'budget', 'archive'], 'safe'],
             [['startDateSearch', 'finishDateSearch', 'number', 'teacher', 'program'], 'string'],
         ];
     }
@@ -38,7 +38,7 @@ class SearchTrainingGroup extends Model implements SearchInterfaces
         string $startDateSearch = '',
         string $finishDateSearch = '',
         int $branch = SearchFieldHelper::EMPTY_FIELD,
-        string $number = '',
+        string $numberPretty = '',
         string $teacher = '',
         string $program = '',
         int $budget = SearchFieldHelper::EMPTY_FIELD,
@@ -47,7 +47,7 @@ class SearchTrainingGroup extends Model implements SearchInterfaces
         $this->startDateSearch = $startDateSearch;
         $this->finishDateSearch = $finishDateSearch;
         $this->branch = $branch;
-        $this->number = $number;
+        $this->numberPretty = $numberPretty;
         $this->teacher = $teacher;
         $this->program = $program;
         $this->budget = $budget;
@@ -96,7 +96,7 @@ class SearchTrainingGroup extends Model implements SearchInterfaces
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort'=> ['defaultOrder' => ['start_date' => SORT_DESC, 'number' => SORT_ASC]]
+            'sort'=> ['defaultOrder' => ['start_date' => SORT_DESC, 'numberPretty' => SORT_ASC]]
         ]);
 
         $this->sortAttributes($dataProvider);
@@ -113,7 +113,7 @@ class SearchTrainingGroup extends Model implements SearchInterfaces
      */
     public function sortAttributes(ActiveDataProvider $dataProvider)
     {
-        $dataProvider->sort->attributes['number'] = [
+        $dataProvider->sort->attributes['numberPretty'] = [
             'asc' => ['number' => SORT_ASC],
             'desc' => ['number' => SORT_DESC],
         ];
@@ -202,8 +202,8 @@ class SearchTrainingGroup extends Model implements SearchInterfaces
      * @return void
      */
     private function filterNumber(ActiveQuery $query) {
-        if (!empty($this->number)) {
-            $query->andFilterWhere(['like', 'LOWER(number)', $this->number]);
+        if (!empty($this->numberPretty)) {
+            $query->andFilterWhere(['like', 'LOWER(number)', $this->numberPretty]);
         }
     }
 

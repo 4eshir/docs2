@@ -24,10 +24,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     switch ($error) {
         case DocumentOrderWork::ERROR_DATE_PARTICIPANT:
-            echo HtmlBuilder::createWarningMessage('Невозможно применить действие к ученикам.', 'Ошибка выбора даты приказа');
+            echo HtmlBuilder::createMessage(HtmlBuilder::TYPE_WARNING,'Невозможно применить действие к ученикам.', 'Ошибка выбора даты приказа');
             break;
         case DocumentOrderWork::ERROR_RELATION:
-            echo HtmlBuilder::createWarningMessage('Невозможно применить действие к ученикам.', 'Выбранные обучающиеся задействованы в других приказах');
+            echo HtmlBuilder::createMessage(HtmlBuilder::TYPE_WARNING,'Невозможно применить действие к ученикам.', 'Выбранные обучающиеся задействованы в других приказах');
             break;
     }
     ?>

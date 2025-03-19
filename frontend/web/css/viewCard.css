@@ -116,3 +116,13 @@ select option[value=""] {
 .card-block-2 .accordion-btn-close {
     background: var(--accordion-btn-dark);
 }
+
+h3:has(svg) {
+    display: flex;
+    align-items: center;
+    margin-left: 0.5em;
+}
+
+a:has(.tooltip-span) {
+    color: black;
+}

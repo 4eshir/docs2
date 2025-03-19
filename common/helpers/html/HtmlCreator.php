@@ -2,6 +2,8 @@
 
 namespace common\helpers\html;
 
+use common\helpers\files\FilePaths;
+
 class HtmlCreator
 {
     public static function filterToggle() {
@@ -19,5 +21,12 @@ class HtmlCreator
                         <path d="M9 12L4 4H15M20 4L15 12V21L9 18V16" stroke="#009580" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                     </svg> Фильтры поиска:
                 </h3>';
+    }
+
+    public static function archiveTooltip() {
+        return HtmlBuilder::createTooltip(
+            'Архивный объект защищён от изменений',
+            FilePaths::SVG_ARCHIVE
+        );
     }
 }

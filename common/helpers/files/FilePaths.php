@@ -10,10 +10,16 @@ class FilePaths
     public const EXAMPLE_FILEPATH = '/upload/example';
     public const EXAMPLE_UTP = self::EXAMPLE_FILEPATH . '/utp-example.xlsx';
 
-    public const FILE_DOWNLOAD_SVG = 'svg/download-file.svg';
-    public const FILE_NO_DOWNLOAD_SVG = 'svg/no-download-file.svg';
-    public const INFO_SVG = 'svg/information-circle.svg';
-    public const PERSONAL_DATE_SVG = 'svg/personal-data.svg';
+    public const SVG_FILE_DOWNLOAD = 'svg/download-file.svg';
+    public const SVG_FILE_NO_DOWNLOAD = 'svg/no-download-file.svg';
+    public const SVG_INFO = 'svg/information-circle.svg';
+    public const SVG_PERSONAL_DATE = 'svg/personal-data.svg';
+    public const SVG_CERTIFICATE = 'svg/certificate.svg';
+    public const SVG_STATUS = 'svg/status.svg';
+    public const SVG_ARCHIVE = 'svg/archive.svg';
+    public const SVG_ALERT_WARNING = 'svg/alert-warning.svg';
+    public const SVG_ALERT_DANGER = 'svg/alert-danger.svg';
+    public const SVG_ALERT_INFO = 'svg/alert-info.svg';
 
 
     public const CERTIFICATE_TEMPLATES = self::BASE_FILEPATH . '/certificate-templates/';

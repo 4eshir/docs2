@@ -3,11 +3,15 @@
 namespace frontend\models\work\educational\training_group;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\dictionaries\base\StudyStatusDictionary;
+use common\helpers\files\FilePaths;
+use common\helpers\html\HtmlBuilder;
+use common\helpers\StringFormatter;
 use common\models\scaffold\TrainingGroupParticipant;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\educational\CertificateWork;
 use frontend\models\work\general\PeopleStampWork;
 use Yii;
+use yii\helpers\Url;
 
 /**
  * @property ForeignEventParticipantsWork $participantWork
@@ -57,6 +61,41 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
     public function getTrainingGroupWork()
     {
         return $this->hasOne(TrainingGroupWork::class, ['id' => 'training_group_id']);
+    }
+
+    /**
+     * Выводит инфу о статусе обучающегося через подсказчик и иконку
+     * @return string
+     */
+    public function getRawStatus()
+    {
+        $stringStatus = '<b>' . Yii::$app->studyStatus->get($this->status) . '</b>';
+        if ($this->status == Yii::$app->studyStatus::ACTIVE || $this->status == Yii::$app->studyStatus::TRANSFER_IN) {
+            $svgColor = HtmlBuilder::SVG_PRIMARY_COLOR;
+        } else if ($this->status == Yii::$app->studyStatus::DEDUCT || $this->status == Yii::$app->studyStatus::TRANSFER_OUT) {
+            $svgColor = HtmlBuilder::SVG_CRITICAL_COLOR;
+        } else {
+            $svgColor = '';
+        }
+        return HtmlBuilder::createTooltip($stringStatus, FilePaths::SVG_STATUS, $svgColor);
+    }
+
+    /**
+     * Выводит инфу о сертификате через подсказчик и иконку
+     * @return string
+     */
+    public function getRawCertificate()
+    {
+        if ($certificate = $this->certificateWork) {
+            $string = '<b>Сертификат № ' . $certificate->getCertificateLongNumber() . ' ' . $certificate->getPrettyStatus() . '</b>';
+            if ($certificate->isSend()) {
+                $svgColor = HtmlBuilder::SVG_PRIMARY_COLOR;
+            } else {
+                $svgColor = HtmlBuilder::SVG_CRITICAL_COLOR;
+            }
+            return HtmlBuilder::createTooltip($string, FilePaths::SVG_CERTIFICATE, $svgColor);
+        }
+        return '';
     }
 
     public function getCertificateWork()
