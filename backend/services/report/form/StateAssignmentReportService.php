@@ -5,6 +5,7 @@ namespace backend\services\report\form;
 use backend\builders\GroupParticipantReportBuilder;
 use backend\builders\ParticipantReportBuilder;
 use backend\builders\TrainingGroupReportBuilder;
+use backend\services\report\ReportManHoursService;
 use common\components\dictionaries\base\AllowRemoteDictionary;
 use common\components\dictionaries\base\BranchDictionary;
 use common\components\dictionaries\base\EventLevelDictionary;
@@ -15,6 +16,7 @@ use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\event\ForeignEventRepository;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\event\ParticipantAchievementWork;
 use yii\db\ActiveQuery;
@@ -37,6 +39,8 @@ class StateAssignmentReportService
     private ForeignEventRepository $foreignEventRepository;
     private ActParticipantRepository $actParticipantRepository;
 
+    private ReportManHoursService $manHoursService;
+
     public function __construct(
         TrainingGroupReportBuilder $groupBuilder,
         GroupParticipantReportBuilder $participantBuilder,
@@ -44,7 +48,8 @@ class StateAssignmentReportService
         TrainingGroupRepository $groupRepository,
         TrainingGroupParticipantRepository $participantRepository,
         ForeignEventRepository $foreignEventRepository,
-        ActParticipantRepository $actParticipantRepository
+        ActParticipantRepository $actParticipantRepository,
+        ReportManHoursService $manHoursService
     )
     {
         $this->groupBuilder = $groupBuilder;
@@ -54,6 +59,7 @@ class StateAssignmentReportService
         $this->participantRepository = $participantRepository;
         $this->foreignEventRepository = $foreignEventRepository;
         $this->actParticipantRepository = $actParticipantRepository;
+        $this->manHoursService = $manHoursService;
     }
 
     /**
@@ -169,9 +175,130 @@ class StateAssignmentReportService
         return $result;
     }
 
+    /**
+     * Заполнение раздела 3.2 гос. задания
+     * Вся бизнес-логика находится в {@see ReportManHoursService}, который используется в отчетах по запросу
+     *
+     * @param string $startDate
+     * @param string $endDate
+     * @param int $type
+     * @return array
+     */
     public function fillSection32(string $startDate, string $endDate, int $type)
     {
+        $result = [];
 
+        $result['technopark']['tech']['personal'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::TECHNOPARK],
+                [FocusDictionary::TECHNICAL],
+                [AllowRemoteDictionary::ONLY_PERSONAL],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        $result['cdntt']['tech']['personal'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::CDNTT],
+                [FocusDictionary::TECHNICAL],
+                [AllowRemoteDictionary::ONLY_PERSONAL],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        $result['cdntt']['art']['personal'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::CDNTT],
+                [FocusDictionary::ART],
+                [AllowRemoteDictionary::ONLY_PERSONAL],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        $result['cdntt']['social']['personal'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::CDNTT],
+                [FocusDictionary::SOCIAL],
+                [AllowRemoteDictionary::ONLY_PERSONAL],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        $result['quantorium']['tech']['personal'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::QUANTORIUM],
+                [FocusDictionary::TECHNICAL],
+                [AllowRemoteDictionary::ONLY_PERSONAL],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        $result['mob_quant']['tech']['personal'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::MOBILE_QUANTUM],
+                [FocusDictionary::TECHNICAL],
+                [AllowRemoteDictionary::ONLY_PERSONAL],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        $result['cod']['tech']['personal'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::COD],
+                [FocusDictionary::TECHNICAL],
+                [AllowRemoteDictionary::ONLY_PERSONAL],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        $result['cod']['tech']['remote'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::COD],
+                [FocusDictionary::TECHNICAL],
+                [AllowRemoteDictionary::PERSONAL_WITH_REMOTE],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        $result['cod']['science']['personal'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::COD],
+                [FocusDictionary::SCIENCE],
+                [AllowRemoteDictionary::ONLY_PERSONAL],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        $result['cod']['art']['personal'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::COD],
+                [FocusDictionary::ART],
+                [AllowRemoteDictionary::ONLY_PERSONAL],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        $result['cod']['sport']['personal'] =
+            $this->manHoursService->calculateManHours(
+                $startDate, $endDate,
+                [BranchDictionary::COD],
+                [FocusDictionary::SPORT],
+                [AllowRemoteDictionary::ONLY_PERSONAL],
+                [TrainingGroupWork::IS_BUDGET],
+                $type
+            )['result'];
+
+        return $result;
     }
 
     /**

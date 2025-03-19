@@ -102,11 +102,15 @@ class TrainingGroupReportBuilder
      */
     public function filterGroupsBetweenDates(ActiveQuery $query, string $date1, string $date2) : ActiveQuery
     {
-        return $query->andWhere(['BETWEEN', 'start_date', $date1, $date2])
-            ->orWhere(['BETWEEN', 'finish_date', $date1, $date2])
-            ->orWhere(['and',
-                ['<', 'start_date', $date1],
-                ['>', 'finish_date', $date2]
+        return $this->filterGroupsByDates(
+            $query,
+            $date1,
+            $date2,
+            [
+                ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_IN,
+                ManHoursReportForm::PARTICIPANT_START_IN_FINISH_AFTER,
+                ManHoursReportForm::PARTICIPANT_START_IN_FINISH_IN,
+                ManHoursReportForm::PARTICIPANT_START_BEFORE_FINISH_AFTER
             ]);
     }
 
