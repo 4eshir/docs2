@@ -1,8 +1,13 @@
 <?php
 
 use backend\forms\TokensForm;
+use common\helpers\DateFormatter;
+use common\helpers\html\HtmlBuilder;
+use common\helpers\StringFormatter;
+use frontend\models\work\rubac\PermissionTokenWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
 use yii\widgets\DetailView;
@@ -10,11 +15,14 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model TokensForm */
 
+$this->title = 'Выдача токенов';
+$this->params['breadcrumbs'][] = ['label' => 'Пользователи', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div style="width:100%; height:1px; clear:both;"></div>
 <div>
-    <div class="content-container" style="float: left">
+    <div class="content-container">
         <h3>Выдать токен доступа</h3>
         <br>
 
@@ -58,25 +66,28 @@ use yii\widgets\DetailView;
     </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>
     <br>
-    <!--<h3>Активные токены</h3>
-    <?php
-/*
-    $levels = \app\models\work\AccessLevelWork::find()->orderBy(['start_time' => SORT_DESC])->all();
 
-    */?>
+    <h3>Активные токены</h3>
     <table class="table table-striped">
+        <tr>
+            <th>ФИО пользователя</th>
+            <th>Разрешение</th>
+            <th>Дата выдачи</th>
+            <th>Дата окончания</th>
+            <th></th>
+        </tr>
         <?php
-/*
-        foreach ($levels as $level)
-        {
-            echo '<tr>';
-            echo '<td>'.$level->userWork->fullName.'</td><td>'.$level->roleFunctionWork->name.'</td><td>'.date('d.m.Y (H:i)', strtotime($level->start_time)).'</td><td>'.date('d.m.Y (H:i)', strtotime($level->end_time)).'</td>'.
-                '<td>'.Html::a('Отозвать токен', \yii\helpers\Url::to(['lk/delete-token', 'id' => $level->id]), ['class' => 'btn btn-danger']).'</td>';
-            echo '</tr>';
-        }
-
-        */?>
-    </table>-->
+        /** @var PermissionTokenWork $token */
+        foreach ($model->tokens as $token) : ?>
+            <tr>
+                <td><?= $token->userWork->getFullName() ?></td>
+                <td><?= $token->permissionWork->name ?></td>
+                <td><?= $token->start_time ?></td>
+                <td><?= $token->end_time ?></td>
+                <td><?= Html::a('Отозвать токен', Url::to(['delete-token', 'id' => $token->id]), ['class' => 'btn btn-danger']) ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
 
 </div>
 <div style="width:100%; height:1px; clear:both;"></div>

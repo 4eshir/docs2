@@ -122,12 +122,28 @@ class UserController extends Controller
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
 
-            $this->tokenService->saveToken($model);
+            if ($this->tokenService->saveToken($model)) {
+                Yii::$app->session->setFlash('success', "Токен успешно выдан пользователю с ID {$model->userId} на {$model->duration} ч.");
+            }
+
+            return $this->redirect(['tokens']);
         }
 
         return $this->render('tokens', [
             'model' => $model
         ]);
+    }
+
+    public function actionDeleteToken($id)
+    {
+        if ($this->tokenService->deleteToken($id)) {
+            Yii::$app->session->setFlash('success', "Токен успешно отозван");
+        }
+        else {
+            Yii::$app->session->setFlash('danger', "Ошибка при попытке отзыва токена");
+        }
+
+        return $this->redirect(['tokens']);
     }
 
     /**

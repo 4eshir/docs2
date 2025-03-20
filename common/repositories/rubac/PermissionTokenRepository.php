@@ -15,6 +15,11 @@ class PermissionTokenRepository
         return PermissionTokenWork::find()->where(['id' => $id])->one();
     }
 
+    public function getAll()
+    {
+        return PermissionTokenWork::find()->orderBy(['end_time' => SORT_ASC])->all();
+    }
+
     public function findByUserFunctionBranch(int $userId, int $functionId, int $branch = null)
     {
         $query = PermissionTokenWork::find()

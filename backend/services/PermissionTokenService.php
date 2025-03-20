@@ -12,6 +12,8 @@ use yii\db\Exception;
 
 class PermissionTokenService
 {
+    const EVENT_NAME_PREFIX = 'token_event_';
+
     private PermissionTokenRepository $repository;
     private UserPermissionFunctionRepository $userPermissionRepository;
 
@@ -24,11 +26,11 @@ class PermissionTokenService
         $this->userPermissionRepository = $userPermissionRepository;
     }
 
-    public function saveToken(TokensForm $form)
+    public function saveToken(TokensForm $form) : bool
     {
         if (!$this->checkDuplicate($form)) {
             Yii::$app->session->setFlash('danger', 'У данного пользователя уже есть данное разрешение');
-            return;
+            return false;
         }
 
         $currentTime = date('Y-m-d H:i:s');
@@ -43,6 +45,7 @@ class PermissionTokenService
         $this->repository->save($model);
 
         $this->addDeleteEventForToken($model);
+        return true;
     }
 
     public function checkDuplicate(TokensForm $form)
@@ -65,7 +68,7 @@ class PermissionTokenService
     public function addDeleteEventForToken(PermissionTokenWork $model)
     {
         $deleteEvent = SqlHelper::createDeleteEvent(
-            "token_delete_$model->id",
+            self::EVENT_NAME_PREFIX . $model->id,
             $model->end_time,
             'permission_token',
             "WHERE `id`= $model->id"
@@ -76,5 +79,21 @@ class PermissionTokenService
         } catch (Exception $e) {
             Yii::error("Ошибка выполнения команды: " . $e->getMessage());
         }
+    }
+
+    public function deleteToken(int $id)
+    {
+        /** @var PermissionTokenWork $token */
+        $token = $this->repository->get($id);
+        $result = $this->repository->delete($token);
+
+        $dropEvent = SqlHelper::dropEvent(self::EVENT_NAME_PREFIX . $id);
+        try {
+            Yii::$app->db->createCommand($dropEvent)->execute();
+        } catch (Exception $e) {
+            Yii::error("Ошибка выполнения команды: " . $e->getMessage());
+        }
+
+        return $result;
     }
 }

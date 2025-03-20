@@ -22,4 +22,15 @@ class SqlHelper
             FROM `$tableName` 
             $condition";
     }
+
+    /**
+     * Создает SQL-команду для удаления события
+     *
+     * @param string $name имя события
+     * @return string
+     */
+    public static function dropEvent(string $name) : string
+    {
+        return "DROP EVENT IF EXISTS `{$name}`";
+    }
 }

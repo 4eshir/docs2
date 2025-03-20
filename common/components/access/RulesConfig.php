@@ -388,7 +388,8 @@ class RulesConfig
                 'view',
                 'create',
                 'update',
-                'tokens'
+                'tokens',
+                'delete-token'
             ]
         ],
 
