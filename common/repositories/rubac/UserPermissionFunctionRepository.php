@@ -5,6 +5,7 @@ namespace common\repositories\rubac;
 use DomainException;
 use frontend\models\work\rubac\PermissionFunctionWork;
 use frontend\models\work\rubac\PermissionTemplateWork;
+use frontend\models\work\rubac\PermissionTokenWork;
 use frontend\models\work\rubac\UserPermissionFunctionWork;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -53,7 +54,8 @@ class UserPermissionFunctionRepository
     public function getPermissionsByUser($userId)
     {
         $userPermissions = ArrayHelper::getColumn(UserPermissionFunctionWork::find()->where(['user_id' => $userId])->all(), 'function_id');
-        return PermissionFunctionWork::find()->where(['IN', 'id', $userPermissions])->all();
+        $userPermissionTokens = ArrayHelper::getColumn(PermissionTokenWork::find()->where(['user_id' => $userId])->all(), 'function_id');
+        return PermissionFunctionWork::find()->where(['IN', 'id', array_unique(array_merge($userPermissions, $userPermissionTokens))])->all();
     }
 
     public function getByUserPermissionBranch($userId, $permissionId, $branch = null)
