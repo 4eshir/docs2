@@ -2,6 +2,8 @@
 
 namespace frontend\controllers\educational;
 
+use common\components\logger\base\LogInterface;
+use common\components\logger\LogFactory;
 use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
@@ -89,7 +91,7 @@ class TrainingGroupController extends DocumentController
 
         $links = array_merge(
             ButtonsFormatter::anyOneLink('Добавить программу', 'create', 'btn-primary'),
-            ButtonsFormatter::anyOneLink('Изменить актуальность', Yii::$app->frontUrls::TRAINING_GROUP_RELEVANCE, ButtonsFormatter::BTN_SUCCESS)
+            ButtonsFormatter::anyOneLink('Изменить актуальность', Yii::$app->frontUrls::TRAINING_GROUP_ARCHIVE, ButtonsFormatter::BTN_SUCCESS)
         );
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
@@ -139,6 +141,44 @@ class TrainingGroupController extends DocumentController
             'trainingPrograms' => $programs,
             'people' => $people,
         ]);
+    }
+
+    /**
+     * Страница с изменением статуса архивирования учебных групп
+     * @return string
+     */
+    public function actionArchive()
+    {
+        $searchModel = new SearchTrainingGroup(TrainingGroupWork::NO_ARCHIVE);
+
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->pagination = false;
+
+        $links = ButtonsFormatter::anyOneLink('Сохранить архив', '', ButtonsFormatter::BTN_PRIMARY, 'archive-save');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
+        return $this->render('archive', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml,
+        ]);
+    }
+
+    /**
+     * Сохранение статусов архивов учебных групп
+     * @return false|string
+     */
+    public function actionArchiveSave()
+    {
+        $archive = Yii::$app->request->post('unactual');
+        $nonArchive = Yii::$app->request->post('actual');
+
+        $archive = is_array($archive) ? $archive : [];
+        $nonArchive = is_array($nonArchive) ? $nonArchive : [];
+
+        $this->service->setGroupArchive($archive, $nonArchive);
+
+        return json_encode(['success' => true]);
     }
 
     public function actionBaseForm($id)
@@ -372,7 +412,7 @@ class TrainingGroupController extends DocumentController
     {
         $form = new TrainingGroupCombinedForm($id);
 
-        $links = ButtonsFormatter::updateDeleteLinks($id);
+        $links = ButtonsFormatter::updateDeleteLinks($id, Yii::$app->frontUrls::TRAINING_GROUP_UPDATE);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         return $this->render('view', [
@@ -450,11 +490,6 @@ class TrainingGroupController extends DocumentController
             $group->number
         );
         $loader();
-    }
-
-    public function actionArchive()
-    {
-
     }
 
     public function actionSubAuds()

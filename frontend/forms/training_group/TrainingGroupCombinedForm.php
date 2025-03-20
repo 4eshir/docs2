@@ -221,6 +221,10 @@ class TrainingGroupCombinedForm extends Model
         $this->orders = $this->orderRepository->getAllByGroup($model->id);
     }
 
+    /**
+     * Вывод иконки архива у учебной группы
+     * @return string
+     */
     public function getRawArchive()
     {
         return $this->trainingGroup->getRawArchive();

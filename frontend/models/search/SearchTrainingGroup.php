@@ -21,6 +21,7 @@ class SearchTrainingGroup extends Model implements SearchInterfaces
     public string $program;
     public int $budget;
     public int $archive;
+    public int $archiveRelevance;
 
     public const BUDGET = [0 => 'Внебюджет', 1 => 'Бюджет'];
     public const ARCHIVE = [0 => 'Актуальные', 1 => 'Архивные'];
@@ -35,14 +36,14 @@ class SearchTrainingGroup extends Model implements SearchInterfaces
     }
 
     public function __construct(
+        int $archive = SearchFieldHelper::EMPTY_FIELD,
         string $startDateSearch = '',
         string $finishDateSearch = '',
         int $branch = SearchFieldHelper::EMPTY_FIELD,
         string $numberPretty = '',
         string $teacher = '',
         string $program = '',
-        int $budget = SearchFieldHelper::EMPTY_FIELD,
-        int $archive = SearchFieldHelper::EMPTY_FIELD
+        int $budget = SearchFieldHelper::EMPTY_FIELD
     ) {
         $this->startDateSearch = $startDateSearch;
         $this->finishDateSearch = $finishDateSearch;

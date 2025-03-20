@@ -521,13 +521,59 @@ input[type="checkbox"] {
     accent-color: var(--primary-color);
 }
 
-
-.training-program-search-relevance .filter-panel {
+.training-program-search-relevance .filter-panel, .training-group-search-relevance .filter-panel {
     display: block;
 }
 
 .training-program-search-relevance .grid-view th, .grid-view td:last-child {
     white-space: normal;
+}
+
+.toggle-icon {
+    flex: 2;
+}
+
+.toggle-switcher {
+    position: relative;
+    width: 5.5em;
+    height: 2em;
+    flex: 1;
+}
+
+.toggle-switcher input[type=checkbox] {
+    visibility: hidden;
+}
+
+.toggle-switcher label {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--secondary-hover);
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s ease-in-out;
+}
+
+.toggle-switcher label::before {
+    content: '';
+    position: absolute;
+    height: 1.75em;
+    width: 2em;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    transition: transform 0.2s ease-in-out;
+}
+
+.toggle-switcher input[type=checkbox]:checked + label {
+    background-color: var(--primary-color);
+}
+
+.toggle-switcher input[type=checkbox]:checked + label::before {
+    transform: translateX(120%);
 }
 
 .toggle-wrapper {
@@ -537,70 +583,6 @@ input[type="checkbox"] {
     align-items: center;
     column-gap: .25em;
 }
-
-.toggle-checkbox:not(:checked) + .off,
-.toggle-checkbox:checked ~ .on {
-    font-weight: 700;
-}
-
-.toggle-checkbox {
-    -webkit-appearance: none;
-    appearance: none;
-    position: absolute;
-    z-index: 1;
-    border-radius: 3.125em;
-    width: 4.05em;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-    margin-left: -2em!important;
-}
-
-.toggle-container {
-    position: relative;
-    border-radius: 3.125em;
-    width: 4.05em;
-    height: 1.5em;
-    background-color: #ccc;
-    background-size: .125em .125em;
-}
-
-.toggle-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: .0625em;
-    left: .0625em;
-    border-radius: inherit;
-    width: 2.55em;
-    height: calc(100% - .125em);
-    background-color: var(--secondary-hover);
-    box-shadow: 0 .125em .25em rgb(0 0 0 / .6);
-    transition: left .2s, background-color 0.15s linear;
-}
-
-.toggle-checkbox:checked ~ .toggle-container > .toggle-button {
-    left: 1.4375em;
-    background-color: var(--primary-color);
-    transition: background-color 0.15s linear;
-}
-
-.toggle-button::before {
-     content: '';
-     position: absolute;
-     top: inherit;
-     border-radius: inherit;
-     width: calc(100% - .375em);
-     height: inherit;
- }
-
-.toggle-button::after {
-     content: '';
-     position: absolute;
-     width: .5em;
-     height: 38%;
- }
 
 .special-field {
     height: 100%;

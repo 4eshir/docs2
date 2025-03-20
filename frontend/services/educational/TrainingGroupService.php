@@ -552,4 +552,28 @@ class TrainingGroupService implements DatabaseServiceInterface
             $this->lessonThemeRepository->delete($lessonTheme);
         }
     }
+
+    /**
+     * Метод архивации учебных групп
+     *
+     * @param array $actual список id учебных групп, которые требуется сделать актуальными
+     * @param array $unactual список id учебных групп, которые требуется сделать архивными
+     * @return void
+     */
+    public function setGroupArchive(array $actual, array $unactual)
+    {
+        foreach ($actual as $actualId) {
+            /** @var TrainingGroupWork $group */
+            $group = $this->trainingGroupRepository->get($actualId);
+            $group->setArchive(TrainingGroupWork::NO_ARCHIVE);
+            $this->trainingGroupRepository->save($group);
+        }
+
+        foreach ($unactual as $unactualId) {
+            /** @var TrainingGroupWork $group */
+            $group = $this->trainingGroupRepository->get($unactualId);
+            $group->setArchive(TrainingGroupWork::IS_ARCHIVE);
+            $this->trainingGroupRepository->save($group);
+        }
+    }
 }

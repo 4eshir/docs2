@@ -86,4 +86,18 @@ class TrainingGroupBaseForm extends Model
         $this->endDate = DateFormatter::format($this->endDate, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
         return parent::beforeValidate();
     }
+
+    public function attributeLabels()
+    {
+        return [
+            'branch' => 'Отдел, производящий учет',
+            'trainingProgramId' => 'Образовательная программа',
+            'network' => 'Сетевая форма обучения',
+            'peopleId' => 'Педагог(-и)',
+            'startDate' => 'Дата начала занятий',
+            'endDate' => 'Дата окончания занятий',
+            'budget' => 'Бюджет',
+            'endLoadOrders' => 'Завершить загрузку приказов о зачислении/отчислении',
+        ];
+    }
 }

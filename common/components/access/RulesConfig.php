@@ -72,7 +72,7 @@ class RulesConfig
                 'create-lesson-themes',
                 'delete-lesson',
                 'update-lesson',
-                'sub-auds'
+                'sub-auds',
             ]
         ],
 
@@ -87,7 +87,7 @@ class RulesConfig
                 'create-lesson-themes',
                 'delete-lesson',
                 'update-lesson',
-                'sub-auds'
+                'sub-auds',
             ]
         ],
 
@@ -105,13 +105,15 @@ class RulesConfig
 
         'archive_branch_groups' => [
             \frontend\controllers\educational\TrainingGroupController::class => [
-                'archive'
+                'archive',
+                'archive-save',
             ]
         ],
 
         'archive_all_groups' => [
             \frontend\controllers\educational\TrainingGroupController::class => [
-                'archive'
+                'archive',
+                'archive-save',
             ]
         ],
 
@@ -154,6 +156,7 @@ class RulesConfig
                 'delete-author',
                 'delete-file',
                 'relevance',
+                'relevance-save',
             ]
         ],
 

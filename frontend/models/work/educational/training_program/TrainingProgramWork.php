@@ -74,6 +74,7 @@ class TrainingProgramWork extends TrainingProgram
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
+            'name' => 'Название',
             'namePretty' => 'Название',
             'thematic_direction' => 'Тематическое направление',
             'level' => 'Уровень сложности',

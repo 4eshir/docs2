@@ -2,7 +2,6 @@
 
 use common\helpers\html\HtmlBuilder;
 use common\helpers\search\SearchFieldHelper;
-use common\helpers\StringFormatter;
 use frontend\models\work\educational\training_program\TrainingProgramWork;
 use yii\widgets\ActiveForm;
 

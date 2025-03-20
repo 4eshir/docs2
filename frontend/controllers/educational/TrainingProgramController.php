@@ -72,6 +72,10 @@ class TrainingProgramController extends DocumentController
         ];
     }
 
+    /**
+     * Страница с изменением статуса актуальности образовательных программ
+     * @return string
+     */
     public function actionRelevance()
     {
         $searchModel = new SearchTrainingProgram(1);
@@ -307,11 +311,11 @@ class TrainingProgramController extends DocumentController
 
     public function beforeAction($action)
     {
-        /*$result = $this->checkActionAccess($action);
+        $result = $this->checkActionAccess($action);
         if ($result['url'] !== '') {
             $this->redirect($result['url']);
             return $result['status'];
-        }*/
+        }
 
         return parent::beforeAction($action);
     }

@@ -21,10 +21,10 @@ class ButtonsFormatter
      * @param int $id
      * @return array[]
      */
-    public static function updateDeleteLinks (int $id) {
+    public static function updateDeleteLinks (int $id, string $customUpdateUrl = 'update') {
         return [
             'Редактировать' => [
-                'url' => ['update', 'id' => $id],
+                'url' => [$customUpdateUrl, 'id' => $id],
                 'class' => self::BTN_PRIMARY,
             ],
             'Удалить' => [

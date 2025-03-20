@@ -92,6 +92,20 @@ class TrainingGroupWork extends TrainingGroup
         ]);
     }
 
+    /**
+     * Изменяем значение архивности/актуальности учебной группы
+     * @param int $archive
+     * @return void
+     */
+    public function setArchive(int $archive)
+    {
+        $this->archive = $archive;
+    }
+
+    /**
+     * Проверяем является ли группа архивной
+     * @return bool
+     */
     public function isArchive()
     {
         return $this->archive == self::IS_ARCHIVE;

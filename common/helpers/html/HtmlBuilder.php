@@ -6,14 +6,12 @@ use common\helpers\common\BaseFunctions;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilePaths;
 use common\helpers\StringFormatter;
-use common\Model;
-use common\widgets\select_search\SelectSearch;
-use Exception;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonalDataParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\team\SquadParticipantWork;
+use InvalidArgumentException;
 use Yii;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -81,14 +79,13 @@ class HtmlBuilder
     public static function createToggle(string $offSwitchText, string $onSwitchText, string $idElement, string $nameInput = null, bool $checked = false)
     {
         return '<div class="toggle-wrapper form-group '.$nameInput.'">
-                    <input type="hidden" value="0" id="'.$idElement.'" name="'.$nameInput.'">
-                    <input type="checkbox" value="1" id="'.$idElement.'" class="toggle-checkbox" name="'.$nameInput.'" '.($checked ? 'checked' : '').'>
                     <span class="toggle-icon off">'.$offSwitchText.'</span>
-                    <div class="toggle-container">
-                        <div class="toggle-button"></div>
+                    <div class="toggle-switcher">
+                        <input type="hidden" value="0" name="'.$nameInput.'">
+                        <input type="checkbox" value="1" id="'.$idElement.'" name="'.$nameInput.'" '.($checked ? 'checked' : '').'/>
+                        <label for="'.$idElement.'"></label>
                     </div>
                     <span class="toggle-icon on">'.$onSwitchText.'</span>
-                    <div class="help-block"></div>
                 </div>';
     }
 
@@ -253,7 +250,7 @@ class HtmlBuilder
                 'autocomplete' => 'off',
             ];
 
-            /** @var Model $searshModel */
+            /** @var  \yii\base\Model $searshModel */
             switch ($field['type']) {
                 case self::DATE_FIELD_TYPE:
                     $widgetOptions = [
@@ -465,7 +462,6 @@ class HtmlBuilder
      * @param string $regularMessage
      * @param string $boldMessage
      * @return string
-     * @throws Exception
      */
     public static function createMessage(string $typeMessage, string $regularMessage, string $boldMessage = '')
     {
@@ -483,7 +479,7 @@ class HtmlBuilder
                 $svgColorClass = '';
                 break;
             default:
-                throw new Exception('Message type not recognized');
+                throw new InvalidArgumentException('Не распознан тип сообщения');
         }
 
         return '<div class="alert alert-dismissible fade show ' . $htmlClass . '"  role="alert">

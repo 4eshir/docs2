@@ -41,7 +41,7 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
     <div class="training-group-base-form">
 
         <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
-        <?= $form->field($model, 'branch')->dropDownList(Yii::$app->branches->getList())->label('Отдел, производящий учет') ?>
+        <?= $form->field($model, 'branch')->dropDownList(Yii::$app->branches->getList()) ?>
         <?= $form->field($model, 'trainingProgramId')->widget(Select2::classname(), [
             'data' => ArrayHelper::map($trainingPrograms,'id','name'),
             'size' => Select2::LARGE,
@@ -49,7 +49,7 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
             'pluginOptions' => [
                 'allowClear' => true
             ],
-        ])->label('Образовательная программа'); ?>
+        ]); ?>
         <?= $form->field($model, 'budget')->checkbox() ?>
         <?= $form->field($model, 'network')->checkbox() ?>
 
@@ -110,7 +110,7 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
                 'changeMonth' => true,
                 'changeYear' => true,
                 'yearRange' => '2000:2100',
-            ]])->label('Дата начала занятий') ?>
+            ]]) ?>
 
         <?= $form->field($model, 'endDate')->widget(\yii\jui\DatePicker::class, [
             'dateFormat' => 'php:d.m.Y',
@@ -124,7 +124,7 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
                 'changeMonth' => true,
                 'changeYear' => true,
                 'yearRange' => '2000:2100',
-            ]])->label('Дата окончания занятий') ?>
+            ]]) ?>
         <?= $form->field($model, 'endLoadOrders')->checkbox() ?>
 
         <?= $form->field($model, 'photos[]')->fileInput(['multiple' => true])->label('Фотоматериалы')?>

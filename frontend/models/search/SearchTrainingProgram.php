@@ -10,6 +10,7 @@ use common\Model;
 use frontend\models\work\educational\training_program\TrainingProgramWork;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
+use function PHPUnit\Framework\isEmpty;
 
 
 class SearchTrainingProgram extends Model implements SearchInterfaces
@@ -33,7 +34,7 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
             [['branchSearch', 'focusSearch', 'allowSearch', 'levelSearch', 'actualRelevance'], 'integer'],
             [['programName', 'authorSearch'], 'string'],
             [['startDateSearch', 'finishDateSearch'], 'date', 'format' => 'dd.MM.yyyy'],
-            [['name', 'startDateSearch', 'finishDateSearch', 'programName', 'authorSearch', 'branchSearch', 'focusSearch', 'allowSearch', 'levelSearch'], 'safe'],
+            [['name', 'startDateSearch', 'finishDateSearch', 'programName', 'authorSearch', 'branchSearch', 'focusSearch', 'allowSearch', 'levelSearch', 'actualRelevance'], 'safe'],
         ];
     }
 
