@@ -18,6 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Добавить пользователя', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Выдать токен', ['tokens'], ['class' => 'btn btn-primary']) ?>
     </p>
 
     <?= GridView::widget([

@@ -63,7 +63,7 @@ $this->title = 'Отчет 1-ДОД';
             'clientOptions' => [
                 'changeMonth' => true,
                 'changeYear' => true,
-                'yearRange' => '2000:100',
+                'yearRange' => '2000:2100',
             ]])->label('По') ?>
     </div>
     <div class="panel-body" style="padding: 0; margin: 0"></div>

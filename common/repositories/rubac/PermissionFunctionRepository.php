@@ -26,7 +26,7 @@ class PermissionFunctionRepository
 
     public function getAllPermissions()
     {
-        return PermissionFunctionWork::find()->all();
+        return PermissionFunctionWork::find()->orderBy(['name' => SORT_ASC])->all();
     }
 
     public function save(PermissionFunctionWork $function)

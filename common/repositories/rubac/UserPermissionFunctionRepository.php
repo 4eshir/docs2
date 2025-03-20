@@ -56,9 +56,20 @@ class UserPermissionFunctionRepository
         return PermissionFunctionWork::find()->where(['IN', 'id', $userPermissions])->all();
     }
 
-    public function getByUserAndPermission($userId, $permissionId)
+    public function getByUserPermissionBranch($userId, $permissionId, $branch = null)
     {
-        return UserPermissionFunctionWork::find()->where(['user_id' => $userId])->andWhere(['function_id' => $permissionId])->one();
+        $query = UserPermissionFunctionWork::find()
+            ->where(['user_id' => $userId])
+            ->andWhere(['function_id' => $permissionId]);
+
+        if (!is_null($branch)) {
+            $query = $query->andWhere(['branch' => $branch]);
+        }
+        else {
+            $query = $query->andWhere(['IS', 'branch', null]);
+        }
+
+        return $query->one();
     }
 
     public function prepareCreate($userId, $functionId){
@@ -69,7 +80,7 @@ class UserPermissionFunctionRepository
     }
 
     public function prepareDelete($userId, $functionId){
-        $model = $this->getByUserAndPermission($userId, $functionId);
+        $model = $this->getByUserPermissionBranch($userId, $functionId);
         if ($model) {
             $command = Yii::$app->db->createCommand();
             $command->delete($model::tableName(), $model->getAttributes());

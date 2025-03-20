@@ -384,7 +384,8 @@ class RulesConfig
                 'index',
                 'view',
                 'create',
-                'update'
+                'update',
+                'tokens'
             ]
         ],
 

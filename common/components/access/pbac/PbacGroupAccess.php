@@ -26,9 +26,9 @@ class PbacGroupAccess implements PbacComponentInterface
 
     public function getAllowedGroups()
     {
-        $accessTheirGroups = $this->permissionFunctionRepository->getByUserAndPermission($this->data->user->id, PermissionFunctionWork::PERMISSION_THEIR_GROUPS_ID);
-        $accessBranchGroups = $this->permissionFunctionRepository->getByUserAndPermission($this->data->user->id, PermissionFunctionWork::PERMISSION_BRANCH_GROUPS_ID);
-        $accessAllGroups = $this->permissionFunctionRepository->getByUserAndPermission($this->data->user->id, PermissionFunctionWork::PERMISSION_ALL_GROUPS_ID);
+        $accessTheirGroups = $this->permissionFunctionRepository->getByUserPermissionBranch($this->data->user->id, PermissionFunctionWork::PERMISSION_THEIR_GROUPS_ID);
+        $accessBranchGroups = $this->permissionFunctionRepository->getByUserPermissionBranch($this->data->user->id, PermissionFunctionWork::PERMISSION_BRANCH_GROUPS_ID);
+        $accessAllGroups = $this->permissionFunctionRepository->getByUserPermissionBranch($this->data->user->id, PermissionFunctionWork::PERMISSION_ALL_GROUPS_ID);
 
         $allowedGroups = [];
         if ($accessTheirGroups) {

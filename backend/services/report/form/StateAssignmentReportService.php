@@ -151,7 +151,7 @@ class StateAssignmentReportService
                 BranchDictionary::COD,
                 FocusDictionary::SCIENCE,
                 AllowRemoteDictionary::ONLY_PERSONAL,
-                [self::PARAM_DUPLICATE, self::PARAM_PROJECTS_RATIO]
+                [self::PARAM_DUPLICATE, self::PARAM_PROJECTS_RATIO, self::PARAM_ACHIEVES_RATIO]
             );
 
         $result['cod']['art']['personal'] =
@@ -319,6 +319,7 @@ class StateAssignmentReportService
         $groupsQuery = $this->groupBuilder->filterGroupsByBranches($groupsQuery, [$branch]);
         $groupsQuery = $this->groupBuilder->filterGroupsByFocuses($groupsQuery, [$focus]);
         $groupsQuery = $this->groupBuilder->filterGroupsByAllowRemote($groupsQuery, [$allowRemote]);
+        $groupsQuery = $this->groupBuilder->filterGroupsByBudget($groupsQuery, [TrainingGroupWork::IS_BUDGET]);
         $groupsAll = $this->groupRepository->findAll($groupsQuery);
 
         $eventsAll = $this->foreignEventRepository->getByDatesAndLevels(
@@ -347,9 +348,7 @@ class StateAssignmentReportService
         $participants = $this->participantBuilder->filterByGroups($participants, ArrayHelper::getColumn($groups, 'id'));
         $participantsDuplicate = $this->participantBuilder->groupByWithHaving(clone $participants, 'participant_id', 'COUNT(`training_group_id`) > 1');
 
-        var_dump($participantsDuplicate->createCommand()->getRawSql());
         $participantsAllUnic = $this->participantBuilder->distinct(clone $participants, ['participant_id']);
-        var_dump($participantsAllUnic->createCommand()->getRawSql());
 
         return $this->percent($this->participantRepository->count($participantsDuplicate), $this->participantRepository->count($participantsAllUnic));
     }
