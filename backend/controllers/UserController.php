@@ -2,14 +2,19 @@
 
 namespace backend\controllers;
 
+use backend\forms\TokensForm;
 use backend\models\forms\UserForm;
 use backend\models\search\SearchUser;
+use backend\services\PermissionTokenService;
 use common\models\work\UserWork;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\general\UserRepository;
 use common\repositories\rubac\PermissionFunctionRepository;
+use common\repositories\rubac\PermissionTokenRepository;
 use common\repositories\rubac\UserPermissionFunctionRepository;
+use DomainException;
 use frontend\models\work\rubac\PermissionFunctionWork;
+use frontend\models\work\rubac\PermissionTokenWork;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
@@ -20,6 +25,7 @@ class UserController extends Controller
     private PeopleRepository $peopleRepository;
     private PermissionFunctionRepository $permissionRepository;
     private UserPermissionFunctionRepository $userPermissionRepository;
+    private PermissionTokenService $tokenService;
 
     public function __construct(
         $id,
@@ -28,6 +34,7 @@ class UserController extends Controller
         PeopleRepository $peopleRepository,
         PermissionFunctionRepository $permissionRepository,
         UserPermissionFunctionRepository $userPermissionRepository,
+        PermissionTokenService $tokenService,
         $config = []
     )
     {
@@ -36,6 +43,7 @@ class UserController extends Controller
         $this->peopleRepository = $peopleRepository;
         $this->permissionRepository = $permissionRepository;
         $this->userPermissionRepository = $userPermissionRepository;
+        $this->tokenService = $tokenService;
     }
 
     public function actionIndex()
@@ -101,6 +109,23 @@ class UserController extends Controller
         );
 
         return $this->render('view', [
+            'model' => $model
+        ]);
+    }
+
+    public function actionTokens()
+    {
+        $model = new TokensForm();
+
+        if ($model->load(Yii::$app->request->post())) {
+            if (!$model->validate()) {
+                throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
+            }
+
+            $this->tokenService->saveToken($model);
+        }
+
+        return $this->render('tokens', [
             'model' => $model
         ]);
     }

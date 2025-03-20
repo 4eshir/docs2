@@ -5,9 +5,11 @@ namespace backend\controllers\report\form;
 use backend\forms\report\DodForm;
 use backend\forms\report\SAForm;
 use backend\invokables\ReportDodLoader;
+use backend\invokables\ReportSALoader;
 use backend\services\report\form\DodReportService;
 use backend\services\report\form\StateAssignmentReportService;
 use backend\services\report\ReportFacade;
+use common\helpers\DateFormatter;
 use Yii;
 use yii\web\Controller;
 
@@ -41,7 +43,9 @@ class FormReportController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $loader = new ReportDodLoader(
                 'report_DOD.xlsx',
-                'report_test.xlsx',
+                'DOD_report_' .
+                        DateFormatter::format(date('Y-m-d'), DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator)
+                        . '.xlsx',
                 ReportFacade::generateDod($model, $this->dodReportService)
             );
             $loader();
@@ -57,15 +61,14 @@ class FormReportController extends Controller
         $model = new SAForm();
 
         if ($model->load(Yii::$app->request->post())) {
-            echo '<pre>';
-            var_dump(ReportFacade::generateSA($model, $this->stateAssignmentService));
-            echo '</pre>';
-            /*$loader = new ReportSALoader(
+            $loader = new ReportSALoader(
                 'report_GZ.xlsx',
-                'report_test.xlsx',
+                'SA_report_' .
+                        DateFormatter::format(date('Y-m-d'), DateFormatter::Ymd_dash, DateFormatter::Ymd_without_separator)
+                        . '.xlsx',
                 ReportFacade::generateSA($model, $this->stateAssignmentService)
             );
-            $loader();*/
+            $loader();
         }
 
         return $this->render('state-assignment', [

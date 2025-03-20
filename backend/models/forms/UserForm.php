@@ -110,9 +110,9 @@ class UserForm extends Model
 
     public function getAkaLink()
     {
-        return StringFormatter::stringAsLink(
+        return $this->entity->aka ? StringFormatter::stringAsLink(
             $this->entity->akaWork->getFIO(PersonInterface::FIO_WITH_POSITION),
             Yii::$app->params['frontendDomain'] . Url::to(['/dictionaries/people/view', 'id' => $this->entity->aka])
-        );
+        ) : '';
     }
 }
