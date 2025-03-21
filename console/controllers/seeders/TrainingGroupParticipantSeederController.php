@@ -29,10 +29,10 @@ class TrainingGroupParticipantSeederController extends Controller
                 'certificat_number' => $this->randomHelper->generateRandomString(),
                 'send_method' => rand(0, 7),
                 'training_group_id' => $this->randomHelper->randomItem(TrainingGroupWork::find()->all())['id'],
-                'status' => 0,
+                'status' => 1,
                 'success' => 0,
                 'points' => 0,
-                'group_project_themes_id' => $this->randomHelper->randomItem(GroupProjectThemesWork::find()->all())['id'],
+                'group_project_themes_id' => NULL // $this->randomHelper->randomItem(GroupProjectThemesWork::find()->all())['id'],
             ]);
             $command->execute();
         }
