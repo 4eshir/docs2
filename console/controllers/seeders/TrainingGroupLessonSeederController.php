@@ -20,7 +20,7 @@ class TrainingGroupLessonSeederController extends Controller
         $this->randomHelper = $randomHelper;
         parent::__construct($id, $module, $config);
     }
-    public function actionRun($amount = 10){
+    public function actionRun($amount = 50){
         for($i = 0; $i < $amount; $i++){
             $command = Yii::$app->db->createCommand();
             $startTime = $this->randomHelper->randomTime();

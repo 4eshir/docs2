@@ -97,7 +97,7 @@ class TrainingGroupController extends DocumentController
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $links = array_merge(
-            ButtonsFormatter::anyOneLink('Добавить программу', 'create', 'btn-primary'),
+            ButtonsFormatter::anyOneLink('Добавить программу', 'create', ButtonsFormatter::BTN_PRIMARY),
             ButtonsFormatter::anyOneLink('Изменить актуальность', Yii::$app->frontUrls::TRAINING_GROUP_ARCHIVE, ButtonsFormatter::BTN_SUCCESS)
         );
         $buttonHtml = HtmlBuilder::createGroupButton($links);

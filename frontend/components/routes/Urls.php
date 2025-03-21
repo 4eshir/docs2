@@ -78,11 +78,28 @@ class Urls
      * TRAINING_GROUP_UPDATE - actionView
      * TRAINING_GROUP_INDEX - actionIndex
      * TRAINING_GROUP_ARCHIVE - actionRelevance
+     * LESSON_THEMES_CREATE - actionCreateLessonThemes
+     * JOURNAL_DELETE - actionDeleteJournal
      */
     const TRAINING_GROUP_INDEX = "educational/training-group/index";
     const TRAINING_GROUP_UPDATE = "educational/training-group/base-form";
     const TRAINING_GROUP_VIEW = "educational/training-group/view";
     const TRAINING_GROUP_ARCHIVE = "educational/training-group/archive";
+    const LESSON_THEMES_CREATE = "educational/training-group/create-lesson-themes";
+    const JOURNAL_DELETE = "educational/training-group/delete-journal";
+
+    /**
+     * Константы Journal
+     *
+     * JOURNAL_VIEW - actionView
+     * JOURNAL_UPDATE - actionUpdate
+     * JOURNAL_UPDATE - actionEditPlan
+     * JOURNAL_DELETE_PLAN - actionDeletePlan
+     */
+    const JOURNAL_VIEW = "educational/journal/view";
+    const JOURNAL_UPDATE = "educational/journal/update";
+    const JOURNAL_EDIT_PLAN = "educational/journal/edit-plan";
+    const JOURNAL_DELETE_PLAN = "educational/journal/delete-plan";
 
     /**
      * Константы Certificate

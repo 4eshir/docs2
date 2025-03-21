@@ -107,14 +107,27 @@ class ButtonsFormatter
      * @param string $link
      * @return array[]
      */
-    public static function anyOneLink(string $nameButton, string $link, string $nameClasses, string $id = '')
+    public static function anyOneLink(string $nameButton, string $link, string $nameClasses, string $id = '', $paramsLink = '')
     {
+        $url = $paramsLink ? Url::to([$link] + $paramsLink) : Url::to([$link]);
         return [
             $nameButton => [
-                'url' => StringFormatter::isEmpty($link) ? '#' : Url::to([$link]),
+                'url' => StringFormatter::isEmpty($link) ? '#' : $url,
                 'class' => $nameClasses,
                 'id' => $id
             ]
         ];
+    }
+
+    /**
+     * Создает форматированные параметры для генерации ссылки через Url::to()
+     *
+     * @param int $valueParameter
+     * @param string $nameParameter
+     * @return int[]
+     */
+    public static function createParameterLink(int $valueParameter, string $nameParameter = 'id')
+    {
+        return [$nameParameter => $valueParameter];
     }
 }

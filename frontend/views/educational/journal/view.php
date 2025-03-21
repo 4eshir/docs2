@@ -3,15 +3,51 @@
 use common\helpers\DateFormatter;
 use frontend\forms\journal\JournalForm;
 use frontend\forms\journal\ThematicPlanForm;
-use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonInterface;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $model JournalForm */
 /* @var $plan ThematicPlanForm */
+/* @var $buttonsAct */
+/* @var $otherButtonsAct */
 
+$this->title = 'Электронный журнал';
+$this->params['breadcrumbs'][] = ['label' => 'Учебные группы', 'url' => [Yii::$app->frontUrls::TRAINING_GROUP_INDEX]];
+$this->params['breadcrumbs'][] = ['label' => 'Группа ' . $model->getTrainingGroupNumber(), 'url' => [Yii::$app->frontUrls::TRAINING_GROUP_VIEW, 'id' => $model->groupId]];
+$this->params['breadcrumbs'][] = $this->title;
+\yii\web\YiiAsset::register($this);
 ?>
+
+<div class="journal-view">
+    <div class="substrate">
+        <div class="flexx">
+            <h1>
+                <?= Html::encode('Журнал ' . $model->getTrainingGroupNumber()) ?>
+            </h1>
+            <h3>
+                <?= $model->getRawArchiveGroup(); ?>
+            </h3>
+        </div>
+
+        <div class="flexx space">
+            <div class="flexx">
+                <?= $buttonsAct; ?>
+            </div>
+            <div class="flexx">
+                <?= $otherButtonsAct; ?>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+
+    </div>
+</div>
+
+
+
+
 
 <div class="journal">
     <?= Html::a('Редактировать журнал', ['update', 'id' => $model->groupId], ['class' => 'btn btn-primary']) ?>

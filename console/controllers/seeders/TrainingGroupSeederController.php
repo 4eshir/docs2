@@ -36,7 +36,7 @@ class TrainingGroupSeederController extends Controller
                 'budget' => rand(0, 1),
                 'branch' => rand(1, 7),
                 'order_stop' => rand(0, 1),
-                'archive' => rand(0, 1),
+                'archive' => 0,
                 'protection_date' => $protectionDate,
                 'protection_confirm' => NULL,
                 'is_network' => NULL,

@@ -22,6 +22,7 @@ class SquadParticipantSeederController extends Controller
         parent::__construct($id, $module, $config);
     }
     public function actionRun($amount = 10){
+        ini_set('memory_limit', '1024M');
         $index = 0;
         while ($index < $amount){
             $actId = $this->randomHelper->randomItem(ActParticipantWork::find()->all())['id'];
