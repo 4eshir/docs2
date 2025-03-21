@@ -32,6 +32,15 @@ class TrainingGroupParticipantMockProvider implements TrainingGroupParticipantPr
         });
     }
 
+    public function getSuccessParticipantsFromGroup(int $groupId)
+    {
+        return array_filter($this->data, function($item) use ($groupId) {
+            return
+                $item['success'] == 1 &&
+                $item['training_group_id'] == $groupId;
+        });
+    }
+
     public function getByParticipantIds(array $ids)
     {
         return array_filter($this->data, function ($participant) use ($ids) {

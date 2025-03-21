@@ -70,6 +70,21 @@ class TrainingGroupParticipantRepository
         return $this->provider->getParticipantsFromGroups($groupId);
     }
 
+    public function getSuccessParticipantsFromGroup(int $groupId)
+    {
+        return $this->provider->getSuccessParticipantsFromGroup($groupId);
+    }
+
+    public function getQueryCertificateAllowed(int $groupId)
+    {
+        return TrainingGroupParticipantWork::find()
+            ->joinWith(['trainingGroupWork'])
+            ->joinWith(['certificateWork'])
+            ->where(['training_group.id' => $groupId])
+            ->andWhere(['success' => 1])
+            ->andWhere(['IS', 'certificate.training_group_participant_id', null]);
+    }
+
     public function prepareCreate($groupId, $participantId, $sendMethod)
     {
         if (get_class($this->provider) == TrainingGroupParticipantProvider::class) {

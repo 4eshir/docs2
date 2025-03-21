@@ -38,4 +38,14 @@ class HeaderWizard
         header('Content-Disposition: attachment; filename="'. $filename .'"');
         header('Cache-Control: max-age=0');
     }
+
+    public static function setWordLoadHeaders(string $filename)
+    {
+        header("Content-Description: File Transfer");
+        header('Content-Disposition: attachment; filename="' . $filename . '.docx"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
+    }
 }

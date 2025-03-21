@@ -4,6 +4,8 @@ namespace frontend\services\educational;
 
 use common\helpers\files\FilesHelper;
 use common\repositories\educational\CertificateRepository;
+use common\repositories\educational\TrainingGroupParticipantRepository;
+use common\repositories\educational\TrainingGroupRepository;
 use frontend\components\wizards\CertificateWizard;
 use frontend\forms\certificate\CertificateForm;
 use frontend\models\work\educational\CertificateWork;
@@ -13,12 +15,18 @@ use yii\helpers\FileHelper;
 class CertificateService
 {
     private CertificateRepository $repository;
+    private TrainingGroupRepository $groupRepository;
+    private TrainingGroupParticipantRepository $participantRepository;
 
     public function __construct(
-        CertificateRepository $repository
+        CertificateRepository $repository,
+        TrainingGroupRepository $groupRepository,
+        TrainingGroupParticipantRepository $participantRepository
     )
     {
         $this->repository = $repository;
+        $this->groupRepository = $groupRepository;
+        $this->participantRepository = $participantRepository;
     }
 
     /**
@@ -68,5 +76,15 @@ class CertificateService
     {
         CertificateWizard::archiveDownload();
         FilesHelper::removeDirectory(Yii::$app->basePath.'/download/'.Yii::$app->user->identity->getId().'/');
+    }
+
+    public function buildGroupQuery(int $groupId)
+    {
+        return $this->groupRepository->getQueryById($groupId);
+    }
+
+    public function buildParticipantQuery(int $groupId)
+    {
+        return $this->participantRepository->getQueryCertificateAllowed($groupId);
     }
 }

@@ -73,6 +73,7 @@ class RulesConfig
                 'delete-lesson',
                 'update-lesson',
                 'sub-auds',
+                'create-protocol'
             ]
         ],
 
@@ -88,6 +89,7 @@ class RulesConfig
                 'delete-lesson',
                 'update-lesson',
                 'sub-auds',
+                'create-protocol'
             ]
         ],
 

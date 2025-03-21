@@ -22,11 +22,14 @@ use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
 use frontend\events\visit\DeleteLessonFromVisitEvent;
+use frontend\forms\journal\JournalForm;
 use frontend\forms\training_group\PitchGroupForm;
+use frontend\forms\training_group\ProtocolForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
 use frontend\invokables\PlanLoad;
+use frontend\invokables\ProtocolLoader;
 use frontend\models\search\SearchTrainingGroup;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
@@ -34,6 +37,7 @@ use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\ProjectThemeWork;
+use frontend\services\educational\GroupDocumentService;
 use frontend\services\educational\JournalService;
 use frontend\services\educational\TrainingGroupService;
 use Yii;
@@ -52,6 +56,7 @@ class TrainingGroupController extends DocumentController
     private AuditoriumRepository $auditoriumRepository;
     private LessonThemeRepository $lessonThemeRepository;
     private LockWizard $lockWizard;
+    private GroupDocumentService $documentService;
 
     public function __construct(
         $id,
@@ -68,6 +73,7 @@ class TrainingGroupController extends DocumentController
         AuditoriumRepository $auditoriumRepository,
         LessonThemeRepository $lessonThemeRepository,
         LockWizard $lockWizard,
+        GroupDocumentService $documentService,
         $config = [])
     {
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
@@ -81,6 +87,7 @@ class TrainingGroupController extends DocumentController
         $this->auditoriumRepository = $auditoriumRepository;
         $this->lessonThemeRepository = $lessonThemeRepository;
         $this->lockWizard = $lockWizard;
+        $this->documentService = $documentService;
     }
 
 
@@ -490,6 +497,34 @@ class TrainingGroupController extends DocumentController
             $group->number
         );
         $loader();
+    }
+
+    public function actionCreateProtocol($id)
+    {
+        $model = new ProtocolForm(
+            $this->trainingGroupRepository->get($id)
+        );
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->validate()) {
+                $loader = new ProtocolLoader(
+                    $this->documentService->generateProtocol($model),
+                    "Протокол итоговой аттестации группы {$model->group->number}"
+                );
+                $loader();
+
+                return $this->redirect(['view', 'id' => $id]);
+            }
+        }
+
+        return $this->render('protocol-settings', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionDownloadJournal($id)
+    {
+        $this->documentService->generateJournal($id);
     }
 
     public function actionSubAuds()

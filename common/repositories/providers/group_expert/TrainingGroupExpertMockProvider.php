@@ -18,10 +18,12 @@ class TrainingGroupExpertMockProvider implements TrainingGroupExpertProviderInte
         return $this->data[$id] ?? null;
     }
 
-    public function getExpertsFromGroup($groupId)
+    public function getExpertsFromGroup($groupId, $type)
     {
-        return array_filter($this->data, function($item) use ($groupId) {
-            return $item['training_group_id'] === $groupId;
+        return array_filter($this->data, function($item) use ($groupId, $type) {
+            return
+                in_array($item['type'], $type) &&
+                $item['training_group_id'] === $groupId;
         });
     }
 

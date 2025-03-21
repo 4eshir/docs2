@@ -41,9 +41,12 @@ class CertificateController extends Controller
         ]);
     }
 
-    public function actionCreate()
+    public function actionCreate($id = null)
     {
-        $form = new CertificateForm();
+        $form = new CertificateForm(
+            $this->service->buildGroupQuery($id),
+            $this->service->buildParticipantQuery($id)
+        );
 
         if ($form->load(Yii::$app->request->post())) {
             $certificateIds = $this->service->saveAllCertificates($form);

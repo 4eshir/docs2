@@ -2,6 +2,7 @@
 
 namespace common\repositories\educational;
 
+use common\models\scaffold\TrainingGroupExpert;
 use common\repositories\providers\group_expert\TrainingGroupExpertProvider;
 use common\repositories\providers\group_expert\TrainingGroupExpertProviderInterface;
 use DomainException;
@@ -28,9 +29,9 @@ class TrainingGroupExpertRepository
         return $this->provider->get($id);
     }
 
-    public function getExpertsFromGroup($groupId)
+    public function getExpertsFromGroup($groupId, $type = [TrainingGroupExpertWork::TYPE_EXTERNAL, TrainingGroupExpertWork::TYPE_INTERNAL])
     {
-        return $this->provider->getExpertsFromGroup($groupId);
+        return $this->provider->getExpertsFromGroup($groupId, $type);
     }
 
     public function prepareCreate($groupId, $expertId, $expertType)

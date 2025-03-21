@@ -3,12 +3,15 @@
 namespace frontend\models\work\general;
 
 use common\models\scaffold\PeopleStamp;
+use frontend\models\work\dictionaries\CompanyWork;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\dictionaries\PositionWork;
 use InvalidArgumentException;
 
 /**
  * @property PeopleWork $peopleWork
- * @property PeoplePositionCompanyBranchWork $positionWork
+ * @property PositionWork $positionWork
+ * @property CompanyWork $companyWork
  */
 class PeopleStampWork extends PeopleStamp
 {
@@ -27,13 +30,13 @@ class PeopleStampWork extends PeopleStamp
     public function getFIO($type)
     {
         switch ($type) {
-            case PeopleWork::FIO_FULL:
+            case PersonInterface::FIO_FULL:
                 return $this->getFullFio();
-            case PeopleWork::FIO_SURNAME_INITIALS:
+            case PersonInterface::FIO_SURNAME_INITIALS:
                 return $this->getSurnameInitials();
-            case PeopleWork::FIO_WITH_POSITION:
+            case PersonInterface::FIO_WITH_POSITION:
                 return $this->getFioPosition();
-            case PeopleWork::FIO_SURNAME_INITIALS_WITH_POSITION:
+            case PersonInterface::FIO_SURNAME_INITIALS_WITH_POSITION:
                 return $this->getPositionSurnameInitials();
             default:
                 throw new InvalidArgumentException('Неизвестный тип вывода ФИО');
@@ -75,5 +78,10 @@ class PeopleStampWork extends PeopleStamp
     public function getPositionWork()
     {
         return $this->hasOne(PositionWork::class, ['id' => 'position_id']);
+    }
+
+    public function getCompanyWork()
+    {
+        return $this->hasOne(CompanyWork::class, ['id' => 'company_id']);
     }
 }

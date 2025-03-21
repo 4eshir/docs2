@@ -17,11 +17,6 @@ use yii\widgets\ActiveForm;
 /* @var $model CertificateForm */
 /* @var $form yii\widgets\ActiveForm */
 ?>
-<?php
-if(isset($_GET['group_id'])) {
-    $model->group_id = $_GET['group_id'];
-}
-?>
 
 <div class="certificate-form">
 
@@ -47,10 +42,10 @@ if(isset($_GET['group_id'])) {
             'participantUrl' => 'get-participants'
         ],
         'dataProviderGroup' => new ActiveDataProvider([
-            'query' => TrainingGroupWork::find()
+            'query' => $model->groupQuery
         ]),
         'dataProviderParticipant' => new ActiveDataProvider([
-            'query' => TrainingGroupParticipantWork::find()->where('0=1')
+            'query' => $model->participantQuery
         ]),
     ]);
     ?>

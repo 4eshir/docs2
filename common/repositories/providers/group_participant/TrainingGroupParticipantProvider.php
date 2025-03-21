@@ -23,6 +23,11 @@ class TrainingGroupParticipantProvider implements TrainingGroupParticipantProvid
         return TrainingGroupParticipantWork::find()->where(['IN', 'training_group_id', $groupId])->all();
     }
 
+    public function getSuccessParticipantsFromGroup(int $groupId)
+    {
+        return TrainingGroupParticipantWork::find()->where(['IN', 'training_group_id', $groupId])->andWhere(['success' => 1])->all();
+    }
+
     public function getByParticipantIds(array $ids)
     {
         return TrainingGroupParticipantWork::find()->where(['IN', 'participant_id', $ids])->all();

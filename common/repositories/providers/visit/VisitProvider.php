@@ -21,7 +21,16 @@ class VisitProvider implements VisitProviderInterface
     {
         return VisitWork::find()
             ->joinWith(['trainingGroupParticipantWork trainingGroupParticipantWork'])
+            ->joinWith(['trainingGroupParticipantWork.participantWork participantWork'])
             ->where(['trainingGroupParticipantWork.training_group_id' => $groupId])
+            ->orderBy(
+                [
+                    'participantWork.surname' => SORT_ASC,
+                    'participantWork.firstname' => SORT_ASC,
+                    'trainingGroupLesson.lesson_date' => SORT_ASC,
+                    'trainingGroupLesson.id' => SORT_ASC
+                ]
+            )
             ->all();
     }
 

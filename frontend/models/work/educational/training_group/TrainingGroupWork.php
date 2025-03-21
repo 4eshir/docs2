@@ -318,4 +318,9 @@ class TrainingGroupWork extends TrainingGroup
     {
         return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
     }
+
+    public function getTrainingGroupExpertsWork()
+    {
+        return $this->hasMany(TrainingGroupExpertWork::class, ['training_group_id' => 'id']);
+    }
 }

@@ -13,9 +13,9 @@ class TrainingGroupExpertProvider implements TrainingGroupExpertProviderInterfac
         return TrainingGroupExpertWork::find()->where(['id' => $id])->one();
     }
 
-    public function getExpertsFromGroup($groupId)
+    public function getExpertsFromGroup($groupId, $type)
     {
-        return TrainingGroupExpertWork::find()->where(['training_group_id' => $groupId])->all();
+        return TrainingGroupExpertWork::find()->where(['training_group_id' => $groupId])->andWhere(['expert_type' => $type])->all();
     }
 
     public function prepareCreate($groupId, $expertId, $expertType)
