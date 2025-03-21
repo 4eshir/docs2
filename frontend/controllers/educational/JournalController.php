@@ -2,6 +2,8 @@
 
 namespace frontend\controllers\educational;
 
+use common\helpers\ButtonsFormatter;
+use common\helpers\html\HtmlBuilder;
 use common\repositories\educational\VisitRepository;
 use frontend\forms\journal\JournalForm;
 use frontend\forms\journal\ThematicPlanForm;
@@ -30,9 +32,54 @@ class JournalController extends Controller
         $form = new JournalForm($id);
         $plan = new ThematicPlanForm($id);
 
+        $links = array_merge(
+            ButtonsFormatter::anyOneLink(
+                'Редактировать журнал',
+                Yii::$app->frontUrls::JOURNAL_UPDATE,
+                ButtonsFormatter::BTN_PRIMARY,
+                '',
+                ButtonsFormatter::createParameterLink($id)
+            ),
+            ButtonsFormatter::anyOneLink(
+                'Редактировать ТП',
+                Yii::$app->frontUrls::JOURNAL_EDIT_PLAN,
+                ButtonsFormatter::BTN_SUCCESS,
+                '',
+                ButtonsFormatter::createParameterLink($id)
+            )
+        );
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
+        $otherLinks = array_merge(
+            ButtonsFormatter::anyOneLink(
+                'Создать ТП',
+                Yii::$app->frontUrls::LESSON_THEMES_CREATE,
+                ButtonsFormatter::BTN_SECONDARY,
+                '',
+                ButtonsFormatter::createParameterLink($id, 'groupId')
+            ),
+            ButtonsFormatter::anyOneLink(
+                'Очистить ТП',
+                Yii::$app->frontUrls::JOURNAL_DELETE_PLAN,
+                ButtonsFormatter::BTN_WARNING,
+                '',
+                ButtonsFormatter::createParameterLink($id)
+            ),
+            ButtonsFormatter::anyOneLink(
+                'Удалить журнал',
+                Yii::$app->frontUrls::JOURNAL_DELETE,
+                ButtonsFormatter::BTN_DANGER,
+                '',
+                ButtonsFormatter::createParameterLink($id),
+            ),
+        );
+        $otherButtonHtml = HtmlBuilder::createGroupButton($otherLinks);
+
         return $this->render('view', [
             'model' => $form,
-            'plan' => $plan
+            'plan' => $plan,
+            'buttonsAct' => $buttonHtml,
+            'otherButtonsAct' => $otherButtonHtml,
         ]);
     }
 
