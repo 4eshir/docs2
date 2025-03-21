@@ -1,11 +1,14 @@
 <?php
 
 use common\models\work\UserWork;
+use frontend\models\work\rubac\UserPermissionFunctionWork;
+use yii\data\ArrayDataProvider;
+use yii\grid\GridView;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model UserWork */
-
+/* @var $permissions */
 //$this->title = $model->people->secondname.' '.$model->responsibilityType->name;
 ?>
 
@@ -21,6 +24,16 @@ use yii\widgets\DetailView;
                 'firstname',
                 'patronymic',
                 'username',
+            ],
+        ]) ?>
+        <?= GridView::widget([
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => $permissions,
+                'pagination' => false,
+            ]),
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+                'name'
             ],
         ]) ?>
     </div>

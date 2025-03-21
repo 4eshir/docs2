@@ -52,4 +52,23 @@ class PermissionTokenRepository
 
         return $model->id;
     }
+    public function isPossibleInsert($userId, $functionId)
+    {
+        $currentTime = date('Y-m-d H:i:s');
+        return PermissionTokenWork::find()
+            ->where(['user_id' => $userId])
+            ->andWhere(['function_id' => $functionId])
+            ->andWhere(['<', 'start_time' , $currentTime])
+            ->andWhere(['>','end_time' , $currentTime])
+            ->exists();
+    }
+    public function getActiveToken($userId)
+    {
+        $currentTime = date('Y-m-d H:i:s');
+        $query = PermissionTokenWork::find()
+            ->where(['user_id' => $userId])
+            ->andWhere(['<', 'start_time' , $currentTime])
+            ->andWhere(['>','end_time' , $currentTime]);
+        return $query->all();
+    }
 }
