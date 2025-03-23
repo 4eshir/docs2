@@ -97,4 +97,132 @@ class RubacComponent
     {
         return Yii::$app->user->identity->getId();
     }
+
+    public function getTeacherPermissions()
+    {
+        return [
+            'add_group',
+            'view_self_groups',
+            'edit_self_groups',
+            'view_dictionaries',
+            'view_training_programs',
+            'view_study_orders'
+        ];
+    }
+
+    public function getStudyInformantPermissions()
+    {
+        return [
+            'add_group',
+            'view_branch_groups',
+            'edit_branch_groups',
+            'view_dictionaries',
+            'view_training_programs',
+            'edit_training_programs',
+            'view_study_orders',
+            'edit_study_orders',
+            'create_certificates',
+            'view_certificate_template',
+            'edit_certificate_template'
+        ];
+    }
+
+    public function getEventInformantPermissions()
+    {
+        return [
+            'view_dictionaries',
+            'view_base_orders',
+            'view_event_regulations',
+            'edit_event_regulations',
+            'view_events',
+            'edit_events',
+            'view_foreign_events',
+            'edit_foreign_events',
+        ];
+    }
+
+    public function getDocumentInformantPermissions()
+    {
+        return [
+            'view_doc_in',
+            'edit_doc_in',
+            'view_doc_out',
+            'edit_doc_out',
+            'view_base_orders',
+            'edit_base_orders',
+            'view_local_resp'
+        ];
+    }
+
+    public function getBranchControllerPermissions()
+    {
+        return [
+            'add_group',
+            'view_branch_groups',
+            'edit_branch_groups',
+            'delete_branch_groups',
+            'forgive_study_errors',
+            'archive_branch_groups',
+            'view_dictionaries',
+            'edit_dictionaries',
+            'view_training_programs',
+            'edit_training_programs',
+            'view_study_orders',
+            'edit_study_orders',
+            'gen_report_query',
+            'view_doc_in',
+            'view_doc_out',
+            'view_base_orders',
+            'view_event_regulations',
+            'edit_event_regulations',
+            'view_base_regulations',
+            'view_events',
+            'edit_events',
+            'view_foreign_events',
+            'edit_foreign_events',
+            'view_local_resp',
+            'create_certificates',
+            'view_certificate_template'
+        ];
+    }
+
+    public function getSuperControllerPermissions()
+    {
+        return [
+            'view_all_groups',
+            'edit_all_groups',
+            'delete_all_groups',
+            'archive_all_groups',
+            'view_dictionaries',
+            'edit_dictionaries',
+            'view_training_programs',
+            'edit_training_programs',
+            'view_study_orders',
+            'edit_study_orders',
+            'gen_report_query',
+            'gen_report_forms',
+            'view_doc_in',
+            'edit_doc_in',
+            'view_doc_out',
+            'edit_doc_out',
+            'view_base_orders',
+            'edit_base_orders',
+            'view_event_regulations',
+            'edit_event_regulations',
+            'view_base_regulations',
+            'edit_base_regulations',
+            'view_events',
+            'edit_events',
+            'view_foreign_events',
+            'edit_foreign_events',
+            'view_local_resp',
+            'edit_local_resp',
+            'view_users',
+            'edit_users',
+            'create_certificates',
+            'delete_certificates',
+            'view_certificate_template',
+            'edit_certificate_template'
+        ];
+    }
 }

@@ -134,12 +134,12 @@ use yii\jui\DatePicker;
 
     <?= $form->field($model, 'city')->textInput(['readonly' => true]) ?>
 
-    <?= $form->field($model, 'event_way')
+    <?= $form->field($model, 'format')
         ->textInput(['readonly' => true, 'value' => Yii::$app->eventWay->get($model->format)])
         ->label('Формат проведения');
     ?>
 
-    <?= $form->field($model, 'event_level')
+    <?= $form->field($model, 'level')
         ->textInput(['readonly' => true, 'value' => Yii::$app->eventLevel->get($model->level)])
         ->label('Уровень');
     ?>

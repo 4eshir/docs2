@@ -34,24 +34,34 @@ use yii\widgets\ActiveForm;
         ],
     ])->label('Также является'); ?>
 
+    <hr>
+    <h5>Правила доступа</h5>
+    <button id="button-teacher">Шаблон "Педагог"</button>
+    <button id="button-study">Шаблон "Информатор по учебной деятельности"</button>
+    <button id="button-event">Шаблон "Информатор по мероприятиям"</button>
+    <button id="button-document">Шаблон "Информатор по документообороту"</button>
+    <button id="button-branch-controller">Шаблон "Контролер в отделе"</button>
+    <button id="button-super-controller">Шаблон "Суперконтролер"</button>
+
+
     <?= $form->field($model, 'userPermissions')->checkboxList(
         ArrayHelper::map($model->permissions, 'id', 'name'),
         [
             'class' => 'base',
-            'item' => function ($index, $label, $name, $checked, $value) {
+            'item' => function ($index, $label, $name, $checked, $value) use ($model) {
                 if ($checked == 1) {
                     $checked = 'checked';
                 }
                 return
                     '<div class="checkbox" class="form-control">
-                            <label style="margin-bottom: 0px" for="branch-' . $index .'">
-                                <input id="branch-'. $index .'" name="'. $name .'" type="checkbox" '. $checked .' value="'. $value .'">
+                            <label style="margin-bottom: 0px" for="permission-' . $model->permissions[$index]->short_code .'">
+                                <input id="permission-'. $model->permissions[$index]->short_code .'" name="'. $name .'" type="checkbox" '. $checked .' value="'. $value .'">
                                 '. $label .'
                             </label>
                         </div>';
             }
         ]
-    )->label('<u>Правила доступа</u>')
+    )->label(false)
     ?>
 
     </div>
@@ -62,3 +72,52 @@ use yii\widgets\ActiveForm;
     <?php ActiveForm::end(); ?>
 
 </div>
+
+
+<?php
+$permissionsTeacher = json_encode(Yii::$app->rubac->getTeacherPermissions());
+$permissionsStudyInform = json_encode(Yii::$app->rubac->getStudyInformantPermissions());
+$permissionsEventInform = json_encode(Yii::$app->rubac->getEventInformantPermissions());
+$permissionsDocInform = json_encode(Yii::$app->rubac->getDocumentInformantPermissions());
+$permissionsBranchController = json_encode(Yii::$app->rubac->getBranchControllerPermissions());
+$permissionsSuperController = json_encode(Yii::$app->rubac->getSuperControllerPermissions());
+
+$this->registerJs(<<<JS
+    function activateCheckboxes(permissions) {
+        let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(function(checkbox) {
+            if (checkbox.id.startsWith('permission-')) {
+                checkbox.checked = false;
+            }
+        });
+        
+        permissions.forEach(function(permission) {
+            let checkboxId = 'permission-' + permission;
+            let checkbox = document.getElementById(checkboxId);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+    }
+
+    document.getElementById('button-teacher').addEventListener('click', function() {
+        activateCheckboxes($permissionsTeacher);
+    });
+    document.getElementById('button-study').addEventListener('click', function() {
+        activateCheckboxes($permissionsStudyInform);
+    });
+    document.getElementById('button-event').addEventListener('click', function() {
+        activateCheckboxes($permissionsEventInform);
+    });
+    document.getElementById('button-document').addEventListener('click', function() {
+        activateCheckboxes($permissionsDocInform);
+    });
+    document.getElementById('button-branch-controller').addEventListener('click', function() {
+        activateCheckboxes($permissionsBranchController);
+    });
+    document.getElementById('button-super-controller').addEventListener('click', function() {
+        activateCheckboxes($permissionsSuperController);
+    });
+JS
+    , $this::POS_LOAD);
+?>
