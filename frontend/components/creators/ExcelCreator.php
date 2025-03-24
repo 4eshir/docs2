@@ -2,17 +2,24 @@
 
 namespace frontend\components\creators;
 
+use common\helpers\files\FilePaths;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\VisitRepository;
 use frontend\forms\journal\JournalForm;
+use frontend\models\work\educational\training_group\LessonThemeWork;
+use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
+use frontend\models\work\educational\training_program\ThematicPlanWork;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 class ExcelCreator
 {
-    public static function createJournal(int $groupId) : Spreadsheet
+    const TEMPLATE_FILENAME = 'electronicJournal.xlsx';
+    /*public static function createJournal(int $groupId) : Spreadsheet
     {
         $onPage = 21; //количество занятий на одной строке в листе
         $lesCount = 0; //счетчик для страниц
@@ -233,6 +240,25 @@ class ExcelCreator
             $inputData->getSheet($sheets)->getStyle('B1')->getAlignment()->setWrapText(true);
         }
 
+        return $inputData;
+    }*/
+    public static function createJournal($groupId)
+    {
+        $fileName = FilePaths::TEMPLATE_FILEPATH. '/' . self::TEMPLATE_FILENAME;
+        $inputType = IOFactory::identify(Yii::$app->basePath . '/' . $fileName);
+        $reader = IOFactory::createReader($inputType);
+        $inputData = $reader->load(Yii::$app->basePath . $fileName);
+        $group = TrainingGroupWork::findOne($groupId);
+        $lessons = TrainingGroupLessonWork::find()->where(['training_group_id' => $group->id])->all();
+        $lessonThemes = LessonThemeWork::find()->where([ 'IN', 'training_group_lesson_id' , ArrayHelper::getColumn($lessons, 'id')])->all();
+        $startPosition = 5;
+        foreach ($lessonThemes as $lessonTheme) {
+            $clone = clone $inputData->getActiveSheet();
+            $clone->setTitle('Шаблон' . 2);
+            $inputData->addSheet($clone);
+            $inputData->getActiveSheet()->setCellValue("AA$startPosition", $lessonTheme->thematicPlanWork->theme);
+            $startPosition++;
+        }
         return $inputData;
     }
 }

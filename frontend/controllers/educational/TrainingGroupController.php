@@ -9,6 +9,7 @@ use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\ButtonsFormatter;
 use common\helpers\common\RequestHelper;
+use common\helpers\files\FilePaths;
 use common\helpers\html\HtmlBuilder;
 use common\Model;
 use common\repositories\dictionaries\AuditoriumRepository;
@@ -21,6 +22,7 @@ use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
 use DomainException;
+use frontend\components\creators\ExcelCreator;
 use frontend\events\visit\DeleteLessonFromVisitEvent;
 use frontend\forms\journal\JournalForm;
 use frontend\forms\training_group\PitchGroupForm;
@@ -28,6 +30,7 @@ use frontend\forms\training_group\ProtocolForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
+use frontend\invokables\JournalLoader;
 use frontend\invokables\PlanLoad;
 use frontend\invokables\ProtocolLoader;
 use frontend\models\search\SearchTrainingGroup;
@@ -524,7 +527,12 @@ class TrainingGroupController extends DocumentController
 
     public function actionDownloadJournal($id)
     {
-        $this->documentService->generateJournal($id);
+        $model = $this->trainingGroupRepository->get($id);
+        $loader = new JournalLoader(
+            $this->documentService->generateJournal($id),
+            "Журнал группы $model->number.xlsx"
+        );
+        $loader();
     }
 
     public function actionSubAuds()
