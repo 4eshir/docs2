@@ -40,8 +40,32 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 
-    <div class="card">
-
+    <div class="card no-flex">
+        <div class="table-topic">
+            <?= $this->title ?>
+        </div>
+        <div class="table-block">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ФИО</th>
+                        <th>Расписание</th>
+                        <th>Итоговой контроль</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($model->participantLessons as $participantLesson): ?>
+                        <tr>
+                            <td>
+                                <?= $participantLesson->participant->getFIO(PersonInterface::FIO_SURNAME_INITIALS); ?>
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

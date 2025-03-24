@@ -26,9 +26,7 @@ class VisitProvider implements VisitProviderInterface
             ->orderBy(
                 [
                     'participantWork.surname' => SORT_ASC,
-                    'participantWork.firstname' => SORT_ASC,
-                    'trainingGroupLesson.lesson_date' => SORT_ASC,
-                    'trainingGroupLesson.id' => SORT_ASC
+                    'participantWork.firstname' => SORT_ASC
                 ]
             )
             ->all();
