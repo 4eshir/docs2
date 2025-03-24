@@ -20,6 +20,12 @@ class FilePaths
     public const SVG_ALERT_WARNING = 'svg/alert-warning.svg';
     public const SVG_ALERT_DANGER = 'svg/alert-danger.svg';
     public const SVG_ALERT_INFO = 'svg/alert-info.svg';
+    public const SVG_TURNOUT = 'svg/turnout.svg';   // явка
+    public const SVG_NON_APPEARANCE = 'svg/non-appearance.svg';   // неявка
+    public const SVG_DISTANT = 'svg/distant.svg';   // дистант
+    public const SVG_DROPPED = 'svg/dropped.svg';   // выбыл/отчислен
+    public const SVG_CHECK = 'svg/do-circle.svg';
+    public const SVG_CROSS = 'svg/dont-circle.svg';
 
 
     public const CERTIFICATE_TEMPLATES = self::BASE_FILEPATH . '/certificate-templates/';

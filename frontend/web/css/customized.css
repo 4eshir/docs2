@@ -668,4 +668,6 @@ input[type="checkbox"] {
     fill: var(--critical-color);
 }
 
-
+.no-flex {
+    display: block!important;
+}

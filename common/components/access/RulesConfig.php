@@ -89,7 +89,8 @@ class RulesConfig
                 'delete-lesson',
                 'update-lesson',
                 'sub-auds',
-                'create-protocol'
+                'create-protocol',
+                'download-journal'
             ]
         ],
 

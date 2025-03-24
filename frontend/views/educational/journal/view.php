@@ -40,62 +40,92 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 
-    <div class="card">
+    <div class="card no-flex">
+        <div class="table-topic">
+            <?= $this->title ?>
+        </div>
+        <div class="table-block">
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">ФИО</th>
+                        <th colspan="<?= $model->getLessonsCount() ?>">Расписание</th>
+                        <th colspan="3">Итоговый контроль</th>
+                    </tr>
+                <tr>
+                    <?php foreach ($model->getDateLessons() as $dateLesson): ?>
+                        <td class="lessons-date"> <?= $dateLesson ?>  </td>
+                    <?php endforeach; ?>
+                    <td>Тема проекта</td>
+                    <td>Оценка</td>
+                    <td>Успешное завершение</td>
+                </tr>
+                </thead>
 
+                <tbody>
+                    <?php foreach ($model->participantLessons as $participantLesson): ?>
+                        <tr>
+                            <td>
+                                <?= $model->getPrettyParticipant($participantLesson->participant); ?>
+                            </td>
+                            <?php foreach ($participantLesson->lessonIds as $lesson): ?>
+                                <td>
+                                    <?= $lesson->getPrettyStatus() ?>
+                                </td>
+                            <?php endforeach; ?>
+                            <td>
+                                <?= $participantLesson->groupProjectThemesWork->projectThemeWork->name; ?>
+                            </td>
+                            <td>
+                                <?= $participantLesson->points; ?>
+                            </td>
+                            <td>
+                                <?= $model->getPrettySuccessFinishing($participantLesson->successFinishing); ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
+    <div class="card no-flex">
+        <div class="table-topic">
+            Тематический план
+        </div>
+        <div class="table-block">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Дата занятия</th>
+                        <th>Тема занятия</th>
+                        <th>Форма контроля</th>
+                        <th>Педагоги</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ($plan->lessonThemes as $index => $lessonTheme): ?>
+                    <tr>
+                        <td>
+                            <?=
+                            DateFormatter::format(
+                                $lessonTheme->trainingGroupLessonWork->lesson_date,
+                                DateFormatter::Ymd_dash,
+                                DateFormatter::dmY_dot
+                            )
+                            ?>
+                        </td>
+                        <td>
+                            <?= $lessonTheme->thematicPlanWork->theme ?>
+                        </td>
 
-
-
-
-<div class="journal">
-    <?= Html::a('Редактировать журнал', ['update', 'id' => $model->groupId], ['class' => 'btn btn-primary']) ?>
-    <table class="table table-bordered">
-        <?php foreach ($model->participantLessons as $participantLesson): ?>
-            <tr>
-                <td>
-                    <?= $participantLesson->participant->getFIO(PersonInterface::FIO_SURNAME_INITIALS); ?>
-                </td>
-                <?php foreach ($participantLesson->lessonIds as $lesson): ?>
-                    <td>
-                        <?= $lesson->getPrettyStatus() ?>
-                    </td>
-                <?php endforeach; ?>
-                <td>
-                    <?= $participantLesson->groupProjectThemesWork->projectThemeWork->name; ?>
-                </td>
-                <td>
-                    <?= $participantLesson->points; ?>
-                </td>
-                <td>
-                    <?= $participantLesson->successFinishing; ?>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
-
-    <?= Html::a('Редактировать тематический план', ['edit-plan', 'id' => $model->groupId], ['class' => 'btn btn-primary']) ?>
-    <?= Html::a('Очистить тематический план', ['delete-plan', 'id' => $model->groupId], ['class' => 'btn btn-danger']) ?>
-    <table class="table table-bordered">
-        <?php foreach ($plan->lessonThemes as $index => $lessonTheme): ?>
-            <tr>
-                <td>
-                    <?=
-                        DateFormatter::format(
-                            $lessonTheme->trainingGroupLessonWork->lesson_date,
-                            DateFormatter::Ymd_dash,
-                            DateFormatter::dmY_dot
-                        )
-                    ?>
-                </td>
-                <td>
-                    <?= $lessonTheme->thematicPlanWork->theme ?>
-                </td>
-                <td>
-                    <?= $lessonTheme->teacherWork->peopleWork->getFIO(PersonInterface::FIO_FULL) ?>
-                </td>
-            </tr>
-        <?php endforeach;?>
-    </table>
+                        <td>
+                            <?= $lessonTheme->teacherWork->peopleWork->getFIO(PersonInterface::FIO_FULL) ?>
+                        </td>
+                    </tr>
+                <?php endforeach;?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

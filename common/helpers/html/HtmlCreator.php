@@ -24,7 +24,7 @@ class HtmlCreator
     }
 
     public static function archiveTooltip() {
-        return HtmlBuilder::createTooltip(
+        return HtmlBuilder::createTooltipIcon(
             'Архивный объект защищён от изменений',
             FilePaths::SVG_ARCHIVE
         );

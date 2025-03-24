@@ -38,7 +38,7 @@ class HtmlBuilder
      * @param string|null $svgColorClass
      * @return string
      */
-    public static function createTooltip(string $content, string $svgLink = FilePaths::SVG_INFO, string $svgColorClass = '')
+    public static function createTooltipIcon(string $content, string $svgLink = FilePaths::SVG_INFO, string $svgColorClass = '')
     {
         $svgContent = file_get_contents($svgLink);
         return '<span class="tooltip-span">
@@ -47,6 +47,21 @@ class HtmlBuilder
                         <div class="ant-tooltip-arrow"></div>
                         <div class="ant-tooltip-content">
                             '.$content.'
+                        </div>
+                    </div>
+                </span>';
+    }
+
+    public static function createTooltip(string $content, string $contentTooltip)
+    {
+        return '<span class="tooltip-span">
+                    <div class="content">
+                        '.$content.'
+                    </div>
+                    <div class="ant-tooltip">
+                        <div class="ant-tooltip-arrow"></div>
+                        <div class="ant-tooltip-content">
+                            '.$contentTooltip.'
                         </div>
                     </div>
                 </span>';
