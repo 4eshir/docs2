@@ -8,11 +8,22 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model CertificateTemplatesForm */
 
-$this->title = $model->name;
+$this->title = "Шаблон {$model->entity->name}";
 $this->params['breadcrumbs'][] = ['label' => 'Шаблоны сертификатов', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
+
+<style>
+    table.detail-view th {
+        width: 30%;
+    }
+
+    table.detail-view td {
+        width: 70%;
+    }
+</style>
+
 <div class="certificat-templates-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -31,12 +42,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'entity.name',
+            ['attribute' => 'entity.name', 'label' => 'Наименование'],
             [
                 'attribute' => 'templateFile',
+                'label' => 'Файл шаблона',
                 'format' => 'raw',
                 'value' => function (CertificateTemplatesForm $model) {
-                    $imageUrl = Url::to(['certificate/get-image', 'filepath' => $model->entity->path]);
+                    $imageUrl = Url::to(['certificate-templates/get-image', 'filepath' => $model->entity->path]);
                     return Html::img($imageUrl, ['alt' => 'Изображение', 'style' => 'max-width:70%;']);
                 },
             ],

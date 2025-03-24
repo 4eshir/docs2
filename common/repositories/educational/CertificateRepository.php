@@ -4,6 +4,7 @@
 namespace common\repositories\educational;
 
 
+use common\components\traits\CommonDatabaseFunctions;
 use DomainException;
 use frontend\models\work\CertificateTemplatesWork;
 use frontend\models\work\educational\CertificateWork;

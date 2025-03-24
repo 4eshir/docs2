@@ -78,13 +78,13 @@ class CertificateService
         FilesHelper::removeDirectory(Yii::$app->basePath.'/download/'.Yii::$app->user->identity->getId().'/');
     }
 
-    public function buildGroupQuery(int $groupId)
+    public function buildGroupQuery(?int $groupId)
     {
-        return $this->groupRepository->getQueryById($groupId);
+        return $groupId ? $this->groupRepository->getQueryById($groupId) : null;
     }
 
-    public function buildParticipantQuery(int $groupId)
+    public function buildParticipantQuery(?int $groupId)
     {
-        return $this->participantRepository->getQueryCertificateAllowed($groupId);
+        return $groupId ? $this->participantRepository->getQueryCertificateAllowed($groupId) : null;
     }
 }

@@ -14,45 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 
-<style>
-    .badge {
-        padding: 1px 9px 2px;
-        font-size: 12.025px;
-        font-weight: bold;
-        white-space: nowrap;
-        color: #ffffff;
-        background-color: #999999;
-        -webkit-border-radius: 9px;
-        -moz-border-radius: 9px;
-        border-radius: 9px;
-    }
-    .badge:hover {
-        color: #ffffff;
-        text-decoration: none;
-        cursor: pointer;
-    }
-    .badge-error {
-        background-color: #b94a48;
-    }
-    .badge-error:hover {
-        background-color: #953b39;
-    }
-    .badge-success {
-        background-color: #468847;
-    }
-    .badge-success:hover {
-        background-color: #356635;
-    }
-
-    table.detail-view th {
-        width: 50%;
-    }
-
-    table.detail-view td {
-        width: 50%;
-    }
-</style>
-
 <div class="user-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -71,11 +32,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'entity.surname',
-            'entity.firstname',
-            'entity.patronymic',
-            'entity.username',
-            //'email',
+            ['attribute' => 'entity.surname', 'label' => 'Фамилия'],
+            ['attribute' => 'entity.firstname', 'label' => 'Имя'],
+            ['attribute' => 'entity.patronymic', 'label' => 'Отчество'],
+            ['attribute' => 'entity.username', 'label' => 'Логин'],
             ['attribute' => 'aka', 'label' => 'Также является', 'format' => 'raw', 'value' => function(UserForm $model) {
                 return $model->getAkaLink();
             }],

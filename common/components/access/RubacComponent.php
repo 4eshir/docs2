@@ -222,7 +222,67 @@ class RubacComponent
             'create_certificates',
             'delete_certificates',
             'view_certificate_template',
-            'edit_certificate_template'
+            'edit_certificate_template',
+            'merge_participants'
+        ];
+    }
+
+    public function getAdminPermissions()
+    {
+        return [
+            'add_group',
+            'view_self_groups',
+            'view_branch_groups',
+            'view_all_groups',
+            'edit_self_groups',
+            'edit_branch_groups',
+            'edit_all_groups',
+            'delete_branch_groups',
+            'delete_all_groups',
+            'archive_branch_groups',
+            'archive_all_groups',
+            'forgive_study_errors',
+            'forgive_base_errors',
+            'delete_participants',
+            'merge_participants',
+            'view_training_programs',
+            'edit_training_programs',
+            'view_event_orders',
+            'edit_event_orders',
+            'view_study_orders',
+            'edit_study_orders',
+            'view_base_orders',
+            'edit_base_orders',
+            'gen_report_query',
+            'gen_report_forms',
+            'view_doc_in',
+            'edit_doc_in',
+            'view_doc_out',
+            'edit_doc_out',
+            'view_event_regulations',
+            'edit_event_regulations',
+            'view_base_regulations',
+            'edit_base_regulations',
+            'view_events',
+            'edit_events',
+            'view_foreign_events',
+            'edit_foreign_events',
+            'view_local_resp',
+            'edit_local_resp',
+            'view_users',
+            'edit_users',
+            'edit_permissions',
+            'create_certificates',
+            'delete_certificates',
+            'allow_base_admin',
+            'allow_extended_admin',
+            'view_certificate_template',
+            'edit_certificate_template',
+            'view_material_obj',
+            'edit_material_obj',
+            'move_material_obj',
+            'view_dictionaries',
+            'edit_dictionaries'
         ];
     }
 }

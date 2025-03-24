@@ -34,6 +34,7 @@ class CertificateTemplatesForm extends Model
         $this->entity = new CertificateTemplatesWork();
         if ($id !== -1) {
             $this->entity = (Yii::createObject(CertificateTemplatesRepository::class))->get($id);
+            $this->name = $this->entity->name;
         }
     }
 
@@ -48,7 +49,9 @@ class CertificateTemplatesForm extends Model
     public function fillEntity()
     {
         $this->entity->name = $this->name;
-        $this->entity->path = 'frontend' . FilePaths::CERTIFICATE_TEMPLATES;
+        if (!$this->entity->path) {
+            $this->entity->path = 'frontend' . FilePaths::CERTIFICATE_TEMPLATES;
+        }
     }
 
     public function uploadTemplateFile()

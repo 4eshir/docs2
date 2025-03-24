@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use backend\builders\CertificateTemplatesBuilder;
 use backend\forms\CertificateTemplatesForm;
+use backend\services\CertificateTemplatesService;
 use common\repositories\educational\CertificateTemplatesRepository;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -11,22 +12,26 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\UploadedFile;
 
-class CertificateController extends Controller
+class CertificateTemplatesController extends Controller
 {
     private CertificateTemplatesBuilder $builder;
     private CertificateTemplatesRepository $repository;
+
+    private CertificateTemplatesService $service;
 
     public function __construct(
         $id,
         $module,
         CertificateTemplatesBuilder $builder,
         CertificateTemplatesRepository $repository,
+        CertificateTemplatesService $service,
         $config = []
     )
     {
         parent::__construct($id, $module, $config);
         $this->builder = $builder;
         $this->repository = $repository;
+        $this->service = $service;
     }
 
     public function actionIndex()
@@ -38,6 +43,30 @@ class CertificateController extends Controller
         return $this->render('index', [
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    public function actionUpdate($id)
+    {
+        $model = new CertificateTemplatesForm($id);
+
+        if ($model->load(Yii::$app->request->post())) {
+            $model->fillEntity();
+            $this->repository->save($model->entity);
+            return $this->redirect(['view', 'id' => $model->entity->id]);
+        }
+
+        return $this->render('update', [
+            'model' => $model
+        ]);
+    }
+
+    public function actionDelete($id)
+    {
+        $result = $this->service->delete($id);
+        if (!$result) {
+            Yii::$app->session->setFlash('danger', 'Ошибка. Невозможно удалить шаблон, т.к. он используется в актуальных сертификатах');
+        }
+        return $this->redirect(['index']);
     }
 
     public function actionCreateTemplate()

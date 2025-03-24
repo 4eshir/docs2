@@ -12,17 +12,37 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
+<style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+
+    .grid-item {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+    }
+
+    .btn-template {
+        width: 420px;
+        height: 40px;
+    }
+</style>
+
 <div class="user-form">
 
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
 
-    <?= $form->field($model->entity, 'firstname')->textInput() ?>
-    <?= $form->field($model->entity, 'surname')->textInput() ?>
-    <?= $form->field($model->entity, 'patronymic')->textInput() ?>
-    <?= $form->field($model->entity, 'username')->textInput() ?>
+    <?= $form->field($model->entity, 'firstname')->textInput()->label('Имя') ?>
+    <?= $form->field($model->entity, 'surname')->textInput()->label('Фамилия') ?>
+    <?= $form->field($model->entity, 'patronymic')->textInput()->label('Отчество') ?>
+    <?= $form->field($model->entity, 'username')->textInput()->label('Логин') ?>
 
     <?php if (is_null($model->entity->password_hash)): ?>
-        <?= $form->field($model->entity, 'password_hash')->textInput(); ?>
+        <?= $form->field($model->entity, 'password_hash')->textInput()->label('Пароль'); ?>
     <?php endif; ?>
 
     <?= $form->field($model->entity, 'aka')->widget(Select2::classname(), [
@@ -36,13 +56,17 @@ use yii\widgets\ActiveForm;
 
     <hr>
     <h5>Правила доступа</h5>
-    <button id="button-teacher">Шаблон "Педагог"</button>
-    <button id="button-study">Шаблон "Информатор по учебной деятельности"</button>
-    <button id="button-event">Шаблон "Информатор по мероприятиям"</button>
-    <button id="button-document">Шаблон "Информатор по документообороту"</button>
-    <button id="button-branch-controller">Шаблон "Контролер в отделе"</button>
-    <button id="button-super-controller">Шаблон "Суперконтролер"</button>
-
+    <div class="grid-container">
+        <div class="grid-item"><button id="button-teacher" class="btn btn-secondary btn-template">Шаблон <b>"Педагог"</b></button></div>
+        <div class="grid-item"><button class="btn btn-secondary btn-template" hidden></button></div>
+        <div class="grid-item"><button class="btn btn-secondary btn-template" hidden></button></div>
+        <div class="grid-item"><button id="button-study" class="btn btn-secondary btn-template">Шаблон <b>"Информатор по учебной деятельности"</b></button></div>
+        <div class="grid-item"><button id="button-event" class="btn btn-secondary btn-template">Шаблон <b>"Информатор по мероприятиям"</b></button></div>
+        <div class="grid-item"><button id="button-document" class="btn btn-secondary btn-template">Шаблон <b>"Информатор по документообороту"</b></button></div>
+        <div class="grid-item"><button id="button-branch-controller" class="btn btn-secondary btn-template">Шаблон <b>"Контролер в отделе"</b></button></div>
+        <div class="grid-item"><button id="button-super-controller" class="btn btn-secondary btn-template">Шаблон <b>"Суперконтролер"</b></button></div>
+        <div class="grid-item"><button id="button-admin" class="btn btn-secondary btn-template">Шаблон <b>"Администратор"</b></button></div>
+    </div>
 
     <?= $form->field($model, 'userPermissions')->checkboxList(
         ArrayHelper::map($model->permissions, 'id', 'name'),
@@ -81,6 +105,7 @@ $permissionsEventInform = json_encode(Yii::$app->rubac->getEventInformantPermiss
 $permissionsDocInform = json_encode(Yii::$app->rubac->getDocumentInformantPermissions());
 $permissionsBranchController = json_encode(Yii::$app->rubac->getBranchControllerPermissions());
 $permissionsSuperController = json_encode(Yii::$app->rubac->getSuperControllerPermissions());
+$permissionsAdmin = json_encode(Yii::$app->rubac->getAdminPermissions());
 
 $this->registerJs(<<<JS
     function activateCheckboxes(permissions) {
@@ -117,6 +142,9 @@ $this->registerJs(<<<JS
     });
     document.getElementById('button-super-controller').addEventListener('click', function() {
         activateCheckboxes($permissionsSuperController);
+    });
+    document.getElementById('button-admin').addEventListener('click', function() {
+        activateCheckboxes($permissionsAdmin);
     });
 JS
     , $this::POS_LOAD);
