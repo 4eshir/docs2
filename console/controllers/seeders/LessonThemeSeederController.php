@@ -21,12 +21,13 @@ class LessonThemeSeederController extends Controller
         $this->randomHelper = $randomHelper;
         parent::__construct($id, $module, $config);
     }
-    public function actionRun($amount = 10){
+    public function actionRun(){
         $teacherId = $this->randomHelper->randomItem(PeopleStampWork::find()->all())['id'];
-        for($i = 0; $i < $amount; $i++){
+        $lessons = TrainingGroupLessonWork::find()->all();
+        foreach ($lessons as $lesson){
             $command = Yii::$app->db->createCommand();
             $command->insert('lesson_theme', [
-                'training_group_lesson_id' => $this->randomHelper->randomItem(TrainingGroupLessonWork::find()->all())['id'],
+                'training_group_lesson_id' => $lesson->id,
                 'thematic_plan_id' => $this->randomHelper->randomItem(ThematicPlanWork::find()->all())['id'],
                 'teacher_id' => $teacherId
             ]);

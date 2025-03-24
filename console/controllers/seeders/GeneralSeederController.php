@@ -51,11 +51,11 @@ class GeneralSeederController extends Controller
         parent::__construct($id, $module, $config);
     }
     public function actionCreateStudy(){
-        $this->trainingProgramSeederController->actionRun();
-        $this->thematicPlanSeederController->actionRun();
-        $this->trainingGroupSeederController->actionRun();
-        $this->trainingGroupParticipantSeederController->actionRun();
-        $this->trainingGroupLessonSeederController->actionRun();
+        $this->trainingProgramSeederController->actionRun(20);
+        $this->thematicPlanSeederController->actionRun(15);
+        $this->trainingGroupSeederController->actionRun(15);
+        $this->trainingGroupParticipantSeederController->actionRun(60);
+        $this->trainingGroupLessonSeederController->actionRun(3000);
         $this->lessonThemeSeederController->actionRun();
         $this->visitSeederController->actionRun();
     }
