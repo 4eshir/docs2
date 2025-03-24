@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: row;
     border-radius: var(--border-radius);
+    margin-bottom: 1em;
 }
 
 .card .card-block-1, .card .card-block-2 {
@@ -125,4 +126,64 @@ h3:has(svg) {
 
 a:has(.tooltip-span) {
     color: black;
+}
+
+
+.table-topic {
+    text-align: center;
+    background: var(--secondary-light-color);
+    border-radius: 10px 10px 0 0;
+    padding: 0.5em;
+    font-weight: 600;
+}
+
+.table-block {
+    padding-bottom: 0.5em;
+}
+
+.card table {
+    width: 100%;
+}
+
+.card thead {
+    box-shadow: none;
+    line-height: 2em;
+    border-bottom: 1px solid rgba(232, 237, 241 , 1);
+    border-top: 1px solid rgba(232, 237, 241 , 1);
+}
+
+.card thead td {
+    font-style: italic;
+    font-weight: 500;
+}
+
+.card table th {
+    background-color: white!important;
+    padding: 0.5em 0;
+    text-align: center;
+}
+
+.card tbody > tr:not(:last-child) {
+    border-bottom: 1px solid rgba(232, 237, 241 , 1);
+}
+
+.card tbody td {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+.card tbody {
+    box-shadow: none;
+}
+
+.card tbody>tr:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgba(245,247,249, 1);
+}
+
+.lessons-date {
+    padding: 0;
+    margin: 0;
+    line-height: 1.2;
+    text-align: center;
 }

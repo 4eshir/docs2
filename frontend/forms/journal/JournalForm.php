@@ -2,18 +2,24 @@
 
 namespace frontend\forms\journal;
 
+use common\helpers\files\FilePaths;
+use common\helpers\html\HtmlBuilder;
+use common\helpers\StringFormatter;
 use common\Model;
 use common\repositories\educational\GroupProjectThemesRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\VisitRepository;
 use DomainException;
+use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\educational\journal\ParticipantLessons;
 use frontend\models\work\educational\journal\VisitLesson;
 use frontend\models\work\educational\journal\VisitWork;
 use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use Yii;
+use yii\helpers\Url;
 use yii\log\LogRuntimeException;
 
 /**
@@ -126,5 +132,49 @@ class JournalForm extends Model
         return $this->trainingGroup ? $this->trainingGroup->getRawArchive() : '';
     }
 
+    /**
+     * Список занятий в расписании
+     * @return array|int
+     */
+    public function getDateLessons()
+    {
+        if (count($this->participantLessons) > 0) {
+            return $this->participantLessons[0]->getLessonsDate();
+        }
+        return 1;
+    }
 
+    /**
+     * Количество занятий
+     * @return int
+     */
+    public function getLessonsCount()
+    {
+        if (count($this->participantLessons) > 0) {
+            return $this->participantLessons[0]->getLessonsCount();
+        }
+        return 1;
+    }
+
+    /**
+     * Красивое отображение успешного завершения
+     * @param int $status
+     * @return false|string
+     */
+    public function getPrettySuccessFinishing(int $status)
+    {
+        if ($status == 1) {
+            return file_get_contents(FilePaths::SVG_CHECK);
+        }
+        return file_get_contents(FilePaths::SVG_CROSS);
+    }
+
+    public function getPrettyParticipant(ForeignEventParticipantsWork $participant)
+    {
+        $partLink = StringFormatter::stringAsLink($participant->getFIO(PersonInterface::FIO_SURNAME_INITIALS),
+            Url::to([Yii::$app->frontUrls::PARTICIPANT_VIEW, 'id' => $participant->id]));
+        return HtmlBuilder::createTooltip(
+            $partLink,
+            $participant->getFIO(PersonInterface::FIO_FULL));
+    }
 }

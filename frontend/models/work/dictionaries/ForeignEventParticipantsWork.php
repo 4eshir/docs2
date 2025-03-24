@@ -193,7 +193,7 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
             $content = '<b>Запретов на разглашение ПД нет</b>';
             $svgColor = HtmlBuilder::SVG_PRIMARY_COLOR;
         }
-        return HtmlBuilder::createTooltip($content, FilePaths::SVG_PERSONAL_DATE, $svgColor);
+        return HtmlBuilder::createTooltipIcon($content, FilePaths::SVG_PERSONAL_DATE, $svgColor);
     }
 
     public function createRawPersonalData()

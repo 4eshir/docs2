@@ -77,7 +77,7 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
         } else {
             $svgColor = '';
         }
-        return HtmlBuilder::createTooltip($stringStatus, FilePaths::SVG_STATUS, $svgColor);
+        return HtmlBuilder::createTooltipIcon($stringStatus, FilePaths::SVG_STATUS, $svgColor);
     }
 
     /**
@@ -93,7 +93,7 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
             } else {
                 $svgColor = HtmlBuilder::SVG_CRITICAL_COLOR;
             }
-            return HtmlBuilder::createTooltip($string, FilePaths::SVG_CERTIFICATE, $svgColor);
+            return HtmlBuilder::createTooltipIcon($string, FilePaths::SVG_CERTIFICATE, $svgColor);
         }
         return '';
     }

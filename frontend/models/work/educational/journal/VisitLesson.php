@@ -3,6 +3,7 @@
 
 namespace frontend\models\work\educational\journal;
 
+use common\helpers\files\FilePaths;
 use common\Model;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\providers\group_lesson\TrainingGroupLessonProvider;
@@ -134,13 +135,13 @@ class VisitLesson extends Model
     {
         switch ($this->status) {
             case VisitWork::NONE:
-                return '--';
+                return file_get_contents(FilePaths::SVG_DROPPED);   //return '--';
             case VisitWork::ATTENDANCE:
-                return 'Я';
+                return file_get_contents(FilePaths::SVG_TURNOUT);   //return 'Я';
             case VisitWork::NO_ATTENDANCE:
-                return 'Н';
+                return file_get_contents(FilePaths::SVG_NON_APPEARANCE);   //return 'Н';
             case VisitWork::DISTANCE:
-                return 'Д';
+                return file_get_contents(FilePaths::SVG_DISTANT);    //return 'Д';
             default:
                 return '?';
         }

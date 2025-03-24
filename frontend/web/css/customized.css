@@ -671,11 +671,3 @@ input[type="checkbox"] {
 .no-flex {
     display: block!important;
 }
-
-.table-topic {
-    text-align: center;
-    background: var(--secondary-light-color);
-    border-radius: 10px 10px 0 0;
-    padding: 0.5em;
-    font-weight: 600;
-}

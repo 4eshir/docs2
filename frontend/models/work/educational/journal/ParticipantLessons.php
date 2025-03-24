@@ -4,9 +4,9 @@
 namespace frontend\models\work\educational\journal;
 
 
+use common\helpers\DateFormatter;
 use common\Model;
 use common\repositories\educational\GroupProjectThemesRepository;
-use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\providers\group_participant\TrainingGroupParticipantProvider;
 use common\repositories\providers\group_project_themes\GroupProjectThemesProvider;
@@ -88,5 +88,30 @@ class ParticipantLessons extends Model
             }
             return $dateComparison;
         });
+    }
+
+    /**
+     * Возвращает дату и время занятий в указанном формате
+     * @param string $dateFormat
+     * @param string $timeDateFormat
+     * @return array
+     */
+    public function getLessonsDate(string $dateFormat = DateFormatter::dm_dot, string $timeDateFormat = DateFormatter::Hi_colon) : array
+    {
+        $date = [];
+        foreach ($this->lessonIds as $oneLesson) {
+            $date[] = DateFormatter::format($oneLesson->lesson->lesson_date, DateFormatter::Ymd_dash, $dateFormat)
+                        . '<br>' . DateFormatter::format($oneLesson->lesson->lesson_start_time, DateFormatter::His_colon, $timeDateFormat);
+        }
+        return $date;
+    }
+
+    /**
+     * Возвращает количество занятий
+     * @return int
+     */
+    public function getLessonsCount()
+    {
+        return count($this->lessonIds);
     }
 }
