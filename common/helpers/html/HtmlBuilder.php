@@ -31,6 +31,17 @@ class HtmlBuilder
     const TYPE_INFO = 'info';
 
     /**
+     * Окрашивает иконку в нужный цветовой стиль
+     * @param string $svgLink
+     * @param string $svgColorClass
+     * @return string
+     */
+    public static function paintSVG(string $svgLink, string $svgColorClass = '')
+    {
+        return '<span class="'.$svgColorClass.'">'. file_get_contents($svgLink) . '</span>';
+    }
+
+    /**
      * Создает подсказчик с нужной иконкой и внутренним сообщением которое отображается при наведении
      *
      * @param string $content
@@ -40,9 +51,8 @@ class HtmlBuilder
      */
     public static function createTooltipIcon(string $content, string $svgLink = FilePaths::SVG_INFO, string $svgColorClass = '')
     {
-        $svgContent = file_get_contents($svgLink);
         return '<span class="tooltip-span">
-                    <span class="'.$svgColorClass.'">'. $svgContent . '</span>
+                    '.self::paintSVG($svgLink, $svgColorClass).'
                     <div class="ant-tooltip">
                         <div class="ant-tooltip-arrow"></div>
                         <div class="ant-tooltip-content">
@@ -52,6 +62,12 @@ class HtmlBuilder
                 </span>';
     }
 
+    /**
+     * Подсказчик текста над текстом
+     * @param string $content
+     * @param string $contentTooltip
+     * @return string
+     */
     public static function createTooltip(string $content, string $contentTooltip)
     {
         return '<span class="tooltip-span">

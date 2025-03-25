@@ -54,7 +54,7 @@ class JournalController extends Controller
             ButtonsFormatter::anyOneLink(
                 'Создать ТП',
                 Yii::$app->frontUrls::LESSON_THEMES_CREATE,
-                ButtonsFormatter::BTN_SECONDARY,
+                ButtonsFormatter::BTN_SUCCESS,
                 '',
                 ButtonsFormatter::createParameterLink($id, 'groupId')
             ),

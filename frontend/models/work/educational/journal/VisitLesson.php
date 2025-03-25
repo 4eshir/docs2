@@ -4,6 +4,7 @@
 namespace frontend\models\work\educational\journal;
 
 use common\helpers\files\FilePaths;
+use common\helpers\html\HtmlBuilder;
 use common\Model;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\providers\group_lesson\TrainingGroupLessonProvider;
@@ -133,13 +134,14 @@ class VisitLesson extends Model
 
     public function getPrettyStatus()
     {
+        HtmlBuilder::createTooltipIcon('Явка', FilePaths::SVG_TURNOUT, HtmlBuilder::SVG_PRIMARY_COLOR);
         switch ($this->status) {
             case VisitWork::NONE:
                 return file_get_contents(FilePaths::SVG_DROPPED);   //return '--';
             case VisitWork::ATTENDANCE:
-                return file_get_contents(FilePaths::SVG_TURNOUT);   //return 'Я';
+                return HtmlBuilder::createTooltipIcon('Явка', FilePaths::SVG_TURNOUT, HtmlBuilder::SVG_PRIMARY_COLOR);
             case VisitWork::NO_ATTENDANCE:
-                return file_get_contents(FilePaths::SVG_NON_APPEARANCE);   //return 'Н';
+                return HtmlBuilder::createTooltipIcon('Неявка', FilePaths::SVG_NON_APPEARANCE, HtmlBuilder::SVG_CRITICAL_COLOR);
             case VisitWork::DISTANCE:
                 return file_get_contents(FilePaths::SVG_DISTANT);    //return 'Д';
             default:
