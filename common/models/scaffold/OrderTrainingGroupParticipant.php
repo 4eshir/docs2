@@ -2,7 +2,6 @@
 
 namespace common\models\scaffold;
 
-use common\models\scaffold\OrderMain;
 use common\models\scaffold\TrainingGroupParticipant;
 use Yii;
 
@@ -14,7 +13,7 @@ use Yii;
  * @property int|null $training_group_participant_in_id
  * @property int $order_id
  *
- * @property OrderMain $order
+ * @property DocumentOrder $order
  * @property TrainingGroupParticipant $trainingGroupParticipantIn
  * @property TrainingGroupParticipant $trainingGroupParticipantOut
  */
@@ -36,7 +35,7 @@ class OrderTrainingGroupParticipant extends \yii\db\ActiveRecord
         return [
             [['training_group_participant_out_id', 'training_group_participant_in_id', 'order_id'], 'integer'],
             [['order_id'], 'required'],
-            [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => OrderMain::class, 'targetAttribute' => ['order_id' => 'id']],
+            [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentOrder::class, 'targetAttribute' => ['order_id' => 'id']],
             [['training_group_participant_in_id'], 'exist', 'skipOnError' => true, 'targetClass' => TrainingGroupParticipant::class, 'targetAttribute' => ['training_group_participant_in_id' => 'id']],
             [['training_group_participant_out_id'], 'exist', 'skipOnError' => true, 'targetClass' => TrainingGroupParticipant::class, 'targetAttribute' => ['training_group_participant_out_id' => 'id']],
         ];
@@ -62,7 +61,7 @@ class OrderTrainingGroupParticipant extends \yii\db\ActiveRecord
      */
     public function getOrder()
     {
-        return $this->hasOne(OrderMain::class, ['id' => 'order_id']);
+        return $this->hasOne(DocumentOrder::class, ['id' => 'order_id']);
     }
 
     /**

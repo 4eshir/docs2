@@ -2,6 +2,7 @@
 
 namespace frontend\components\creators;
 
+use common\helpers\DateFormatter;
 use common\helpers\files\FilePaths;
 use frontend\models\work\educational\journal\VisitWork;
 use frontend\models\work\educational\training_group\GroupProjectThemesWork;
@@ -10,6 +11,7 @@ use frontend\models\work\educational\training_group\OrderTrainingGroupParticipan
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
+use frontend\models\work\order\DocumentOrderWork;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -247,13 +249,13 @@ class ExcelCreator
         $reader = IOFactory::createReader($inputType);
         $inputData = $reader->load(Yii::$app->basePath . $fileName);
         $group = TrainingGroupWork::findOne($groupId);
-        $defence = GroupProjectThemesWork::find()->where(['training_group_id' => $group->id])->all();
+        $defences = GroupProjectThemesWork::find()->where(['training_group_id' => $group->id])->all();
         $lessons = TrainingGroupLessonWork::find()->where(['training_group_id' => $group->id])->orderBy('lesson_date ASC')->all();
         $participants = TrainingGroupParticipantWork::find()->where(['training_group_id' => $group->id])->all();
         $visits = VisitWork::find()->where(['IN','training_group_participant_id', ArrayHelper::getColumn($participants, 'id')])->all();
-        ExcelCreator::createList($lessons, $inputData);
+        ExcelCreator::createList($lessons, $group, $participants, $defences, $inputData);
         $inputData = ExcelCreator::fillVisits($lessons, $visits, $inputData);
-        $inputData = ExcelCreator::fillThemes($inputData, $lessons, $participants, $defence);
+        $inputData = ExcelCreator::fillThemes($inputData, $lessons);
         return $inputData;
     }
     public static function fillVisits($lessons, $visits , $inputData)
@@ -263,6 +265,11 @@ class ExcelCreator
         $visitIndex = "B";
         $currentSheet = 0;
         $currentIndex = 4;
+        $styleArray = array(
+            'alignment' => array(
+                'textRotation' => 90  // Поворот текста на 90 градусов
+            )
+        );
         foreach ($lessons as $i => $lesson) {
             if ($i != 0 && $i % 21 == 0) {
                 $visitIndex = "B";
@@ -274,7 +281,8 @@ class ExcelCreator
                 $currentIndex = 4;
                 $currentSheet++;
             }
-            $inputData->getSheet($currentSheet)->setCellValue("$visitIndex". $currentIndex, $lesson->lesson_date);
+            $inputData->getSheet($currentSheet)->getStyle("$visitIndex". $currentIndex)->applyFromArray($styleArray);
+            $inputData->getSheet($currentSheet)->setCellValue("$visitIndex". $currentIndex, DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot));
             foreach ($visits as $counter => $visit) {
                 $inputData->getSheet($currentSheet)->setCellValue("A". ($currentIndex + $counter + 2), $visit->trainingGroupParticipantWork->participantWork->getFullFio());
                 $inputData->getSheet($currentSheet)->setCellValue("$visitIndex" . ($currentIndex + $counter + 2), ExcelCreator::findStatus($visit->id, $lesson->id));
@@ -306,49 +314,80 @@ class ExcelCreator
         }
         return '-';
     }
-    public static function fillThemes($inputData, $lessons , $participants, $defence)
+    public static function fillThemes(
+        $inputData,
+        $lessons)
     {
+        /* @var $defence GroupProjectThemesWork */
         $currentSheet = 0;
-        $dateDefence = 0;
-        $kpi = count($lessons) * count($participants);
-        if ($participants[0] != '') {
-            $orderEnroll = count(OrderTrainingGroupParticipantWork::find()
-                ->where(['training_group_participant_in_id' => $participants[0]])
-                ->andWhere(['training_group_participant_out_id' => NULL])->one()) > 0 ?
-                (OrderTrainingGroupParticipantWork::find()
-                ->where(['training_group_participant_in_id' => $participants[0]])
-                ->andWhere(['training_group_participant_out_id' => NULL])->one())->order_id :
-            NULL;
-            $orderDeduct = count(OrderTrainingGroupParticipantWork::find()
-                ->where(['training_group_participant_out_id' => $participants[0]])
-                ->andWhere(['training_group_participant_in_id' => NULL])->one()) > 0 ?
-                (OrderTrainingGroupParticipantWork::find()
-                    ->where(['training_group_participant_out_id' => $participants[0]])
-                    ->andWhere(['training_group_participant_in_id' => NULL])->one())->order_id :
-            NULL;
-        }
         foreach ($lessons as $i => $lesson) {
             if ($i != 0 && $i % 42 == 0) {
                 $currentSheet++;
             }
             $address = ($i % 42) + 5;
             $lessonTheme = LessonThemeWork::find()->where(['training_group_lesson_id' => $lesson->id])->one();
-            $inputData->getSheet($currentSheet)->setCellValue("Z$address", $lessonTheme->trainingGroupLessonWork->lesson_date);
+            $inputData->getSheet($currentSheet)->setCellValue("Z$address", DateFormatter::format($lessonTheme->trainingGroupLessonWork->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot));
             $inputData->getSheet($currentSheet)->setCellValue("AA$address", $lessonTheme->thematicPlanWork->theme);
-            $inputData->getSheet($currentSheet)->setCellValue("Z51",  $orderEnroll);
-            $inputData->getSheet($currentSheet)->setCellValue("AB51", $dateDefence);
-            $inputData->getSheet($currentSheet)->setCellValue("AD51", $orderDeduct);
-            $inputData->getSheet($currentSheet)->setCellValue("AF51", $kpi);
         }
         return $inputData;
     }
-    public static function createList($lessons, $inputData)
+    public static function createList($lessons, $group, $participants, $defences, $inputData)
     {
+        /* @var $group TrainingGroupWork */
+        /* @var $defence GroupProjectThemesWork */
         $amountLists = ExcelCreator::countList($lessons);
+        $orderEnroll = [];
+        $orderDeduct = [];
+        foreach ($participants as $participant) {
+            $orderEnrollIds = array_unique(ArrayHelper::getColumn(
+                OrderTrainingGroupParticipantWork::find()
+                    ->where(['training_group_participant_out_id' => NULL])
+                    ->andWhere(['training_group_participant_in_id' => $participant->id])
+                    ->all(),
+                'order_id'
+            ));
+            $orderDeductIds = array_unique(ArrayHelper::getColumn(
+                OrderTrainingGroupParticipantWork::find()
+                    ->where(['training_group_participant_out_id' => $participant->id])
+                    ->andWhere(['training_group_participant_in_id' => NULL])
+                    ->all(),
+                'order_id'
+            ));
+            $orderEnroll[] = array_unique(ArrayHelper::getColumn(DocumentOrderWork::find()->where(['IN', 'id' , $orderEnrollIds])->all(), 'order_number'));
+
+            $orderDeduct[] = array_unique(ArrayHelper::getColumn(DocumentOrderWork::find()->where(['IN', 'id' , $orderDeductIds])->all(), 'order_number'));
+        }
+        $enroll = '';
+        $deduct = '';
+        foreach ($orderEnroll as $orders) {
+            foreach ($orders as $order) {
+                $enroll = $enroll . ' , '. $order;
+            }
+        }
+        foreach ($orderDeduct as $orders) {
+            foreach ($orders as $order) {
+                $deduct = $deduct . ' , '. $order;
+            }
+        }
         for ($i = 0; $i < $amountLists; $i++){
             $clone = clone $inputData->getActiveSheet();
             $clone->setTitle('Шаблон ' . ($i + 2));
             $inputData->addSheet($clone);
+            $defenceName = [];
+            $defenceDate = [];
+            foreach ($defences as $defence) {
+                $defenceName[] = $defence->projectThemeWork->name;
+                $defenceDate[] = NULL;
+            }
+            $defenceDate = implode(' , ', array_unique($defenceDate));
+            $defenceName = implode(' , ', array_unique($defenceName));
+            $inputData->getSheet($i)->setCellValue('A1', 'Группа: ' . $group->number);
+            $inputData->getSheet($i)->setCellValue('B1', 'Программа: ' . $group->trainingProgramWork->name);
+            $inputData->getSheet($i)->setCellValue('Z1', 'Тема проектов: ' . $defenceName);
+            $inputData->getSheet($i)->setCellValue('Z51',  $enroll);
+            $inputData->getSheet($i)->setCellValue('AB51',  $defenceDate);
+            $inputData->getSheet($i)->setCellValue('AD51', $deduct);
+            $inputData->getSheet($i)->setCellValue('AF51', count($lessons) * count($participants));
         }
     }
     public static function countList($lessons){
