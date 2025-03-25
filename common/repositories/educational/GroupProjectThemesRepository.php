@@ -2,6 +2,7 @@
 
 namespace common\repositories\educational;
 
+use common\components\traits\CommonDatabaseFunctions;
 use common\repositories\providers\group_project_themes\GroupProjectThemesProvider;
 use common\repositories\providers\group_project_themes\GroupProjectThemesProviderInterface;
 use frontend\models\work\educational\training_group\GroupProjectThemesWork;
@@ -9,6 +10,8 @@ use Yii;
 
 class GroupProjectThemesRepository
 {
+    use CommonDatabaseFunctions;
+
     private $provider;
 
     public function __construct(GroupProjectThemesProviderInterface $provider = null)
@@ -23,6 +26,11 @@ class GroupProjectThemesRepository
     public function get($id)
     {
         return $this->provider->get($id);
+    }
+
+    public function delete(GroupProjectThemesWork $model)
+    {
+        return $model->delete();
     }
 
     public function getProjectThemesFromGroup($groupId)

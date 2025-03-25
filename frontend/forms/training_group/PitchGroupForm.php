@@ -4,6 +4,7 @@ namespace frontend\forms\training_group;
 
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
+use common\helpers\html\HtmlBuilder;
 use common\Model;
 use common\repositories\educational\GroupProjectThemesRepository;
 use common\repositories\educational\TrainingGroupRepository;
@@ -12,6 +13,8 @@ use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\ProjectThemeWork;
 use Yii;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 class PitchGroupForm extends Model
 {
@@ -27,6 +30,7 @@ class PitchGroupForm extends Model
     public $prevExperts;
 
     public $themes;
+    public $themesTable;
     public $prevThemes;
     public $protectionDate;
     public $themeIds;
@@ -57,20 +61,47 @@ class PitchGroupForm extends Model
             $this->protectionDate = $this->entity->protection_date;
             $this->experts = $this->groupRepository->getExperts($id) ?: [new TrainingGroupExpertWork];
             $this->prevExperts = $this->groupRepository->getExperts($id) ?: [new TrainingGroupExpertWork];
-            $this->themes = $this->groupRepository->getThemes($id) ?: [new ProjectThemeWork];
             $this->prevThemes = $this->groupProjectRepository->getProjectThemesFromGroup($id) ?: [new GroupProjectThemesWork];
         }
         else {
             $this->prevExperts = [];
             $this->prevThemes = [];
         }
+
+        $this->themes = /*$this->groupRepository->getThemes($id) ?: */[new ProjectThemeWork];
+        $this->createThemesTable();
     }
 
     public function rules()
     {
         return array_merge(parent::rules(), [
-            ['protectionDate', 'safe']
+            [['protectionDate', 'themes'], 'safe']
         ]);
+    }
+
+    public function createThemesTable()
+    {
+        $this->themesTable = HtmlBuilder::createTableWithActionButtons(
+            [
+                array_merge(['Тема'], ArrayHelper::getColumn($this->prevThemes, 'projectThemeWork.name')),
+                array_merge(['Тип проекта'], array_map(function ($value) {
+                    return Yii::$app->projectType->get($value);
+                }, ArrayHelper::getColumn($this->prevThemes, 'projectThemeWork.project_type'))),
+                array_merge(['Подтверждена'], array_map(function ($value) {
+                    return $value ? 'Да' : 'Нет';
+                }, ArrayHelper::getColumn($this->prevThemes, 'confirm')))
+            ],
+            [
+                HtmlBuilder::createButtonsArray(
+                    'Удалить',
+                    Url::to('delete-theme'),
+                    [
+                        'groupId' => array_fill(0, count($this->prevThemes), $this->id),
+                        'entityId' => ArrayHelper::getColumn($this->prevThemes, 'id')
+                    ]
+                )
+            ]
+        );
     }
 
     public function beforeValidate()

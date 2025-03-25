@@ -97,4 +97,12 @@ class VisitRepository
         );
         return $command->getRawSql();
     }
+
+    public function prepareCreate($visitIds, $lessons)
+    {
+        $model = VisitWork::fill($visitIds, $lessons);
+        $command = Yii::$app->db->createCommand();
+        $command->insert($model::tableName(), $model->getAttributes());
+        return $command->getRawSql();
+    }
 }

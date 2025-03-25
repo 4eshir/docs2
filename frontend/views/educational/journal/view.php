@@ -121,7 +121,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?= $lessonTheme->thematicPlanWork->theme ?>
                         </td>
                         <td>
-                            ВОТ СЮДА ФОРМУ КОНТРОЛЯ
+                            <?= Yii::$app->controlType->get($lessonTheme->thematicPlanWork->control_type) ?>
                         </td>
                         <td>
                             <?= $lessonTheme->teacherWork->peopleWork->getFIO(PersonInterface::FIO_FULL) ?>

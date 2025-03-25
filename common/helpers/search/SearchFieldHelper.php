@@ -29,7 +29,7 @@ class SearchFieldHelper
                 'clientOptions' => [
                     'changeMonth' => true,
                     'changeYear' => true,
-                    'yearRange' => DateFormatter::DEFAULT_YEAR_RANGE,
+                    'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
                 ],
             ],
         ];

@@ -27,7 +27,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Html::encode($this->title) ?>
             </h1>
         </div>
-
         <div class="flexx space">
             <div class="flexx">
                 <?= Html::submitButton('Сохранить', ['class' => 'btn btn-primary']) ?>
@@ -68,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?= $lessonTheme->thematicPlanWork->theme ?>
                             </td>
                             <td>
-                                ВОТ СЮДА ФОРМУ КОНТРОЛЯ
+                                <?= Yii::$app->controlType->get($lessonTheme->thematicPlanWork->control_type) ?>
                             </td>
                             <td>
                                 <?= $form->field($lessonTheme, "teacher_id[$index]")->widget(Select2::classname(), [
