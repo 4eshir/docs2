@@ -15,6 +15,7 @@ use common\Model;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use common\repositories\dictionaries\PeopleRepository;
+use common\repositories\educational\GroupProjectThemesRepository;
 use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupRepository;
@@ -41,6 +42,7 @@ use frontend\models\work\educational\training_group\TrainingGroupParticipantWork
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\ProjectThemeWork;
 use frontend\services\educational\GroupDocumentService;
+use frontend\services\educational\GroupProjectThemesService;
 use frontend\services\educational\JournalService;
 use frontend\services\educational\TrainingGroupService;
 use Yii;
@@ -58,6 +60,7 @@ class TrainingGroupController extends DocumentController
     private PeopleRepository $peopleRepository;
     private AuditoriumRepository $auditoriumRepository;
     private LessonThemeRepository $lessonThemeRepository;
+    private GroupProjectThemesService $projectThemesService;
     private LockWizard $lockWizard;
     private GroupDocumentService $documentService;
 
@@ -75,6 +78,7 @@ class TrainingGroupController extends DocumentController
         PeopleRepository $peopleRepository,
         AuditoriumRepository $auditoriumRepository,
         LessonThemeRepository $lessonThemeRepository,
+        GroupProjectThemesService $projectThemesService,
         LockWizard $lockWizard,
         GroupDocumentService $documentService,
         $config = [])
@@ -89,6 +93,7 @@ class TrainingGroupController extends DocumentController
         $this->peopleRepository = $peopleRepository;
         $this->auditoriumRepository = $auditoriumRepository;
         $this->lessonThemeRepository = $lessonThemeRepository;
+        $this->projectThemesService = $projectThemesService;
         $this->lockWizard = $lockWizard;
         $this->documentService = $documentService;
     }
@@ -258,6 +263,7 @@ class TrainingGroupController extends DocumentController
 
                 $this->service->attachParticipants($formParticipant);
                 $formParticipant->releaseEvents();
+                $this->service->refreshVisitsByParticipants($id);
 
                 return $this->redirect(['view', 'id' => $formParticipant->id]);
             }
@@ -416,6 +422,16 @@ class TrainingGroupController extends DocumentController
 
         $model->releaseEvents();
         return $this->redirect(['schedule-form', 'id' => $groupId]);
+    }
+
+    public function actionDeleteTheme($groupId, $entityId)
+    {
+        $result = $this->projectThemesService->delete($entityId);
+        if (!$result) {
+            Yii::$app->session->setFlash('danger', 'Невозможно удалить тему, т.к. она связана с одним или несколькими обучающимися в журнале');
+        }
+
+        return $this->redirect(['pitch-form', 'id' => $groupId]);
     }
 
     public function actionView($id)

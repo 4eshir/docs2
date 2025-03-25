@@ -57,7 +57,8 @@ class RulesConfig
                 'create-lesson-themes',
                 'delete-lesson',
                 'update-lesson',
-                'sub-auds'
+                'sub-auds',
+                'delete-theme'
             ]
         ],
 
@@ -73,7 +74,8 @@ class RulesConfig
                 'delete-lesson',
                 'update-lesson',
                 'sub-auds',
-                'create-protocol'
+                'create-protocol',
+                'delete-theme'
             ]
         ],
 
@@ -90,7 +92,8 @@ class RulesConfig
                 'update-lesson',
                 'sub-auds',
                 'create-protocol',
-                'download-journal'
+                'download-journal',
+                'delete-theme'
             ]
         ],
 

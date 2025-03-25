@@ -195,7 +195,7 @@ class SearchEvent extends Model implements SearchInterfaces
     public function filterDate(ActiveQuery $query) {
         if (!empty($this->startDateSearch) || !empty($this->finishDateSearch))
         {
-            $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
+            $dateFrom = $this->startDateSearch ? date('Y-m-d', strtotime($this->startDateSearch)) : DateFormatter::DEFAULT_STUDY_YEAR_START;
             $dateTo =  $this->finishDateSearch ? date('Y-m-d', strtotime($this->finishDateSearch)) : date('Y-m-d');
 
             $query->andWhere(['or',

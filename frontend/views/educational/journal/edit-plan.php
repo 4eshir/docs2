@@ -41,6 +41,9 @@ $this->title = 'Редактирование тематического план
                         <?= $lessonTheme->thematicPlanWork->theme ?>
                     </td>
                     <td>
+                        <?= Yii::$app->controlType->get($lessonTheme->thematicPlanWork->control_type) ?>
+                    </td>
+                    <td>
                         <?= $form->field($lessonTheme, "teacher_id[$index]")->widget(Select2::classname(), [
                             'data' => ArrayHelper::map($model->availableTeachers,'id','fullFio'),
                             'size' => Select2::LARGE,

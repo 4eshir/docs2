@@ -16,6 +16,8 @@ use Yii;
 
 class GroupProjectThemesWork extends GroupProjectThemes
 {
+    const CONFIRM = 1;
+    const NO_CONFIRM = 0;
 
     public static function fill(int $groupId, int $themeId, int $confirm, int $id = null)
     {

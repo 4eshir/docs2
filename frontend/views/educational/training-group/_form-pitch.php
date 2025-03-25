@@ -1,6 +1,7 @@
 <?php
 
 use common\components\wizards\AlertMessageWizard;
+use common\helpers\DateFormatter;
 use common\models\scaffold\TrainingGroup;
 use frontend\forms\training_group\PitchGroupForm;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
@@ -49,8 +50,12 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
             'clientOptions' => [
                 'changeMonth' => true,
                 'changeYear' => true,
-                'yearRange' => '2000:2100',
+                'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
             ]])->label('Дата выдачи сертификатов') ?>
+
+        <?php if (strlen($model->themesTable) > 10): ?>
+            <?= $model->themesTable; ?>
+        <?php endif; ?>
 
         <div class="panel-body">
             <?php DynamicFormWidget::begin([

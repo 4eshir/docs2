@@ -15,7 +15,7 @@ class GroupProjectThemesProvider implements GroupProjectThemesProviderInterface
 
     public function getProjectThemesFromGroup($groupId)
     {
-        return GroupProjectThemesWork::find()->where(['training_group_id' => $groupId])->all();
+        return GroupProjectThemesWork::find()->joinWith(['projectThemeWork'])->where(['training_group_id' => $groupId])->all();
     }
 
     public function prepareCreate($groupId, $themeId, $confirm)

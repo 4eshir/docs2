@@ -22,9 +22,9 @@ class CertificateTemplatesService implements DatabaseServiceInterface
 
     public function isAvailableDelete($entityId)
     {
-        $docsIn = $this->templatesRepository->checkDeleteAvailable(Certificate::tableName(), CertificateTemplates::tableName(), $entityId);
+        $templates = $this->templatesRepository->checkDeleteAvailable(Certificate::tableName(), CertificateTemplates::tableName(), $entityId);
 
-        return $docsIn;
+        return $templates;
     }
 
     /**

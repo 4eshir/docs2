@@ -20,6 +20,7 @@ use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\ProjectThemeRepository;
 use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
+use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\educational\VisitRepository;
@@ -47,6 +48,8 @@ use frontend\forms\training_group\PitchGroupForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
 use frontend\forms\training_group\TrainingGroupScheduleForm;
+use frontend\models\work\educational\journal\VisitLesson;
+use frontend\models\work\educational\journal\VisitWork;
 use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\LessonThemeWork;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
@@ -69,34 +72,43 @@ class TrainingGroupService implements DatabaseServiceInterface
     private TrainingGroupRepository $trainingGroupRepository;
     private TeacherGroupRepository $teacherGroupRepository;
     private TrainingGroupLessonRepository $trainingGroupLessonRepository;
+    private TrainingGroupParticipantRepository $trainingGroupParticipantRepository;
     private ProjectThemeRepository $themeRepository;
     private TrainingProgramRepository $trainingProgramRepository;
+    private VisitRepository $visitRepository;
     private LessonThemeRepository $lessonThemeRepository;
     private FileService $fileService;
     private TrainingGroupFileNameGenerator $filenameGenerator;
     private PeopleStampService $peopleStampService;
+    private JournalService $journalService;
 
     public function __construct(
         TrainingGroupRepository $trainingGroupRepository,
         TeacherGroupRepository $teacherGroupRepository,
         TrainingGroupLessonRepository $trainingGroupLessonRepository,
+        TrainingGroupParticipantRepository $trainingGroupParticipantRepository,
         ProjectThemeRepository $themeRepository,
         TrainingProgramRepository $trainingProgramRepository,
+        VisitRepository $visitRepository,
         LessonThemeRepository $lessonThemeRepository,
         FileService $fileService,
         TrainingGroupFileNameGenerator $filenameGenerator,
-        PeopleStampService $peopleStampService
+        PeopleStampService $peopleStampService,
+        JournalService $journalService
     )
     {
         $this->trainingGroupRepository = $trainingGroupRepository;
         $this->teacherGroupRepository = $teacherGroupRepository;
         $this->trainingGroupLessonRepository = $trainingGroupLessonRepository;
+        $this->trainingGroupParticipantRepository = $trainingGroupParticipantRepository;
         $this->themeRepository = $themeRepository;
         $this->trainingProgramRepository = $trainingProgramRepository;
+        $this->visitRepository = $visitRepository;
         $this->lessonThemeRepository = $lessonThemeRepository;
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
         $this->peopleStampService = $peopleStampService;
+        $this->journalService = $journalService;
     }
 
     public function convertBaseFormToModel(TrainingGroupBaseForm $form)
@@ -308,7 +320,6 @@ class TrainingGroupService implements DatabaseServiceInterface
         $addParticipants = $this->setDifference($newParticipants, $form->prevParticipants, ParticipantGroupCompare::class);
         $delParticipants = $this->setDifference($form->prevParticipants, $newParticipants, ParticipantGroupCompare::class);
 
-
         foreach ($addParticipants as $participant) {
             $form->recordEvent(new CreateTrainingGroupParticipantEvent($form->id, $participant->participant_id, $participant->send_method), TrainingGroupParticipantWork::className());
         }
@@ -372,41 +383,17 @@ class TrainingGroupService implements DatabaseServiceInterface
 
     public function attachThemes(PitchGroupForm $form)
     {
-        $newThemes = [];
         foreach ($form->themeIds as $themeId) {
-            $groupThemeEntity = GroupProjectThemesWork::fill(
-                $form->id,
-                $themeId,
-                0
-            );
-            $newThemes[] = $groupThemeEntity;
-        }
-        $newThemes = array_unique($newThemes);
-
-        $addThemes = $this->setDifference($newThemes, $form->prevThemes, GroupThemeCompare::class);
-        $delThemes = $this->setDifference($form->prevThemes, $newThemes, GroupThemeCompare::class);
-
-        foreach ($addThemes as $theme) {
-            /** @var GroupProjectThemesWork $theme */
-            $form->recordEvent(new AddGroupThemeEvent($form->id, $theme->project_theme_id, $theme->confirm), GroupProjectThemesWork::class);
-        }
-
-        foreach ($delThemes as $theme) {
-            /** @var GroupProjectThemesWork $theme */
-            $form->recordEvent(new DeleteGroupThemeEvent($theme->id), GroupProjectThemesWork::class);
-        }
-
-        foreach ($newThemes as $theme) {
-            /** @var GroupProjectThemesWork $theme */
             $form->recordEvent(
-                new UpdateProjectThemeEvent(
-                    $theme->project_theme_id,
-                    $theme->projectThemeWork->project_type,
-                    $theme->projectThemeWork->description
+                new AddGroupThemeEvent(
+                    $form->id,
+                    $themeId,
+                    GroupProjectThemesWork::NO_CONFIRM
                 ),
                 GroupProjectThemesWork::class
             );
         }
+        $form->releaseEvents();
     }
 
     public function attachExperts(PitchGroupForm $form)
@@ -574,6 +561,36 @@ class TrainingGroupService implements DatabaseServiceInterface
             $group = $this->trainingGroupRepository->get($unactualId);
             $group->setArchive(TrainingGroupWork::IS_ARCHIVE);
             $this->trainingGroupRepository->save($group);
+        }
+    }
+
+    public function refreshVisitsByParticipants(int $groupId)
+    {
+        $participantIds = ArrayHelper::getColumn(
+            $this->trainingGroupParticipantRepository->getParticipantsFromGroups([$groupId]),
+            'id'
+        );
+
+        $visitLessons = [];
+        $lessons = $this->trainingGroupLessonRepository->getLessonsFromGroup($groupId);
+        foreach ($lessons as $lesson) {
+            $visitLessons[] = new VisitLesson(
+                $lesson->id,
+                VisitWork::NONE
+            );
+        }
+        $lessonsString = VisitLesson::toString($visitLessons);
+
+        foreach ($participantIds as $participantId) {
+            $visitEntity = $this->visitRepository->getByTrainingGroupParticipant($participantId);
+            if (!$visitEntity) {
+                $this->visitRepository->save(
+                    VisitWork::fill(
+                        $participantId,
+                        $lessonsString
+                    )
+                );
+            }
         }
     }
 }

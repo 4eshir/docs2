@@ -106,7 +106,7 @@ class RegulationSearch extends Model
     private function filterDate(ActiveQuery $query, string $startDateSearch, string $finishDateSearch) {
         if (!empty($startDateSearch) || !empty($finishDateSearch))
         {
-            $dateFrom = $startDateSearch ? date('Y-m-d', strtotime($startDateSearch)) : DateFormatter::DEFAULT_YEAR_START;
+            $dateFrom = $startDateSearch ? date('Y-m-d', strtotime($startDateSearch)) : DateFormatter::DEFAULT_STUDY_YEAR_START;
             $dateTo =  $finishDateSearch ? date('Y-m-d', strtotime($finishDateSearch)) : date('Y-m-d');
 
             $query->andWhere(['between', 'date', $dateFrom, $dateTo]);
