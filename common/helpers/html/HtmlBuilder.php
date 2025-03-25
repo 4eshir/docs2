@@ -31,6 +31,16 @@ class HtmlBuilder
     const TYPE_INFO = 'info';
 
     /**
+     * Добваляет кнопку, которая следует за пользователем и при нажатии отправляет его наверх
+     * @return string
+     */
+    public static function upButton()
+    {
+        return '<button class="btn-secondary" id="toTopButton">'.self::paintSVG(FilePaths::SVG_UP).'</button>
+                <script type="text/javascript" src="/js/toUpButton.js"></script>';
+    }
+
+    /**
      * Окрашивает иконку в нужный цветовой стиль
      * @param string $svgLink
      * @param string $svgColorClass

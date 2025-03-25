@@ -134,16 +134,15 @@ class VisitLesson extends Model
 
     public function getPrettyStatus()
     {
-        HtmlBuilder::createTooltipIcon('Явка', FilePaths::SVG_TURNOUT, HtmlBuilder::SVG_PRIMARY_COLOR);
         switch ($this->status) {
             case VisitWork::NONE:
-                return file_get_contents(FilePaths::SVG_DROPPED);   //return '--';
+                return HtmlBuilder::createTooltipIcon('--', FilePaths::SVG_DROPPED);
             case VisitWork::ATTENDANCE:
-                return HtmlBuilder::createTooltipIcon('Явка', FilePaths::SVG_TURNOUT, HtmlBuilder::SVG_PRIMARY_COLOR);
+                return HtmlBuilder::createTooltipIcon('Явка', FilePaths::SVG_TURNOUT);
             case VisitWork::NO_ATTENDANCE:
-                return HtmlBuilder::createTooltipIcon('Неявка', FilePaths::SVG_NON_APPEARANCE, HtmlBuilder::SVG_CRITICAL_COLOR);
+                return HtmlBuilder::createTooltipIcon('Неявка', FilePaths::SVG_NON_APPEARANCE);
             case VisitWork::DISTANCE:
-                return file_get_contents(FilePaths::SVG_DISTANT);    //return 'Д';
+                return HtmlBuilder::createTooltipIcon('Дистант', FilePaths::SVG_DISTANT);
             default:
                 return '?';
         }

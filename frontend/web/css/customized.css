@@ -336,6 +336,7 @@ a:hover {
 .filter-toggle {
     cursor: pointer;
     margin: auto 0;
+    text-align: right;
 }
 
 .filter-panel {
@@ -676,4 +677,29 @@ input[type="checkbox"] {
 
 .no-flex {
     display: block!important;
+}
+
+.scroll {
+    overflow: scroll;
+}
+
+.plan-form .form-group {
+    margin-bottom: 0;
+}
+
+#toTopButton {
+    position: fixed;
+    bottom: 5em;
+    right: 5em;
+    padding: 0.5em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    z-index: 99;
+}
+
+#toTopButton svg {
+    width: 2em;
+    height: 2em;
 }

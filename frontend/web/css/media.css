@@ -26,4 +26,32 @@
     .field-date:has(.accordion-block) {
         margin: 1em 0;
     }
+
+    .table-block, .grid-view {
+        overflow: scroll;
+    }
+
+    .table-block td {
+        padding-left: 0.75em;
+        padding-right: 0.75em;
+    }
+
+    .space {
+        flex-direction: column;
+    }
+
+    .button-group {
+        flex-direction: column;
+        display: flex;
+    }
+
+    .button-group a {
+        white-space: nowrap;
+        margin: 0.5em;
+        font-size: 90%;
+    }
+
+    .export-menu {
+        margin: auto 1em;
+    }
 }

@@ -101,7 +101,7 @@ class ParticipantLessons extends Model
         $date = [];
         foreach ($this->lessonIds as $oneLesson) {
             $date[] = DateFormatter::format($oneLesson->lesson->lesson_date, DateFormatter::Ymd_dash, $dateFormat)
-                        . '<br>' . DateFormatter::format($oneLesson->lesson->lesson_start_time, DateFormatter::His_colon, $timeDateFormat);
+                        . '<br><span class="fnt-wght-4">' . DateFormatter::format($oneLesson->lesson->lesson_start_time, DateFormatter::His_colon, $timeDateFormat) .  '</span>';
         }
         return $date;
     }

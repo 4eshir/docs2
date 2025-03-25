@@ -1,6 +1,7 @@
 <?php
 
 use common\helpers\DateFormatter;
+use common\helpers\html\HtmlBuilder;
 use frontend\forms\journal\JournalForm;
 use frontend\forms\journal\ThematicPlanForm;
 use frontend\models\work\dictionaries\PersonInterface;
@@ -44,15 +45,16 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="table-topic">
             <?= $this->title ?>
         </div>
-        <div class="table-block">
+        <div class="table-block scroll">
             <table>
                 <thead>
                     <tr>
-                        <th rowspan="2">ФИО</th>
+                        <th>ФИО</th>
                         <th colspan="<?= $model->getLessonsCount() ?>">Расписание</th>
                         <th colspan="3">Итоговый контроль</th>
                     </tr>
                 <tr>
+                    <td>учащегося</td>
                     <?php foreach ($model->getDateLessons() as $dateLesson): ?>
                         <td class="lessons-date"> <?= $dateLesson ?>  </td>
                     <?php endforeach; ?>
@@ -76,10 +78,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             <td>
                                 <?= $participantLesson->groupProjectThemesWork->projectThemeWork->name; ?>
                             </td>
-                            <td>
+                            <td class="status-participant">
                                 <?= $participantLesson->points; ?>
                             </td>
-                            <td>
+                            <td class="status-participant">
                                 <?= $model->getPrettySuccessFinishing($participantLesson->successFinishing); ?>
                             </td>
                         </tr>
@@ -130,4 +132,5 @@ $this->params['breadcrumbs'][] = $this->title;
             </table>
         </div>
     </div>
+    <?= HtmlBuilder::upButton();?>
 </div>
