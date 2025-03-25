@@ -4,7 +4,9 @@ namespace frontend\components\creators;
 
 use common\helpers\files\FilePaths;
 use frontend\models\work\educational\journal\VisitWork;
+use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\LessonThemeWork;
+use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
@@ -245,12 +247,13 @@ class ExcelCreator
         $reader = IOFactory::createReader($inputType);
         $inputData = $reader->load(Yii::$app->basePath . $fileName);
         $group = TrainingGroupWork::findOne($groupId);
+        $defence = GroupProjectThemesWork::find()->where(['training_group_id' => $group->id])->all();
         $lessons = TrainingGroupLessonWork::find()->where(['training_group_id' => $group->id])->orderBy('lesson_date ASC')->all();
         $participants = TrainingGroupParticipantWork::find()->where(['training_group_id' => $group->id])->all();
         $visits = VisitWork::find()->where(['IN','training_group_participant_id', ArrayHelper::getColumn($participants, 'id')])->all();
         ExcelCreator::createList($lessons, $inputData);
         $inputData = ExcelCreator::fillVisits($lessons, $visits, $inputData);
-        $inputData = ExcelCreator::fillThemes($inputData, $lessons);
+        $inputData = ExcelCreator::fillThemes($inputData, $lessons, $participants, $defence);
         return $inputData;
     }
     public static function fillVisits($lessons, $visits , $inputData)
@@ -303,9 +306,27 @@ class ExcelCreator
         }
         return '-';
     }
-    public static function fillThemes($inputData, $lessons)
+    public static function fillThemes($inputData, $lessons , $participants, $defence)
     {
         $currentSheet = 0;
+        $dateDefence = 0;
+        $kpi = count($lessons) * count($participants);
+        if ($participants[0] != '') {
+            $orderEnroll = count(OrderTrainingGroupParticipantWork::find()
+                ->where(['training_group_participant_in_id' => $participants[0]])
+                ->andWhere(['training_group_participant_out_id' => NULL])->one()) > 0 ?
+                (OrderTrainingGroupParticipantWork::find()
+                ->where(['training_group_participant_in_id' => $participants[0]])
+                ->andWhere(['training_group_participant_out_id' => NULL])->one())->order_id :
+            NULL;
+            $orderDeduct = count(OrderTrainingGroupParticipantWork::find()
+                ->where(['training_group_participant_out_id' => $participants[0]])
+                ->andWhere(['training_group_participant_in_id' => NULL])->one()) > 0 ?
+                (OrderTrainingGroupParticipantWork::find()
+                    ->where(['training_group_participant_out_id' => $participants[0]])
+                    ->andWhere(['training_group_participant_in_id' => NULL])->one())->order_id :
+            NULL;
+        }
         foreach ($lessons as $i => $lesson) {
             if ($i != 0 && $i % 42 == 0) {
                 $currentSheet++;
@@ -314,6 +335,10 @@ class ExcelCreator
             $lessonTheme = LessonThemeWork::find()->where(['training_group_lesson_id' => $lesson->id])->one();
             $inputData->getSheet($currentSheet)->setCellValue("Z$address", $lessonTheme->trainingGroupLessonWork->lesson_date);
             $inputData->getSheet($currentSheet)->setCellValue("AA$address", $lessonTheme->thematicPlanWork->theme);
+            $inputData->getSheet($currentSheet)->setCellValue("Z51",  $orderEnroll);
+            $inputData->getSheet($currentSheet)->setCellValue("AB51", $dateDefence);
+            $inputData->getSheet($currentSheet)->setCellValue("AD51", $orderDeduct);
+            $inputData->getSheet($currentSheet)->setCellValue("AF51", $kpi);
         }
         return $inputData;
     }
