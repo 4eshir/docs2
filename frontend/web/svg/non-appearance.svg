@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect x="20" y="40" width="60" height="30" fill="#EAEAEA" stroke="black" stroke-width="2"/>
-  <circle cx="50" cy="80" r="5" fill="black"/> <!-- Голова -->
-  <line x1="45" y1="85" x2="55" y2="95" stroke="black" stroke-width="2"/> <!-- Туловище -->
-  <line x1="35" y1="90" x2="65" y2="90" stroke="black" stroke-width="2"/> <!-- Руки -->
-  <line x1="50" y1="98" x2="50" y2="105" stroke="black" stroke-width="2"/> <!-- Ноги -->
-</svg>
+<svg id="Слой_1" data-name="Слой 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 85.04 85.04"><defs><style>.cls-1{fill:#d21d1e;}</style></defs><path class="cls-1" d="M7.72,7.79V77H77V7.79ZM71.86,71.93h-59v-59h59Z"/><polygon class="cls-1" points="48.67 42.55 62.37 56.33 56.2 62.46 42.5 48.68 28.72 62.37 22.58 56.2 36.37 42.5 22.67 28.72 28.84 22.59 42.53 36.37 56.32 22.67 62.46 28.85 48.67 42.55"/></svg>

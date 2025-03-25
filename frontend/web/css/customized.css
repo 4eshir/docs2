@@ -29,6 +29,8 @@
 
     --accordion-dark: #F7FAFC;
     --accordion-btn-dark: #BAC1C9;
+
+    --svg-distant: #0074B2;
 }
 
 *, :after, :before {
@@ -660,12 +662,16 @@ input[type="checkbox"] {
     text-align: left;
 }
 
-.svg-primary svg path, .svg-primary svg ellipse  {
+.svg-primary svg path, .svg-primary svg ellipse, .svg-primary svg polygon {
     fill: var(--primary-color);
 }
 
-.svg-critical svg path, .svg-critical svg ellipse {
+.svg-critical svg path, .svg-critical svg ellipse, .svg-critical svg polygon {
     fill: var(--critical-color);
+}
+
+.svg-distant svg path, .svg-distant svg ellipse, .svg-distant svg polygon {
+    fill: var(--svg-distant);
 }
 
 .no-flex {

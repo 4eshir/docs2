@@ -153,8 +153,8 @@ a:has(.tooltip-span) {
 }
 
 .card thead td {
-    font-style: italic;
     font-weight: 500;
+    text-align: center;
 }
 
 .card table th {
@@ -186,4 +186,13 @@ a:has(.tooltip-span) {
     margin: 0;
     line-height: 1.2;
     text-align: center;
+}
+
+.status-participant {
+    text-align: center;
+}
+
+.status-participant svg{
+    width: 20px;
+    height: 20px;
 }

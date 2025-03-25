@@ -69,7 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?= $model->getPrettyParticipant($participantLesson->participant); ?>
                             </td>
                             <?php foreach ($participantLesson->lessonIds as $lesson): ?>
-                                <td>
+                                <td class="status-participant">
                                     <?= $lesson->getPrettyStatus() ?>
                                 </td>
                             <?php endforeach; ?>
@@ -91,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="card no-flex">
         <div class="table-topic">
-            Тематический план
+            Тематический план (ТП)
         </div>
         <div class="table-block">
             <table>
