@@ -243,61 +243,6 @@ class ExcelCreator
 
         return $inputData;
     }*/
-    public static function createJournal($groupId)
-    {
-        $fileName = FilePaths::TEMPLATE_FILEPATH . '/' . self::TEMPLATE_FILENAME;
-        $inputType = IOFactory::identify(Yii::$app->basePath . '/' . $fileName);
-        $reader = IOFactory::createReader($inputType);
-        $inputData = $reader->load(Yii::$app->basePath . $fileName);
-        $group = TrainingGroupWork::findOne($groupId);
-        $defences = GroupProjectThemesWork::find()->where(['training_group_id' => $group->id])->all();
-        $lessons = TrainingGroupLessonWork::find()->where(['training_group_id' => $group->id])->orderBy('lesson_date ASC')->all();
-        $participants = TrainingGroupParticipantWork::find()->where(['training_group_id' => $group->id])->all();
-        $visits = VisitWork::find()->where(['IN','training_group_participant_id', ArrayHelper::getColumn($participants, 'id')])->all();
-        ExcelCreator::createList($lessons, $group, $participants, $defences, $inputData);
-        $inputData = ExcelCreator::fillVisits($lessons, $visits, $inputData);
-        $inputData = ExcelCreator::fillThemes($inputData, $lessons);
-        return $inputData;
-    }
-    public static function fillVisits($lessons, $visits , $inputData)
-    {
-        /* @var $lesson TrainingGroupLessonWork */
-        /*  @var $visit VisitWork */
-        $visitIndex = "B";
-        $currentSheet = 0;
-        $currentIndex = 4;
-        $styleArray = array(
-            'alignment' => array(
-                'textRotation' => 90  // Поворот текста на 90 градусов
-            )
-        );
-        foreach ($lessons as $i => $lesson) {
-            if ($i != 0 && $i % 21 == 0) {
-                $visitIndex = "B";
-                $currentIndex = 30;
-
-            }
-            if ($i != 0 && $i % 42 == 0) {
-                $visitIndex = "B";
-                $currentIndex = 4;
-                $currentSheet++;
-            }
-            $inputData->getSheet($currentSheet)->getStyle("$visitIndex". $currentIndex)->applyFromArray($styleArray);
-            $inputData->getSheet($currentSheet)->setCellValue("$visitIndex". $currentIndex, DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot));
-            usort($visits, function($a, $b) {
-                return strcmp(
-                    $a->trainingGroupParticipantWork->participantWork->getFullFio(),
-                    $b->trainingGroupParticipantWork->participantWork->getFullFio()
-                );
-            });
-            foreach ($visits as $counter => $visit) {
-                $inputData->getSheet($currentSheet)->setCellValue("A". ($currentIndex + $counter + 2), $visit->trainingGroupParticipantWork->participantWork->getFIO(ForeignEventParticipantsWork::FIO_SURNAME_INITIALS));
-                $inputData->getSheet($currentSheet)->setCellValue("$visitIndex" . ($currentIndex + $counter + 2), ExcelCreator::findStatus($visit->id, $lesson->id));
-            }
-            $visitIndex++;
-        }
-        return $inputData;
-    }
     public static function findStatus($visitId, $lessonId){
         $visit = VisitWork::findOne($visitId);
         $lessons = json_decode(($visit->lessons));
@@ -321,28 +266,105 @@ class ExcelCreator
         }
         return '-';
     }
-    public static function fillThemes(
-        $inputData,
-        $lessons)
+    public static function createJournal($groupId)
     {
-        /* @var $defence GroupProjectThemesWork */
+        $fileName = FilePaths::TEMPLATE_FILEPATH . '/' . self::TEMPLATE_FILENAME;
+        $inputType = IOFactory::identify(Yii::$app->basePath . '/' . $fileName);
+        $reader = IOFactory::createReader($inputType);
+        $inputData = $reader->load(Yii::$app->basePath . $fileName);
+        $group = TrainingGroupWork::findOne($groupId);
+        $defences = GroupProjectThemesWork::find()->where(['training_group_id' => $group->id])->all();
+        $lessons = TrainingGroupLessonWork::find()->where(['training_group_id' => $group->id])->orderBy('lesson_date ASC')->all();
+        $participants = TrainingGroupParticipantWork::find()->where(['training_group_id' => $group->id])->all();
+        $visits = VisitWork::find()->where(['IN','training_group_participant_id', ArrayHelper::getColumn($participants, 'id')])->all();
+        $amountSheets = ExcelCreator::countList($lessons, $participants);
+        //var_dump($amountSheets);
+        ExcelCreator::createList($lessons, $group, $participants, $defences, $inputData, $amountSheets);
+        $inputData = ExcelCreator::fillVisits($lessons, $visits, $inputData, $amountSheets);
+        $inputData = ExcelCreator::fillThemes($inputData, $lessons, $amountSheets);
+        return $inputData;
+    }
+    public static function fillVisits($lessons, $visits , $inputData, $amountSheets)
+    {
+        /* @var $lesson TrainingGroupLessonWork */
+        /*  @var $visit VisitWork */
+        $styleArray = array(
+            'alignment' => array(
+                'textRotation' => 90  // Поворот текста на 90 градусов
+            )
+        );
+        usort($visits, function($a, $b) {
+            return strcmp(
+                $a->trainingGroupParticipantWork->participantWork->getFullFio(),
+                $b->trainingGroupParticipantWork->participantWork->getFullFio()
+            );
+        });
         $currentSheet = 0;
-        foreach ($lessons as $i => $lesson) {
-            if ($i != 0 && $i % 42 == 0) {
-                $currentSheet++;
+        $currentIndex = 6;
+        foreach ($visits as $counter => $visit) {
+            if ($counter != 0 && $counter % 20 == 0){
+                $currentSheet = $currentSheet + $amountSheets['lessonList'];
+                $currentIndex = 6;
             }
-            $address = ($i % 42) + 5;
-            $lessonTheme = LessonThemeWork::find()->where(['training_group_lesson_id' => $lesson->id])->one();
-            $inputData->getSheet($currentSheet)->setCellValue("Z$address", DateFormatter::format($lessonTheme->trainingGroupLessonWork->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot));
-            $inputData->getSheet($currentSheet)->setCellValue("AA$address", $lessonTheme->thematicPlanWork->theme);
+            $localSheet = $currentSheet;
+            $currentVisitIndex = 4;
+            $visitIndex = "B";
+            foreach ($lessons as $i => $lesson) {
+                if ($i != 0 && $i % 21 == 0) {
+                    $visitIndex = "B";
+                    $currentVisitIndex = 30;
+                }
+                if ($i != 0 && $i % 42 == 0) {
+                    $visitIndex = "B";
+                    $currentVisitIndex = 4;
+                    $localSheet++;
+                }
+
+                $inputData->getSheet($currentSheet)->setCellValue("$visitIndex". $currentVisitIndex, DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot));
+                $inputData->getSheet($localSheet)->setCellValue("$visitIndex" . ($currentVisitIndex + ($counter % 20) + 2), ExcelCreator::findStatus($visit->id, $lesson->id));
+                $visitIndex++;
+            }
+            for($sheet = 0; $sheet < $amountSheets['lessonList']; $sheet++){
+                $visitIndex = "B";
+                foreach ($lessons as $lesson) {
+                    $inputData->getSheet($currentSheet + $sheet)->getStyle("$visitIndex". 4)->applyFromArray($styleArray);
+                    $inputData->getSheet($currentSheet + $sheet)->setCellValue("$visitIndex". 4, DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot));
+                    $inputData->getSheet($currentSheet + $sheet)->setCellValue("$visitIndex". 30, DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot));
+                }
+                $inputData->getSheet($currentSheet + $sheet)->setCellValue("A". ($currentIndex), $visit->trainingGroupParticipantWork->participantWork->getFIO(ForeignEventParticipantsWork::FIO_SURNAME_INITIALS));
+                $inputData->getSheet($currentSheet + $sheet)->setCellValue("A". ($currentIndex + 26), $visit->trainingGroupParticipantWork->participantWork->getFIO(ForeignEventParticipantsWork::FIO_SURNAME_INITIALS));
+            }
+            $currentIndex++;
         }
         return $inputData;
     }
-    public static function createList($lessons, $group, $participants, $defences, $inputData)
+    public static function fillThemes(
+        $inputData,
+        $lessons,
+        $amountSheets
+    )
+    {
+        /* @var $defence GroupProjectThemesWork */
+        $currentSheet = 0;
+        for($counter = 0; $counter < $amountSheets['participantList']; $counter++) {
+            foreach ($lessons as $i => $lesson) {
+                if ($i != 0 && $i % 42 == 0) {
+                    $currentSheet++;
+                }
+                $address = ($i % 42) + 5;
+                $lessonTheme = LessonThemeWork::find()->where(['training_group_lesson_id' => $lesson->id])->one();
+                $inputData->getSheet($currentSheet)->setCellValue("Z$address", DateFormatter::format($lessonTheme->trainingGroupLessonWork->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot));
+                $inputData->getSheet($currentSheet)->setCellValue("AA$address", $lessonTheme->thematicPlanWork->theme);
+            }
+            $currentSheet++;
+        }
+        return $inputData;
+    }
+    public static function createList($lessons, $group, $participants, $defences, $inputData, $amountLists)
     {
         /* @var $group TrainingGroupWork */
         /* @var $defence GroupProjectThemesWork */
-        $amountLists = ExcelCreator::countList($lessons);
+
         $orderEnroll = [];
         $orderDeduct = [];
         foreach ($participants as $participant) {
@@ -361,7 +383,6 @@ class ExcelCreator
                 'order_id'
             ));
             $orderEnroll[] = array_unique(ArrayHelper::getColumn(DocumentOrderWork::find()->where(['IN', 'id' , $orderEnrollIds])->all(), 'order_number'));
-
             $orderDeduct[] = array_unique(ArrayHelper::getColumn(DocumentOrderWork::find()->where(['IN', 'id' , $orderDeductIds])->all(), 'order_number'));
         }
         $enroll = '';
@@ -376,7 +397,7 @@ class ExcelCreator
                 $deduct = $deduct . ' , '. $order;
             }
         }
-        for ($i = 0; $i < $amountLists; $i++){
+        for ($i = 0; $i < $amountLists['common']; $i++){
             $clone = clone $inputData->getActiveSheet();
             $clone->setTitle('Шаблон ' . ($i + 2));
             $inputData->addSheet($clone);
@@ -397,7 +418,11 @@ class ExcelCreator
             $inputData->getSheet($i)->setCellValue('AF51', count($lessons) * count($participants));
         }
     }
-    public static function countList($lessons){
-        return intdiv(count($lessons), 42);
+    public static function countList($lessons, $participants){
+        return [
+            'lessonList' => intdiv(count($lessons), 42) + 1,
+            'participantList' => intdiv(count($participants), 20) + 1,
+            'common' => max((intdiv(count($lessons), 42) + 1) * (intdiv(count($participants), 20) + 1) - 1, intdiv(count($lessons), 42) , intdiv(count($participants), 20))
+        ];
     }
 }
