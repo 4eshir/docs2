@@ -75,6 +75,14 @@ class TrainingGroupParticipantRepository
         return $this->provider->getSuccessParticipantsFromGroup($groupId);
     }
 
+    public function getParticipantsWithoutCertificates(array $groupIds)
+    {
+        return TrainingGroupParticipantWork::find()
+            ->joinWith(['certificatesWork'])
+            ->where(['IN', 'training_group_id', $groupIds])
+            ->andWhere(['IS', 'certificate.certificate_number', null]);
+    }
+
     public function getQueryCertificateAllowed(int $groupId)
     {
         return TrainingGroupParticipantWork::find()

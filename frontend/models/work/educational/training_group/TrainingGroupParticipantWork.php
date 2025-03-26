@@ -192,4 +192,9 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
     {
         return $this->hasOne(GroupProjectThemesWork::class, ['id' => 'group_project_themes_id']);
     }
+
+    public function getCertificatesWork()
+    {
+        return $this->hasOne(CertificateWork::class, ['training_group_participant_id' => 'id']);
+    }
 }

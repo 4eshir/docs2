@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         $gridColumns = [
             ['attribute' => 'certificate_number', 'format' => 'raw', 'value' => function(CertificateWork $model){
-                return $model->certificate_number;
+                return $model->getCertificateLongNumber();
             }],
             ['attribute' => 'certificate_template_id', 'format' => 'raw', 'value' => function(CertificateWork $model){
                 return $model->certificateTemplatesWork->name;
@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn', 'header' => '№ п/п'],
             ['attribute' => 'certificate_number', 'format' => 'raw', 'value' => function(CertificateWork $model){
-                return StringFormatter::stringAsLink($model->certificate_number, Url::to(['view', 'id' => $model->id]));
+                return StringFormatter::stringAsLink($model->getCertificateLongNumber(), Url::to(['view', 'id' => $model->id]));
             }],
             ['attribute' => 'certificate_template_id', 'format' => 'raw', 'value' => function(CertificateWork $model){
                 return StringFormatter::stringAsLink(

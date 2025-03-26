@@ -49,7 +49,7 @@ class UserPermissionFunctionRepository
     /**
      * Возвращает список PermissionFunctionWork для пользователя с ID = userId
      * @param $userId
-     * @return array|\yii\db\ActiveRecord[]
+     * @return PermissionFunctionWork[]
      */
     public function getPermissionsByUser($userId)
     {

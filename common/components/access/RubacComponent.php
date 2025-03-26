@@ -98,6 +98,15 @@ class RubacComponent
         return Yii::$app->user->identity->getId();
     }
 
+    public function checkPermission(int $userId, string $permissionCode)
+    {
+        $permissions = ArrayHelper::getColumn(
+            $this->userPermissionFunctionRepository->getPermissionsByUser($userId),
+            'short_code'
+        );
+        return in_array($permissionCode, $permissions);
+    }
+
     public function getTeacherPermissions()
     {
         return [

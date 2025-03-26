@@ -124,23 +124,30 @@ class CertificateWizard
         FilesHelper::createDirectory(Yii::$app->basePath . '/download/' . Yii::$app->user->identity->getId() . '_temp_certificates/');
 
         foreach ($certificates as $certificate) {
-            $name = self::downloadCertificate($certificate, $certificate->trainingGroupParticipantWork, self::DESTINATION_SERVER, Yii::$app->basePath . '/download/' . Yii::$app->user->identity->getId() . '_temp_certificates/');
-            $result = Yii::$app->mailer->compose()
-                ->setFrom('noreply@schooltech.ru')
-                ->setTo($certificate->trainingGroupParticipantWork->participant->email)
-                ->setSubject('Сертификат об успешном прохождении программы ДО')
-                ->setHtmlBody('Сертификат находится в прикрепленном файле.<br><br><br>Пожалуйста, обратите внимание, что это сообщение было сгенерировано и отправлено в автоматическом режиме. Не отвечайте на него. По всем вопросам обращайтесь по телефону 44-24-28 (единый номер).')
-                ->attach(Yii::$app->basePath . '/download/' . Yii::$app->user->identity->getId() . '_temp_certificates/' . $name . '.pdf')
-                ->send();
-            if ($result) {
-                $certificate->recordEvent(new CertificateSetStatusEvent($certificate->id, CertificateWork::STATUS_SEND), CertificateWork::className());
-            }
-            else {
-                $certificate->recordEvent(new CertificateSetStatusEvent($certificate->id, CertificateWork::STATUS_ERR_SEND), CertificateWork::className());
-            }
-            $certificate->releaseEvents();
+            self::sendCertificateToEmail($certificate);
         }
 
         FilesHelper::removeDirectory(Yii::$app->basePath . '/download/' . Yii::$app->user->identity->getId() . '_temp_certificates/');
+    }
+
+    public static function sendCertificateToEmail(CertificateWork $certificate)
+    {
+        $name = self::downloadCertificate($certificate, $certificate->trainingGroupParticipantWork, self::DESTINATION_SERVER, Yii::$app->basePath . '/download/' . Yii::$app->user->identity->getId() . '_temp_certificates/');
+        $result = Yii::$app->mailer->compose()
+            ->setFrom('noreply@schooltech.ru')
+            ->setTo($certificate->trainingGroupParticipantWork->participant->email)
+            ->setSubject('Сертификат об успешном прохождении программы ДО')
+            ->setHtmlBody('Сертификат находится в прикрепленном файле.<br><br><br>Пожалуйста, обратите внимание, что это сообщение было сгенерировано и отправлено в автоматическом режиме. Не отвечайте на него. По всем вопросам обращайтесь по телефону 44-24-28 (единый номер).')
+            ->attach(Yii::$app->basePath . '/download/' . Yii::$app->user->identity->getId() . '_temp_certificates/' . $name . '.pdf')
+            ->send();
+        if ($result) {
+            $certificate->recordEvent(new CertificateSetStatusEvent($certificate->id, CertificateWork::STATUS_SEND), CertificateWork::className());
+        }
+        else {
+            $certificate->recordEvent(new CertificateSetStatusEvent($certificate->id, CertificateWork::STATUS_ERR_SEND), CertificateWork::className());
+        }
+        $certificate->releaseEvents();
+
+        return $result;
     }
 }
