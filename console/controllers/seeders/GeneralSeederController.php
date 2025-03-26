@@ -54,7 +54,7 @@ class GeneralSeederController extends Controller
         $this->trainingProgramSeederController->actionRun(20);
         $this->thematicPlanSeederController->actionRun(15);
         $this->trainingGroupSeederController->actionRun(15);
-        $this->trainingGroupParticipantSeederController->actionRun(60);
+        $this->trainingGroupParticipantSeederController->actionRun(400);
         $this->trainingGroupLessonSeederController->actionRun(3000);
         $this->lessonThemeSeederController->actionRun();
         $this->visitSeederController->actionRun();
