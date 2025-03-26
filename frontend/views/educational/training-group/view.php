@@ -1,8 +1,10 @@
 <?php
 
+use common\helpers\html\HtmlBuilder;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
 use frontend\services\educational\JournalService;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model TrainingGroupCombinedForm */
@@ -201,13 +203,26 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
         <?= Html::a('Перенести темы занятий из ОП', ['create-lesson-themes', 'groupId' => $model->id], ['class' => 'btn btn-secondary']) ?>
         <?= Html::a('Скачать КУГ', ['download-plan', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
-        <?php if ($journalState == JournalService::JOURNAL_EMPTY): ?>
-            <?= Html::a('Создать журнал', ['generate-journal', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
-        <?php elseif ($journalState == JournalService::JOURNAL_EXIST): ?>
-            <?= Html::a('Открыть журнал', ['educational/journal/view', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= HtmlBuilder::createDualityButton(
+            ['Архивировать', 'Разархивировать'],
+            [Url::to(['archive-group', 'id' => $model->id]), Url::to(['unarchive-group', 'id' => $model->id])],
+            [['btn', 'btn-success'], ['btn', 'btn-primary']],
+            !$model->trainingGroup->isArchive()
+        ); ?>
+
+        <?= HtmlBuilder::createDualityButton(
+            ['Создать журнал', 'Открыть журнал'],
+            [Url::to(['generate-journal', 'id' => $model->id]), Url::to(['educational/journal/view', 'id' => $model->id])],
+            [['btn', 'btn-success'], ['btn', 'btn-primary']],
+            $journalState == JournalService::JOURNAL_EMPTY
+        ); ?>
+
+        <?php if ($journalState == JournalService::JOURNAL_EXIST): ?>
             <?= Html::a('Удалить журнал', ['delete-journal', 'id' => $model->id], ['class' => 'btn btn-danger']) ?>
             <?= Html::a('Сформировать протокол', ['create-protocol', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?= Html::a('Сгенерировать сертификаты', ['/educational/certificate/create', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Отправить сертификаты', ['/educational/certificate/send-all', 'groupId' => $model->id], ['class' => 'btn btn-primary']) ?>
+
             <?= Html::a('Скачать журнал', ['download-journal', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?php endif; ?>
 

@@ -4,7 +4,9 @@ namespace frontend\components\wizards;
 
 use common\components\files\CreateDirZip;
 use common\helpers\common\BaseFunctions;
+use common\helpers\files\FilesHelper;
 use common\helpers\html\CertificateBuilder;
+use frontend\events\educational\certificate\CertificateSetStatusEvent;
 use frontend\helpers\CertificateHelper;
 use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\educational\CertificateWork;
@@ -17,7 +19,7 @@ class CertificateWizard
     const DESTINATION_DOWNLOAD = 1;
     const DESTINATION_SERVER = 2;
 
-    public static function DownloadCertificate(
+    public static function downloadCertificate(
         CertificateWork $certificate,
         TrainingGroupParticipantWork $participant,
         int $destination,
@@ -29,17 +31,17 @@ class CertificateWizard
                 strripos($certificate->certificateTemplatesWork->name, CertificateWork::INTENSIVE) ||
                 strripos($certificate->certificateTemplatesWork->name, CertificateWork::PRO)
             ) {
-                $mpdf = CertificateWizard::CertificateIntensive($certificate, $participant);
+                $mpdf = CertificateWizard::certificateIntensive($certificate, $participant);
             }
             else {
-                $mpdf = CertificateWizard::CertificateTechnosummer($certificate, $participant);
+                $mpdf = CertificateWizard::certificateTechnosummer($certificate, $participant);
             }
         }
         else if (strripos($certificate->certificateTemplatesWork->name, CertificateWork::SCHOOL)) {
-            $mpdf = CertificateWizard::CertificateSchool($certificate, $participant);
+            $mpdf = CertificateWizard::certificateSchool($certificate, $participant);
         }
         else {
-            $mpdf = CertificateWizard::CertificateStandard($certificate, $participant);
+            $mpdf = CertificateWizard::certificateStandard($certificate, $participant);
         }
 
         if ($destination === self::DESTINATION_DOWNLOAD) {
@@ -65,7 +67,7 @@ class CertificateWizard
         }
     }
 
-    private static function CertificateStandard(CertificateWork $certificate, TrainingGroupParticipantWork $participant)
+    private static function certificateStandard(CertificateWork $certificate, TrainingGroupParticipantWork $participant)
     {
         $genderVerbs = CertificateHelper::getGenderVerbs($participant->participantWork);
 
@@ -76,7 +78,7 @@ class CertificateWizard
         return CertificateBuilder::createPdfClass($content);
     }
 
-    private static function CertificateSchool(CertificateWork $certificate, TrainingGroupParticipantWork $participant)
+    private static function certificateSchool(CertificateWork $certificate, TrainingGroupParticipantWork $participant)
     {
         $genderVerbs = CertificateHelper::getGenderVerbs($participant->participantWork);
 
@@ -84,13 +86,13 @@ class CertificateWizard
         return CertificateBuilder::createPdfClass($content);
     }
 
-    private static function CertificateTechnosummer(CertificateWork $certificate, TrainingGroupParticipantWork $participant)
+    private static function certificateTechnosummer(CertificateWork $certificate, TrainingGroupParticipantWork $participant)
     {
         $content = CertificateBuilder::createTechnosummerCertificate($certificate, $participant);
         return CertificateBuilder::createPdfClass($content);
     }
 
-    private static function CertificateIntensive(CertificateWork $certificate, TrainingGroupParticipantWork $participant)
+    private static function certificateIntensive(CertificateWork $certificate, TrainingGroupParticipantWork $participant)
     {
         $genderVerbs = CertificateHelper::getGenderVerbs($participant->participantWork);
 
@@ -110,5 +112,35 @@ class CertificateWizard
         fclose($fd);
         $createZip->forceDownload($fileName);
         unlink(Yii::$app->basePath.'/web/'.$fileName);
+        FilesHelper::removeDirectory(Yii::$app->basePath.'/download/'.Yii::$app->user->identity->getId().'/');
+    }
+
+    /**
+     * @param CertificateWork[] $certificates
+     * @return void
+     */
+    public static function sendCertificates(array $certificates)
+    {
+        FilesHelper::createDirectory(Yii::$app->basePath . '/download/' . Yii::$app->user->identity->getId() . '_temp_certificates/');
+
+        foreach ($certificates as $certificate) {
+            $name = self::downloadCertificate($certificate, $certificate->trainingGroupParticipantWork, self::DESTINATION_SERVER, Yii::$app->basePath . '/download/' . Yii::$app->user->identity->getId() . '_temp_certificates/');
+            $result = Yii::$app->mailer->compose()
+                ->setFrom('noreply@schooltech.ru')
+                ->setTo($certificate->trainingGroupParticipantWork->participant->email)
+                ->setSubject('Сертификат об успешном прохождении программы ДО')
+                ->setHtmlBody('Сертификат находится в прикрепленном файле.<br><br><br>Пожалуйста, обратите внимание, что это сообщение было сгенерировано и отправлено в автоматическом режиме. Не отвечайте на него. По всем вопросам обращайтесь по телефону 44-24-28 (единый номер).')
+                ->attach(Yii::$app->basePath . '/download/' . Yii::$app->user->identity->getId() . '_temp_certificates/' . $name . '.pdf')
+                ->send();
+            if ($result) {
+                $certificate->recordEvent(new CertificateSetStatusEvent($certificate->id, CertificateWork::STATUS_SEND), CertificateWork::className());
+            }
+            else {
+                $certificate->recordEvent(new CertificateSetStatusEvent($certificate->id, CertificateWork::STATUS_ERR_SEND), CertificateWork::className());
+            }
+            $certificate->releaseEvents();
+        }
+
+        FilesHelper::removeDirectory(Yii::$app->basePath . '/download/' . Yii::$app->user->identity->getId() . '_temp_certificates/');
     }
 }

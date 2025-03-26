@@ -113,6 +113,8 @@ class RulesConfig
             \frontend\controllers\educational\TrainingGroupController::class => [
                 'archive',
                 'archive-save',
+                'archive-group',
+                'unarchive-group'
             ]
         ],
 
@@ -120,6 +122,8 @@ class RulesConfig
             \frontend\controllers\educational\TrainingGroupController::class => [
                 'archive',
                 'archive-save',
+                'archive-group',
+                'unarchive-group'
             ]
         ],
 

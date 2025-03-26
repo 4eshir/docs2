@@ -68,14 +68,13 @@ class CertificateService
             /** @var CertificateWork $certificate */
             $certificate = $this->repository->get($id);
             $participant = $certificate->trainingGroupParticipantWork;
-            CertificateWizard::DownloadCertificate($certificate, $participant, CertificateWizard::DESTINATION_SERVER);
+            CertificateWizard::downloadCertificate($certificate, $participant, CertificateWizard::DESTINATION_SERVER);
         }
     }
 
     public function downloadCertificates()
     {
         CertificateWizard::archiveDownload();
-        FilesHelper::removeDirectory(Yii::$app->basePath.'/download/'.Yii::$app->user->identity->getId().'/');
     }
 
     public function buildGroupQuery(?int $groupId)

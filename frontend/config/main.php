@@ -21,6 +21,19 @@ return [
         ]
     ],
     'components' => [
+        'mailer' => [
+            'class' => 'yii\swiftmailer\Mailer',
+            'viewPath' => '@app/mail',
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => 'smtp.yandex.ru',
+                'username' => 'noreply@schooltech.ru',
+                'password' => 'noreply0noreply',
+                'port' => 465,
+                'encryption' => 'ssl',
+            ],
+            'useFileTransport' => false,
+        ],
         'request' => [
             'enableCookieValidation' => true,
             'enableCsrfValidation' => true,

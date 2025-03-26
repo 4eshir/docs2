@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\educational;
 
+use common\events\EventTrait;
 use common\models\scaffold\Certificate;
 use frontend\models\work\CertificateTemplatesWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
@@ -12,6 +13,7 @@ use frontend\models\work\educational\training_group\TrainingGroupParticipantWork
  */
 class CertificateWork extends Certificate
 {
+    use EventTrait;
     const TECHNOSUMMER = 'лето';
     const INTENSIVE = 'Интенсив';
     const PRO = 'ПРО';
@@ -20,6 +22,7 @@ class CertificateWork extends Certificate
 
     const STATUS_CREATE = 0;
     const STATUS_SEND = 1;
+    const STATUS_ERR_SEND = 2;
 
 
     public static function fill(

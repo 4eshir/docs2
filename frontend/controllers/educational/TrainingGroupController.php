@@ -42,6 +42,7 @@ use frontend\models\work\educational\training_group\TrainingGroupParticipantWork
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\ProjectThemeWork;
 use frontend\services\educational\GroupDocumentService;
+use frontend\services\educational\GroupLessonService;
 use frontend\services\educational\GroupProjectThemesService;
 use frontend\services\educational\JournalService;
 use frontend\services\educational\TrainingGroupService;
@@ -61,6 +62,7 @@ class TrainingGroupController extends DocumentController
     private AuditoriumRepository $auditoriumRepository;
     private LessonThemeRepository $lessonThemeRepository;
     private GroupProjectThemesService $projectThemesService;
+    private GroupLessonService $lessonService;
     private LockWizard $lockWizard;
     private GroupDocumentService $documentService;
 
@@ -79,6 +81,7 @@ class TrainingGroupController extends DocumentController
         AuditoriumRepository $auditoriumRepository,
         LessonThemeRepository $lessonThemeRepository,
         GroupProjectThemesService $projectThemesService,
+        GroupLessonService $lessonService,
         LockWizard $lockWizard,
         GroupDocumentService $documentService,
         $config = [])
@@ -94,6 +97,7 @@ class TrainingGroupController extends DocumentController
         $this->auditoriumRepository = $auditoriumRepository;
         $this->lessonThemeRepository = $lessonThemeRepository;
         $this->projectThemesService = $projectThemesService;
+        $this->lessonService = $lessonService;
         $this->lockWizard = $lockWizard;
         $this->documentService = $documentService;
     }
@@ -177,6 +181,28 @@ class TrainingGroupController extends DocumentController
             'dataProvider' => $dataProvider,
             'buttonsAct' => $buttonHtml,
         ]);
+    }
+
+    public function actionArchiveGroup($id)
+    {
+        /** @var TrainingGroupWork $model */
+        $model = $this->trainingGroupRepository->get($id);
+        $model->setArchive(TrainingGroupWork::IS_ARCHIVE);
+        $this->trainingGroupRepository->save($model);
+        Yii::$app->session->setFlash('success', 'Группа отправлена в архив');
+
+        return $this->redirect(['view', 'id' => $id]);
+    }
+
+    public function actionUnarchiveGroup($id)
+    {
+        /** @var TrainingGroupWork $model */
+        $model = $this->trainingGroupRepository->get($id);
+        $model->setArchive(TrainingGroupWork::NO_ARCHIVE);
+        $this->trainingGroupRepository->save($model);
+        Yii::$app->session->setFlash('success', 'Группа извлечена из архива');
+
+        return $this->redirect(['view', 'id' => $id]);
     }
 
     /**
@@ -406,12 +432,7 @@ class TrainingGroupController extends DocumentController
     public function actionDeleteLesson($groupId, $entityId)
     {
         /** @var TrainingGroupLessonWork $model */
-        $model = $this->groupLessonRepository->get($entityId);
-        $model->recordEvent(
-            new DeleteLessonFromVisitEvent($groupId, [$model]),
-            TrainingGroupLessonWork::class
-        );
-        $result = $this->groupLessonRepository->delete($model);
+        $result = $this->lessonService->delete($entityId);
 
         if ($result) {
             Yii::$app->session->setFlash('success', 'Занятие успешно удалено');
@@ -491,18 +512,15 @@ class TrainingGroupController extends DocumentController
 
     public function actionGroupDeletion($id)
     {
+        $errorString = '';
         $data = RequestHelper::getDataFromPost(Yii::$app->request->post(), 'check', RequestHelper::CHECKBOX);
         foreach ($data as $item) {
-            /** @var TrainingGroupLessonWork $entity */
-            $entity = $this->groupLessonRepository->get($item);
-            $entity->recordEvent(
-                new DeleteLessonFromVisitEvent($id, [$entity]),
-                TrainingGroupLessonWork::class
-            );
-            $this->groupLessonRepository->delete($entity);
-            $entity->releaseEvents();
+            $result = $this->lessonService->delete($item);
+            if (!$result) {
+                $errorString .= "Ошибка удаления занятия (ID: $item)<br>";
+            }
         }
-
+        Yii::$app->session->setFlash('danger', $errorString);
         return $this->redirect(['schedule-form', 'id' => $id]);
     }
 

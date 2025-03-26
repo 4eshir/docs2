@@ -2,6 +2,7 @@
 
 namespace common\repositories\educational;
 
+use common\components\traits\CommonDatabaseFunctions;
 use common\repositories\providers\group_lesson\TrainingGroupLessonProvider;
 use common\repositories\providers\group_lesson\TrainingGroupLessonProviderInterface;
 use DomainException;
@@ -10,6 +11,8 @@ use Yii;
 
 class TrainingGroupLessonRepository
 {
+    use CommonDatabaseFunctions;
+
     private $provider;
 
     public function __construct(

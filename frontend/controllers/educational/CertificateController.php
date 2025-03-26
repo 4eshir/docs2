@@ -2,6 +2,7 @@
 
 namespace frontend\controllers\educational;
 
+use common\repositories\educational\CertificateRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use frontend\components\GroupParticipantWidget;
 use frontend\components\wizards\CertificateWizard;
@@ -15,18 +16,18 @@ use yii\web\Controller;
 
 class CertificateController extends Controller
 {
-    private TrainingGroupParticipantRepository $participantRepository;
+    private CertificateRepository $repository;
     private CertificateService $service;
 
     public function __construct(
         $id,
         $module,
-        TrainingGroupParticipantRepository $participantRepository,
+        CertificateRepository $repository,
         CertificateService $service,
         $config = [])
     {
         parent::__construct($id, $module, $config);
-        $this->participantRepository = $participantRepository;
+        $this->repository = $repository;
         $this->service = $service;
     }
 
@@ -63,6 +64,15 @@ class CertificateController extends Controller
     {
         $this->service->downloadCertificates();
         return $this->redirect(['index']);
+    }
+
+    public function actionSendAll($groupId)
+    {
+        CertificateWizard::sendCertificates(
+            $this->repository->getCertificatesByGroupId($groupId)
+        );
+
+        return $this->redirect(['/educational/training-group/view', 'id' => $groupId]);
     }
 
     public function actionGetGroups()

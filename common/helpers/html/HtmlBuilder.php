@@ -685,4 +685,27 @@ class HtmlBuilder
 
         return $result;
     }
+
+    /**
+     * Функция для создания "двойных кнопок".
+     * Это кнопка, которая может быть в одном из двух состояний, в зависимости от условия.
+     * Массивы должны иметь только 2 элемента, каждый из которых описывает свойства соответствующей кнопки
+     * Состояние 1 - индекс 0 массивов
+     * Состояние 2 - индекс 1 массивов
+     *
+     * @param string[] $buttonNames имена кнопок
+     * @param string[] $urls эндпоинты кнопок
+     * @param array[] $classes списки классов для кнопок
+     * @param bool $condition условие выбора состояния (состояние 1 - если $condition = true)
+     * @return string
+     */
+    public static function createDualityButton(array $buttonNames, array $urls, array $classes, bool $condition) : string
+    {
+        if ($condition) {
+            return Html::a($buttonNames[0], $urls[0], ['class' => implode(' ', $classes[0])]);
+        }
+        else {
+            return Html::a($buttonNames[1], $urls[1], ['class' => implode(' ', $classes[1])]);
+        }
+    }
 }

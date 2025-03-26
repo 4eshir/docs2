@@ -105,4 +105,11 @@ class VisitRepository
         $command->insert($model::tableName(), $model->getAttributes());
         return $command->getRawSql();
     }
+
+    public function prepareDelete(int $groupParticipantId)
+    {
+        $command = Yii::$app->db->createCommand();
+        $command->delete(VisitWork::tableName(), ['training_group_participant_id' => $groupParticipantId]);
+        return $command->getRawSql();
+    }
 }

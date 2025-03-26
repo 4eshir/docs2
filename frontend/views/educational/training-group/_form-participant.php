@@ -41,13 +41,8 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
             'widgetContainer' => 'dynamicform_wrapper', // required: only alphanumeric characters plus "_" [A-Za-z0-9_]
             'widgetBody' => '.container-items', // required: css class selector
             'widgetItem' => '.item', // required: css class
-<<<<<<< HEAD
             'limit' => 100, // the maximum times, an element can be cloned (default 999)
-            'min' => 1, // 0 or 1 (default 1)
-=======
-            'limit' => 4, // the maximum times, an element can be cloned (default 999)
-            'min' => 0, // 0 or 1 (default 1)
->>>>>>> 18ad3c4b7b8c3daa188d93eb71d7d0412e36674f
+            'min' => 0,
             'insertButton' => '.add-item', // css class
             'deleteButton' => '.remove-item', // css class
             'model' => $modelChilds[0],

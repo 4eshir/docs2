@@ -39,6 +39,7 @@ use frontend\events\educational\training_group\DeleteGroupThemeEvent;
 use frontend\events\educational\training_group\DeleteLessonGroupEvent;
 use frontend\events\educational\training_group\DeleteTeacherGroupEvent;
 use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
+use frontend\events\educational\training_group\DeleteVisitEvent;
 use frontend\events\educational\training_group\UpdateGroupExpertEvent;
 use frontend\events\educational\training_group\UpdateProjectThemeEvent;
 use frontend\events\educational\training_group\UpdateTrainingGroupParticipantEvent;
@@ -325,6 +326,7 @@ class TrainingGroupService implements DatabaseServiceInterface
         }
 
         foreach ($delParticipants as $participant) {
+            $form->recordEvent(new DeleteVisitEvent($participant->id), VisitWork::className());
             $form->recordEvent(new DeleteTrainingGroupParticipantEvent($participant->id), TrainingGroupParticipantWork::className());
         }
 
