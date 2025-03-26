@@ -54,4 +54,9 @@
     .export-menu {
         margin: auto 1em;
     }
+
+    #toTopButton {
+        bottom: 3em;
+        right: 1em;
+    }
 }

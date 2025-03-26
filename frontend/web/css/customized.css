@@ -681,6 +681,7 @@ input[type="checkbox"] {
 
 .scroll {
     overflow: scroll;
+    padding-left: 1em;
 }
 
 .plan-form .form-group {
@@ -702,4 +703,19 @@ input[type="checkbox"] {
 #toTopButton svg {
     width: 2em;
     height: 2em;
+}
+
+/* Скроллбар */
+::-webkit-scrollbar {
+    margin-bottom: -1em;
+}
+
+/* Ручка скроллбара */
+::-webkit-scrollbar-thumb {
+    background-color: var(--accordion-btn-dark);
+    border-radius: var(--border-radius);
+}
+
+::-webkit-scrollbar-corner {
+    display: none;
 }
