@@ -2,6 +2,7 @@
 
 use common\helpers\DateFormatter;
 use common\helpers\html\HtmlBuilder;
+use common\helpers\StringFormatter;
 use frontend\forms\journal\JournalForm;
 use frontend\forms\journal\ThematicPlanForm;
 use frontend\models\work\dictionaries\PersonInterface;
@@ -51,15 +52,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     <tr>
                         <th>ФИО</th>
                         <th colspan="<?= $model->getLessonsCount() ?>">Расписание</th>
-                        <th colspan="3">Итоговый контроль</th>
+                        <th colspan="<?= $model->getColspanControl() ?>">Итоговый контроль</th>
                     </tr>
                 <tr>
                     <td>учащегося</td>
                     <?php foreach ($model->getDateLessons() as $dateLesson): ?>
                         <td class="lessons-date"> <?= $dateLesson ?>  </td>
                     <?php endforeach; ?>
-                    <td>Тема проекта</td>
-                    <td>Оценка</td>
+                    <td style="display: <?= $model->isProjectCertificate() ? 'block' : 'none';?>">Тема проекта</td>
+                    <td style="display: <?= $model->isControlWorkCertificate() ? 'block' : 'none';?>">Оценка</td>
                     <td>Успешное завершение</td>
                 </tr>
                 </thead>
@@ -68,17 +69,17 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php foreach ($model->participantLessons as $participantLesson): ?>
                         <tr>
                             <td>
-                                <?= $model->getPrettyParticipant($participantLesson->participant); ?>
+                                <?= $model->getPrettyParticipant($participantLesson->participant, StringFormatter::FORMAT_LINK); ?>
                             </td>
                             <?php foreach ($participantLesson->lessonIds as $lesson): ?>
                                 <td class="status-participant">
                                     <?= $lesson->getPrettyStatus() ?>
                                 </td>
                             <?php endforeach; ?>
-                            <td>
+                            <td style="display: <?= $model->isProjectCertificate() ? 'block' : 'none';?>">
                                 <?= $participantLesson->groupProjectThemesWork->projectThemeWork->name; ?>
                             </td>
-                            <td class="status-participant">
+                            <td class="status-participant" style="display: <?= $model->isControlWorkCertificate() ? 'block' : 'none';?>">
                                 <?= $participantLesson->points; ?>
                             </td>
                             <td class="status-participant">

@@ -152,10 +152,20 @@ a:has(.tooltip-span) {
     border-top: 1px solid rgba(232, 237, 241 , 1);
 }
 
+.card thead th:last-child {
+    line-height: 1.5;
+    padding-left: 0.5em;
+}
+
+.card thead td:first-child {
+    padding-left: 1em;
+}
+
 .card thead td {
     font-weight: 500;
     text-align: center;
-    padding: 0.25em;
+    padding: 0.5em;
+    line-height: 1.2;
 }
 
 .card table th {
@@ -185,7 +195,6 @@ a:has(.tooltip-span) {
 .lessons-date {
     padding: 0;
     margin: 0;
-    line-height: 1.2;
     text-align: center;
 }
 

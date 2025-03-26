@@ -20,7 +20,6 @@ use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use Yii;
 use yii\helpers\Url;
-use yii\log\LogRuntimeException;
 
 /**
  * @property TrainingGroupWork $trainingGroupWork
@@ -169,12 +168,32 @@ class JournalForm extends Model
         return HtmlBuilder::paintSVG(FilePaths::SVG_CROSS, HtmlBuilder::SVG_CRITICAL_COLOR);
     }
 
-    public function getPrettyParticipant(ForeignEventParticipantsWork $participant)
+    public function getPrettyParticipant(ForeignEventParticipantsWork $participant, int $formatter = null)
     {
-        $partLink = StringFormatter::stringAsLink($participant->getFIO(PersonInterface::FIO_SURNAME_INITIALS),
-            Url::to([Yii::$app->frontUrls::PARTICIPANT_VIEW, 'id' => $participant->id]));
+        if ($formatter == StringFormatter::FORMAT_LINK) {
+            $partContent = StringFormatter::stringAsLink($participant->getFIO(PersonInterface::FIO_SURNAME_INITIALS),
+                Url::to([Yii::$app->frontUrls::PARTICIPANT_VIEW, 'id' => $participant->id]));
+        } else {
+            $partContent = $participant->getFIO(PersonInterface::FIO_SURNAME_INITIALS);
+        }
+
         return HtmlBuilder::createTooltip(
-            $partLink,
+            $partContent,
             $participant->getFIO(PersonInterface::FIO_FULL));
+    }
+
+    public function isProjectCertificate()
+    {
+        return $this->trainingGroup->trainingProgramWork->isProjectCertificate();
+    }
+
+    public function isControlWorkCertificate()
+    {
+        return $this->trainingGroup->trainingProgramWork->isControlWorkCertificate();
+    }
+
+    public function getColspanControl()
+    {
+        return 1 + (int)$this->isProjectCertificate() + (int)$this->isControlWorkCertificate();
     }
 }
