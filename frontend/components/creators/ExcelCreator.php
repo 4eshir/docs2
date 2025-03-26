@@ -4,6 +4,7 @@ namespace frontend\components\creators;
 
 use common\helpers\DateFormatter;
 use common\helpers\files\FilePaths;
+use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\educational\journal\VisitWork;
 use frontend\models\work\educational\training_group\GroupProjectThemesWork;
 use frontend\models\work\educational\training_group\LessonThemeWork;
@@ -283,8 +284,14 @@ class ExcelCreator
             }
             $inputData->getSheet($currentSheet)->getStyle("$visitIndex". $currentIndex)->applyFromArray($styleArray);
             $inputData->getSheet($currentSheet)->setCellValue("$visitIndex". $currentIndex, DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot));
+            usort($visits, function($a, $b) {
+                return strcmp(
+                    $a->trainingGroupParticipantWork->participantWork->getFullFio(),
+                    $b->trainingGroupParticipantWork->participantWork->getFullFio()
+                );
+            });
             foreach ($visits as $counter => $visit) {
-                $inputData->getSheet($currentSheet)->setCellValue("A". ($currentIndex + $counter + 2), $visit->trainingGroupParticipantWork->participantWork->getFullFio());
+                $inputData->getSheet($currentSheet)->setCellValue("A". ($currentIndex + $counter + 2), $visit->trainingGroupParticipantWork->participantWork->getFIO(ForeignEventParticipantsWork::FIO_SURNAME_INITIALS));
                 $inputData->getSheet($currentSheet)->setCellValue("$visitIndex" . ($currentIndex + $counter + 2), ExcelCreator::findStatus($visit->id, $lesson->id));
             }
             $visitIndex++;
