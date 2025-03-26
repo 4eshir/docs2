@@ -14,6 +14,7 @@ use frontend\models\work\educational\training_group\TrainingGroupParticipantWork
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\order\DocumentOrderWork;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -278,7 +279,6 @@ class ExcelCreator
         $participants = TrainingGroupParticipantWork::find()->where(['training_group_id' => $group->id])->all();
         $visits = VisitWork::find()->where(['IN','training_group_participant_id', ArrayHelper::getColumn($participants, 'id')])->all();
         $amountSheets = ExcelCreator::countList($lessons, $participants);
-        //var_dump($amountSheets);
         ExcelCreator::createList($lessons, $group, $participants, $defences, $inputData, $amountSheets);
         $inputData = ExcelCreator::fillVisits($lessons, $visits, $inputData, $amountSheets);
         $inputData = ExcelCreator::fillThemes($inputData, $lessons, $amountSheets);
@@ -291,6 +291,9 @@ class ExcelCreator
         $styleArray = array(
             'alignment' => array(
                 'textRotation' => 90  // Поворот текста на 90 градусов
+            ),
+             'numberFormat' => array(
+                'code' => NumberFormat::FORMAT_TEXT
             )
         );
         usort($visits, function($a, $b) {
@@ -319,17 +322,41 @@ class ExcelCreator
                     $currentVisitIndex = 4;
                     $localSheet++;
                 }
-
                 $inputData->getSheet($currentSheet)->setCellValue("$visitIndex". $currentVisitIndex, DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot));
                 $inputData->getSheet($localSheet)->setCellValue("$visitIndex" . ($currentVisitIndex + ($counter % 20) + 2), ExcelCreator::findStatus($visit->id, $lesson->id));
                 $visitIndex++;
             }
             for($sheet = 0; $sheet < $amountSheets['lessonList']; $sheet++){
                 $visitIndex = "B";
+                $iterator = 0;
                 foreach ($lessons as $lesson) {
-                    $inputData->getSheet($currentSheet + $sheet)->getStyle("$visitIndex". 4)->applyFromArray($styleArray);
-                    $inputData->getSheet($currentSheet + $sheet)->setCellValue("$visitIndex". 4, DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot));
-                    $inputData->getSheet($currentSheet + $sheet)->setCellValue("$visitIndex". 30, DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot));
+                    if ($sheet * 42 <= $iterator && $iterator < ($sheet + 1) * 42){
+                        if ($iterator % 21 == 0 && $iterator != $sheet * 42){
+                             $visitIndex = "B";
+                        }
+                        if ($iterator + 21 < ($sheet + 1) * 42){
+                            $inputData->getSheet($currentSheet + $sheet)->getStyle("$visitIndex". 4)->applyFromArray($styleArray);
+                            $inputData->getActiveSheet()
+                                ->getCell("$visitIndex". 4)
+                                ->setValueExplicit(
+                                    DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot),
+                                    \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING2
+                                );
+
+                            $visitIndex++;
+                        }
+                        else {
+                            $inputData->getSheet($currentSheet + $sheet)->getStyle("$visitIndex". 30)->applyFromArray($styleArray);
+                            $inputData->getActiveSheet()
+                                ->getCell("$visitIndex". 30)
+                                ->setValueExplicit(
+                                    DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot),
+                                    \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING2
+                                );
+                            $visitIndex++;
+                        }
+                    }
+                    $iterator++;
                 }
                 $inputData->getSheet($currentSheet + $sheet)->setCellValue("A". ($currentIndex), $visit->trainingGroupParticipantWork->participantWork->getFIO(ForeignEventParticipantsWork::FIO_SURNAME_INITIALS));
                 $inputData->getSheet($currentSheet + $sheet)->setCellValue("A". ($currentIndex + 26), $visit->trainingGroupParticipantWork->participantWork->getFIO(ForeignEventParticipantsWork::FIO_SURNAME_INITIALS));
