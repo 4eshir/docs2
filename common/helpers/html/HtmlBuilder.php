@@ -6,6 +6,7 @@ use common\helpers\common\BaseFunctions;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilePaths;
 use common\helpers\StringFormatter;
+use common\models\Error;
 use common\models\work\ErrorsWork;
 use common\repositories\general\ErrorsRepository;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
@@ -716,7 +717,9 @@ class HtmlBuilder
     {
         $errors = (Yii::createObject(ErrorsRepository::class))->getErrorsByTableRow($tableName, $rowId);
         $errorsString = implode('<br>', array_map(function(ErrorsWork $error) {
-            return Yii::$app->errors->get($error->error)->getDescription();
+            /** @var Error $errorTemplate */
+            $errorTemplate = Yii::$app->errors->get($error->error);
+            return "<b>Ошибка $errorTemplate->code</b>: $errorTemplate->description";
         }, $errors));
 
         return strlen($errorsString) > 0 ?

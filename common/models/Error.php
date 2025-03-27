@@ -3,8 +3,17 @@
 namespace common\models;
 
 use InvalidArgumentException;
+use yii\base\BaseObject;
 
-class Error
+/**
+ * Class Error
+ * @package common\models
+ *
+ * @property string $code
+ * @property string $description
+ * @property int $  ztype
+ */
+class Error extends BaseObject
 {
     /**
      * ТИПЫ ОШИБОК
@@ -18,9 +27,9 @@ class Error
 
     const TYPES = [self::TYPE_BASE, self::TYPE_CRITICAL, self::TYPE_CHANGEABLE];
 
-    private string $code;
-    private string $description;
-    private int $type;
+    private string $_code;
+    private string $_description;
+    private int $_type;
 
     /**
      * Функции для изменения состояния ошибок
@@ -45,9 +54,9 @@ class Error
             throw new InvalidArgumentException('Неизвестный тип ошибки');
         }
 
-        $this->code = $code;
-        $this->description = $description;
-        $this->type = $type;
+        $this->_code = $code;
+        $this->_description = $description;
+        $this->_type = $type;
         $this->makeFunction = $makeFunction;
         $this->fixFunction = $fixFunction;
         $this->changeStateFunction = $changeStateFunction;
@@ -55,17 +64,17 @@ class Error
 
     public function getCode()
     {
-        return $this->code;
+        return $this->_code;
     }
 
     public function getDescription()
     {
-        return $this->description;
+        return $this->_description;
     }
 
     public function getType()
     {
-        return $this->type;
+        return $this->_type;
     }
 
     public function getMakeFunction()
@@ -85,17 +94,17 @@ class Error
 
     public function setCode(string $code)
     {
-        $this->code = $code;
+        $this->_code = $code;
     }
 
     public function setDescription(string $description)
     {
-        $this->description = $description;
+        $this->_description = $description;
     }
 
     public function setType(int $type)
     {
-        $this->type = $type;
+        $this->_type = $type;
     }
 
     public function setMakeFunction(callable $makeFunction)
