@@ -47,8 +47,9 @@ class TrainingGroupProvider implements TrainingGroupProviderInterface
     public function getByTeacher($teacherId)
     {
         return TrainingGroupWork::find()
-            ->joinWith(['teacherWork teacherWork'])
-            ->where(['teacherWork.people_id' => $teacherId])
+            ->joinWith(['teachersWork teachersWork'])
+            ->where(['teachersWork.teacher_id' => $teacherId])
+            ->orderBy(['finish_date' => SORT_DESC, 'start_date' => SORT_DESC])
             ->all();
     }
 

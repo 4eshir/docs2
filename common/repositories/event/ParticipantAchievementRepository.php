@@ -39,6 +39,15 @@ class ParticipantAchievementRepository
             ->all();
     }
 
+    public function getByTeacherId($teacherId)
+    {
+        return ParticipantAchievementWork::find()
+            ->joinWith(['actParticipantWork actParticipantWork'])
+            ->where(['actParticipantWork.teacher_id' => $teacherId])
+            ->orWhere(['actParticipantWork.teacher2_id' => $teacherId])
+            ->all();
+    }
+
     public function prepareCreate($actParticipantId, $achievement, $type, $certNumber, $nomination, $date)
     {
         $model = ParticipantAchievementWork::fill($actParticipantId, $achievement, $type, $certNumber, $nomination, $date);

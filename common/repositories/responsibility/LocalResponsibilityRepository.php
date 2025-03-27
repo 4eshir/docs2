@@ -21,6 +21,14 @@ class LocalResponsibilityRepository
         return LocalResponsibilityWork::find()->where(['id' => $id])->one();
     }
 
+    public function getPeopleResponsibilities($peopleId)
+    {
+        return LocalResponsibilityWork::find()
+            ->joinWith(['peopleStampWork peopleStampWork'])
+            ->where(['peopleStampWork.people_id' => $peopleId])
+            ->all();
+    }
+
     public function save(LocalResponsibilityWork $responsibility)
     {
         if (!$responsibility->save()) {

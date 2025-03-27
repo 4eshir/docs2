@@ -6,8 +6,11 @@ namespace common\models\scaffold;
  * This is the model class for table "errors".
  *
  * @property int $id
- * @property string|null $number
- * @property string|null $description
+ * @property int|null $error
+ * @property string|null $table_name
+ * @property int|null $table_row_id
+ * @property string|null $create_datetime
+ * @property int|null $was_amnesty
  */
 class Errors extends \yii\db\ActiveRecord
 {
@@ -25,8 +28,11 @@ class Errors extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['number'], 'string', 'max' => 16],
-            [['description'], 'string', 'max' => 128],
+            [['error', 'table_name', 'table_row_id', 'create_datetime'], 'default', 'value' => null],
+            [['was_amnesty'], 'default', 'value' => 0],
+            [['error', 'table_row_id', 'was_amnesty'], 'integer'],
+            [['create_datetime'], 'safe'],
+            [['table_name'], 'string', 'max' => 128],
         ];
     }
 
@@ -37,8 +43,12 @@ class Errors extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'number' => 'Number',
-            'description' => 'Description',
+            'error' => 'Error',
+            'table_name' => 'Table Name',
+            'table_row_id' => 'Table Row ID',
+            'create_datetime' => 'Create Datetime',
+            'was_amnesty' => 'Was Amnesty',
         ];
     }
+
 }

@@ -27,7 +27,7 @@ use yii\helpers\Url;
  *
  * @property ActParticipantBranchWork[] $actParticipantBranchWork
  * @property ParticipantAchievementWork[] $participantAchievementWork
- * @property SquadParticipantWork[] $squadParticipantWorks
+ * @property SquadParticipantWork[] $squadParticipantsWork
  */
 class ActParticipantWork extends ActParticipant
 {
@@ -229,7 +229,7 @@ class ActParticipantWork extends ActParticipant
         return 'stub';
     }
 
-    public function getSquadParticipants()
+    public function getSquadParticipantsWork()
     {
         return $this->hasMany(SquadParticipantWork::class, ['act_participant_id' => 'id']);
     }

@@ -6,6 +6,7 @@ use common\events\EventTrait;
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\Auditorium;
 use InvalidArgumentException;
+use Yii;
 
 class AuditoriumWork extends Auditorium
 {
@@ -57,5 +58,30 @@ class AuditoriumWork extends Auditorium
     public function getFullName()
     {
         return "$this->name ($this->text)";
+    }
+
+    public function isEducation()
+    {
+        return $this->is_education;
+    }
+
+    public function isIncludeSquare()
+    {
+        return $this->include_square;
+    }
+
+    public function getEducationPretty()
+    {
+        return $this->isEducation() ? 'Да' : 'Нет';
+    }
+
+    public function getIncludeSquarePretty()
+    {
+        return $this->isIncludeSquare() ? 'Да' : 'Нет';
+    }
+
+    public function getAuditoriumTypePretty()
+    {
+        return Yii::$app->auditoriumType->get($this->auditorium_type);
     }
 }

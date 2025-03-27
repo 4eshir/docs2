@@ -66,8 +66,15 @@ class PeopleController extends Controller
             )
         );
 
+        $groupsList = $this->service->getGroupsList($model);
+        $studentAchievements = $this->service->getStudentAchievements($model);
+        $responsibilities = $this->service->getResponsibilities($model);
+
         return $this->render('view', [
             'model' => $model,
+            'groupsList' => $groupsList,
+            'studentAchievements' => $studentAchievements,
+            'responsibilities' => $responsibilities,
             'positions' => $positions,
         ]);
     }
