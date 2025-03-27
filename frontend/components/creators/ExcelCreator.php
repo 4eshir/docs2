@@ -20,7 +20,10 @@ use yii\helpers\ArrayHelper;
 
 class ExcelCreator
 {
-    const TEMPLATE_FILENAME = 'electronicJournal.xlsx';
+    public const TEMPLATE_FILENAME = 'electronicJournal.xlsx';
+    public const LIMIT = 21;
+    public const PARTICIPANT_LIMIT = 20;
+    public const START_INDEX = "B";
     /*public static function createJournal(int $groupId) : Spreadsheet
     {
         $onPage = 21; //количество занятий на одной строке в листе
@@ -305,36 +308,36 @@ class ExcelCreator
         $currentSheet = 0;
         $currentIndex = 6;
         foreach ($visits as $counter => $visit) {
-            if ($counter != 0 && $counter % 20 == 0){
+            if ($counter != 0 && $counter % self::PARTICIPANT_LIMIT == 0){
                 $currentSheet = $currentSheet + $amountSheets['lessonList'];
                 $currentIndex = 6;
             }
             $localSheet = $currentSheet;
             $currentVisitIndex = 4;
-            $visitIndex = "B";
+            $visitIndex = self::START_INDEX;
             foreach ($lessons as $i => $lesson) {
-                if ($i != 0 && $i % 21 == 0) {
-                    $visitIndex = "B";
+                if ($i != 0 && $i % self::LIMIT == 0) {
+                    $visitIndex = self::START_INDEX;
                     $currentVisitIndex = 30;
                 }
-                if ($i != 0 && $i % 42 == 0) {
-                    $visitIndex = "B";
+                if ($i != 0 && $i % (self::LIMIT * 2) == 0) {
+                    $visitIndex = self::START_INDEX;
                     $currentVisitIndex = 4;
                     $localSheet++;
                 }
                 $inputData->getSheet($currentSheet)->setCellValue("$visitIndex". $currentVisitIndex, DateFormatter::format($lesson->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dm_dot));
-                $inputData->getSheet($localSheet)->setCellValue("$visitIndex" . ($currentVisitIndex + ($counter % 20) + 2), ExcelCreator::findStatus($visit->id, $lesson->id));
+                $inputData->getSheet($localSheet)->setCellValue("$visitIndex" . ($currentVisitIndex + ($counter % self::PARTICIPANT_LIMIT) + 2), ExcelCreator::findStatus($visit->id, $lesson->id));
                 $visitIndex++;
             }
             for($sheet = 0; $sheet < $amountSheets['lessonList']; $sheet++){
-                $visitIndex = "B";
+                $visitIndex = self::START_INDEX;
                 $iterator = 0;
                 foreach ($lessons as $lesson) {
-                    if ($sheet * 42 <= $iterator && $iterator < ($sheet + 1) * 42){
-                        if ($iterator % 21 == 0 && $iterator != $sheet * 42){
-                             $visitIndex = "B";
+                    if ($sheet * (self::LIMIT * 2) <= $iterator && $iterator < ($sheet + 1) * (self::LIMIT * 2)){
+                        if ($iterator % self::LIMIT == 0 && $iterator != $sheet * (self::LIMIT * 2)){
+                             $visitIndex = self::START_INDEX;
                         }
-                        if ($iterator + 21 < ($sheet + 1) * 42){
+                        if ($iterator + self::LIMIT < ($sheet + 1) * (self::LIMIT * 2)){
                             $inputData->getSheet($currentSheet + $sheet)->getStyle("$visitIndex". 4)->applyFromArray($styleArray);
                             $inputData->getActiveSheet()
                                 ->getCell("$visitIndex". 4)
@@ -375,10 +378,10 @@ class ExcelCreator
         $currentSheet = 0;
         for($counter = 0; $counter < $amountSheets['participantList']; $counter++) {
             foreach ($lessons as $i => $lesson) {
-                if ($i != 0 && $i % 42 == 0) {
+                if ($i != 0 && $i % (self::LIMIT * 2) == 0) {
                     $currentSheet++;
                 }
-                $address = ($i % 42) + 5;
+                $address = ($i % (self::LIMIT * 2)) + 5;
                 $lessonTheme = LessonThemeWork::find()->where(['training_group_lesson_id' => $lesson->id])->one();
                 $inputData->getSheet($currentSheet)->setCellValue("Z$address", DateFormatter::format($lessonTheme->trainingGroupLessonWork->lesson_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot));
                 $inputData->getSheet($currentSheet)->setCellValue("AA$address", $lessonTheme->thematicPlanWork->theme);
@@ -428,6 +431,8 @@ class ExcelCreator
             $clone = clone $inputData->getActiveSheet();
             $clone->setTitle('Шаблон ' . ($i + 2));
             $inputData->addSheet($clone);
+        }
+        for($i = 0; $i <= $amountLists['common']; $i++){
             $defenceName = [];
             $defenceDate = [];
             foreach ($defences as $defence) {
@@ -447,9 +452,9 @@ class ExcelCreator
     }
     public static function countList($lessons, $participants){
         return [
-            'lessonList' => intdiv(count($lessons), 42) + 1,
-            'participantList' => intdiv(count($participants), 20) + 1,
-            'common' => max((intdiv(count($lessons), 42) + 1) * (intdiv(count($participants), 20) + 1) - 1, intdiv(count($lessons), 42) , intdiv(count($participants), 20))
+            'lessonList' => intdiv(count($lessons), self::LIMIT * 2) + 1,
+            'participantList' => intdiv(count($participants), self::PARTICIPANT_LIMIT) + 1,
+            'common' => max((intdiv(count($lessons), self::LIMIT * 2) + 1) * (intdiv(count($participants), self::PARTICIPANT_LIMIT) + 1) - 1, intdiv(count($lessons), self::LIMIT * 2) , intdiv(count($participants), self::PARTICIPANT_LIMIT))
         ];
     }
 }
