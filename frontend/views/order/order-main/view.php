@@ -1,5 +1,7 @@
 <?php
 
+use common\helpers\html\HtmlBuilder;
+use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderMainWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -10,7 +12,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model \frontend\models\work\order\OrderMainWork */
+/* @var $model OrderMainWork */
 /* @var $modelResponsiblePeople */
 /* @var $modelChangedDocuments */
 $this->title = $model->order_name;
@@ -34,6 +36,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
+
+    <?= HtmlBuilder::createErrorsBlock(DocumentOrderWork::tableName(), $model->id) ?>
 
     <?=
         DetailView::widget([

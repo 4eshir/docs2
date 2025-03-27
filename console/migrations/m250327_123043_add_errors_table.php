@@ -10,7 +10,7 @@ class m250327_123043_add_errors_table extends Migration
     public function safeUp()
     {
         $tableName = $this->db->tablePrefix . 'errors';
-        if (!$this->db->getTableSchema($tableName, true) === null) {
+        if ($this->db->getTableSchema($tableName, true) !== null) {
             $this->dropTable('errors');
         }
 

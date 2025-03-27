@@ -48,6 +48,7 @@ use frontend\models\search\SearchOrderEvent;
 use frontend\services\event\ForeignEventService;
 use Yii;
 use yii\helpers\ArrayHelper;
+
 class OrderEventController extends DocumentController
 {
     use AccessControl;

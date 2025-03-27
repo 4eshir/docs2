@@ -6,6 +6,8 @@ use common\helpers\common\BaseFunctions;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilePaths;
 use common\helpers\StringFormatter;
+use common\models\work\ErrorsWork;
+use common\repositories\general\ErrorsRepository;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonalDataParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
@@ -13,6 +15,7 @@ use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\team\SquadParticipantWork;
 use InvalidArgumentException;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\jui\DatePicker;
@@ -707,5 +710,18 @@ class HtmlBuilder
         else {
             return Html::a($buttonNames[1], $urls[1], ['class' => implode(' ', $classes[1])]);
         }
+    }
+
+    public static function createErrorsBlock(string $tableName, int $rowId)
+    {
+        $errors = (Yii::createObject(ErrorsRepository::class))->getErrorsByTableRow($tableName, $rowId);
+        $errorsString = implode('<br>', array_map(function(ErrorsWork $error) {
+            return Yii::$app->errors->get($error->error)->getDescription();
+        }, $errors));
+
+        return strlen($errorsString) > 0 ?
+            '<div class="alert alert-dismissible fade show alert-danger"  role="alert">
+                '.$errorsString.'
+            </div>' : '';
     }
 }

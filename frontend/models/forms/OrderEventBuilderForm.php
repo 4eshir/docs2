@@ -15,6 +15,7 @@ class OrderEventBuilderForm extends Model
     public $company;
     public $actTable;
     public $tables;
+
     public function __construct(
         $orderEventForm,
         $people,
