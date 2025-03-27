@@ -10,7 +10,14 @@ return [
         'yandexApiKey' => 'y0_AgAEA7qkEK7HAAn5LwAAAADkMhh1CPjqd4DtS52DG7Vyd3i0JNf-NxY',
     ],
     'components' => [
-
+        'rabbitmq' => [
+            'class' => 'common\\components\\RabbitMQ',
+            'host' => 'localhost',
+            'port' => 5672,
+            'user' => 'guest',
+            'password' => 'guest',
+            'vhost' => '/',
+        ],
         'redis' => [
             'class' => 'common\\components\\RedisComponent',
             'hostname' => 'localhost',
@@ -105,6 +112,6 @@ return [
         ],
         'logRecord' => [
             'class' => 'common\\components\\access\\LogRecordComponent',
-        ]
+        ],
     ],
 ];

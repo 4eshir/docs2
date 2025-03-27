@@ -26,13 +26,13 @@ class YandexDiskContext
 
     }
 
-    static public function UploadFileOnDisk($disk_filepath, $local_filepath)
+    static public function UploadFileOnDisk($disk_filepath, $local_filepath,  $overwrite = false)
     {
         $disk = new Disk(Yii::$app->params['yandexApiKey']);
 
         $resource = $disk->getResource($disk_filepath);
 
-        $resource->upload($local_filepath);
+        $resource->upload($local_filepath, $overwrite);
     }
 
     static public function DeleteFileFromDisk($filepath)

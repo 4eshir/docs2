@@ -28,6 +28,7 @@ use common\components\dictionaries\base\SendMethodDictionary;
 use common\components\dictionaries\base\StudyStatusDictionary;
 use common\components\dictionaries\base\ThematicDirectionDictionary;
 use common\components\dictionaries\TableDictionary;
+use common\components\RabbitMQ;
 use common\components\RedisComponent;
 use frontend\components\routes\Urls;
 use yii\caching\FileCache;
@@ -83,6 +84,7 @@ class Yii {
  * @property Urls $frontUrls
  * @property StudyStatusDictionary $studyStatus
  * @property LogRecordComponent $logRecord
+ * @property RabbitMQ $rabbitmq
  */
 class __Application {
 }
