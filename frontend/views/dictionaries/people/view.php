@@ -1,17 +1,23 @@
 <?php
 
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\general\PeopleWork;
 use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\web\YiiAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model PeopleWork */
+/* @var $groupsList string */
+/* @var $studentAchievements string */
+/* @var $responsibilities string */
 /* @var $positions string */
 
-$this->title = $model->getFIO(PeopleWork::FIO_FULL);
+$this->title = $model->getFIO(PersonInterface::FIO_FULL);
 $this->params['breadcrumbs'][] = ['label' => 'Люди', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-\yii\web\YiiAsset::register($this);
+YiiAsset::register($this);
 ?>
 <div class="people-view">
 
@@ -36,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['label' => 'Отчество', 'attribute' => 'patronymic'],
             ['label' => 'Организации и должности', 'value' => $positions, 'format' => 'raw'],
             ['label' => 'Отдел по трудовому договору', 'attribute' => 'branch', 'format' => 'raw', 'value' => function($model) {
-                return Html::a(Yii::$app->branches->get($model->branch), \yii\helpers\Url::to(['branch/view', 'id' => $model->branch]));
+                return Html::a(Yii::$app->branches->get($model->branch), Url::to(['branch/view', 'id' => $model->branch]));
             }, 'visible' => $model->branch !== null],
 
             ['label' => 'Уникальный идентификатор', 'attribute' => 'short', 'format' => 'raw', 'visible' => $model->short !== null && $model->short !== ''],
@@ -46,24 +52,20 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
     <h4><u>Информация об образовательной деятельности</u></h4>
-    <i>Coming soon</i>
-    <?php /*= DetailView::widget([
+    <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            ['label' => 'Группы', 'attribute' => 'groupsList', 'format' => 'raw'],
-            ['label' => 'Достижения учеников', 'attribute' => 'achievements', 'format' => 'raw'],
-
+            ['label' => 'Группы', 'attribute' => 'groupsList', 'format' => 'raw', 'value' => $groupsList],
+            ['label' => 'Достижения учеников', 'attribute' => 'studentAchievements', 'format' => 'raw', 'value' => $studentAchievements],
         ],
-    ]) */?>
+    ]) ?>
 
     <h4><u>Ответственность работника</u></h4>
-    <i>Coming soon</i>
-    <?php /*= DetailView::widget([
+    <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            ['label' => 'Ответственности', 'attribute' => 'respLinks', 'format' => 'raw'],
-
+            ['label' => 'Ответственности', 'attribute' => 'responsibilities', 'format' => 'raw', 'value' => $responsibilities],
         ],
-    ]) */?>
+    ]) ?>
 
 </div>

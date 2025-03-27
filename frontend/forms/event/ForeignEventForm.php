@@ -2,6 +2,7 @@
 
 namespace frontend\forms\event;
 
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\order\OrderEventWork;
 use frontend\models\work\team\ActParticipantWork;
@@ -198,9 +199,9 @@ class ForeignEventForm extends Model
         $achievements = (Yii::createObject(ParticipantAchievementRepository::class))->getByForeignEvent($foreignEventId);
         $flattenedParticipants = array_map(function ($innerArray) {
             return implode('<br>', array_map(function ($participant) {
-                return $participant->participantWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS);
+                return $participant->participantWork->getFIO(PersonInterface::FIO_SURNAME_INITIALS);
             }, $innerArray));
-        }, ArrayHelper::getColumn($achievements, 'actParticipantWork.squadParticipants'));
+        }, ArrayHelper::getColumn($achievements, 'actParticipantWork.squadParticipantsWork'));
 
 
         return HtmlBuilder::createTableWithActionButtons(

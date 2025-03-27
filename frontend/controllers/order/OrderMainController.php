@@ -6,6 +6,7 @@ use app\models\forms\OrderMainForm;
 use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
+use common\helpers\ErrorAssociationHelper;
 use common\models\scaffold\DocumentOrder;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\expire\ExpireRepository;
@@ -109,6 +110,7 @@ class OrderMainController extends DocumentController
             $this->orderPeopleService->addOrderPeopleEvent($post["OrderMainWork"]["responsible_id"], $form->entity);
             $this->documentOrderService->saveFilesFromModel($form->entity);
             $form->entity->releaseEvents();
+            $form->entity->checkModel(ErrorAssociationHelper::getOrderMainErrorsList(), DocumentOrderWork::tableName(), $form->entity->id);
             return $this->redirect(['view', 'id' => $form->entity->id]);
         }
         return $this->render('create', [
@@ -148,6 +150,7 @@ class OrderMainController extends DocumentController
                 $this->service->addExpireEvent($post["ExpireForm"], $form->entity);
                 $this->documentOrderService->saveFilesFromModel($form->entity);
                 $form->entity->releaseEvents();
+                $form->entity->checkModel(ErrorAssociationHelper::getOrderMainErrorsList(), DocumentOrderWork::tableName(), $form->entity->id);
                 return $this->redirect(['view', 'id' => $form->entity->id]);
             }
             return $this->render('update', [

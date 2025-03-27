@@ -105,6 +105,9 @@ return [
         ],
         'logRecord' => [
             'class' => 'common\\components\\access\\LogRecordComponent',
+        ],
+        'errors' => [
+            'class' => 'common\\components\\dictionaries\\base\\ErrorDictionary',
         ]
     ],
 ];

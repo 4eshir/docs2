@@ -25,6 +25,7 @@ class DocumentOrderWork extends DocumentOrder
     public $scanFile;
     public $docFiles;
     public $appFiles;
+
     public function rules()
     {
         return array_merge(parent::rules(), [
@@ -36,9 +37,11 @@ class DocumentOrderWork extends DocumentOrder
                 'extensions' => 'ppt, pptx, xls, xlsx, pdf, png, jpg, doc, docx, zip, rar, 7z, tag, txt'],
         ]);
     }
+
     public function getFullOrderName(){
         return $this->order_number . ' ' . $this->order_postfix . ' ' . $this->order_name;
     }
+
     public function getFullNumber()
     {
         if ($this->order_postfix == null) {
@@ -69,10 +72,12 @@ class DocumentOrderWork extends DocumentOrder
             return $this->order_number.'/'.$this->order_postfix;
         }
     }
+
     public function getOrderName()
     {
         return $this->order_name;
     }
+
     public function getBringName()
     {
         $model = PeopleWork::findOne($this->bring_id);
@@ -83,22 +88,27 @@ class DocumentOrderWork extends DocumentOrder
             return $this->bring_id;
         }
     }
+
     public function getCreatorWork()
     {
         return PeopleStampWork::findOne($this->creator_id);
     }
+
     public function getLastUpdateWork()
     {
         return PeopleStampWork::findOne($this->last_edit_id);
     }
+
     public function getBringWork()
     {
         return PeopleStampWork::findOne($this->bring_id);
     }
+
     public function getExecutorWork()
     {
         return PeopleStampWork::findOne($this->executor_id);
     }
+
     public function getExecutorName()
     {
         $model = PeopleStampWork::findOne($this->executor_id);
@@ -109,6 +119,7 @@ class DocumentOrderWork extends DocumentOrder
             return $this->bring_id;
         }
     }
+
     public function getFileLinks($filetype)
     {
         if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
@@ -128,6 +139,7 @@ class DocumentOrderWork extends DocumentOrder
         }
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
     }
+
     public function setValuesForUpdate()
     {
         $this->bring_id = $this->bring->people_id;

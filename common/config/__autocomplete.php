@@ -12,6 +12,7 @@ use common\components\dictionaries\base\CompanyTypeDictionary;
 use common\components\dictionaries\base\ControlTypeDictionary;
 use common\components\dictionaries\base\DocumentStatusDictionary;
 use common\components\dictionaries\base\DocumentTypeDictionary;
+use common\components\dictionaries\base\ErrorDictionary;
 use common\components\dictionaries\base\EventFormDictionary;
 use common\components\dictionaries\base\EventLevelDictionary;
 use common\components\dictionaries\base\EventTypeDictionary;
@@ -83,6 +84,7 @@ class Yii {
  * @property Urls $frontUrls
  * @property StudyStatusDictionary $studyStatus
  * @property LogRecordComponent $logRecord
+ * @property ErrorDictionary $errors
  */
 class __Application {
 }
