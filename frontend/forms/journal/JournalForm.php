@@ -6,8 +6,10 @@ use common\helpers\files\FilePaths;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\Model;
+use common\models\scaffold\TrainingGroupParticipant;
 use common\repositories\educational\GroupProjectThemesRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
+use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\VisitRepository;
 use DomainException;
@@ -17,6 +19,7 @@ use frontend\models\work\educational\journal\ParticipantLessons;
 use frontend\models\work\educational\journal\VisitLesson;
 use frontend\models\work\educational\journal\VisitWork;
 use frontend\models\work\educational\training_group\GroupProjectThemesWork;
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
 use Yii;
 use yii\helpers\Url;
@@ -168,6 +171,20 @@ class JournalForm extends Model
         return HtmlBuilder::paintSVG(FilePaths::SVG_CROSS, HtmlBuilder::SVG_CRITICAL_COLOR);
     }
 
+    public function getParticipantIcons(ForeignEventParticipantsWork $participant)
+    {
+        /** @var TrainingGroupParticipantWork $trGrPart */
+        $trGrPart = (Yii::createObject(TrainingGroupParticipantRepository::class))->getByParticipantIdAndGroupId($participant->id, $this->groupId);
+        $className = $trGrPart->isBlockedJournal() ? 'status-block' : 'status-active';
+        return '<div class="'.$className.'">'.$trGrPart->getRawStatus().'</div>';
+    }
+
+    /**
+     * Красивое отображение учащихся
+     * @param ForeignEventParticipantsWork $participant
+     * @param int|null $formatter
+     * @return string
+     */
     public function getPrettyParticipant(ForeignEventParticipantsWork $participant, int $formatter = null)
     {
         if ($formatter == StringFormatter::FORMAT_LINK) {
@@ -178,20 +195,33 @@ class JournalForm extends Model
         }
 
         return HtmlBuilder::createTooltip(
-            $partContent,
-            $participant->getFIO(PersonInterface::FIO_FULL));
+                $partContent,
+                $participant->getFIO(PersonInterface::FIO_FULL)
+            );
     }
 
+    /**
+     * Возвращает информацию о необходимости отображать данные по проектам
+     * @return mixed
+     */
     public function isProjectCertificate()
     {
         return $this->trainingGroup->trainingProgramWork->isProjectCertificate();
     }
 
+    /**
+     * Возвращает информацию о необходимости отображаеть данные по контрольной
+     * @return mixed
+     */
     public function isControlWorkCertificate()
     {
         return $this->trainingGroup->trainingProgramWork->isControlWorkCertificate();
     }
 
+    /**
+     * Определяем количество ячеек которые необходимо объединить
+     * @return int
+     */
     public function getColspanControl()
     {
         return 1 + (int)$this->isProjectCertificate() + (int)$this->isControlWorkCertificate();

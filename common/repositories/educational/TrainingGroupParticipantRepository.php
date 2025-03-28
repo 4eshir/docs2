@@ -75,6 +75,11 @@ class TrainingGroupParticipantRepository
         return $this->provider->getSuccessParticipantsFromGroup($groupId);
     }
 
+    public function getByParticipantIdAndGroupId(int $participantId, int $groupId)
+    {
+        return $this->provider->getByParticipantIdAndGroupId($participantId, $groupId);
+    }
+
     public function getParticipantsWithoutCertificates(array $groupIds)
     {
         return TrainingGroupParticipantWork::find()

@@ -81,6 +81,18 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
     }
 
     /**
+     * Информация о необходимости блокировать изменение явок в журнале
+     * @return bool
+     */
+    public function isBlockedJournal()
+    {
+        if ($this->status == Yii::$app->studyStatus::DEDUCT || $this->status == Yii::$app->studyStatus::TRANSFER_OUT) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Выводит инфу о сертификате через подсказчик и иконку
      * @return string
      */
