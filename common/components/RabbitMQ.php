@@ -36,14 +36,36 @@ class RabbitMQ extends Component
         $this->_channel->basic_publish($msg, '', $queue);
     }
 
-    public function consume($queue, $callback)
+    public function consume($queue, $callback, $processAll = false)
     {
         $this->_channel->queue_declare($queue, false, true, false, false);
-        $this->_channel->basic_consume($queue, '', false, true, false, false, function ($msg) use ($callback) {
-            call_user_func($callback, $msg->body);
-        });
-        while ($this->_channel->is_consuming()) {
-            $this->_channel->wait();
+
+        if ($processAll) {
+            // Получаем количество сообщений в очереди
+            $queueInfo = $this->_channel->queue_declare($queue, false, true, false, false, false);
+            $messageCount = $queueInfo[1];
+
+            if ($messageCount > 0) {
+                $this->_channel->basic_consume($queue, '', false, true, false, false, function ($msg) use ($callback, &$messageCount) {
+                    call_user_func($callback, $msg->body);
+                    $messageCount--;
+                    if ($messageCount <= 0) {
+                        $msg->delivery_info['channel']->basic_cancel($msg->delivery_info['consumer_tag']);
+                    }
+                });
+
+                while ($messageCount > 0 && $this->_channel->is_consuming()) {
+                    $this->_channel->wait();
+                }
+            }
+        } else {
+            // Оригинальное поведение
+            $this->_channel->basic_consume($queue, '', false, true, false, false, function ($msg) use ($callback) {
+                call_user_func($callback, $msg->body);
+            });
+            while ($this->_channel->is_consuming()) {
+                $this->_channel->wait();
+            }
         }
     }
 
