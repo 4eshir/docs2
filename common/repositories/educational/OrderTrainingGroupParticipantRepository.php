@@ -14,6 +14,22 @@ class OrderTrainingGroupParticipantRepository
         return OrderTrainingGroupParticipantWork::find()->where(['id' => $id])->one();
     }
 
+    public function getEnrollByGroupId($groupId)
+    {
+        return OrderTrainingGroupParticipantWork::find()
+            ->joinWith(['trainingGroupParticipantInWork trainingGroupParticipantInWork'])
+            ->where(['trainingGroupParticipantInWork.training_group_id' => $groupId])
+            ->all();
+    }
+
+    public function getExlusionByGroupId($groupId)
+    {
+        return OrderTrainingGroupParticipantWork::find()
+            ->joinWith(['trainingGroupParticipantOutWork trainingGroupParticipantOutWork'])
+            ->where(['trainingGroupParticipantOutWork.training_group_id' => $groupId])
+            ->all();
+    }
+
     public function prepareCreate(
         $trainingGroupParticipantOutId,
         $trainingGroupParticipantInId,

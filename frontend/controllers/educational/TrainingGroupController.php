@@ -9,6 +9,7 @@ use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\ButtonsFormatter;
 use common\helpers\common\RequestHelper;
+use common\helpers\ErrorAssociationHelper;
 use common\helpers\files\FilePaths;
 use common\helpers\html\HtmlBuilder;
 use common\Model;
@@ -31,6 +32,7 @@ use frontend\forms\training_group\ProtocolForm;
 use frontend\forms\training_group\TrainingGroupBaseForm;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
 use frontend\forms\training_group\TrainingGroupParticipantForm;
+use frontend\forms\training_group\TrainingGroupScheduleForm;
 use frontend\invokables\JournalLoader;
 use frontend\invokables\PlanLoad;
 use frontend\invokables\ProtocolLoader;
@@ -150,6 +152,7 @@ class TrainingGroupController extends DocumentController
             $this->service->getFilesInstances($form);
             $this->service->saveFilesFromModel($form);
             $form->releaseEvents();
+            $groupModel->checkModel(ErrorAssociationHelper::getTrainingGroupErrorsList(), TrainingGroupWork::tableName(), $groupModel->id);
 
             return $this->redirect(['view', 'id' => $groupModel->id]);
         }
@@ -253,6 +256,8 @@ class TrainingGroupController extends DocumentController
                 $this->service->saveFilesFromModel($formBase);
                 $formBase->releaseEvents();
 
+                $groupModel->checkModel(ErrorAssociationHelper::getTrainingGroupErrorsList(), TrainingGroupWork::tableName(), $groupModel->id);
+
                 return $this->redirect(['view', 'id' => $groupModel->id]);
             }
 
@@ -290,6 +295,7 @@ class TrainingGroupController extends DocumentController
                 $this->service->attachParticipants($formParticipant);
                 $formParticipant->releaseEvents();
                 $this->service->refreshVisitsByParticipants($id);
+                $formParticipant->group->checkModel(ErrorAssociationHelper::getTrainingGroupErrorsList(), TrainingGroupWork::tableName(), $formParticipant->group->id);
 
                 return $this->redirect(['view', 'id' => $formParticipant->id]);
             }
@@ -311,6 +317,7 @@ class TrainingGroupController extends DocumentController
     {
         if ($this->lockWizard->lockObject($id, TrainingGroupWork::tableName(), Yii::$app->user->id)) {
             $formData = $this->service->prepareFormScheduleData($id);
+            /** @var TrainingGroupScheduleForm $formSchedule */
             $formSchedule = $formData['formSchedule'];
             $modelLessons = $formData['modelLessons'];
             $auditoriums = $formData['auditoriums'];
@@ -331,6 +338,8 @@ class TrainingGroupController extends DocumentController
                 $this->service->preprocessingLessons($formSchedule);
                 $this->service->attachLessons($formSchedule);
                 $formSchedule->releaseEvents();
+
+                $formSchedule->trainingGroup->checkModel(ErrorAssociationHelper::getTrainingGroupErrorsList(), TrainingGroupWork::tableName(), $formSchedule->trainingGroup->group->id);
 
                 return $this->redirect(['view', 'id' => $formSchedule->id]);
             }
@@ -378,6 +387,8 @@ class TrainingGroupController extends DocumentController
                 $this->service->attachExperts($formPitch);
                 $formPitch->releaseEvents();
                 $formPitch->save();
+
+                $formPitch->entity->checkModel(ErrorAssociationHelper::getTrainingGroupErrorsList(), TrainingGroupWork::tableName(), $formPitch->entity->id);
 
                 return $this->redirect(['view', 'id' => $formPitch->id]);
             }

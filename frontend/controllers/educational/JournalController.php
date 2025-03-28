@@ -2,13 +2,18 @@
 
 namespace frontend\controllers\educational;
 
+use common\components\access\pbac\data\PbacLessonData;
+use common\components\access\pbac\PbacLessonAccess;
 use common\helpers\ButtonsFormatter;
 use common\helpers\html\HtmlBuilder;
+use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\VisitRepository;
+use common\repositories\general\UserRepository;
 use frontend\forms\journal\JournalForm;
 use frontend\forms\journal\ThematicPlanForm;
 use frontend\models\work\educational\journal\ParticipantLessons;
 use frontend\models\work\educational\journal\VisitLesson;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\services\educational\JournalService;
 use Yii;
 use yii\web\Controller;
@@ -16,15 +21,21 @@ use yii\web\Controller;
 class JournalController extends Controller
 {
     private JournalService $service;
+    private UserRepository $userRepository;
+    private TrainingGroupRepository $groupRepository;
 
     public function __construct(
         $id,
         $module,
         JournalService $service,
+        UserRepository $userRepository,
+        TrainingGroupRepository $groupRepository,
         $config = [])
     {
         parent::__construct($id, $module, $config);
         $this->service = $service;
+        $this->userRepository = $userRepository;
+        $this->groupRepository = $groupRepository;
     }
 
     public function actionView($id)
@@ -87,6 +98,15 @@ class JournalController extends Controller
     {
         $form = new JournalForm($id);
 
+        $access = new PbacLessonAccess(
+            new PbacLessonData(
+                $this->userRepository->get(Yii::$app->rubac->authId()),
+                $this->groupRepository->get($id)
+            )
+        );
+
+        var_dump($access->getAllowedLessonIds());
+
         if ($form->load(Yii::$app->request->post())) {
             foreach ($form->participantLessons as $participantLesson) {
                 /** @var ParticipantLessons $participantLesson */
@@ -106,7 +126,7 @@ class JournalController extends Controller
         }
 
         return $this->render('update', [
-            'model' => $form
+            'model' => $form,
         ]);
     }
 

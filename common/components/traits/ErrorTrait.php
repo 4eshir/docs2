@@ -10,17 +10,17 @@ use Yii;
 
 trait ErrorTrait
 {
-    private ErrorsRepository $repository;
+    private ErrorsRepository $errorsTraitRepository;
 
-    public function __construct(
-        ErrorsRepository $repository = null
+    public function init(
+        ErrorsRepository $errorsTraitRepository = null
     )
     {
-        if (!$repository) {
-            $repository = Yii::createObject(ErrorsRepository::class);
+        if (!$errorsTraitRepository) {
+            $errorsTraitRepository = Yii::createObject(ErrorsRepository::class);
         }
 
-        $this->repository = $repository;
+        $this->errorsTraitRepository = $errorsTraitRepository;
     }
 
     /**
@@ -33,7 +33,7 @@ trait ErrorTrait
      */
     public function checkModel(array $allErrors, string $tableName, int $rowId)
     {
-        $currentErrors = $this->repository->getErrorsByTableRow($tableName, $rowId);
+        $currentErrors = $this->errorsTraitRepository->getErrorsByTableRow($tableName, $rowId);
 
         // Сначала проверяем существующие ошибки - были ли они исправлены в результате действий пользователя
         foreach ($currentErrors as $currentError) {

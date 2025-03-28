@@ -206,3 +206,20 @@ a:has(.tooltip-span) {
     width: 1.5em;
     height: 1.5em;
 }
+
+.btn-resize {
+    margin-right: 0.5em;
+    width: 2.2em;
+    font-size: 1.2em;
+    text-align: center;
+    align-items: center;
+    border: 1px solid var(--bs-border-color-translucent);
+}
+
+.control-unit {
+    margin-bottom: 1em;
+}
+
+.status-block, .status-active {
+    margin-right: 0.5em;
+}

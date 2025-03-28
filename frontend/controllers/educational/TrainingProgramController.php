@@ -9,6 +9,7 @@ use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\ButtonsFormatter;
+use common\helpers\ErrorAssociationHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\search\SearchFieldHelper;
 use common\models\work\LogWork;
@@ -178,6 +179,7 @@ class TrainingProgramController extends DocumentController
 
             $model->recordEvent(new CreateTrainingProgramBranchEvent($model->id, $model->branches), TrainingProgramWork::class);
             $model->releaseEvents();
+            $model->checkModel(ErrorAssociationHelper::getTrainingProgramErrorsList(), TrainingProgramWork::tableName(), $model->id);
 
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -227,6 +229,7 @@ class TrainingProgramController extends DocumentController
 
                 $model->recordEvent(new CreateTrainingProgramBranchEvent($model->id, $model->branches), TrainingProgramWork::class);
                 $model->releaseEvents();
+                $model->checkModel(ErrorAssociationHelper::getTrainingProgramErrorsList(), TrainingProgramWork::tableName(), $model->id);
 
                 return $this->redirect(['view', 'id' => $model->id]);
             }

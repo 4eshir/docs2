@@ -2,8 +2,10 @@
 
 namespace frontend\services\act_participant;
 
+use common\helpers\ErrorAssociationHelper;
 use common\repositories\general\PeopleStampRepository;
 use common\services\general\PeopleStampService;
+use frontend\models\work\event\ForeignEventWork;
 use frontend\services\act_participant\ActParticipantBranchService;
 use frontend\services\act_participant\SquadParticipantService;
 use frontend\events\act_participant\ActParticipantCreateEvent;
@@ -61,10 +63,12 @@ class ActParticipantService
         $this->actParticipantBranchService = $actParticipantBranchService;
         $this->peopleStampService = $peopleStampService;
     }
+
     public function getFilesInstance(ActParticipantForm $modelActParticipant, $index)
     {
         $modelActParticipant->actFiles = UploadedFile::getInstance($modelActParticipant,  "[{$index}]actFiles");
     }
+
     public function saveFilesFromModel(ActParticipantWork $model, $index)
     {
         if ($model->actFiles != null) {
@@ -89,6 +93,7 @@ class ActParticipantService
             );
         }
     }
+
     public function addActParticipant($acts, $foreignEventId){
         $index = 0;
 
@@ -155,7 +160,10 @@ class ActParticipantService
                 $index++;
             }
         }
+
+        $this->checkAllActsOnErrors($foreignEventId);
     }
+
     public function setPeopleStamp(ActParticipantWork $model)
     {
         if ($model->teacher_id != ""){
@@ -165,15 +173,18 @@ class ActParticipantService
             $model->teacher2_id = $this->peopleStampService->createStampFromPeople($model->teacher2_id);
         }
     }
+
     public function getPeopleStamp(ActParticipantWork $model)
     {
         $model->teacher_id = $model->teacher->people_id;
         $model->teacher2_id = $model->teacher2->people_id;
     }
+
     public function updateSquadParticipant(ActParticipantWork $model, $participant)
     {
         $this->squadParticipantService->updateSquadParticipantEvent($model, $participant);
     }
+
     public function createForms($acts)
     {
         /* @var $act ActParticipantWork */
@@ -197,6 +208,7 @@ class ActParticipantService
         }
         return $forms;
     }
+
     public function getAllPacticipants($actId){
         $participants = [];
         $squadParticipants = $this->squadParticipantRepository->getAllByActId($actId);
@@ -205,6 +217,7 @@ class ActParticipantService
         }
         return $participants;
     }
+
     public function createActTable($id)
     {
         $model = $this->actParticipantRepository->getByForeignEventIds([$id]) ;
@@ -232,6 +245,7 @@ class ActParticipantService
             ]
         );
     }
+
     public function createActFileTable(ActParticipantWork $model)
     {
         $links = $model->getFileLinks(FilesHelper::TYPE_MATERIAL);
@@ -247,5 +261,14 @@ class ActParticipantService
             ]
         );
         return $file;
+    }
+
+    public function checkAllActsOnErrors($eventId)
+    {
+        /** @var ActParticipantWork[] $acts */
+        $acts = $this->actParticipantRepository->getByForeignEventIds([$eventId]);
+        foreach ($acts as $act) {
+            $act->checkModel(ErrorAssociationHelper::getActParticipantErrorsList(), ActParticipantWork::tableName(), $act->id);
+        }
     }
 }

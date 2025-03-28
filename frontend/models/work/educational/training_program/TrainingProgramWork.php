@@ -3,6 +3,7 @@
 namespace frontend\models\work\educational\training_program;
 
 use common\components\dictionaries\base\CertificateTypeDictionary;
+use common\components\traits\ErrorTrait;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -26,7 +27,7 @@ use yii\helpers\Url;
 
 class TrainingProgramWork extends TrainingProgram
 {
-    use EventTrait;
+    use EventTrait, ErrorTrait;
 
     public $mainFile;
     public $docFiles;
@@ -52,6 +53,7 @@ class TrainingProgramWork extends TrainingProgram
     public function __construct($config = [])
     {
         parent::__construct($config);
+        $this->init();
         $this->fileService = Yii::createObject(FileService::class);
         $this->repository = Yii::createObject(TrainingProgramRepository::class);
     }

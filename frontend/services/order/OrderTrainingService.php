@@ -73,7 +73,7 @@ class OrderTrainingService
         $inId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id), 'training_group_participant_in_id');
         $outId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id), 'training_group_participant_out_id');
         $groupIds = array_unique(ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll(ArrayHelper::merge($inId, $outId)), 'training_group_id'));
-        $groups = $this->trainingGroupRepository->getById($groupIds);
+        $groups = $this->trainingGroupRepository->getQueryById($groupIds)->all();
         $links = [];
         foreach ($groups as $group) {
             $links[] = Html::a($group->number, ['educational/training-group/view', 'id' => $group->id]) . "<br>";

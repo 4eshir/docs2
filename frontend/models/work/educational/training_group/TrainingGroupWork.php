@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\educational\training_group;
 
+use common\components\traits\ErrorTrait;
 use common\helpers\html\HtmlCreator;
 use common\helpers\StringFormatter;
 use common\models\work\UserWork;
@@ -26,7 +27,7 @@ use yii\helpers\Url;
 
 class TrainingGroupWork extends TrainingGroup
 {
-    use EventTrait;
+    use EventTrait, ErrorTrait;
 
     const ERROR_NO_PROGRAM = 1;
     const ERROR_THEMES_MISMATCH = 2;
