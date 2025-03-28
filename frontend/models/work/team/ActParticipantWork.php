@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\team;
 
+use common\components\traits\ErrorTrait;
 use common\models\scaffold\ActParticipantBranch;
 use common\models\scaffold\SquadParticipant;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
@@ -31,7 +32,7 @@ use yii\helpers\Url;
  */
 class ActParticipantWork extends ActParticipant
 {
-    use EventTrait;
+    use EventTrait, ErrorTrait;
 
     public $actFiles;
     public $branch;

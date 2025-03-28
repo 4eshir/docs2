@@ -5,6 +5,7 @@ namespace frontend\controllers\event;
 use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
+use common\helpers\ErrorAssociationHelper;
 use common\Model;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\event\ParticipantAchievementRepository;
@@ -80,6 +81,7 @@ class ForeignEventController extends DocumentController
                 $this->service->saveAchievementFileFromModel($form);
                 $form->save();
                 $form->releaseEvents();
+                $form->event->checkModel(ErrorAssociationHelper::getForeignEventErrorsList(), ForeignEventWork::tableName(), $id);
                 return $this->redirect(['view', 'id' => $id]);
             }
 

@@ -311,7 +311,7 @@ class ErrorDictionary extends BaseDictionary
                 [$this->journalService, 'fixJournal_005'],
             ),
             self::JOURNAL_006 => new Error(
-                'ЭЖ006', 'Не заполнено поле «Рабочие материалы» в карточке группы',
+                'ЭЖ006', 'Объем расписания не равен объему программы в карточке группы',
                 Error::TYPE_BASE,
                 [$this->journalService, 'makeJournal_006'],
                 [$this->journalService, 'fixJournal_006'],

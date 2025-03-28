@@ -6,6 +6,10 @@ namespace frontend\models\work\educational\training_group;
 use common\events\EventTrait;
 use common\models\scaffold\OrderTrainingGroupParticipant;
 
+/**
+ * @property TrainingGroupParticipantWork $trainingGroupParticipantOutWork
+ * @property TrainingGroupParticipantWork $trainingGroupParticipantInWork
+ */
 class OrderTrainingGroupParticipantWork extends OrderTrainingGroupParticipant
 {
     use EventTrait;

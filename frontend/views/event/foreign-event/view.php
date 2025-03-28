@@ -1,7 +1,9 @@
 <?php
 
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use frontend\forms\event\ForeignEventForm;
+use frontend\models\work\event\ForeignEventWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -34,6 +36,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],]);
         ?>
     </p>
+
+    <?= HtmlBuilder::createErrorsBlock(ForeignEventWork::tableName(), $model->id) ?>
 
     <?= DetailView::widget([
         'model' => $model,

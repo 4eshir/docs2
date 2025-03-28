@@ -2,135 +2,405 @@
 
 namespace common\services\general\errors;
 
+use common\components\dictionaries\base\ErrorDictionary;
+use common\helpers\files\FilesHelper;
+use common\models\work\ErrorsWork;
+use common\repositories\act_participant\ActParticipantRepository;
+use common\repositories\educational\TrainingGroupParticipantRepository;
+use common\repositories\event\EventRepository;
+use common\repositories\event\ForeignEventRepository;
+use common\repositories\event\ParticipantAchievementRepository;
+use common\repositories\general\ErrorsRepository;
+use frontend\models\work\event\EventBranchWork;
+use frontend\models\work\event\EventWork;
+use frontend\models\work\event\ForeignEventWork;
+use frontend\models\work\event\ParticipantAchievementWork;
+use frontend\models\work\team\ActParticipantBranchWork;
+use frontend\models\work\team\ActParticipantWork;
+use yii\helpers\ArrayHelper;
+
 class ErrorAchieveService
 {
-    public function makeAchieve_001()
-    {
+    private ErrorsRepository $errorsRepository;
+    private ForeignEventRepository $foreignEventRepository;
+    private ActParticipantRepository $actParticipantRepository;
+    private TrainingGroupParticipantRepository $groupParticipantRepository;
+    private ParticipantAchievementRepository $achievementRepository;
+    private EventRepository $eventRepository;
 
+    public function __construct(
+        ErrorsRepository $errorsRepository,
+        ForeignEventRepository $foreignEventRepository,
+        ActParticipantRepository $actParticipantRepository,
+        TrainingGroupParticipantRepository $groupParticipantRepository,
+        ParticipantAchievementRepository $achievementRepository,
+        EventRepository $eventRepository
+    )
+    {
+        $this->errorsRepository = $errorsRepository;
+        $this->foreignEventRepository = $foreignEventRepository;
+        $this->actParticipantRepository = $actParticipantRepository;
+        $this->groupParticipantRepository = $groupParticipantRepository;
+        $this->achievementRepository = $achievementRepository;
+        $this->eventRepository = $eventRepository;
     }
 
-    public function fixAchieve_001()
+    // Проверяем даты начала и окончания на валидность
+    public function makeAchieve_001($rowId)
     {
-
+        /** @var ForeignEventWork $event */
+        $event = $this->foreignEventRepository->get($rowId);
+        if ($event->begin_date > $event->end_date) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_001,
+                    ForeignEventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_002()
+    public function fixAchieve_001($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var ForeignEventWork $event */
+        $error = $this->errorsRepository->get($errorId);
+        $event = $this->foreignEventRepository->get($error->table_row_id);
+        if (!($event->begin_date > $event->end_date)) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_002()
+    // Проверка на отсутствие города проведения
+    public function makeAchieve_002($rowId)
     {
-
+        /** @var ForeignEventWork $event */
+        $event = $this->foreignEventRepository->get($rowId);
+        if (is_null($event->city) || strlen($event->city) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_002,
+                    ForeignEventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_003()
+    public function fixAchieve_002($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var ForeignEventWork $event */
+        $error = $this->errorsRepository->get($errorId);
+        $event = $this->foreignEventRepository->get($error->table_row_id);
+        if (!(is_null($event->city) || strlen($event->city) == 0)) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_003()
+    // Проверка на отсутствие участников мероприятия
+    public function makeAchieve_003($rowId)
     {
-
+        /** @var ForeignEventWork $event */
+        $acts = $this->actParticipantRepository->getByForeignEventIds([$rowId]);
+        if (count($acts) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_003,
+                    ForeignEventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_004()
+    public function fixAchieve_003($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var ForeignEventWork $event */
+        $error = $this->errorsRepository->get($errorId);
+        $acts = $this->actParticipantRepository->getByForeignEventIds([$error->table_row_id]);
+        if (count($acts) != 0) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_004()
+    // Проверка на отдел обучения участника мероприятия (act_participant)
+    public function makeAchieve_004($rowId)
     {
+        /** @var ActParticipantWork $act */
+        $act = $this->actParticipantRepository->get($rowId);
+        $branchesEvent = ArrayHelper::getColumn($this->actParticipantRepository->getParticipantBranches($rowId), 'branch');
+        $groupParticipants = $this->groupParticipantRepository->getByParticipantIds([$act->squadParticipantsWork[0]->participant_id]);
+        $branchesStudy = ArrayHelper::getColumn($groupParticipants, 'trainingGroupWork.branch');
 
+        if (empty(array_intersect($branchesEvent, $branchesStudy))) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_004,
+                    ActParticipantWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_005()
+    public function fixAchieve_004($errorId)
     {
+        /** @var ErrorsWork $error */
+        /** @var ActParticipantWork $act */
+        $error = $this->errorsRepository->get($errorId);
+        $act = $this->actParticipantRepository->get($error->table_row_id);
+        $branchesEvent = ArrayHelper::getColumn($this->actParticipantRepository->getParticipantBranches($error->table_row_id), 'branch');
+        $groupParticipants = $this->groupParticipantRepository->getByParticipantIds([$act->squadParticipantsWork[0]->participant_id]);
+        $branchesStudy = ArrayHelper::getColumn($groupParticipants, 'trainingGroupWork.branch');
 
+        if (!empty(array_intersect($branchesEvent, $branchesStudy))) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_005()
+    // Проверка на отсутствие хотя бы одного указанного достижения участника
+    public function makeAchieve_005($rowId)
     {
+        /** @var ParticipantAchievementWork[] $achieves */
+        $achieves = $this->achievementRepository->getByForeignEvent($rowId);
 
+        if (count($achieves) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_005,
+                    ForeignEventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_006()
+    public function fixAchieve_005($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var ForeignEventWork $event */
+        $error = $this->errorsRepository->get($errorId);
+        $achieves = $this->achievementRepository->getByForeignEvent($error->table_row_id);
+        if (count($achieves) != 0) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_006()
+    // Проверка на отсутствие файла достижений
+    public function makeAchieve_006($rowId)
     {
-
+        /** @var ForeignEventWork $event */
+        $event = $this->foreignEventRepository->get($rowId);
+        if (count($event->getFileLinks(FilesHelper::TYPE_DOC)) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_006,
+                    ForeignEventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_007()
+    public function fixAchieve_006($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var ForeignEventWork $event */
+        $error = $this->errorsRepository->get($errorId);
+        $event = $this->foreignEventRepository->get($error->table_row_id);
+        if (count($event->getFileLinks(FilesHelper::TYPE_DOC)) > 0) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_007()
+    // Проверка на отсутствие организатора
+    public function makeAchieve_007($rowId)
     {
-
+        /** @var ForeignEventWork $event */
+        $event = $this->foreignEventRepository->get($rowId);
+        if (is_null($event->organizer_id)) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_007,
+                    ForeignEventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_008()
+    public function fixAchieve_007($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var ForeignEventWork $event */
+        $error = $this->errorsRepository->get($errorId);
+        $event = $this->foreignEventRepository->get($error->table_row_id);
+        if ($event->organizer_id) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_008()
+    // Проверка на отсутствие формата проведения
+    public function makeAchieve_008($rowId)
     {
-
+        /** @var EventWork $event */
+        $event = $this->eventRepository->get($rowId);
+        if (is_null($event->event_way)) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_008,
+                    EventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_009()
+    public function fixAchieve_008($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var EventWork $event */
+        $error = $this->errorsRepository->get($errorId);
+        $event = $this->eventRepository->get($error->table_row_id);
+        if ($event->event_way) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_009()
+    // Проверка на отсутствие отдела
+    public function makeAchieve_009($rowId)
     {
-
+        /** @var EventBranchWork[] $branches */
+        $branches = $this->eventRepository->getBranches($rowId);
+        if (count($branches) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_009,
+                    EventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_010()
+    public function fixAchieve_009($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var EventBranchWork[] $branches */
+        $error = $this->errorsRepository->get($errorId);
+        $branches = $this->eventRepository->getBranches($error->table_row_id);
+        if (count($branches) > 0) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_010()
+    // Проверка на отсутствие приказа
+    public function makeAchieve_010($rowId)
     {
-
+        /** @var EventWork $event */
+        $event = $this->eventRepository->get($rowId);
+        if (is_null($event->order_id)) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_008,
+                    EventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_011()
+    public function fixAchieve_010($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var EventWork $event */
+        $error = $this->errorsRepository->get($errorId);
+        $event = $this->eventRepository->get($error->table_row_id);
+        if ($event->order_id) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_011()
+    // Проверка на отсутствие фотоматериалов
+    public function makeAchieve_011($rowId)
     {
-
+        /** @var EventWork $event */
+        $event = $this->eventRepository->get($rowId);
+        if (count($event->getFileLinks(FilesHelper::TYPE_PHOTO)) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_011,
+                    EventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_012()
+    public function fixAchieve_011($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var EventWork $event */
+        $error = $this->errorsRepository->get($errorId);
+        $event = $this->eventRepository->get($error->table_row_id);
+        if (count($event->getFileLinks(FilesHelper::TYPE_PHOTO)) > 0) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_012()
+    // Проверка на отсутствие ключевых слов
+    public function makeAchieve_012($rowId)
     {
-
+        /** @var EventWork $event */
+        $event = $this->eventRepository->get($rowId);
+        if (is_null($event->key_words) || strlen($event->key_words) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_008,
+                    EventWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
-    public function makeAchieve_013()
+    public function fixAchieve_012($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var EventWork $event */
+        $error = $this->errorsRepository->get($errorId);
+        $event = $this->eventRepository->get($error->table_row_id);
+        if (!(is_null($event->key_words) || strlen($event->key_words) == 0)) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
-    public function fixAchieve_013()
+    // Проверка на отсутствие отдела учета для участников мероприятий
+    public function makeAchieve_013($rowId)
     {
+        $branchesEvent = $this->actParticipantRepository->getParticipantBranches($rowId);
+        if (count($branchesEvent) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::ACHIEVE_013,
+                    ActParticipantWork::tableName(),
+                    $rowId
+                )
+            );
+        }
+    }
 
+    public function fixAchieve_013($errorId)
+    {
+        /** @var ErrorsWork $error */
+        /** @var ActParticipantBranchWork[] $branchesEvent */
+        $error = $this->errorsRepository->get($errorId);
+        $branchesEvent = $this->actParticipantRepository->getParticipantBranches($error->table_row_id);
+        if (count($branchesEvent) > 0) {
+            $this->errorsRepository->delete($error);
+        }
     }
 }

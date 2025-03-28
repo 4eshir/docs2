@@ -12,6 +12,7 @@ use app\models\work\order\OrderEventGenerateWork;
 use app\services\order\OrderEventGenerateService;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\traits\AccessControl;
+use common\helpers\ErrorAssociationHelper;
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\OrderEventGenerate;
 use common\repositories\dictionaries\PeopleRepository;
@@ -128,6 +129,7 @@ class OrderEventController extends DocumentController
             'dataProvider' => $dataProvider,
         ]);
     }
+
     public function actionCreate() {
         $form = new OrderEventBuilderForm(
             new OrderEventForm(),
@@ -202,6 +204,8 @@ class OrderEventController extends DocumentController
                 $form->orderEventForm->actFiles
             );
             $this->foreignEventRepository->save($modelForeignEvent);
+            $modelForeignEvent->checkModel(ErrorAssociationHelper::getForeignEventErrorsList(), ForeignEventWork::tableName(), $modelForeignEvent->id);
+
             $this->orderPeopleService->addOrderPeopleEvent($respPeopleId, $modelOrderEvent);
             $this->foreignEventService->saveActFilesFromModel($modelForeignEvent, $form->orderEventForm->actFiles, $number);
             $form->orderEventForm->releaseEvents();
@@ -328,6 +332,7 @@ class OrderEventController extends DocumentController
                     $form->orderEventForm->actFiles
                 );
                 $this->foreignEventRepository->save($modelForeignEvent);
+                $modelForeignEvent->checkModel(ErrorAssociationHelper::getForeignEventErrorsList(), ForeignEventWork::tableName(), $modelForeignEvent->id);
                 $this->actParticipantService->addActParticipant($acts, $modelForeignEvent->id);
                 $modelOrderEvent->releaseEvents();
                 return $this->redirect(['view', 'id' => $modelOrderEvent->id]);

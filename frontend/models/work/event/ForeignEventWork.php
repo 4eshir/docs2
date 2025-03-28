@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\event;
 
+use common\components\traits\ErrorTrait;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -23,7 +24,7 @@ use yii\helpers\ArrayHelper;
  */
 class ForeignEventWork extends ForeignEvent
 {
-    use EventTrait;
+    use EventTrait, ErrorTrait;
 
     const EXPORT_TYPE = 1;
     const VIEW_TYPE = 2;
