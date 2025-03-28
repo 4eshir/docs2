@@ -80,6 +80,30 @@ class ErrorAssociationHelper
             ErrorDictionary::JOURNAL_006,
             ErrorDictionary::JOURNAL_007,
             ErrorDictionary::JOURNAL_008,
+            ErrorDictionary::JOURNAL_009,
+            ErrorDictionary::JOURNAL_014,
+            ErrorDictionary::JOURNAL_016,
+            ErrorDictionary::JOURNAL_017,
+            ErrorDictionary::JOURNAL_020,
+            ErrorDictionary::JOURNAL_021,
+            ErrorDictionary::JOURNAL_022,
+            ErrorDictionary::JOURNAL_023,
+            ErrorDictionary::JOURNAL_024,
+            ErrorDictionary::JOURNAL_025,
+        ];
+    }
+
+    public static function getTrainingProgramErrorsList()
+    {
+        return [
+            ErrorDictionary::JOURNAL_010,
+            ErrorDictionary::JOURNAL_011,
+            ErrorDictionary::JOURNAL_012,
+            ErrorDictionary::JOURNAL_013,
+            ErrorDictionary::JOURNAL_018,
+            ErrorDictionary::JOURNAL_019,
+            ErrorDictionary::JOURNAL_026,
+            ErrorDictionary::JOURNAL_027,
         ];
     }
 

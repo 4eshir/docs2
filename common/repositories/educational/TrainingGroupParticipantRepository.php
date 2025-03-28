@@ -129,26 +129,32 @@ class TrainingGroupParticipantRepository
     {
         return $this->provider->delete($model);
     }
+
     public function getAll($id)
     {
         return TrainingGroupParticipantWork::find()->where(['id' => $id])->all();
     }
+
     public function empty()
     {
         return TrainingGroupParticipantWork::find()->where(['id' => 0]);
     }
+
     public function getParticipantsToEnrollCreate($groupIds)
     {
         return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => NomenclatureDictionary::ORDER_INIT]);
     }
+
     public function getParticipantsToDeductCreate($groupIds)
     {
         return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => NomenclatureDictionary::ORDER_ENROLL]);
     }
+
     public function getParticipantsToTransferCreate($groupIds)
     {
         return TrainingGroupParticipantWork::find()->andWhere(['training_group_id' => $groupIds])->andWhere(['status' => NomenclatureDictionary::ORDER_ENROLL]);
     }
+
     public function getParticipantToEnrollUpdate($groupId, $orderId){
         $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
             ->andWhere(['order_id' => $orderId])->andWhere(['training_group_participant_out_id' => NULL])
@@ -159,6 +165,7 @@ class TrainingGroupParticipantRepository
             ->orWhere(['and', ['training_group_id' => $groupId], ['status' => NomenclatureDictionary::ORDER_INIT]]);
         return $query;
     }
+
     public function getParticipantToDeductUpdate($groupId, $orderId){
         $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
             ->andWhere(['order_id' => $orderId])->andWhere(['training_group_participant_in_id' => NULL])
@@ -169,6 +176,7 @@ class TrainingGroupParticipantRepository
             ->orWhere(['and', ['training_group_id' => $groupId], ['status' => NomenclatureDictionary::ORDER_ENROLL]]);
         return $query;
     }
+
     public function getParticipantToTransferUpdate($groupId, $orderId)
     {
         $orderParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()
@@ -188,11 +196,13 @@ class TrainingGroupParticipantRepository
         $query = $query->andWhere(['not in', 'id', $exceptParticipantId]);
         return $query;
     }
+
     public function setStatus($id, $status){
         $model = TrainingGroupParticipantWork::findOne($id);
         $model->setStatus($status);
         return $this->save($model);
     }
+
     public function isExist($groupId, $participantId)
     {
         return TrainingGroupParticipantWork::find()
@@ -201,6 +211,7 @@ class TrainingGroupParticipantRepository
             ->andWhere(['status' => NomenclatureDictionary::ORDER_ENROLL])
             ->exists();
     }
+
     public function getAttachedParticipantByOrder($orderId, $status){
         if ($status == NomenclatureDictionary::ORDER_ENROLL){
             $participants = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($orderId), 'training_group_participant_in_id');
@@ -213,10 +224,19 @@ class TrainingGroupParticipantRepository
         }
         return $participants;
     }
+
     public function prepareUpdateByStatus($id, $status)
     {
         $command = Yii::$app->db->createCommand();
         $command->update(TrainingGroupParticipantWork::tableName(), ['status' => $status], ['id' => $id]);
         return $command->getRawSql();
+    }
+
+    public function getEnrolledParticipantsFromGroup(int $groupId)
+    {
+        return TrainingGroupParticipantWork::find()
+            ->where(['training_group_id' => $groupId])
+            ->andWhere(['status' => NomenclatureDictionary::ORDER_ENROLL])
+            ->all();
     }
 }

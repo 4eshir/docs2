@@ -341,7 +341,7 @@ class ErrorDictionary extends BaseDictionary
                 [$this->journalService, 'fixJournal_010'],
             ),
             self::JOURNAL_011 => new Error(
-                'ЭЖ001', 'В учебно-тематическом плане образовательной программе не указана форма контроля',
+                'ЭЖ011', 'В учебно-тематическом плане образовательной программе не указана форма контроля',
                 Error::TYPE_BASE,
                 [$this->journalService, 'makeJournal_001'],
                 [$this->journalService, 'fixJournal_001'],
@@ -359,7 +359,7 @@ class ErrorDictionary extends BaseDictionary
                 [$this->journalService, 'fixJournal_013'],
             ),
             self::JOURNAL_014 => new Error(
-                'ЭЖ014', 'В расписании учебной группы указано не корректное помещение (не предназначенное для учебных целей)',
+                'ЭЖ014', 'В расписании учебной группы указано некорректное помещение (не предназначенное для учебных целей)',
                 Error::TYPE_BASE,
                 [$this->journalService, 'makeJournal_014'],
                 [$this->journalService, 'fixJournal_014'],

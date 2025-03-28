@@ -2,18 +2,27 @@
 
 namespace common\services\general\errors;
 
+use common\components\dictionaries\base\CertificateTypeDictionary;
 use common\components\dictionaries\base\ErrorDictionary;
 use common\helpers\files\FilesHelper;
 use common\models\work\ErrorsWork;
+use common\repositories\educational\CertificateRepository;
+use common\repositories\educational\GroupProjectThemesRepository;
 use common\repositories\educational\LessonThemeRepository;
 use common\repositories\educational\OrderTrainingGroupParticipantRepository;
 use common\repositories\educational\TeacherGroupRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
+use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
+use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\general\ErrorsRepository;
 use common\repositories\order\DocumentOrderRepository;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
+use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
+use frontend\models\work\educational\training_program\BranchProgramWork;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use frontend\models\work\event\ForeignEventWork;
 use yii\helpers\ArrayHelper;
 
@@ -25,6 +34,10 @@ class ErrorJournalService
     private OrderTrainingGroupParticipantRepository $orderParticipantRepository;
     private TrainingGroupLessonRepository $lessonRepository;
     private LessonThemeRepository $themeRepository;
+    private TrainingGroupParticipantRepository $participantRepository;
+    private CertificateRepository $certificateRepository;
+    private TrainingProgramRepository $programRepository;
+    private GroupProjectThemesRepository $projectRepository;
 
     public function __construct(
         ErrorsRepository $errorsRepository,
@@ -32,7 +45,11 @@ class ErrorJournalService
         TeacherGroupRepository $teacherGroupRepository,
         OrderTrainingGroupParticipantRepository $orderParticipantRepository,
         TrainingGroupLessonRepository $lessonRepository,
-        LessonThemeRepository $themeRepository
+        LessonThemeRepository $themeRepository,
+        TrainingGroupParticipantRepository $participantRepository,
+        CertificateRepository $certificateRepository,
+        TrainingProgramRepository $programRepository,
+        GroupProjectThemesRepository $projectRepository
     )
     {
         $this->errorsRepository = $errorsRepository;
@@ -41,6 +58,10 @@ class ErrorJournalService
         $this->orderParticipantRepository = $orderParticipantRepository;
         $this->lessonRepository = $lessonRepository;
         $this->themeRepository = $themeRepository;
+        $this->participantRepository = $participantRepository;
+        $this->certificateRepository = $certificateRepository;
+        $this->programRepository = $programRepository;
+        $this->projectRepository = $projectRepository;
     }
 
     // Проверяет на отсутствие прикрепленного к группе педагога (хотя бы одного)
@@ -273,16 +294,41 @@ class ErrorJournalService
         }
     }
 
+    // Проверка на отсутствие сертификатов
     public function makeJournal_008($rowId)
     {
-
+        /** @var TrainingGroupParticipantWork[] $participants */
+        $participants = $this->participantRepository->getSuccessParticipantsFromGroup($rowId);
+        foreach ($participants as $participant) {
+            if (!$this->certificateRepository->getByGroupParticipantId($participant->id)) {
+                $this->errorsRepository->save(
+                    ErrorsWork::fill(
+                        ErrorDictionary::JOURNAL_008,
+                        TrainingGroupWork::tableName(),
+                        $rowId
+                    )
+                );
+                break;
+            }
+        }
     }
 
     public function fixJournal_008($errorId)
     {
+        /** @var ErrorsWork $error */
+        /** @var TrainingGroupParticipantWork[] $participants */
+        $error = $this->errorsRepository->get($errorId);
+        $participants = $this->participantRepository->getSuccessParticipantsFromGroup($error->table_row_id);
+        foreach ($participants as $participant) {
+            if (!$this->certificateRepository->getByGroupParticipantId($participant->id)) {
+                return;
+            }
+        }
 
+        $this->errorsRepository->delete($error);
     }
 
+    // Проверка на отсутствие явок
     public function makeJournal_009($rowId)
     {
 
@@ -293,183 +339,586 @@ class ErrorJournalService
 
     }
 
+    // Проверка на отсутствие тематического направления в образовательной программе
     public function makeJournal_010($rowId)
     {
-
+        /** @var TrainingProgramWork $program */
+        $program = $this->programRepository->get($rowId);
+        if (is_null($program->thematic_direction)) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_010,
+                    TrainingProgramWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_010($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var TrainingProgramWork $program */
+        $error = $this->errorsRepository->get($errorId);
+        $program = $this->programRepository->get($error->table_row_id);
+        if ($program->thematic_direction) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на отсутствие формы контроля
     public function makeJournal_011($rowId)
     {
-
+        /** @var TrainingProgramWork $program */
+        $program = $this->programRepository->get($rowId);
+        if (is_null($program->certificate_type)) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_011,
+                    TrainingProgramWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_011($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var TrainingProgramWork $program */
+        $error = $this->errorsRepository->get($errorId);
+        $program = $this->programRepository->get($error->table_row_id);
+        if ($program->thematic_direction) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на соответствие объема образовательной программы с ее УТП
     public function makeJournal_012($rowId)
     {
-
+        /** @var TrainingProgramWork $program */
+        $program = $this->programRepository->get($rowId);
+        $plan = $this->programRepository->getThematicPlan($rowId);
+        if (count($plan) != $program->capacity) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_012,
+                    TrainingProgramWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_012($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var TrainingProgramWork $program */
+        $error = $this->errorsRepository->get($errorId);
+        $program = $this->programRepository->get($error->table_row_id);
+        $plan = $this->programRepository->getThematicPlan($error->table_row_id);
+        if (count($plan) == $program->capacity) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на отсутствие авторов программы
     public function makeJournal_013($rowId)
     {
-
+        $authors = $this->programRepository->getAuthors($rowId);
+        if (count($authors) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_013,
+                    TrainingProgramWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_013($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var TrainingProgramWork $program */
+        $error = $this->errorsRepository->get($errorId);
+        $authors = $this->programRepository->getAuthors($error->table_row_id);
+        if (count($authors) > 0) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка учебной группы на использование некорректных помещений для занятий
     public function makeJournal_014($rowId)
     {
-
+        /** @var TrainingGroupLessonWork[] $lessons */
+        $lessons = $this->lessonRepository->getLessonsFromGroup($rowId);
+        foreach ($lessons as $lesson) {
+            if (!$lesson->auditoriumWork->isEducation()) {
+                $this->errorsRepository->save(
+                    ErrorsWork::fill(
+                        ErrorDictionary::JOURNAL_014,
+                        TrainingGroupWork::tableName(),
+                        $rowId
+                    )
+                );
+                break;
+            }
+        }
     }
 
     public function fixJournal_014($errorId)
     {
+        /** @var ErrorsWork $error */
+        /** @var TrainingGroupLessonWork[] $lessons */
+        $error = $this->errorsRepository->get($errorId);
+        $lessons = $this->lessonRepository->getLessonsFromGroup($error->table_row_id);
+        foreach ($lessons as $lesson) {
+            if (!$lesson->auditoriumWork->isEducation()) {
+                return;
+            }
+        }
 
+        $this->errorsRepository->delete($error);
     }
 
     public function makeJournal_015($rowId)
     {
-
+        // deprecated
     }
 
     public function fixJournal_015($errorId)
     {
-
+        // deprecated
     }
 
+    // Проверка на несовпадение даты последнего занятия и даты окончания обучения группы
     public function makeJournal_016($rowId)
     {
-
+        /** @var TrainingGroupWork $group */
+        /** @var TrainingGroupLessonWork[] $lessons */
+        $group = $this->groupRepository->get($rowId);
+        $lessons = $this->lessonRepository->getLessonsFromGroup($rowId);
+        if ($group->finish_date != end($lessons)->lesson_date) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_016,
+                    TrainingGroupWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_016($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var TrainingGroupWork $group */
+        $error = $this->errorsRepository->get($errorId);
+        $group = $this->groupRepository->get($error->table_row_id);
+        $lessons = $this->lessonRepository->getLessonsFromGroup($error->table_row_id);
+        if ($group->finish_date == end($lessons)->lesson_date) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на нахождение группы в архиве
     public function makeJournal_017($rowId)
     {
+        $daysCount = 5;
+        /** @var TrainingGroupWork $group */
+        $group = $this->groupRepository->get($rowId);
+        $currentDate = strtotime($group->finish_date);
+        $upperBound = strtotime("+$daysCount days", $currentDate);
+        $targetDate = strtotime("today");
 
+        if ($targetDate > $upperBound && !$group->isArchive()) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_017,
+                    TrainingGroupWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_017($errorId)
     {
+        $daysCount = 5;
+        /** @var ErrorsWork $error */
+        /** @var TrainingGroupWork $group */
+        $error = $this->errorsRepository->get($errorId);
+        $group = $this->groupRepository->get($error->table_row_id);
+        $currentDate = strtotime($group->finish_date);
+        $upperBound = strtotime("+$daysCount days", $currentDate);
+        $targetDate = strtotime("today");
 
+        if ($targetDate <= $upperBound || $group->isArchive()) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на наличие отдела реализации образовательной программы
     public function makeJournal_018($rowId)
     {
-
+        /** @var BranchProgramWork[] $program */
+        $branches = $this->programRepository->getBranches($rowId);
+        if (count($branches) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_018,
+                    TrainingProgramWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_018($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var TrainingGroupWork $group */
+        $error = $this->errorsRepository->get($errorId);
+        $branches = $this->programRepository->getBranches($error->table_row_id);
+        if (count($branches) > 0) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на отсутствие даты педагогического совета
     public function makeJournal_019($rowId)
     {
-
+        /** @var TrainingProgramWork $program */
+        $program = $this->programRepository->get($rowId);
+        if (is_null($program->ped_council_date)) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_019,
+                    TrainingProgramWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_019($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var TrainingProgramWork $program */
+        $error = $this->errorsRepository->get($errorId);
+        $program = $this->programRepository->get($error->table_row_id);
+        if ($program->ped_council_date) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    /*
+     * Проверка на наличие обучающихся, не фигурирующих в соответствующих приказах
+     * 1. На момент начала занятий должен быть как минимум 1 приказ о зачислении
+     * 2. На момент окончания занятий должно быть как минимум 2 приказа: не менее 1 о зачислении и не менее 1 об отчислении
+     */
     public function makeJournal_020($rowId)
     {
+        /** @var TrainingGroupWork $group */
+        $errFlag = true;
+        $group = $this->groupRepository->get($rowId);
+        $participants = $this->participantRepository->getParticipantsFromGroups([$rowId]);
+        if (date('Y-m-d') >= $group->start_date) {
+            $orderEnrollParticipants = $this->orderParticipantRepository->getEnrollByGroupId($rowId);
+            if (count($orderEnrollParticipants) != count($participants)) {
+                $errFlag = false;
+            }
+        }
+        if (date('Y-m-d') >= $group->finish_date) {
+            $orderExclusionParticipants = $this->orderParticipantRepository->getExlusionByGroupId($rowId);
+            if (count($orderExclusionParticipants) != count($participants)) {
+                $errFlag = false;
+            }
+        }
 
+        if ($errFlag) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_020,
+                    TrainingGroupWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_020($errorId)
     {
+        $errFlag = false;
+        /** @var ErrorsWork $error */
+        /** @var TrainingProgramWork $program */
+        /** @var TrainingGroupWork $group */
+        $error = $this->errorsRepository->get($errorId);
+        $group = $this->groupRepository->get($error->table_row_id);
+        $participants = $this->participantRepository->getParticipantsFromGroups([$error->table_row_id]);
+        if (date('Y-m-d') >= $group->start_date) {
+            $orderEnrollParticipants = $this->orderParticipantRepository->getEnrollByGroupId($error->table_row_id);
+            if (count($orderEnrollParticipants) == count($participants)) {
+                $errFlag = true;
+            }
+        }
+        if (date('Y-m-d') >= $group->finish_date) {
+            $orderExclusionParticipants = $this->orderParticipantRepository->getExlusionByGroupId($error->table_row_id);
+            if (count($orderExclusionParticipants) == count($participants)) {
+                $errFlag = true;
+            }
+        }
 
+        if ($errFlag) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на отсутствие даты защиты
     public function makeJournal_021($rowId)
     {
+        $daysCount = 4;
+        /** @var TrainingGroupWork $group */
+        $group = $this->groupRepository->get($rowId);
+        $currentDate = strtotime($group->finish_date);
+        $lowerBound = strtotime("-$daysCount days", $currentDate);
+        $targetDate = strtotime("today");
 
+        if (is_null($group->protection_date) && $targetDate >= $lowerBound) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_021,
+                    TrainingGroupWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_021($errorId)
     {
+        $daysCount = 4;
+        /** @var ErrorsWork $error */
+        /** @var TrainingGroupWork $group */
+        $error = $this->errorsRepository->get($errorId);
+        $group = $this->groupRepository->get($error->table_row_id);
+        $currentDate = strtotime($group->finish_date);
+        $lowerBound = strtotime("-$daysCount days", $currentDate);
+        $targetDate = strtotime("today");
 
+        if (!(is_null($group->protection_date) && $targetDate >= $lowerBound)) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на отсутствие темы проекта
     public function makeJournal_022($rowId)
     {
+        $daysCount = 10;
+        /** @var TrainingGroupWork $group */
+        $group = $this->groupRepository->get($rowId);
+        $projectThemes = $this->projectRepository->getProjectThemesFromGroup($rowId);
+        $currentDate = strtotime($group->finish_date);
+        $lowerBound = strtotime("-$daysCount days", $currentDate);
+        $targetDate = strtotime("today");
 
+        if (
+            count($projectThemes) == 0 &&
+            $targetDate >= $lowerBound &&
+            $group->trainingProgramWork->certificate_type == CertificateTypeDictionary::PROJECT_PITCH
+        ) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_022,
+                    TrainingGroupWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_022($errorId)
     {
+        $daysCount = 10;
+        /** @var ErrorsWork $error */
+        /** @var TrainingGroupWork $group */
+        $error = $this->errorsRepository->get($errorId);
+        $group = $this->groupRepository->get($error->table_row_id);
+        $projectThemes = $this->projectRepository->getProjectThemesFromGroup($error->table_row_id);
+        $currentDate = strtotime($group->finish_date);
+        $lowerBound = strtotime("-$daysCount days", $currentDate);
+        $targetDate = strtotime("today");
 
+        if (!(count($projectThemes) == 0 && $targetDate >= $lowerBound)) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на наличие эксперта в группе
     public function makeJournal_023($rowId)
     {
+        $daysCount = 4;
+        /** @var TrainingGroupWork $group */
+        $group = $this->groupRepository->get($rowId);
+        $experts = $this->groupRepository->getExperts($rowId);
+        $currentDate = strtotime($group->finish_date);
+        $lowerBound = strtotime("-$daysCount days", $currentDate);
+        $targetDate = strtotime("today");
 
+        if (count($experts) == 0 && $targetDate >= $lowerBound) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_023,
+                    TrainingGroupWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_023($errorId)
     {
+        $daysCount = 4;
+        /** @var ErrorsWork $error */
+        /** @var TrainingGroupWork $group */
+        $error = $this->errorsRepository->get($errorId);
+        $group = $this->groupRepository->get($error->table_row_id);
+        $experts = $this->groupRepository->getExperts($error->table_row_id);
+        $currentDate = strtotime($group->finish_date);
+        $lowerBound = strtotime("-$daysCount days", $currentDate);
+        $targetDate = strtotime("today");
 
+        if (!(count($experts) == 0 && $targetDate >= $lowerBound)) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на соответствие даты защиты и даты окончания занятий
     public function makeJournal_024($rowId)
     {
+        /** @var TrainingGroupWork $group */
+        $group = $this->groupRepository->get($rowId);
 
+        if ($group->finish_date >= $group->protection_date) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_024,
+                    TrainingGroupWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_024($errorId)
     {
+        /** @var ErrorsWork $error */
+        /** @var TrainingGroupWork $group */
+        $error = $this->errorsRepository->get($errorId);
+        $group = $this->groupRepository->get($error->table_row_id);
 
+        if ($group->finish_date < $group->protection_date) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на отсутствие тем проекта, прикрепленных к обучающимся
     public function makeJournal_025($rowId)
     {
+        $daysCount = 4;
+        /** @var TrainingGroupWork $group */
+        /** @var TrainingGroupParticipantWork[] $participants */
+        $group = $this->groupRepository->get($rowId);
+        $participants = $this->participantRepository->getEnrolledParticipantsFromGroup($rowId);
+        $currentDate = strtotime($group->finish_date);
+        $lowerBound = strtotime("-$daysCount days", $currentDate);
+        $targetDate = strtotime("today");
 
+        if ($targetDate >= $lowerBound && $group->trainingProgramWork->certificate_type == CertificateTypeDictionary::PROJECT_PITCH) {
+            foreach ($participants as $participant) {
+                if (is_null($participant->group_project_themes_id)) {
+                    $this->errorsRepository->save(
+                        ErrorsWork::fill(
+                            ErrorDictionary::JOURNAL_025,
+                            TrainingGroupWork::tableName(),
+                            $rowId
+                        )
+                    );
+                    break;
+                }
+            }
+        }
     }
 
     public function fixJournal_025($errorId)
     {
+        /** @var ErrorsWork $error */
+        /** @var TrainingGroupWork $group */
+        /** @var TrainingGroupParticipantWork[] $participants */
+        $error = $this->errorsRepository->get($errorId);
+        $participants = $this->participantRepository->getEnrolledParticipantsFromGroup($error->table_row_id);
 
+        foreach ($participants as $participant) {
+            if (is_null($participant->group_project_themes_id)) {
+                return;
+            }
+        }
+
+        $this->errorsRepository->delete($error);
     }
 
+    // Проверка на наличие документа программы в образовательной программе
     public function makeJournal_026($rowId)
     {
-
+        /** @var TrainingProgramWork $program */
+        $program = $this->programRepository->get($rowId);
+        if (count($program->getFileLinks(FilesHelper::TYPE_MAIN)) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_026,
+                    TrainingProgramWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_026($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var TrainingProgramWork $program */
+        $error = $this->errorsRepository->get($errorId);
+        $program = $this->programRepository->get($error->table_row_id);
+        if (count($program->getFileLinks(FilesHelper::TYPE_MAIN)) > 0) {
+            $this->errorsRepository->delete($error);
+        }
     }
 
+    // Проверка на наличие редактируемого документа в образовательной программе
     public function makeJournal_027($rowId)
     {
-
+        /** @var TrainingProgramWork $program */
+        $program = $this->programRepository->get($rowId);
+        if (count($program->getFileLinks(FilesHelper::TYPE_DOC)) == 0) {
+            $this->errorsRepository->save(
+                ErrorsWork::fill(
+                    ErrorDictionary::JOURNAL_027,
+                    TrainingProgramWork::tableName(),
+                    $rowId
+                )
+            );
+        }
     }
 
     public function fixJournal_027($errorId)
     {
-
+        /** @var ErrorsWork $error */
+        /** @var TrainingProgramWork $program */
+        $error = $this->errorsRepository->get($errorId);
+        $program = $this->programRepository->get($error->table_row_id);
+        if (count($program->getFileLinks(FilesHelper::TYPE_DOC)) > 0) {
+            $this->errorsRepository->delete($error);
+        }
     }
 }

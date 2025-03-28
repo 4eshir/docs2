@@ -27,6 +27,13 @@ class CertificateRepository
         return CertificateWork::find()->count();
     }
 
+    public function getByGroupParticipantId(int $groupParticipantId)
+    {
+        return CertificateWork::find()
+            ->where(['training_group_participant_id' => $groupParticipantId])
+            ->one();
+    }
+
     public function getCertificatesByGroupId(int $groupId)
     {
         return CertificateWork::find()->
