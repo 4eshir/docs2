@@ -3,7 +3,6 @@
 use common\helpers\files\FilePaths;
 use common\helpers\html\HtmlBuilder;
 use frontend\forms\journal\JournalForm;
-use frontend\models\work\educational\journal\VisitWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -58,7 +57,7 @@ $userData = [
         saveSvgFile(IconTurnoutLink, IconNonAppearanceLink, IconDistantLink, IconDroppedLink);
         let cell = document.getElementsByClassName('attendance');
         Array.from(cell).forEach(oneCell => {
-            oneCell.addEventListener('click', function () {
+            oneCell.addEventListener('click', function changeStatus() {
                 clickOneCell(oneCell);
             });
         });
@@ -109,7 +108,7 @@ $userData = [
         }
 
         let oldSVG = oneCell.getElementsByTagName('svg');
-        if (oldSVG.length > 0) {
+        if (oldSVG.length > 0 && currentIcon) {
             oldSVG[0].remove();
         }
         oneCell.innerHTML += svgData;
@@ -154,6 +153,7 @@ $userData = [
 
     document.addEventListener('DOMContentLoaded', function () {
         init();
+        applyStatusBlockToRowCells();
     });
 
     /**
@@ -175,6 +175,25 @@ $userData = [
         });
     }
 
+</script>
+<script>
+    function applyStatusBlockToRowCells() {
+        const table = document.getElementById('journal-tbody');
+        const rows = table.querySelectorAll('tr');
+
+        rows.forEach(row => {
+            const firstCell = row.firstElementChild;
+            const status = firstCell.getElementsByClassName('status-block');
+console.log(firstCell, status);
+
+            if (firstCell && status) {
+                Array.from(row.children).forEach(cell => {
+                    cell.classList.add('status-block');
+                    cell.removeEventListener('click', function changeStatus(){});
+                });
+            }
+        });
+    }
 </script>
 <style>
     .icon-button {
@@ -259,7 +278,10 @@ $userData = [
                     <?php foreach ($model->participantLessons as $participantLesson): ?>
                         <tr>
                             <td>
-                                <?= $model->getPrettyParticipant($participantLesson->participant); ?>
+                                <div class="flexx space">
+                                    <?= $model->getParticipantIcons($participantLesson->participant); ?>
+                                    <?= $model->getPrettyParticipant($participantLesson->participant); ?>
+                                </div>
                             </td>
                             <?php foreach ($participantLesson->lessonIds as $index => $lesson): ?>
                                 <td class="status-participant attendance">
@@ -272,13 +294,9 @@ $userData = [
                                             'readonly' => true,
                                             'class' => 'status'
                                         ])
-                                        /*->dropDownList([
-                                            VisitWork::NONE => '---',
-                                            VisitWork::ATTENDANCE => 'Я',
-                                            VisitWork::NO_ATTENDANCE => 'Н',
-                                            VisitWork::DISTANCE => 'Д'
-                                        ])*/
                                         ->label(false); ?>
+
+                                    <?= $lesson->getPrettyStatus() ?>
                                 </td>
                             <?php endforeach; ?>
                             <td style="display: <?= $model->isProjectCertificate() ? 'block' : 'none';?>">

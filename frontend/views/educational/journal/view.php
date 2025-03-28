@@ -69,7 +69,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?php foreach ($model->participantLessons as $participantLesson): ?>
                         <tr>
                             <td>
-                                <?= $model->getPrettyParticipant($participantLesson->participant, StringFormatter::FORMAT_LINK); ?>
+                                <div class="flexx space">
+                                    <?= $model->getParticipantIcons($participantLesson->participant); ?>
+                                    <?= $model->getPrettyParticipant($participantLesson->participant, StringFormatter::FORMAT_LINK); ?>
+                                </div>
                             </td>
                             <?php foreach ($participantLesson->lessonIds as $lesson): ?>
                                 <td class="status-participant">

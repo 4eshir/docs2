@@ -12,6 +12,8 @@ use Yii;
 
 class FileService
 {
+    public const FILE_LIMIT = 41943040; // 40 MB
+    public const FOLDER = 'DSSD/upload/files';
     public function downloadFile($filepath)
     {
         $downloadServ = new FileDownloadServer($filepath);
@@ -62,9 +64,23 @@ class FileService
 
         if ($file) {
             $file->saveAs(Yii::$app->basePath . $finalPath . $filename);
+            if($file->size > self::FILE_LIMIT){
+                //загрузка на Диск
+                $this->uploadDisk($finalPath, $filename, $params);
+            }
         }
     }
-
+    public function uploadDisk($finalPath, $filename, $params)
+    {
+        $path = Yii::$app->basePath . $finalPath . $filename;
+        if (file_exists($path)) {
+            $taskData = json_encode([
+                'localPath' => $path,
+                'yandexPath' => self::FOLDER . '/' . str_replace('_', '-', $params['tableName']) . '/' . $params['fileType'] . '/' .  $filename,
+            ]);
+            Yii::$app->rabbitmq->publish('file_upload_queue', $taskData);
+        }
+    }
     /**
      * Функция загрузки файла на сервер (с измененным размером)
      *

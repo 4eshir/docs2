@@ -4,14 +4,26 @@ namespace console\controllers;
 
 use common\components\RabbitMQ;
 use common\helpers\common\QueryHelper;
+use common\services\general\files\FileService;
 use common\services\general\files\YandexDiskContext;
 use Yii;
 use yii\console\Controller;
 
 class YandexDiskController extends Controller
 {
-    const LOCAL_FILE_PATH = 'C:\Users\rkuzu\Downloads\u1471742_index.sql';
+    const LOCAL_FILE_PATH = 'C:\Users\Praktik\Downloads\visit.sql';
     const YANDEX_FILE_PATH = 'CSHD';
+    private FileService $fileService;
+    public function __construct(
+        $id,
+        $module,
+        FileService $fileService,
+        $config = []
+    )
+    {
+        $this->fileService = $fileService;
+        parent::__construct($id, $module, $config);
+    }
 
     public function actionSendMessage()
     {
@@ -26,7 +38,6 @@ class YandexDiskController extends Controller
             echo "Файл не найден по указанному пути.\n";
         }
     }
-
     public function actionConsumeMessage()
     {
         Yii::$app->rabbitmq->consume('file_upload_queue', function ($message) {
@@ -35,14 +46,20 @@ class YandexDiskController extends Controller
                 echo "Неверный формат задания.\n";
                 return;
             }
+
             if (file_exists($task['localPath'])) {
                 echo "Загрузка файла на Яндекс.Диск: " . $task['yandexPath'] . "\n";
                 YandexDiskContext::UploadFileOnDisk($task['yandexPath'], $task['localPath'], true);
                 echo "Файл успешно загружен.\n";
+                echo "Попытка удалить файл ". $task['localPath'] ."\n";
+                if (YandexDiskContext::CheckSameFile($task['yandexPath'])){
+                    unlink($task['localPath']);
+                    echo "Файл ". $task['localPath'] ." удалён \n";
+                }
             } else {
                 echo "Файл не найден: " . $task['localPath'] . "\n";
             }
-        });
+        }, true);
     }
 
     public function actionTestSend(){
@@ -54,5 +71,4 @@ class YandexDiskController extends Controller
             echo "Received: " . $message . "\n";
         });
     }
-
 }

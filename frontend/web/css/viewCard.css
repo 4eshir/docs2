@@ -219,3 +219,7 @@ a:has(.tooltip-span) {
 .control-unit {
     margin-bottom: 1em;
 }
+
+.status-block, .status-active {
+    margin-right: 0.5em;
+}
