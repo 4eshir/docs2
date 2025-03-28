@@ -72,8 +72,6 @@ class FileService
     }
     public function uploadDisk($finalPath, $filename, $params)
     {
-        var_dump($params);
-
         $path = Yii::$app->basePath . $finalPath . $filename;
         if (file_exists($path)) {
             $taskData = json_encode([
