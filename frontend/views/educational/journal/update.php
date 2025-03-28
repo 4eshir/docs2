@@ -189,7 +189,7 @@ console.log(firstCell, status);
             if (firstCell && status) {
                 Array.from(row.children).forEach(cell => {
                     cell.classList.add('status-block');
-                    cell.removeEventListener('click', changeStatus);
+                    cell.removeEventListener('click', function changeStatus(){});
                 });
             }
         });
