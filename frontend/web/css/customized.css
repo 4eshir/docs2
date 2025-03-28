@@ -376,7 +376,7 @@ a:hover {
     justify-content: space-around;
 }
 
-.substrate, .breadcrumb {
+.substrate, .breadcrumb, .control-unit {
     background-color: white;
     border-radius: var(--border-radius);
     padding: 1em;

@@ -106,7 +106,7 @@ class JournalController extends Controller
         }
 
         return $this->render('update', [
-            'model' => $form
+            'model' => $form,
         ]);
     }
 
