@@ -48,15 +48,6 @@ class DocumentOrderCopyController extends Controller
                     'study_type' => $record['study_type'],
                 ]
             );
-            $this->fileTransferHelper->createFiles(
-                [
-                    'scan' => $record['scan'],
-                    'doc' => $record['doc'],
-                    'app' => NULL,
-                    'table' => DocumentOrderWork::tableName(),
-                    'row' => $record['id'],
-                ]
-            );
             $command->execute();
         }
     }

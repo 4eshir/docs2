@@ -25,6 +25,7 @@ class GeneralCopyController extends Controller
     private LogCopyController $logCopyController;
     private EventTrainingGroupCopyController $eventTrainingGroupCopyController;
     private OrderPeopleCopyController $orderPeopleCopyController;
+    private FilesCopyController $filesCopyController;
     public function __construct(
         $id,
         $module,
@@ -47,6 +48,7 @@ class GeneralCopyController extends Controller
         LogCopyController $logCopyController,
         EventTrainingGroupCopyController $eventTrainingGroupCopyController,
         OrderPeopleCopyController $orderPeopleCopyController,
+        FilesCopyController $filesCopyController,
         $config = [])
     {
         $this->initCopyController = $initCopyController;
@@ -68,6 +70,7 @@ class GeneralCopyController extends Controller
         $this->logCopyController = $logCopyController;
         $this->eventTrainingGroupCopyController = $eventTrainingGroupCopyController;
         $this->orderPeopleCopyController = $orderPeopleCopyController;
+        $this->filesCopyController = $filesCopyController;
         parent::__construct($id, $module, $config);
     }
 
@@ -92,10 +95,14 @@ class GeneralCopyController extends Controller
 
         $this->participantAchievementCopyController->actionCopyAll();
         $this->logCopyController->actionCopyAll();
+
+        $this->filesCopyController->actionCopyAll();
     }
 
     public function actionDeleteAll()
     {
+        $this->filesCopyController->actionDeleteAll();
+
         $this->participantAchievementCopyController->actionDeleteAll();
         $this->logCopyController->actionDeleteAll();
 

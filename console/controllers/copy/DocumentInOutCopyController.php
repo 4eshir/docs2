@@ -12,18 +12,15 @@ use yii\console\Controller;
 class DocumentInOutCopyController extends Controller
 {
     private PeopleStampService $peopleStampService;
-    private FileTransferHelper $fileTransferHelper;
     private PeopleTablesCopyController $peopleTablesCopyController;
     public function __construct(
         $id,
         $module,
         PeopleStampService $peopleStampService,
-        FileTransferHelper $fileTransferHelper,
         PeopleTablesCopyController $peopleTablesCopyController,
         $config = [])
     {
         $this->peopleStampService = $peopleStampService;
-        $this->fileTransferHelper = $fileTransferHelper;
         $this->peopleTablesCopyController = $peopleTablesCopyController;
         parent::__construct($id, $module, $config);
     }
@@ -127,15 +124,6 @@ class DocumentInOutCopyController extends Controller
                     'creator_id' => $record['creator_id'],
                 ]
             );
-            $this->fileTransferHelper->createFiles(
-                [
-                    'scan' => $record['scan'],
-                    'doc' => $record['doc'],
-                    'app' => NULL,
-                    'table' => DocumentInWork::tableName(),
-                    'row' => $record['id'],
-                ]
-            );
             $command->execute();
         }
     }
@@ -161,15 +149,6 @@ class DocumentInOutCopyController extends Controller
                     'key_words' => $record['key_words'],
                     'is_answer' => $record['isAnswer'],
                     'creator_id' => $record['creator_id'],
-                ]
-            );
-            $this->fileTransferHelper->createFiles(
-                [
-                    'scan' => $record['Scan'],
-                    'doc' => $record['doc'],
-                    'app' => NULL,
-                    'table' => DocumentOutWork::tableName(),
-                    'row' => $record['id'],
                 ]
             );
             $command->execute();
