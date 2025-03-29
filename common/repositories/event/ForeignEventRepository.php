@@ -52,10 +52,6 @@ class ForeignEventRepository
         return ForeignEventWork::deleteAll(['id' => $id]);
     }
 
-    public function getAll()
-    {
-        return ForeignEventWork::find()->all();
-    }
     public function prepareDelete($id)
     {
         $command = Yii::$app->db->createCommand();
