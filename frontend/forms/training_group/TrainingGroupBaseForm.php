@@ -69,6 +69,7 @@ class TrainingGroupBaseForm extends Model
     public function rules()
     {
         return [
+            [['startDate', 'endDate'], 'required'],
             [['branch', 'budget', 'trainingProgramId', 'network', 'endLoadOrders'], 'integer'],
             [['startDate', 'endDate', 'teachers', 'prevTeachers'], 'safe'],
             [['photos'], 'file',

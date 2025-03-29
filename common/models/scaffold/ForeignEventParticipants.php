@@ -46,11 +46,11 @@ class ForeignEventParticipants extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'firstname' => 'Firstname',
-            'surname' => 'Surname',
-            'patronymic' => 'Patronymic',
-            'birthdate' => 'Birthdate',
-            'sex' => 'Sex',
+            'firstname' => 'Имя',
+            'surname' => 'Фамилия',
+            'patronymic' => 'Отчество',
+            'birthdate' => 'Дата рождения',
+            'sex' => 'Пол',
             'is_true' => 'Is True',
             'guaranteed_true' => 'Guaranteed True',
             'email' => 'Email',

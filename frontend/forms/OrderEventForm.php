@@ -83,7 +83,8 @@ class OrderEventForm extends Model {
     public function rules()
     {
         return [
-            [['order_date'], 'required'],
+            [['order_date', 'dateBegin', 'eventName', 'dateEnd','bring_id', 'executor_id', 'purpose', 'docEvent',
+                'respPeopleInfo', 'timeProvisionDay', 'extraRespInsert', 'timeInsertDay', 'extraRespMethod', 'extraRespInfoStuff'], 'required'],
             [['order_copy_id', 'order_postfix', 'signed_id', 'bring_id', 'executor_id',  'creator_id', 'last_edit_id',
                 'nomenclature_id', 'type', 'state', 'organizer_id' , 'eventWay','eventLevel' ,'minister','minAge', 'maxAge' ,
                 'purpose' ,'docEvent', 'respPeopleInfo', 'timeProvisionDay', 'extraRespInsert', 'timeInsertDay', 'extraRespMethod', 'extraRespInfoStuff'], 'integer'],
@@ -97,7 +98,21 @@ class OrderEventForm extends Model {
     }
     public function attributeLabels(){
         return array_merge(parent::attributeLabels(), [
-            'typeActParticipant' => 'Личный тип участия'
+            'typeActParticipant' => 'Личный тип участия',
+            'order_date' => 'Дата приказа',
+            'dateBegin' => 'Дата начала',
+            'eventName' => 'Название мероприятия',
+            'dateEnd' => 'Дата окончания',
+            'bring_id' => 'Проект вносит',
+            'executor_id' => 'Кто исполняет',
+            'purpose' => 'Уставная цель',
+            'docEvent' => 'Документ о мероприятии',
+            'respPeopleInfo' => 'Ответственный за сбор и предоставление информации',
+            'timeProvisionDay' => 'Срок предоставления информации (в днях)',
+            'extraRespInsert' => 'Ответственный за внесение в ЦСХД',
+            'timeInsertDay' => 'Срок внесения информации (в днях)',
+            'extraRespMethod' => 'Ответственный за методологический контроль',
+            'extraRespInfoStuff' => 'Ответственный за информирование работников'
         ]);
     }
     public static function fill(

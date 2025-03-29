@@ -46,7 +46,7 @@ if ($dataProvider != NULL) {
                         ];
                     },
                 ],
-                'fullFio',
+                ['value' =>'fullFio', 'label' => 'ФИО обучающегося',],
                 [
                     'attribute' => 'dropdownField', // Условное имя атрибута
                     'format' => 'raw', // Чтобы отобразить HTML-код

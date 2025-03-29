@@ -49,14 +49,14 @@ class Auditorium extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'square' => 'Square',
-            'text' => 'Text',
+            'name' => 'Уникальный глобальный номер',
+            'square' => 'Площадь (кв.м.)',
+            'text' => 'Имя',
             'capacity' => 'Capacity',
-            'is_education' => 'Is Education',
-            'branch' => 'Branch',
-            'include_square' => 'Include Square',
-            'window_count' => 'Window Count',
+            'is_education' => 'Предназначен для обр. деят.',
+            'branch' => 'Название отдела',
+            'include_square' => 'Учитывать при подсчете общей площади',
+            'window_count' => 'Количество оконных проемов',
             'auditorium_type' => 'Auditorium Type',
         ];
     }

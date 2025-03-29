@@ -63,9 +63,9 @@ class Company extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'company_type' => 'Company Type',
-            'name' => 'Name',
-            'short_name' => 'Short Name',
-            'is_contractor' => 'Is Contractor',
+            'name' => 'Название организации',
+            'short_name' => 'Краткое название организации',
+            'is_contractor' => 'Является контрагентом',
             'inn' => 'Inn',
             'category_smsp' => 'Category Smsp',
             'comment' => 'Comment',

@@ -55,10 +55,10 @@ class DocumentInWork extends DocumentIn implements FileInterface
     {
         return array_merge(parent::attributeLabels(), [
             'fullNumber' => '№ п/п',
-            'localDate' => 'Дата<br>документа',
-            'realDate' => 'Дата входящего<br>документа',
-            'realNumber' => 'Рег. номер<br>входящего док.',
-            'companyName' => 'Наименование<br>корреспондента',
+            'localDate' => 'Дата документа',
+            'realDate' => 'Дата входящего документа',
+            'realNumber' => 'Рег. номер входящего док.',
+            'companyName' => 'Наименование корреспондента',
             'documentTheme' => 'Тема документа',
             'sendMethodName' => 'Способ получения',
             'needAnswer' => 'Ответ',
