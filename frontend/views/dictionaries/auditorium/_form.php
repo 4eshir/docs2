@@ -39,7 +39,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'branch')->dropDownList(Yii::$app->branches->getList()); ?>
     <?= $form->field($model, 'window_count')->textInput(['type' => 'number', 'style' => 'width: 40%']) ?>
     <?= $form->field($model, 'include_square')->checkbox() ?>
-    <?= $form->field($model, 'filesList[]')->fileInput(['multiple' => true]) ?>
+    <?= $form->field($model, 'filesList[]')->fileInput(['multiple' => true])->label('Файлы') ?>
 
     <?php if (strlen($otherFiles) > 10): ?>
         <?= $otherFiles; ?>

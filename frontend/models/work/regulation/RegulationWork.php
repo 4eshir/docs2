@@ -60,6 +60,7 @@ class RegulationWork extends Regulation
     public function rules()
     {
         return array_merge(parent::rules(), [
+            [['date' , 'name'], 'required'],
             [['scanFile'], 'file', 'skipOnEmpty' => true,
                 'extensions' => 'png, jpg, pdf, zip, rar, 7z, tag, txt'],
         ]);
@@ -73,10 +74,10 @@ class RegulationWork extends Regulation
             'short_name' => 'Короткое наименование',
             'orderName' => 'Приказ',
             'state' => 'Состояние',
-            'ped_council_number' => '№ пед.<br>совета',
-            'ped_council_date' => 'Дата пед.<br>совета',
-            'par_council_number' => '№ совета<br>род.',
-            'par_council_date' => 'Дата совета<br>род.',
+            'ped_council_number' => '№ пед.совета',
+            'ped_council_date' => 'Дата пед.совета',
+            'par_council_number' => '№ совета род.',
+            'par_council_date' => 'Дата совета род.',
         ]);
     }
 

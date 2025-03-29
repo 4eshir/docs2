@@ -64,9 +64,9 @@ class People extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'firstname' => 'Firstname',
-            'surname' => 'surname',
-            'patronymic' => 'Patronymic',
+            'firstname' => 'Имя',
+            'surname' => 'Фамилия',
+            'patronymic' => 'Отчество',
             'company_id' => 'Company ID',
             'position_id' => 'Position ID',
             'short' => 'Short',

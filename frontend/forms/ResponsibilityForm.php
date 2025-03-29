@@ -30,6 +30,7 @@ class ResponsibilityForm extends Model
     public function rules()
     {
         return [
+            [['orderId'] , 'required'],
             [['responsibilityType', 'branch', 'auditoriumId', 'quant', 'peopleStampId', 'regulationId', 'orderId'], 'integer'],
             [['auditoriumId'], 'exist', 'skipOnError' => true, 'targetClass' => AuditoriumWork::class, 'targetAttribute' => ['auditoriumId' => 'id']],
             [['peopleStampId'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['peopleStampId' => 'id']],
@@ -37,6 +38,17 @@ class ResponsibilityForm extends Model
             [['orderId'], 'exist', 'skipOnError' => true, 'targetClass' => OrderMainWork::class, 'targetAttribute' => ['orderId' => 'id']],
             [['startDate', 'endDate', 'filesStr'], 'safe'],
             [['filesList'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10]
+        ];
+    }
+    public function attributeLabels(){
+        return [
+            'responsibilityType' => 'Вид ответственности',
+            'branch' => 'Отдел',
+            'auditoriumId' => 'Помещение',
+            'quant' => 'Квант',
+            'peopleStampId' => 'Работник',
+            'orderId' => 'Приказ',
+            'regulationId' => 'Положение/инструкция'
         ];
     }
 

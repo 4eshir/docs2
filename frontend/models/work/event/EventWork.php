@@ -79,6 +79,7 @@ class EventWork extends Event
     public function rules()
     {
         return array_merge(parent::rules(), [
+                [['name', 'start_date', 'finish_date', 'address'], 'required'],
                 [['scopes', 'branches'], 'safe'],
                 ['child_rst_participants_count', 'compare', 'compareAttribute' => 'child_participants_count', 'operator' => '<=', 'message' => 'Количество детей от РШТ не должно превышать общего количества детей'],
             ]
@@ -88,20 +89,20 @@ class EventWork extends Event
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
-            'name' => 'Название<br>мероприятия',
-            'datePeriod' => 'Период<br>проведения',
-            'eventType' => 'Тип<br>мероприятия',
-            'scopesSplitter' => 'Тематическая<br>направленность',
-            'responsibleString' => 'Ответственный(-ые)<br>работник(-и)',
+            'name' => 'Название мероприятия',
+            'datePeriod' => 'Период проведения',
+            'eventType' => 'Тип мероприятия',
+            'scopesSplitter' => 'Тематическая направленность',
+            'responsibleString' => 'Ответственный(-ые) работник(-и)',
             'eventBranches' => 'Мероприятие проводит',
             'regulationRaw' => 'Положение',
-            'address' => 'Адрес<br>проведения',
-            'eventLevel' => 'Уровень<br>мероприятия',
-            'participantCount' => 'Кол-во<br>участников',
-            'isFederal' => 'Входит<br>в ФП',
+            'address' => 'Адрес проведения',
+            'eventLevel' => 'Уровень мероприятия',
+            'participantCount' => 'Кол-во участников',
+            'isFederal' => 'Входит в ФП',
             'orderNameRaw' => 'Приказ',
-            'eventWay' => 'Формат<br>проведения',
-            'eventLevelAndType' => 'Уровень и Тип<br>мероприятия',
+            'eventWay' => 'Формат проведения',
+            'eventLevelAndType' => 'Уровень и Тип мероприятия',
             'childParticipantsCount' => 'Кол-во детей',
             'childRSTParticipantsCount' => 'Кол-во детей из РШТ',
             'teacherParticipantsCount' => 'Кол-во педагогов',

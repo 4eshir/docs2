@@ -76,29 +76,29 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['attribute' => 'name'],
-            ['attribute' => 'companyString'],
-            ['attribute' => 'start_date'],
-            ['attribute' => 'finish_date'],
-            ['attribute' => 'city'],
-            ['attribute' => 'eventWayString', 'value' => function(ForeignEventWork $model){
+            ['attribute' => 'companyString', 'label' => 'Организатор'],
+            ['attribute' => 'start_date', 'label' => 'Дата начала'],
+            ['attribute' => 'finish_date', 'label' => 'Дата окончания'],
+            ['attribute' => 'city', 'label' => 'Город'],
+            ['attribute' => 'eventWayString', 'label' => 'Формат проведения', 'value' => function(ForeignEventWork $model){
                 return Yii::$app->eventWay->get($model->format);
             }],
-            ['attribute' => 'eventLevelString', 'value' => function(ForeignEventWork $model){
+            ['attribute' => 'eventLevelString', 'label' => 'Уровень', 'value' => function(ForeignEventWork $model){
                 return Yii::$app->eventLevel->get($model->level);
             }],
 
-            ['attribute' => 'teachers', 'value' => function(ForeignEventWork $model){
+            ['attribute' => 'teachers', 'label' => 'Педагоги','value' => function(ForeignEventWork $model){
                 return $model->getTeachers(ForeignEventWork::VIEW_TYPE);
             }],
 
             ['attribute' => 'participantCount', 'format' => 'raw', 'label' => 'Кол-во участников', 'encodeLabel' => false],
-            ['attribute' => 'winners', 'value' => function(ForeignEventWork $model){
+            ['attribute' => 'winners', 'label' => 'Победители', 'value' => function(ForeignEventWork $model){
                 return $model->getWinners();
             }],
-            ['attribute' => 'prizes', 'value' => function(ForeignEventWork $model){
+            ['attribute' => 'prizes', 'label' => 'Призёры', 'value' => function(ForeignEventWork $model){
                 return $model->getPrizes();
             }],
-            ['attribute' => 'businessTrips', 'value' => function(ForeignEventWork $model){
+            ['attribute' => 'businessTrips', 'label' => 'Командировка', 'value' => function(ForeignEventWork $model){
                 return $model->isTrip();
             }],
 

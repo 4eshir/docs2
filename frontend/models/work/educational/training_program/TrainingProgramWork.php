@@ -61,6 +61,7 @@ class TrainingProgramWork extends TrainingProgram
     public function rules()
     {
         return array_merge(parent::rules(), [
+                [['name', 'capacity', 'hour_capacity'], 'required'],
                 [['branches'], 'safe'],
                 [['mainFile'], 'file', 'skipOnEmpty' => true,
                     'extensions' => 'jpg, png, pdf, doc, docx, zip, rar, 7z, tag'],

@@ -22,13 +22,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
 
     $gridColumns = [
-        ['attribute' => 'responsibilityTypeStrEx'],
-        ['attribute' => 'branchStrEx'],
-        ['attribute' => 'auditoriumStrEx'],
+        ['attribute' => 'responsibilityTypeStrEx', 'label' => 'Вид ответственности'],
+        ['attribute' => 'branchStrEx', 'label' => 'Отдел'],
+        ['attribute' => 'auditoriumStrEx' ,'label' => 'Помещение'],
         ['attribute' => 'quantEx', 'label' => 'Квант'],
-        ['attribute' => 'peopleStrEx'],
+        ['attribute' => 'peopleStrEx', 'label' => 'Работник'],
         ['attribute' => 'orderStrEx', 'label' => 'Приказ'],
-        ['attribute' => 'regulationStrEx'],
+        ['attribute' => 'regulationStrEx', 'label' => 'Положение/инструкция'],
 
     ];
     echo '<b>Скачать файл </b>';
@@ -51,13 +51,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'formatter' => ['class' => 'yii\i18n\Formatter', 'nullDisplay' => ''],
         'columns' => [
 
-            ['attribute' => 'responsibilityTypeStr', 'format' => 'raw'],
-            ['attribute' => 'branchStr', 'format' => 'raw'],
-            ['attribute' => 'auditoriumStr', 'format' => 'raw'],
+            ['attribute' => 'responsibilityTypeStr', 'format' => 'raw', 'label' => 'Вид ответственности'],
+            ['attribute' => 'branchStr', 'format' => 'raw', 'label' => 'Отдел'],
+            ['attribute' => 'auditoriumStr', 'format' => 'raw', 'label' => 'Помещение'],
             ['attribute' => 'quant', 'format' => 'raw', 'label' => 'Квант'],
-            ['attribute' => 'peopleStr', 'format' => 'raw'],
+            ['attribute' => 'peopleStr', 'format' => 'raw', 'label' => 'Работник'],
             ['attribute' => 'orderStr', 'format' => 'raw', 'label' => 'Приказ'],
-            ['attribute' => 'regulationStr', 'format' => 'raw'],
+            ['attribute' => 'regulationStr', 'format' => 'raw', 'label' => 'Положение/инструкция'],
 
 
             ['class' => 'yii\grid\ActionColumn'],

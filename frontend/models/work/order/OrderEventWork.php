@@ -16,6 +16,18 @@ class OrderEventWork extends DocumentOrderWork
     public $actFiles;
     public $scanFile;
     public $docFiles;
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'fullNumber' => '№ п/п',
+            'orderDate' => 'Дата приказа<br>',
+            'orderName' => 'Название приказа',
+            'bringName' => 'Проект вносит',
+            'executorName' => 'Исполнитель',
+            'state' => 'Статус',
+            'archive' => 'Архивный приказ',
+        ]);
+    }
     public static function fill(
          $order_copy_id, $order_number, $order_postfix,
          $order_date, $order_name, $signed_id,

@@ -9,17 +9,6 @@ use yii\console\Controller;
 
 class RegulationCopyController extends Controller
 {
-    private FileTransferHelper $fileTransferHelper;
-    public function __construct(
-        $id,
-        $module,
-        FileTransferHelper $fileTransferHelper,
-        $config = []
-    )
-    {
-        $this->fileTransferHelper = $fileTransferHelper;
-        parent::__construct($id, $module, $config);
-    }
     public function actionCopyRegulation(){
         $query = Yii::$app->old_db->createCommand("SELECT * FROM regulation");
         $command = Yii::$app->db->createCommand();
@@ -36,15 +25,6 @@ class RegulationCopyController extends Controller
                     'par_council_date' => $record['par_council_date'],
                     'state' => $record['state'],
                     'regulation_type' => $record['regulation_type_id'],
-                ]
-            );
-            $this->fileTransferHelper->createFiles(
-                [
-                    'scan' => $record['scan'],
-                    'doc' => NULL,
-                    'app' => NULL,
-                    'table' => RegulationWork::tableName(),
-                    'row' => $record['id'],
                 ]
             );
             $command->execute();

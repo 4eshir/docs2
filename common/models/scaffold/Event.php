@@ -78,14 +78,14 @@ class Event extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
-            'start_date' => 'Start Date',
-            'finish_date' => 'Finish Date',
+            'name' => 'Название мероприятия',
+            'start_date' => 'Дата начала мероприятия',
+            'finish_date' => 'Дата окончания мероприятия',
             'event_type' => 'Event Type',
             'event_form' => 'Event Form',
             'event_level' => 'Event Level',
             'event_way' => 'Event Way',
-            'address' => 'Address',
+            'address' => 'Адрес проведения',
             'is_federal' => 'Is Federal',
             'responsible1_id' => 'Responsible1 ID',
             'responsible2_id' => 'Responsible2 ID',

@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ['attribute' => 'company_type', 'label' => 'Тип организации', 'value' => function(CompanyWork $model){
                 return Yii::$app->companyType->get($model->company_type);
             }],
-            'contractorString',
+            ['attribute' => 'contractorString', 'label' => 'Является контрагентом'],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

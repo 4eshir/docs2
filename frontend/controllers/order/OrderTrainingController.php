@@ -303,7 +303,7 @@ class OrderTrainingController extends DocumentController
                 'dataProvider' => $dataProvider,
                 'model' => $this->orderTrainingRepository->get($modelId),
                 'nomenclature' => $nomenclature,
-                'transferGroups' => $this->trainingGroupRepository->getById($groupIds),
+                'transferGroups' => $this->trainingGroupRepository->getQueryById($groupIds)->all(),
                 'groupCheckOption' => $groupCheckOption,
                 'groupParticipantOption' => $groupParticipantOption,
             ]),
