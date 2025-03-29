@@ -13,6 +13,11 @@ class ForeignEventRepository
         return ForeignEventWork::find()->where(['id' => $id])->one();
     }
 
+    public function getAll()
+    {
+        return ForeignEventWork::find()->all();
+    }
+
     public function getByIds(array $ids)
     {
         return ForeignEventWork::find()->where(['IN', 'id', $ids])->all();

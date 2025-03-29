@@ -20,6 +20,14 @@ class ErrorsRepository
             ->all();
     }
 
+    public function getErrorsByTableRows(string $tableName, array $rowIds)
+    {
+        return ErrorsWork::find()
+            ->where(['table_name' => $tableName])
+            ->andWhere(['IN', 'table_row_id', $rowIds])
+            ->all();
+    }
+
     public function getErrorsByTableRowError(string $tableName, int $rowId, string $error)
     {
         return ErrorsWork::find()

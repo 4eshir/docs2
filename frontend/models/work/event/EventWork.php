@@ -29,6 +29,7 @@ use yii\helpers\Url;
 /** @property OrderMainWork $orderWork */
 /** @property UserWork $creatorWork */
 /** @property UserWork $lastEditorWork */
+/** @property EventBranchWork[] $eventBranchWorks */
 
 class EventWork extends Event
 {
@@ -470,7 +471,7 @@ class EventWork extends Event
         return $this->hasMany(EventScopeWork::class, ['event_id' => 'id']);
     }
 
-    public function getBranchesWork()
+    public function getEventBranchWorks()
     {
         return $this->hasMany(EventBranchWork::class, ['event_id' => 'id']);
     }

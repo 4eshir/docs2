@@ -339,7 +339,7 @@ class TrainingGroupController extends DocumentController
                 $this->service->attachLessons($formSchedule);
                 $formSchedule->releaseEvents();
 
-                $formSchedule->trainingGroup->checkModel(ErrorAssociationHelper::getTrainingGroupErrorsList(), TrainingGroupWork::tableName(), $formSchedule->trainingGroup->group->id);
+                $formSchedule->trainingGroup->checkModel(ErrorAssociationHelper::getTrainingGroupErrorsList(), TrainingGroupWork::tableName(), $formSchedule->trainingGroup->id);
 
                 return $this->redirect(['view', 'id' => $formSchedule->id]);
             }

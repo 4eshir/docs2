@@ -43,6 +43,11 @@ class ActParticipantRepository
         return $query->count();
     }
 
+    public function getAll()
+    {
+        return ActParticipantWork::find()->all();
+    }
+
     public function getByForeignEventIds(array $foreignEventIds, array $types = [ActParticipantWork::TYPE_TEAM, ActParticipantWork::TYPE_SOLO])
     {
         $query = ActParticipantWork::find()
@@ -57,6 +62,15 @@ class ActParticipantRepository
         $squads = ArrayHelper::getColumn($this->squadParticipantRepository->getAllByParticipantId($participantId), 'act_participant_id');
         $query = ActParticipantWork::find()->where(['IN', 'id', $squads]);
         LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка актов участия по заданному участнику деятельности', $query->createCommand()->getRawSql());
+        return $query->all();
+    }
+
+    public function getActsByBranches(array $branches)
+    {
+        $query = ActParticipantWork::find()
+            ->joinWith(['actParticipantBranchWork actParticipantBranchWork'])
+            ->where(['IN', 'actParticipantBranchWork.branch', $branches]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка актов участия по отделам', $query->createCommand()->getRawSql());
         return $query->all();
     }
 

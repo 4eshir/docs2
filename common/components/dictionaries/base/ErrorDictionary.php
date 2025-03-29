@@ -72,6 +72,39 @@ class ErrorDictionary extends BaseDictionary
     const JOURNAL_026 = 44;
     const JOURNAL_027 = 45;
 
+    const MATERIAL_ERRORS = [
+        self::MATERIAL_001, self::MATERIAL_002, self::MATERIAL_003,
+        self::MATERIAL_004, self::MATERIAL_005, self::MATERIAL_006,
+        self::MATERIAL_007, self::MATERIAL_008, self::MATERIAL_009,
+        self::MATERIAL_010, self::MATERIAL_011,
+    ];
+
+    const DOCUMENT_ERRORS = [
+        self::DOCUMENT_001, self::DOCUMENT_002, self::DOCUMENT_003,
+        self::DOCUMENT_004, self::DOCUMENT_005, self::DOCUMENT_006,
+        self::DOCUMENT_007,
+    ];
+
+    const ACHIEVE_ERRORS = [
+        self::ACHIEVE_001, self::ACHIEVE_002, self::ACHIEVE_003,
+        self::ACHIEVE_004, self::ACHIEVE_005, self::ACHIEVE_006,
+        self::ACHIEVE_007, self::ACHIEVE_008, self::ACHIEVE_009,
+        self::ACHIEVE_010, self::ACHIEVE_011, self::ACHIEVE_012,
+        self::ACHIEVE_013,
+    ];
+
+    const JOURNAL_ERRORS = [
+        self::JOURNAL_001, self::JOURNAL_002, self::JOURNAL_003,
+        self::JOURNAL_004, self::JOURNAL_005, self::JOURNAL_006,
+        self::JOURNAL_007, self::JOURNAL_008, self::JOURNAL_009,
+        self::JOURNAL_010, self::JOURNAL_011, self::JOURNAL_012,
+        self::JOURNAL_013, self::JOURNAL_014, self::JOURNAL_015,
+        self::JOURNAL_016, self::JOURNAL_017, self::JOURNAL_018,
+        self::JOURNAL_019, self::JOURNAL_020, self::JOURNAL_021,
+        self::JOURNAL_022, self::JOURNAL_023, self::JOURNAL_024,
+        self::JOURNAL_025, self::JOURNAL_026, self::JOURNAL_027,
+    ];
+
     private ErrorMaterialService $materialService;
     private ErrorAchieveService $achieveService;
     private ErrorDocumentService $documentService;

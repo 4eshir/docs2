@@ -33,6 +33,11 @@ class EventRepository
         return EventWork::find()->where(['id' => $id])->one();
     }
 
+    public function getAll()
+    {
+        return EventWork::find()->all();
+    }
+
     public function getBranches($id)
     {
         return EventBranchWork::find()->where(['event_id' => $id])->orderBy(['branch' => SORT_ASC])->all();
@@ -41,6 +46,14 @@ class EventRepository
     public function getScopes($id)
     {
         return EventScopeWork::find()->where(['event_id' => $id])->orderBy(['participation_scope' => SORT_ASC])->all();
+    }
+
+    public function getEventsByBranches(array $branches)
+    {
+        return EventWork::find()
+            ->joinWith(['eventBranchWork eventBranchWork'])
+            ->where(['IN', 'eventBranchWork.branch', $branches])
+            ->all();
     }
 
     public function prepareResetBranches($eventId)

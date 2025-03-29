@@ -2,6 +2,7 @@
 
 namespace common\services\general\errors;
 
+use common\components\access\pbac\PbacLessonAccess;
 use common\components\dictionaries\base\CertificateTypeDictionary;
 use common\components\dictionaries\base\ErrorDictionary;
 use common\helpers\files\FilesHelper;
@@ -15,8 +16,11 @@ use common\repositories\educational\TrainingGroupLessonRepository;
 use common\repositories\educational\TrainingGroupParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
+use common\repositories\educational\VisitRepository;
 use common\repositories\general\ErrorsRepository;
 use common\repositories\order\DocumentOrderRepository;
+use frontend\models\work\educational\journal\VisitLesson;
+use frontend\models\work\educational\journal\VisitWork;
 use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\educational\training_group\TrainingGroupLessonWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
@@ -38,6 +42,7 @@ class ErrorJournalService
     private CertificateRepository $certificateRepository;
     private TrainingProgramRepository $programRepository;
     private GroupProjectThemesRepository $projectRepository;
+    private VisitRepository $visitRepository;
 
     public function __construct(
         ErrorsRepository $errorsRepository,
@@ -49,7 +54,8 @@ class ErrorJournalService
         TrainingGroupParticipantRepository $participantRepository,
         CertificateRepository $certificateRepository,
         TrainingProgramRepository $programRepository,
-        GroupProjectThemesRepository $projectRepository
+        GroupProjectThemesRepository $projectRepository,
+        VisitRepository $visitRepository
     )
     {
         $this->errorsRepository = $errorsRepository;
@@ -62,6 +68,7 @@ class ErrorJournalService
         $this->certificateRepository = $certificateRepository;
         $this->programRepository = $programRepository;
         $this->projectRepository = $projectRepository;
+        $this->visitRepository = $visitRepository;
     }
 
     // Проверяет на отсутствие прикрепленного к группе педагога (хотя бы одного)
@@ -331,12 +338,94 @@ class ErrorJournalService
     // Проверка на отсутствие явок
     public function makeJournal_009($rowId)
     {
+        /** @var VisitWork[] $visits */
+        /** @var TrainingGroupLessonWork[] $lessonsToCheck */
+        $visits = $this->visitRepository->getByTrainingGroup($rowId);
 
+        // Получаем все ID занятий, которые подлежат проверке на ошибки
+        $lessonIdsToCheck = ArrayHelper::getColumn(
+            array_filter(
+                $this->lessonRepository->getLessonsFromGroup($rowId),
+                function (TrainingGroupLessonWork $lesson) {
+                    $currentDate = strtotime("today");
+                    $lowerBound = strtotime("-" . PbacLessonAccess::LESSON_OFFSET_DOWN . " days", $currentDate);
+                    $targetDate = strtotime($lesson->lesson_date);
+                    return $targetDate < $lowerBound;
+                }
+            ),
+            'id'
+        );
+
+        /*
+         * Создаем массив для отслеживания состояния каждого занятия
+         * 0 - для занятия нет ни одной отметки
+         * 1 - есть хотя бы одна отметка
+         */
+        $lessonChecker = array_fill_keys($lessonIdsToCheck, 0);
+
+        foreach ($visits as $visit) {
+            $lessonsFromVisit = VisitLesson::fromString($visit->lessons, $this->lessonRepository);
+            foreach ($lessonsFromVisit as $lesson) {
+                if (in_array($lesson->lessonId, $lessonIdsToCheck) && $lesson->status != VisitWork::NONE) {
+                    $lessonChecker[$lesson->lessonId] = 1;
+                }
+            }
+
+            // Если остался 0 хотя бы у одного занятия
+            if (array_sum($lessonChecker) != count($lessonChecker)) {
+                $this->errorsRepository->save(
+                    ErrorsWork::fill(
+                        ErrorDictionary::JOURNAL_009,
+                        TrainingGroupWork::tableName(),
+                        $rowId
+                    )
+                );
+            }
+        }
     }
 
     public function fixJournal_009($errorId)
     {
+        /** @var ErrorsWork $error */
+        /** @var VisitWork[] $visits */
+        /** @var TrainingGroupLessonWork[] $lessonsToCheck */
+        $error = $this->errorsRepository->get($errorId);
+        $visits = $this->visitRepository->getByTrainingGroup($error->table_row_id);
 
+        // Получаем все ID занятий, которые подлежат проверке на ошибки
+        $lessonIdsToCheck = ArrayHelper::getColumn(
+            array_filter(
+                $this->lessonRepository->getLessonsFromGroup($error->table_row_id),
+                function (TrainingGroupLessonWork $lesson) {
+                    $currentDate = strtotime("today");
+                    $lowerBound = strtotime("-" . PbacLessonAccess::LESSON_OFFSET_DOWN . " days", $currentDate);
+                    $targetDate = strtotime($lesson->lesson_date);
+                    return $targetDate < $lowerBound;
+                }
+            ),
+            'id'
+        );
+
+        /*
+         * Создаем массив для отслеживания состояния каждого занятия
+         * 0 - для занятия нет ни одной отметки
+         * 1 - есть хотя бы одна отметка
+         */
+        $lessonChecker = array_fill_keys($lessonIdsToCheck, 0);
+
+        foreach ($visits as $visit) {
+            $lessonsFromVisit = VisitLesson::fromString($visit->lessons, $this->lessonRepository);
+            foreach ($lessonsFromVisit as $lesson) {
+                if (in_array($lesson->lessonId, $lessonIdsToCheck) && $lesson->status != VisitWork::NONE) {
+                    $lessonChecker[$lesson->lessonId] = 1;
+                }
+            }
+
+            // Если не осталось 0 ни у одного занятия
+            if (array_sum($lessonChecker) == count($lessonChecker)) {
+                $this->errorsRepository->delete($error);
+            }
+        }
     }
 
     // Проверка на отсутствие тематического направления в образовательной программе
@@ -454,7 +543,7 @@ class ErrorJournalService
         /** @var TrainingGroupLessonWork[] $lessons */
         $lessons = $this->lessonRepository->getLessonsFromGroup($rowId);
         foreach ($lessons as $lesson) {
-            if (!$lesson->auditoriumWork->isEducation()) {
+            if ($lesson->auditoriumWork && !$lesson->auditoriumWork->isEducation()) {
                 $this->errorsRepository->save(
                     ErrorsWork::fill(
                         ErrorDictionary::JOURNAL_014,

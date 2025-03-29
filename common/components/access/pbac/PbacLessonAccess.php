@@ -14,6 +14,9 @@ use yii\helpers\ArrayHelper;
 
 class PbacLessonAccess implements PbacComponentInterface
 {
+    const LESSON_OFFSET_DOWN = 5; // кол-во дней, раньше которого запрещено редактирование явок
+    const LESSON_OFFSET_UP = 1; // кол-во дней, позже которых запрещено редактирование явок
+
     private PbacLessonData $data;
     private TrainingGroupLessonRepository $lessonRepository;
 
@@ -38,8 +41,8 @@ class PbacLessonAccess implements PbacComponentInterface
         return ArrayHelper::getColumn(
             array_filter($lessons, function (TrainingGroupLessonWork $lesson) {
                 $currentDate = strtotime("today");
-                $lowerBound = strtotime("-5 days", $currentDate);
-                $upperBound = strtotime("+1 day", $currentDate);
+                $lowerBound = strtotime("-" . self::LESSON_OFFSET_DOWN . " days", $currentDate);
+                $upperBound = strtotime("+" . self::LESSON_OFFSET_UP . " day", $currentDate);
                 $targetDate = strtotime($lesson->lesson_date);
 
                 return $targetDate >= $lowerBound && $targetDate <= $upperBound;

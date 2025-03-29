@@ -20,6 +20,7 @@ trait ErrorTrait
             $errorsTraitRepository = Yii::createObject(ErrorsRepository::class);
         }
 
+        /** @var ErrorsRepository $errorsTraitRepository */
         $this->errorsTraitRepository = $errorsTraitRepository;
     }
 
