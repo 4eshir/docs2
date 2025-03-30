@@ -26,6 +26,7 @@ class GeneralCopyController extends Controller
     private EventTrainingGroupCopyController $eventTrainingGroupCopyController;
     private OrderPeopleCopyController $orderPeopleCopyController;
     private FilesCopyController $filesCopyController;
+    private ExpireCopyController $expireCopyController;
     public function __construct(
         $id,
         $module,
@@ -49,6 +50,7 @@ class GeneralCopyController extends Controller
         EventTrainingGroupCopyController $eventTrainingGroupCopyController,
         OrderPeopleCopyController $orderPeopleCopyController,
         FilesCopyController $filesCopyController,
+        ExpireCopyController $expireCopyController,
         $config = [])
     {
         $this->initCopyController = $initCopyController;
@@ -71,6 +73,7 @@ class GeneralCopyController extends Controller
         $this->eventTrainingGroupCopyController = $eventTrainingGroupCopyController;
         $this->orderPeopleCopyController = $orderPeopleCopyController;
         $this->filesCopyController = $filesCopyController;
+        $this->expireCopyController = $expireCopyController;
         parent::__construct($id, $module, $config);
     }
 
@@ -78,8 +81,9 @@ class GeneralCopyController extends Controller
         $this->initCopyController->actionCopyAll();
         $this->documentInOutCopyController->actionCopyAll();
         $this->regulationCopyController->actionCopyAll();
-        $this->localResponsibilityCopyController->actionCopyAll();
         $this->documentOrderCopyController->actionCopyAll();
+        $this->expireCopyController->actionCopyAll();
+        $this->localResponsibilityCopyController->actionCopyAll();
         $this->orderPeopleCopyController->actionCopyAll();
         $this->foreignEventCopyController->actionCopyAll();
         $this->actCopyController->actionCopyAll();
@@ -92,10 +96,7 @@ class GeneralCopyController extends Controller
         $this->eventTrainingGroupCopyController->actionCopyAll();
         $this->certificateCopyController->actionCopyAll();
         $this->visitCopyController->actionCopyAll();
-
-        $this->participantAchievementCopyController->actionCopyAll();
         $this->logCopyController->actionCopyAll();
-
         $this->filesCopyController->actionCopyAll();
     }
 
@@ -117,8 +118,9 @@ class GeneralCopyController extends Controller
         $this->actCopyController->actionDeleteAll();
         $this->foreignEventCopyController->actionDeleteAll();
         $this->orderPeopleCopyController->actionDeleteAll();
-        $this->documentOrderCopyController->actionDeleteAll();
         $this->localResponsibilityCopyController->actionDeleteAll();
+        $this->expireCopyController->actionDeleteAll();
+        $this->documentOrderCopyController->actionDeleteAll();
         $this->regulationCopyController->actionDeleteAll();
         $this->documentInOutCopyController->actionDeleteAll();
         $this->peopleTablesCopyController->actionDeleteAll();
