@@ -412,19 +412,22 @@ class ExcelCreator
                     ->all(),
                 'order_id'
             ));
-            $orderEnroll[] = array_unique(ArrayHelper::getColumn(DocumentOrderWork::find()->where(['IN', 'id' , $orderEnrollIds])->all(), 'order_number'));
-            $orderDeduct[] = array_unique(ArrayHelper::getColumn(DocumentOrderWork::find()->where(['IN', 'id' , $orderDeductIds])->all(), 'order_number'));
+            $orderEnroll[] = array_unique(ArrayHelper::getColumn(DocumentOrderWork::find()->where(['IN', 'id' , $orderEnrollIds])->all(), 'id'));
+            $orderDeduct[] = array_unique(ArrayHelper::getColumn(DocumentOrderWork::find()->where(['IN', 'id' , $orderDeductIds])->all(), 'id'));
         }
+
         $enroll = '';
         $deduct = '';
+        $orderEnroll = array_unique($orderEnroll);
+        $orderDeduct = array_unique($orderDeduct);
         foreach ($orderEnroll as $orders) {
             foreach ($orders as $order) {
-                $enroll = $enroll . ' , '. $order;
+                $enroll = $enroll . DocumentOrderWork::find()->where(['id' => $order])->one()['order_number'] . '/' .DocumentOrderWork::find()->where(['id' => $order])->one()['order_copy_id'] . ' ';
             }
         }
         foreach ($orderDeduct as $orders) {
             foreach ($orders as $order) {
-                $deduct = $deduct . ' , '. $order;
+                $deduct = $deduct . DocumentOrderWork::find()->where(['id' => $order])->one()['order_number'] . '/' .DocumentOrderWork::find()->where(['id' => $order])->one()['order_copy_id'] . ' ';
             }
         }
         for ($i = 0; $i < $amountLists['common']; $i++){
