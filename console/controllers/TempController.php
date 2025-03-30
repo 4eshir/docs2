@@ -12,6 +12,8 @@ use common\components\logger\search\MethodSearchData;
 use common\components\logger\search\SearchLog;
 use common\components\logger\SearchLogFacade;
 use common\repositories\act_participant\SquadParticipantRepository;
+use common\services\general\errors\ErrorService;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\team\SquadParticipantWork;
 use Yii;
 use yii\console\Controller;
@@ -21,23 +23,7 @@ class TempController extends Controller
 {
     public function actionCheck()
     {
-        $provider = SearchLog::byUserIds(
-            [1, 2]
-        );
-
-        $provider->setMethodSearchData(
-            MethodSearchData::create(
-                ['document-in-controller']
-            )
-        );
-
-        $provider->setCrudSearchData(
-            CrudSearchData::create(
-                'DELETE'
-            )
-        );
-
-        var_dump(ArrayHelper::getColumn(SearchLogFacade::findLogs($provider), 'id'));
+        (Yii::createObject(ErrorService::class))->amnestyErrors(TrainingGroupWork::tableName(), 8);
     }
 
     public function actionReport()

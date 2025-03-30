@@ -54,7 +54,7 @@ class ErrorsRepository
 
     public function save(ErrorsWork $model)
     {
-        if (!$this->getErrorsByTableRowError($model->table_name, $model->table_row_id, $model->error)) {
+        if (!$this->getErrorsByTableRowError($model->table_name, $model->table_row_id, $model->error) || !is_null($model->id)) {
             if (!$model->save()) {
                 throw new DomainException('Ошибка сохранения ошибки данных. Проблемы: '.json_encode($model->getErrors()));
             }

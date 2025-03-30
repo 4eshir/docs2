@@ -119,6 +119,7 @@ class ErrorService
         foreach ($errors as $error) {
             $error->setAmnesty();
             $this->errorsRepository->save($error);
+            var_dump($error->was_amnesty);
         }
     }
 
