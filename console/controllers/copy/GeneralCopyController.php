@@ -78,8 +78,8 @@ class GeneralCopyController extends Controller
         $this->initCopyController->actionCopyAll();
         $this->documentInOutCopyController->actionCopyAll();
         $this->regulationCopyController->actionCopyAll();
-        $this->localResponsibilityCopyController->actionCopyAll();
         $this->documentOrderCopyController->actionCopyAll();
+        $this->localResponsibilityCopyController->actionCopyAll();
         $this->orderPeopleCopyController->actionCopyAll();
         $this->foreignEventCopyController->actionCopyAll();
         $this->actCopyController->actionCopyAll();
@@ -117,8 +117,8 @@ class GeneralCopyController extends Controller
         $this->actCopyController->actionDeleteAll();
         $this->foreignEventCopyController->actionDeleteAll();
         $this->orderPeopleCopyController->actionDeleteAll();
-        $this->documentOrderCopyController->actionDeleteAll();
         $this->localResponsibilityCopyController->actionDeleteAll();
+        $this->documentOrderCopyController->actionDeleteAll();
         $this->regulationCopyController->actionDeleteAll();
         $this->documentInOutCopyController->actionDeleteAll();
         $this->peopleTablesCopyController->actionDeleteAll();
