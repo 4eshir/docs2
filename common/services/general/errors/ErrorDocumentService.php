@@ -45,7 +45,7 @@ class ErrorDocumentService
                 ErrorsWork::fill(
                     ErrorDictionary::DOCUMENT_001,
                     DocumentOrderWork::tableName(),
-                    $rowId
+                    $rowId,
                 )
             );
         }

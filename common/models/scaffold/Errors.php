@@ -11,6 +11,7 @@ namespace common\models\scaffold;
  * @property int|null $table_row_id
  * @property string|null $create_datetime
  * @property int|null $was_amnesty
+ * @property int|null $branch
  */
 class Errors extends \yii\db\ActiveRecord
 {
@@ -30,7 +31,7 @@ class Errors extends \yii\db\ActiveRecord
         return [
             [['error', 'table_name', 'table_row_id', 'create_datetime'], 'default', 'value' => null],
             [['was_amnesty'], 'default', 'value' => 0],
-            [['error', 'table_row_id', 'was_amnesty'], 'integer'],
+            [['error', 'table_row_id', 'was_amnesty', 'branch'], 'integer'],
             [['create_datetime'], 'safe'],
             [['table_name'], 'string', 'max' => 128],
         ];

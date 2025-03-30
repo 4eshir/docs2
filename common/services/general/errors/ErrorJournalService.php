@@ -75,13 +75,16 @@ class ErrorJournalService
     public function makeJournal_001($rowId)
     {
         /** @var TeacherGroupWork[] $teachers */
+        /** @var TrainingGroupWork $group */
+        $group = $this->groupRepository->get($rowId);
         $teachers = $this->teacherGroupRepository->getAllTeachersFromGroup($rowId);
         if (count($teachers) == 0) {
             $this->errorsRepository->save(
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_001,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -126,7 +129,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_002,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -165,7 +169,8 @@ class ErrorJournalService
                     ErrorsWork::fill(
                         ErrorDictionary::JOURNAL_003,
                         TrainingGroupWork::tableName(),
-                        $rowId
+                        $rowId,
+                        $group->branch
                     )
                 );
             }
@@ -195,7 +200,8 @@ class ErrorJournalService
                     ErrorsWork::fill(
                         ErrorDictionary::JOURNAL_004,
                         TrainingGroupWork::tableName(),
-                        $rowId
+                        $rowId,
+                        $group->branch
                     )
                 );
             }
@@ -225,7 +231,8 @@ class ErrorJournalService
                     ErrorsWork::fill(
                         ErrorDictionary::JOURNAL_005,
                         TrainingGroupWork::tableName(),
-                        $rowId
+                        $rowId,
+                        $group->branch
                     )
                 );
             }
@@ -254,7 +261,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_006,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -283,7 +291,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_007,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -312,7 +321,8 @@ class ErrorJournalService
                     ErrorsWork::fill(
                         ErrorDictionary::JOURNAL_008,
                         TrainingGroupWork::tableName(),
-                        $rowId
+                        $rowId,
+                        $participant->trainingGroupWork->branch
                     )
                 );
                 break;
@@ -377,7 +387,8 @@ class ErrorJournalService
                     ErrorsWork::fill(
                         ErrorDictionary::JOURNAL_009,
                         TrainingGroupWork::tableName(),
-                        $rowId
+                        $rowId,
+                        $visits[0]->trainingGroupParticipantWork->trainingGroupWork->branch
                     )
                 );
             }
@@ -438,7 +449,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_010,
                     TrainingProgramWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
         }
@@ -465,7 +477,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_011,
                     TrainingProgramWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
         }
@@ -493,7 +506,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_012,
                     TrainingProgramWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
         }
@@ -514,13 +528,16 @@ class ErrorJournalService
     // Проверка на отсутствие авторов программы
     public function makeJournal_013($rowId)
     {
+        /** @var TrainingProgramWork $program */
+        $program = $this->programRepository->get($rowId);
         $authors = $this->programRepository->getAuthors($rowId);
         if (count($authors) == 0) {
             $this->errorsRepository->save(
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_013,
                     TrainingProgramWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
         }
@@ -548,7 +565,8 @@ class ErrorJournalService
                     ErrorsWork::fill(
                         ErrorDictionary::JOURNAL_014,
                         TrainingGroupWork::tableName(),
-                        $rowId
+                        $rowId,
+                        $lesson->trainingGroupWork->branch
                     )
                 );
                 break;
@@ -593,7 +611,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_016,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -626,7 +645,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_017,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -652,13 +672,16 @@ class ErrorJournalService
     public function makeJournal_018($rowId)
     {
         /** @var BranchProgramWork[] $program */
+        /** @var TrainingProgramWork $program */
+        $program = $this->programRepository->get($rowId);
         $branches = $this->programRepository->getBranches($rowId);
         if (count($branches) == 0) {
             $this->errorsRepository->save(
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_018,
                     TrainingProgramWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
         }
@@ -685,7 +708,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_019,
                     TrainingProgramWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
         }
@@ -731,7 +755,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_020,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -779,7 +804,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_021,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -821,7 +847,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_022,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -860,7 +887,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_023,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -894,7 +922,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_024,
                     TrainingGroupWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $group->branch
                 )
             );
         }
@@ -931,7 +960,8 @@ class ErrorJournalService
                         ErrorsWork::fill(
                             ErrorDictionary::JOURNAL_025,
                             TrainingGroupWork::tableName(),
-                            $rowId
+                            $rowId,
+                            $group->branch
                         )
                     );
                     break;
@@ -967,7 +997,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_026,
                     TrainingProgramWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
         }
@@ -994,7 +1025,8 @@ class ErrorJournalService
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_027,
                     TrainingProgramWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
         }

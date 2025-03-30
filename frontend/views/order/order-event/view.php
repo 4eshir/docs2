@@ -1,5 +1,7 @@
 <?php
 
+use common\helpers\html\HtmlBuilder;
+use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderEventWork;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -28,6 +30,8 @@ $this->params['breadcrumbs'][] = ['label' => 'Приказы о мероприя
             ],
         ]) ?>
     </p>
+
+    <?= HtmlBuilder::createErrorsBlock(DocumentOrderWork::tableName(), $model->id) ?>
 
     <?=
     DetailView::widget([

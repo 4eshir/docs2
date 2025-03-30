@@ -24,6 +24,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 /** @property AuthorProgramWork $authorsProgramWork */
+/** @property BranchProgramWork[] $branchProgramWork */
 
 class TrainingProgramWork extends TrainingProgram
 {
@@ -418,7 +419,7 @@ class TrainingProgramWork extends TrainingProgram
         return $this->hasMany(AuthorProgramWork::class, ['training_program_id' => 'id']);
     }
 
-    public function getBranchWork()
+    public function getBranchProgramWork()
     {
         return $this->hasMany(BranchProgramWork::class, ['training_program_id' => 'id']);
     }

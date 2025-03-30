@@ -10,7 +10,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 /* @var $this yii\web\View */
-/* @var $model \frontend\models\work\order\OrderTrainingWork */
+/* @var $model OrderTrainingWork */
 /* @var $modelResponsiblePeople */
 /* @var $groups */
 /* @var $participants */
@@ -42,6 +42,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
+
+    <?= HtmlBuilder::createErrorsBlock(DocumentOrderWork::tableName(), $model->id) ?>
+
     <?=
     DetailView::widget([
         'model' => $model,

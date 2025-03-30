@@ -17,15 +17,21 @@ class ErrorsRepository
         return ErrorsWork::find()
             ->where(['table_name' => $tableName])
             ->andWhere(['table_row_id' => $rowId])
+            ->andWhere(['was_amnesty' => 0])
             ->all();
     }
 
-    public function getErrorsByTableRows(string $tableName, array $rowIds)
+    public function getErrorsByTableRowsBranch(string $tableName, array $rowIds, int $branch = null)
     {
-        return ErrorsWork::find()
+        $query = ErrorsWork::find()
             ->where(['table_name' => $tableName])
             ->andWhere(['IN', 'table_row_id', $rowIds])
-            ->all();
+            ->andWhere(['was_amnesty' => 0]);
+        if ($branch) {
+            $query = $query->andWhere(['branch' => $branch]);
+        }
+
+        return $query->all();
     }
 
     public function getErrorsByTableRowError(string $tableName, int $rowId, string $error)
@@ -34,6 +40,7 @@ class ErrorsRepository
             ->where(['table_name' => $tableName])
             ->andWhere(['table_row_id' => $rowId])
             ->andWhere(['error' => $error])
+            ->andWhere(['was_amnesty' => 0])
             ->one();
     }
 

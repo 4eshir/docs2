@@ -1,5 +1,6 @@
 <?php
 
+use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use frontend\models\work\educational\training_program\TrainingProgramWork;
 use yii\helpers\Html;
@@ -31,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-
+    <?= HtmlBuilder::createErrorsBlock(TrainingProgramWork::tableName(), $model->id) ?>
     <div class="card">
         <div class="card-block-1">
             <div class="card-set">

@@ -1,5 +1,6 @@
 <?php
 
+use common\helpers\html\HtmlBuilder;
 use frontend\models\work\event\EventWork;
 use yii\helpers\Html;
 
@@ -23,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-
+    <?= HtmlBuilder::createErrorsBlock(EventWork::tableName(), $model->id) ?>
     <div class="card">
         <div class="card-block-1">
             <div class="card-set">

@@ -2,6 +2,7 @@
 
 use common\helpers\html\HtmlBuilder;
 use frontend\forms\training_group\TrainingGroupCombinedForm;
+use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\services\educational\JournalService;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -18,7 +19,6 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
 ?>
 
 <div class="training-group-view">
-
     <div class="substrate">
         <div class="flexx">
             <h1>
@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
             </div>
         </div>
     </div>
-
+    <?= HtmlBuilder::createErrorsBlock(TrainingGroupWork::tableName(), $model->id) ?>
     <div class="card">
         <div class="card-block-1">
             <div class="card-set">

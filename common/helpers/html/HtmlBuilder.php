@@ -727,4 +727,27 @@ class HtmlBuilder
                 '.$errorsString.'
             </div>' : '';
     }
+
+    /**
+     *
+     *
+     * @param ErrorsWork[] $errors
+     * @return string
+     */
+    public static function createErrorsTable(array $errors) : string
+    {
+        $table = '<table><tr><th>Код проблемы</th><th>Описание проблемы</th><th>Код проблемы</th><th>Место возникновения</th><th>Отдел</th></tr>';
+        foreach ($errors as $error) {
+            /** @var Error $errorEntity */
+            $errorEntity = Yii::$app->errors->get($error->error);
+            $table .= '<tr>';
+            $table .= '<td>' . $errorEntity->code . '</td>';
+            $table .= '<td>' . $errorEntity->description . '</td>';
+            $table .= '<td>' . $error->getEntityName() . '</td>';
+            $table .= '<td>' . Yii::$app->branches->get($error->branch) . '</td>';
+            $table .= '</tr>';
+        }
+
+        return $table;
+    }
 }

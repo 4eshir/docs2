@@ -102,7 +102,7 @@ class ErrorAchieveService
     // Проверка на отсутствие участников мероприятия
     public function makeAchieve_003($rowId)
     {
-        /** @var ForeignEventWork $event */
+        /** @var ActParticipantWork[] $acts */
         $acts = $this->actParticipantRepository->getByForeignEventIds([$rowId]);
         if (count($acts) == 0) {
             $this->errorsRepository->save(
@@ -140,7 +140,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_004,
                     ActParticipantWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $branchesEvent[0]
                 )
             );
         }
@@ -253,7 +254,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_008,
                     EventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $event->eventBranchWorks[0] ? $event->eventBranchWorks[0]->branch : null
                 )
             );
         }
@@ -307,7 +309,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_008,
                     EventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $event->eventBranchWorks[0] ? $event->eventBranchWorks[0]->branch : null
                 )
             );
         }
@@ -334,7 +337,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_011,
                     EventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $event->eventBranchWorks[0] ? $event->eventBranchWorks[0]->branch : null
                 )
             );
         }
@@ -361,7 +365,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_008,
                     EventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    $event->eventBranchWorks[0] ? $event->eventBranchWorks[0]->branch : null
                 )
             );
         }
