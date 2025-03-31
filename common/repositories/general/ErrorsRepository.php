@@ -33,12 +33,13 @@ class ErrorsRepository
             ->all();
     }
 
-    public function getErrorsByTableRowsBranch(string $tableName, array $rowIds, int $branch = null)
+    public function getErrorsByTableRowsBranchTypes(string $tableName, array $rowIds, int $branch = null, array $types = [Error::TYPE_BASE, Error::TYPE_CRITICAL])
     {
         $query = ErrorsWork::find()
             ->where(['table_name' => $tableName])
             ->andWhere(['IN', 'table_row_id', $rowIds])
-            ->andWhere(['was_amnesty' => 0]);
+            ->andWhere(['was_amnesty' => 0])
+            ->andWhere(['IN', 'state', $types]);
         if ($branch) {
             $query = $query->andWhere(['branch' => $branch]);
         }

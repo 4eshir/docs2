@@ -3,6 +3,7 @@
 
 namespace common\services\general\errors;
 
+use common\models\Error;
 use common\models\work\ErrorsWork;
 use common\models\work\UserWork;
 use common\repositories\act_participant\ActParticipantRepository;
@@ -63,7 +64,7 @@ class ErrorService
      * @param int $userId
      * @return ErrorsWork[]
      */
-    public function getErrorsByUser(int $userId) : array
+    public function getErrorsByUser(int $userId, array $types = [Error::TYPE_BASE, Error::TYPE_CRITICAL]) : array
     {
         /** @var UserWork $user */
         $user = $this->userRepository->get($userId);
@@ -93,8 +94,8 @@ class ErrorService
             }
 
             // Ищем только те ошибки, которые связаны с найденными мероприятиями
-            $errorsEvent = $this->errorsRepository->getErrorsByTableRowsBranch(EventWork::tableName(), $eventIds);
-            $errorsForeignEvent = $this->errorsRepository->getErrorsByTableRowsBranch(ForeignEventWork::tableName(), $foreignEventIds);
+            $errorsEvent = $this->errorsRepository->getErrorsByTableRowsBranchTypes(EventWork::tableName(), $eventIds, null, [Error::TYPE_CRITICAL]);
+            $errorsForeignEvent = $this->errorsRepository->getErrorsByTableRowsBranchTypes(ForeignEventWork::tableName(), $foreignEventIds, null, [Error::TYPE_CRITICAL]);
         }
 
         // Поиск ошибок по журналу (учебной деятельности)
@@ -115,8 +116,8 @@ class ErrorService
                 $programIds = [];
             }
 
-            $errorsJournal = $this->errorsRepository->getErrorsByTableRowsBranch(TrainingGroupWork::tableName(), $groupIds);
-            $errorsProgram = $this->errorsRepository->getErrorsByTableRowsBranch(TrainingProgramWork::tableName(), $programIds);
+            $errorsJournal = $this->errorsRepository->getErrorsByTableRowsBranchTypes(TrainingGroupWork::tableName(), $groupIds, null, [Error::TYPE_CRITICAL]);
+            $errorsProgram = $this->errorsRepository->getErrorsByTableRowsBranchTypes(TrainingProgramWork::tableName(), $programIds, null, [Error::TYPE_CRITICAL]);
         }
 
         // Поиск ошибок по документообороту
@@ -130,7 +131,7 @@ class ErrorService
                 $orderIds = $this->orderService->getOrdersByBranch($user->akaWork->branch);
             }
 
-            $errorsOrder = $this->errorsRepository->getErrorsByTableRowsBranch(DocumentOrderWork::tableName(), $orderIds);
+            $errorsOrder = $this->errorsRepository->getErrorsByTableRowsBranchTypes(DocumentOrderWork::tableName(), $orderIds, null, [Error::TYPE_CRITICAL]);
         }
 
         // Поиск ошибок по мат. ценностям

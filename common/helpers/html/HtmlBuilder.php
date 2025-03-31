@@ -740,12 +740,11 @@ class HtmlBuilder
      */
     public static function createErrorsTable(array $errors) : string
     {
-        $table = '<table><tr><th>Код проблемы</th><th>Описание проблемы</th><th>Место возникновения</th><th>Отдел</th></tr>';
+        $table = '<table class="table table-bordered"><tr><th>Код проблемы</th><th>Описание проблемы</th><th>Место возникновения</th><th>Отдел</th></tr>';
         foreach ($errors as $error) {
             /** @var Error $errorEntity */
             $errorEntity = Yii::$app->errors->get($error->error);
             $table .= '<tr>';
-            $table .= '<td>' . $error->id . '</td>';
             $table .= '<td>' . $errorEntity->code . '</td>';
             $table .= '<td>' . $errorEntity->description . '</td>';
             $table .= '<td>' . $error->getEntityName() . '</td>';
