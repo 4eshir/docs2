@@ -17,6 +17,7 @@ use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\event\ParticipantAchievementWork;
 use frontend\models\work\team\ActParticipantBranchWork;
 use frontend\models\work\team\ActParticipantWork;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 class ErrorAchieveService
@@ -55,7 +56,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_001,
                     ForeignEventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_001)->getErrorState()
                 )
             );
         }
@@ -82,7 +84,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_002,
                     ForeignEventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_002)->getErrorState()
                 )
             );
         }
@@ -109,7 +112,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_003,
                     ForeignEventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_003)->getErrorState()
                 )
             );
         }
@@ -141,6 +145,7 @@ class ErrorAchieveService
                     ErrorDictionary::ACHIEVE_004,
                     ActParticipantWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_004)->getErrorState(),
                     $branchesEvent[0]
                 )
             );
@@ -173,7 +178,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_005,
                     ForeignEventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_005)->getErrorState()
                 )
             );
         }
@@ -200,7 +206,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_006,
                     ForeignEventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_006)->getErrorState()
                 )
             );
         }
@@ -227,7 +234,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_007,
                     ForeignEventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_007)->getErrorState()
                 )
             );
         }
@@ -255,6 +263,7 @@ class ErrorAchieveService
                     ErrorDictionary::ACHIEVE_008,
                     EventWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_008)->getErrorState(),
                     $event->eventBranchWorks[0] ? $event->eventBranchWorks[0]->branch : null
                 )
             );
@@ -282,7 +291,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_009,
                     EventWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_009)->getErrorState()
                 )
             );
         }
@@ -307,9 +317,10 @@ class ErrorAchieveService
         if (is_null($event->order_id)) {
             $this->errorsRepository->save(
                 ErrorsWork::fill(
-                    ErrorDictionary::ACHIEVE_008,
+                    ErrorDictionary::ACHIEVE_010,
                     EventWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_010)->getErrorState(),
                     $event->eventBranchWorks[0] ? $event->eventBranchWorks[0]->branch : null
                 )
             );
@@ -338,6 +349,7 @@ class ErrorAchieveService
                     ErrorDictionary::ACHIEVE_011,
                     EventWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_011)->getErrorState(),
                     $event->eventBranchWorks[0] ? $event->eventBranchWorks[0]->branch : null
                 )
             );
@@ -363,9 +375,10 @@ class ErrorAchieveService
         if (is_null($event->key_words) || strlen($event->key_words) == 0) {
             $this->errorsRepository->save(
                 ErrorsWork::fill(
-                    ErrorDictionary::ACHIEVE_008,
+                    ErrorDictionary::ACHIEVE_012,
                     EventWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_012)->getErrorState(),
                     $event->eventBranchWorks[0] ? $event->eventBranchWorks[0]->branch : null
                 )
             );
@@ -392,7 +405,8 @@ class ErrorAchieveService
                 ErrorsWork::fill(
                     ErrorDictionary::ACHIEVE_013,
                     ActParticipantWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::ACHIEVE_013)->getErrorState()
                 )
             );
         }

@@ -136,4 +136,14 @@ class Error extends BaseObject
     {
         return call_user_func_array($this->changeStateFunction, $args);
     }
+
+    public function getErrorState()
+    {
+        if ($this->_type == self::TYPE_BASE || $this->_type == self::TYPE_CHANGEABLE) {
+            return self::TYPE_BASE;
+        }
+        else {
+            return self::TYPE_CRITICAL;
+        }
+    }
 }

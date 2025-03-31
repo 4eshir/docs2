@@ -235,7 +235,7 @@ class ErrorDictionary extends BaseDictionary
             ),
             self::ACHIEVE_008 => new Error(
                 'УД008', 'В мероприятии не указан формат проведения мероприятия',
-                Error::TYPE_BASE,
+                Error::TYPE_CRITICAL,
                 [$this->achieveService, 'makeAchieve_008'],
                 [$this->achieveService, 'fixAchieve_008'],
             ),
@@ -259,13 +259,13 @@ class ErrorDictionary extends BaseDictionary
             ),
             self::ACHIEVE_012 => new Error(
                 'УД012', 'В мероприятии отсутствуют ключевые слова',
-                Error::TYPE_BASE,
+                Error::TYPE_CRITICAL,
                 [$this->achieveService, 'makeAchieve_012'],
                 [$this->achieveService, 'fixAchieve_012'],
             ),
             self::ACHIEVE_013 => new Error(
                 'УД013', 'У участника(-ов) мероприятия отсутствует отдел учёта достижения',
-                Error::TYPE_BASE,
+                Error::TYPE_CRITICAL,
                 [$this->achieveService, 'makeAchieve_013'],
                 [$this->achieveService, 'fixAchieve_013'],
             ),
@@ -284,7 +284,7 @@ class ErrorDictionary extends BaseDictionary
             ),
             self::DOCUMENT_003 => new Error(
                 'ЭД003', 'В приказе отсутствуют ключевые слова',
-                Error::TYPE_BASE,
+                Error::TYPE_CRITICAL,
                 [$this->documentService, 'makeDocument_003'],
                 [$this->documentService, 'fixDocument_003'],
             ),
@@ -405,7 +405,7 @@ class ErrorDictionary extends BaseDictionary
             ),
             self::JOURNAL_016 => new Error(
                 'ЭЖ016', 'Дата окончания занятий группы не совпадает с датой последнего занятия в расписании',
-                Error::TYPE_BASE,
+                Error::TYPE_CRITICAL,
                 [$this->journalService, 'makeJournal_016'],
                 [$this->journalService, 'fixJournal_016'],
             ),

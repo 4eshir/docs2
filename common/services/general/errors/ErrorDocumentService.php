@@ -12,6 +12,7 @@ use common\repositories\order\DocumentOrderRepository;
 use common\repositories\order\OrderEventGenerateRepository;
 use common\repositories\order\OrderMainRepository;
 use frontend\models\work\order\DocumentOrderWork;
+use Yii;
 
 class ErrorDocumentService
 {
@@ -46,6 +47,7 @@ class ErrorDocumentService
                     ErrorDictionary::DOCUMENT_001,
                     DocumentOrderWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::DOCUMENT_001)->getErrorState()
                 )
             );
         }
@@ -80,7 +82,8 @@ class ErrorDocumentService
                 ErrorsWork::fill(
                     ErrorDictionary::DOCUMENT_003,
                     DocumentOrderWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::DOCUMENT_003)->getErrorState()
                 )
             );
         }
@@ -115,7 +118,8 @@ class ErrorDocumentService
                 ErrorsWork::fill(
                     ErrorDictionary::DOCUMENT_005,
                     DocumentOrderWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::DOCUMENT_005)->getErrorState()
                 )
             );
         }
@@ -140,7 +144,8 @@ class ErrorDocumentService
                 ErrorsWork::fill(
                     ErrorDictionary::DOCUMENT_006,
                     DocumentOrderWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::DOCUMENT_006)->getErrorState()
                 )
             );
         }
@@ -165,7 +170,8 @@ class ErrorDocumentService
                 ErrorsWork::fill(
                     ErrorDictionary::DOCUMENT_007,
                     DocumentOrderWork::tableName(),
-                    $rowId
+                    $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::DOCUMENT_007)->getErrorState()
                 )
             );
         }

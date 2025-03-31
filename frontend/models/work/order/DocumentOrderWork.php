@@ -147,4 +147,19 @@ class DocumentOrderWork extends DocumentOrder
         $this->executor_id = $this->executor->people_id;
         $this->signed_id = $this->signed->people_id;
     }
+
+    public function isMain()
+    {
+        return $this->type == DocumentOrderWork::ORDER_MAIN;
+    }
+
+    public function isTraining()
+    {
+        return $this->type == DocumentOrderWork::ORDER_TRAINING;
+    }
+
+    public function isEvent()
+    {
+        return $this->type == DocumentOrderWork::ORDER_EVENT;
+    }
 }

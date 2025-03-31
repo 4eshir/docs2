@@ -25,6 +25,14 @@ class NomenclatureDictionary extends BaseDictionary
     public const CDNTT_TRANSFER = '11-31';
     public const MOB_QUANT_ADD = '12-01';
     public const MOB_QUANT_DEL = '12-02';
+
+    public const ADMIN_NOMENCLATURES = [self::ADMIN_ORDER];
+    public const COD_NOMENCLATURES = [self::COD_ADD, self::COD_DEL];
+    public const TECHNOPARK_NOMENCLATURES = [self::TECHNOPARK_ADD, self::TECHNOPARK_DEL, self::TECHNOPARK_ADD_BUDGET, self::TECHNOPARK_DEL_BUDGET];
+    public const QUANTORIUM_NOMENCLATURES = [self::QUANTORIUM_ADD, self::QUANTORIUM_DEL, self::QUANTORIUM_ADD_BUDGET, self::QUANTORIUM_DEL_BUDGET];
+    public const CDNTT_NOMENCLATURES = [self::CDNTT_ADD, self::CDNTT_DEL, self::CDNTT_ADD_BUDGET, self::CDNTT_DEL_BUDGET, self::CDNTT_TRANSFER];
+    public const MOB_QUANT_NOMENCLATURES = [self::MOB_QUANT_ADD, self::MOB_QUANT_DEL];
+
     public function __construct()
     {
         parent::__construct();
@@ -72,45 +80,36 @@ class NomenclatureDictionary extends BaseDictionary
             $this->list[self::MOB_QUANT_DEL],
         ];
     }
+
     public static function getBranchByNomenclature($nomenclature)
     {
-        switch ($nomenclature) {
-            case '09-01':
-                return BranchDictionary::TECHNOPARK;
-            case '09-02':
-                return BranchDictionary::TECHNOPARK;
-            case '09-22':
-                return BranchDictionary::TECHNOPARK;
-            case '09-23':
-                return BranchDictionary::TECHNOPARK;
-            case '10-01':
-                return BranchDictionary::QUANTORIUM;
-            case '10-02':
-                return BranchDictionary::QUANTORIUM;
-            case '10-26':
-                return BranchDictionary::QUANTORIUM;
-            case '10-27':
-                return BranchDictionary::QUANTORIUM;
-            case '11-01':
-                return BranchDictionary::CDNTT;
-            case '11-02':
-                return BranchDictionary::CDNTT;
-            case '11-26':
-                return BranchDictionary::CDNTT;
-            case '11-27':
-                return BranchDictionary::CDNTT;
-            case '11-31':
-                return BranchDictionary::CDNTT;
-            case '13-01':
-                return BranchDictionary::COD;
-            case '13-02':
-                return BranchDictionary::COD;
-            case '02-02':
-                return BranchDictionary::ADMINISTRATION;
-            default:
-                return null;
+        if (in_array($nomenclature, self::ADMIN_NOMENCLATURES)) {
+            return BranchDictionary::ADMINISTRATION;
         }
+
+        if (in_array($nomenclature, self::COD_NOMENCLATURES)) {
+            return BranchDictionary::COD;
+        }
+
+        if (in_array($nomenclature, self::TECHNOPARK_NOMENCLATURES)) {
+            return BranchDictionary::TECHNOPARK;
+        }
+
+        if (in_array($nomenclature, self::QUANTORIUM_NOMENCLATURES)) {
+            return BranchDictionary::QUANTORIUM;
+        }
+
+        if (in_array($nomenclature, self::CDNTT_NOMENCLATURES)) {
+            return BranchDictionary::CDNTT;
+        }
+
+        if (in_array($nomenclature, self::MOB_QUANT_NOMENCLATURES)) {
+            return BranchDictionary::MOBILE_QUANTUM;
+        }
+
+        return null;
     }
+
     public function getListByBranch($branch){
         switch ($branch){
             case BranchDictionary::TECHNOPARK:

@@ -21,6 +21,7 @@ use common\repositories\expire\ExpireRepository;
 use common\repositories\general\FilesRepository;
 use common\repositories\general\OrderPeopleRepository;
 use common\repositories\general\PeopleStampRepository;
+use common\repositories\order\DocumentOrderRepository;
 use common\repositories\team\TeamRepository;
 use common\services\general\PeopleStampService;
 use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
@@ -56,6 +57,7 @@ class DocumentOrderService
     private ActParticipantRepository $actParticipantRepository;
     private OrderPeopleRepository $orderPeopleRepository;
     private OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository;
+    private DocumentOrderRepository $orderRepository;
 
     public function __construct(
         FileService $fileService,
@@ -68,7 +70,8 @@ class DocumentOrderService
         TeamRepository $teamRepository,
         ActParticipantRepository $actParticipantRepository,
         OrderPeopleRepository $orderPeopleRepository,
-        OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository
+        OrderTrainingGroupParticipantRepository $orderTrainingGroupParticipantRepository,
+        DocumentOrderRepository $orderRepository
     )
     {
         $this->fileService = $fileService;
@@ -82,7 +85,9 @@ class DocumentOrderService
         $this->actParticipantRepository = $actParticipantRepository;
         $this->orderPeopleRepository = $orderPeopleRepository;
         $this->orderTrainingGroupParticipantRepository = $orderTrainingGroupParticipantRepository;
+        $this->orderRepository = $orderRepository;
     }
+
     public function createOrderPeopleArray(array $data)
     {
         $result = [];
@@ -92,12 +97,14 @@ class DocumentOrderService
         }
         return $result;
     }
+
     public function getFilesInstances($model)
     {
         $model->scanFile = UploadedFile::getInstance($model, 'scanFile');
         $model->docFiles = UploadedFile::getInstances($model, 'docFiles');
         $model->appFiles = UploadedFile::getInstances($model, 'appFiles');
     }
+
     public function saveFilesFromModel($model)
     {
         if ($model->scanFile !== null) {
@@ -148,6 +155,7 @@ class DocumentOrderService
             }
         }
     }
+
     public function getUploadedFilesTables($model)
     {
         $scanLinks = $model->getFileLinks(FilesHelper::TYPE_SCAN);
@@ -191,6 +199,7 @@ class DocumentOrderService
 
         return ['scan' => $scanFile, 'docs' => $docFiles, 'app' => $appFiles];
     }
+
     public function getPeopleStamps($model)
     {
         if ($model->executor_id != "") {
@@ -206,6 +215,7 @@ class DocumentOrderService
             $model->bring_id = $peopleStampId;
         }
     }
+
     public function setResponsiblePeople($responsiblePeople, $model)
     {
         foreach ($responsiblePeople as $index => $person) {
@@ -214,6 +224,7 @@ class DocumentOrderService
         }
         $model->responsible_id = $responsiblePeople;
     }
+
     public function documentOrderDelete($model)
     {
         switch ($model->type) {
@@ -225,6 +236,7 @@ class DocumentOrderService
                 $this->orderTrainingDelete($model);
         }
     }
+
     public function orderMainDelete(DocumentOrderWork $model)
     {
         /* @var FilesWork $file */
@@ -280,6 +292,7 @@ class DocumentOrderService
         $model->recordEvent(new ForeignEventDeleteEvent($event->id), DocumentOrderWork::class);
         $model->recordEvent(new DocumentOrderDeleteEvent($model->id), DocumentOrderWork::class);
     }
+
     public function orderTrainingDelete(DocumentOrderWork $model)
     {
         /* @var $orderParticipant OrderTrainingGroupParticipantWork */
@@ -312,5 +325,31 @@ class DocumentOrderService
             $model->recordEvent(new FileDeleteEvent($file->id), DocumentOrderWork::class);
         }
         $model->recordEvent(new DocumentOrderDeleteEvent($model->id), DocumentOrderWork::class);
+    }
+
+    public function getOrdersByBranch(int $branch)
+    {
+        /** @var DocumentOrderWork[] $orders */
+        $orders = $this->orderRepository->getAll();
+        $resultOrders = [];
+
+        foreach ($orders as $order) {
+            if ($order->isTraining()) {
+                // Если приказ учебный, то смотрим на номенклатуру
+                if (NomenclatureDictionary::getBranchByNomenclature($order->order_number) == $branch) {
+                    $resultOrders[] = $order;
+                }
+            }
+            if ($order->isEvent()) {
+                // Если приказ об участии, то пытаемся найти хотя бы одного участника с указанным отделом
+                $eventIds = ArrayHelper::getColumn($this->foreignEventRepository->getByDocOrderId($order->id), 'id');
+                $participants = $this->actParticipantRepository->getByForeignEventsAndBranches($eventIds, [$branch]);
+                if (count($participants) > 0) {
+                    $resultOrders[] = $order;
+                }
+            }
+        }
+
+        return $resultOrders;
     }
 }

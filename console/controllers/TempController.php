@@ -11,6 +11,7 @@ use common\components\logger\search\CrudSearchData;
 use common\components\logger\search\MethodSearchData;
 use common\components\logger\search\SearchLog;
 use common\components\logger\SearchLogFacade;
+use common\invokables\ErrorsSender;
 use common\repositories\act_participant\SquadParticipantRepository;
 use common\services\general\errors\ErrorService;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
@@ -23,7 +24,7 @@ class TempController extends Controller
 {
     public function actionCheck()
     {
-        (Yii::createObject(ErrorService::class))->amnestyErrors(TrainingGroupWork::tableName(), 8);
+
     }
 
     public function actionReport()

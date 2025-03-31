@@ -100,7 +100,7 @@ class SearchTrainingProgram extends Model implements SearchInterfaces
                 'authorsProgramWork.author' => function ($query) {
                     $query->alias('authorPeople');
                 },
-                'branchWork' => function ($query) {
+                'branchProgramWork' => function ($query) {
                     $query->alias('branch');
                 },
             ]);

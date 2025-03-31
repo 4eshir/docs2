@@ -60,6 +60,14 @@ class TrainingProgramRepository
         return BranchProgramWork::find()->where(['training_program_id' => $id])->orderBy(['branch' => SORT_ASC])->all();
     }
 
+    public function getByBranches(array $branches)
+    {
+        return TrainingProgramWork::find()
+            ->joinWith(['branchProgramWork branchProgramWork'])
+            ->where(['IN', 'branchProgramWork.branch', $branches])
+            ->all();
+    }
+
     public function prepareResetBranches($eventId)
     {
         $branches = $this->getBranches($eventId);

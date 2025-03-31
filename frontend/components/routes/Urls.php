@@ -56,6 +56,15 @@ class Urls
     const OUR_EVENT_VIEW = "event/our-event/view";
 
     /**
+     * Константы ForeignEvent
+     *
+     * FOREIGN_EVENT_VIEW - actionView
+     * FOREIGN_EVENT_INDEX - actionIndex
+     */
+    const FOREIGN_EVENT_VIEW = "event/foreign-event/index";
+    const FOREIGN_EVENT_INDEX = "event/foreign-event/view";
+
+    /**
      * Константы TrainingProgram
      *
      * PROGRAM_VIEW - actionView
@@ -87,6 +96,13 @@ class Urls
     const TRAINING_GROUP_ARCHIVE = "educational/training-group/archive";
     const LESSON_THEMES_CREATE = "educational/training-group/create-lesson-themes";
     const JOURNAL_DELETE = "educational/training-group/delete-journal";
+
+    /**
+     * Константы TrainingProgram
+     *
+     * TRAINING_PROGRAM_VIEW - actionView
+     */
+    const TRAINING_PROGRAM_VIEW = "educational/training-program/view";
 
     /**
      * Константы Journal
@@ -135,4 +151,11 @@ class Urls
      * ORDER_TRAINING_VIEW - actionView
      */
     const ORDER_TRAINING_VIEW = "order/order-training/view";
+
+    /**
+     * Константы OrderEvent
+     *
+     * ORDER_EVENT_VIEW - actionView
+     */
+    const ORDER_EVENT_VIEW = "order/order-event/view";
 }

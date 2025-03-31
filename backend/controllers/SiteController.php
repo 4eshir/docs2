@@ -10,7 +10,9 @@ use backend\services\report\ReportManHoursService;
 use common\components\dictionaries\base\BranchDictionary;
 use common\helpers\common\HeaderWizard;
 use common\helpers\creators\ExcelCreator;
+use common\invokables\ErrorsSender;
 use common\models\LoginForm;
+use common\services\general\errors\ErrorService;
 use Hidehalo\Nanoid\Client;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Yii;
@@ -89,32 +91,11 @@ class SiteController extends Controller
 
     public function actionTest()
     {
-        $service = Yii::createObject(ReportForeignEventService::class);
-        $res = $service->calculateEventParticipants(
-            '2024-01-01',
-            '2026-02-02',
-            [1, 2, 3, 4, 5],
-            [1, 2, 3, 4, 5],
-            [0, 1],
-            [1, 2, 3, 4, 5, 6, 7, 8],
-            ReportFacade::MODE_DEBUG
+        $sender = new ErrorsSender(
+            'g.kalashnik@mail.ru',
+            (Yii::createObject(ErrorService::class))->getErrorsByUser(2)
         );
 
-        echo '<pre>';
-        var_dump($res['result']);
-        echo '</pre>';
-
-        /*HeaderWizard::setCsvLoadHeaders((Yii::createObject(Client::class))->generateId(10) . '.csv');
-
-        $writer = new Csv(
-            ExcelCreator::createCsvFile(
-                $res["debugData"],
-                DebugReportHelper::getManHoursReportHeaders()
-            )
-        );
-        $writer->setDelimiter(';');
-        $writer->setOutputEncoding('windows-1251');
-        $writer->save('php://output');
-        exit;*/
+        $sender();
     }
 }

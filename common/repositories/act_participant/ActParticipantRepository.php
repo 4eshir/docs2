@@ -74,6 +74,16 @@ class ActParticipantRepository
         return $query->all();
     }
 
+    public function getByForeignEventsAndBranches(array $foreignEventIds, array $branches)
+    {
+        $query = ActParticipantWork::find()
+            ->joinWith(['actParticipantBranchWork actParticipantBranchWork'])
+            ->where(['IN', 'foreign_event_id', $foreignEventIds])
+            ->andWhere(['IN', 'actParticipantBranchWork.branch', $branches]);
+        LogFactory::createCrudLog(LogInterface::LVL_INFO, 'Выгрузка актов участия по заданному мероприятию и отделам', $query->createCommand()->getRawSql());
+        return $query->all();
+    }
+
     public function prepareCreate($modelAct, $teamNameId, $foreignEventId)
     {
         $modelAct->save();

@@ -28,6 +28,7 @@ use frontend\models\work\educational\training_group\TrainingGroupWork;
 use frontend\models\work\educational\training_program\BranchProgramWork;
 use frontend\models\work\educational\training_program\TrainingProgramWork;
 use frontend\models\work\event\ForeignEventWork;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 class ErrorJournalService
@@ -130,6 +131,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_002,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_002)->getErrorState(),
                     $group->branch
                 )
             );
@@ -170,6 +172,7 @@ class ErrorJournalService
                         ErrorDictionary::JOURNAL_003,
                         TrainingGroupWork::tableName(),
                         $rowId,
+                        Yii::$app->errors->get(ErrorDictionary::JOURNAL_003)->getErrorState(),
                         $group->branch
                     )
                 );
@@ -201,6 +204,7 @@ class ErrorJournalService
                         ErrorDictionary::JOURNAL_004,
                         TrainingGroupWork::tableName(),
                         $rowId,
+                        Yii::$app->errors->get(ErrorDictionary::JOURNAL_004)->getErrorState(),
                         $group->branch
                     )
                 );
@@ -232,6 +236,7 @@ class ErrorJournalService
                         ErrorDictionary::JOURNAL_005,
                         TrainingGroupWork::tableName(),
                         $rowId,
+                        Yii::$app->errors->get(ErrorDictionary::JOURNAL_005)->getErrorState(),
                         $group->branch
                     )
                 );
@@ -262,6 +267,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_006,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_006)->getErrorState(),
                     $group->branch
                 )
             );
@@ -292,6 +298,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_007,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_007)->getErrorState(),
                     $group->branch
                 )
             );
@@ -322,6 +329,7 @@ class ErrorJournalService
                         ErrorDictionary::JOURNAL_008,
                         TrainingGroupWork::tableName(),
                         $rowId,
+                        Yii::$app->errors->get(ErrorDictionary::JOURNAL_008)->getErrorState(),
                         $participant->trainingGroupWork->branch
                     )
                 );
@@ -388,6 +396,7 @@ class ErrorJournalService
                         ErrorDictionary::JOURNAL_009,
                         TrainingGroupWork::tableName(),
                         $rowId,
+                        Yii::$app->errors->get(ErrorDictionary::JOURNAL_009)->getErrorState(),
                         $visits[0]->trainingGroupParticipantWork->trainingGroupWork->branch
                     )
                 );
@@ -450,6 +459,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_010,
                     TrainingProgramWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_010)->getErrorState(),
                     $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
@@ -478,6 +488,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_011,
                     TrainingProgramWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_011)->getErrorState(),
                     $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
@@ -507,6 +518,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_012,
                     TrainingProgramWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_012)->getErrorState(),
                     $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
@@ -537,6 +549,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_013,
                     TrainingProgramWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_013)->getErrorState(),
                     $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
@@ -566,6 +579,7 @@ class ErrorJournalService
                         ErrorDictionary::JOURNAL_014,
                         TrainingGroupWork::tableName(),
                         $rowId,
+                        Yii::$app->errors->get(ErrorDictionary::JOURNAL_014)->getErrorState(),
                         $lesson->trainingGroupWork->branch
                     )
                 );
@@ -612,6 +626,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_016,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_016)->getErrorState(),
                     $group->branch
                 )
             );
@@ -646,6 +661,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_017,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_017)->getErrorState(),
                     $group->branch
                 )
             );
@@ -681,6 +697,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_018,
                     TrainingProgramWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_018)->getErrorState(),
                     $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
@@ -709,6 +726,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_019,
                     TrainingProgramWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_019)->getErrorState(),
                     $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
@@ -756,6 +774,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_020,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_020)->getErrorState(),
                     $group->branch
                 )
             );
@@ -805,6 +824,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_021,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_021)->getErrorState(),
                     $group->branch
                 )
             );
@@ -848,6 +868,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_022,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_022)->getErrorState(),
                     $group->branch
                 )
             );
@@ -888,6 +909,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_023,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_023)->getErrorState(),
                     $group->branch
                 )
             );
@@ -923,6 +945,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_024,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_024)->getErrorState(),
                     $group->branch
                 )
             );
@@ -961,6 +984,7 @@ class ErrorJournalService
                             ErrorDictionary::JOURNAL_025,
                             TrainingGroupWork::tableName(),
                             $rowId,
+                            Yii::$app->errors->get(ErrorDictionary::JOURNAL_025)->getErrorState(),
                             $group->branch
                         )
                     );
@@ -998,6 +1022,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_026,
                     TrainingProgramWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_026)->getErrorState(),
                     $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
@@ -1026,6 +1051,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_027,
                     TrainingProgramWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_027)->getErrorState(),
                     $program->branchProgramWork[0] ? $program->branchProgramWork[0]->branch : null
                 )
             );
