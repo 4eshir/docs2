@@ -67,6 +67,7 @@ AppAsset::register($this);
                 ['label' => 'Образовательные программы', 'url' => ['/educational/training-program/index']],
                 ['label' => 'Учебные группы', 'url' => ['/educational/training-group/index']],
                 ['label' => 'Генерация сертификатов', 'url' => ['/educational/certificate/index']],
+                ['label' => 'Защиты проектов', 'url' => ['/educational/pitch/index']],
             ],
         ],
         [

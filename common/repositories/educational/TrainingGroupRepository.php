@@ -202,6 +202,14 @@ class TrainingGroupRepository
             ->all();
     }
 
+    public function getGroupPitchInPeriod(string $leftDate, string $rightDate)
+    {
+        return TrainingGroupWork::find()
+            ->where(['>', 'protection_date', $leftDate])
+            ->andWhere(['<', 'protection_date', $rightDate])
+            ->all();
+    }
+
     public function getAttachedGroupsByOrder($orderId, $status){
         if ($status == NomenclatureDictionary::ORDER_ENROLL){
             $participants = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($orderId), 'training_group_participant_in_id');

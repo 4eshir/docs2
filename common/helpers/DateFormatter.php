@@ -64,4 +64,22 @@ class DateFormatter
         $datetime = DateTime::createFromFormat(self::get($baseType), $data);
         return $datetime ? $datetime->format(self::get($targetType)) : $data;
     }
+
+    public static function createMonthPeriod(string $startDate, int $leftOffset, int $rightOffset)
+    {
+        $startDate = new DateTime($startDate);
+
+        // Вычисляем дату -leftOffset месяцев
+        $leftDate = clone $startDate;
+        $leftDate->modify("-$leftOffset months");
+
+        // Вычисляем дату +rightOffset месяцев
+        $rightDate = clone $startDate;
+        $rightDate->modify("+$rightOffset months");
+
+        return [
+            $leftDate->format('Y-m-d'),
+            $rightDate->format('Y-m-d')
+        ];
+    }
 }

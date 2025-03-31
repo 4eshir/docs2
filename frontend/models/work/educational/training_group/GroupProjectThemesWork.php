@@ -40,4 +40,9 @@ class GroupProjectThemesWork extends GroupProjectThemes
     {
         return $this->hasOne(ProjectThemeWork::class, ['id' => 'project_theme_id']);
     }
+
+    public function setConfirm(int $confirm)
+    {
+        $this->confirm = $confirm;
+    }
 }

@@ -100,4 +100,9 @@ class UserPermissionFunctionRepository
 
         return $userFunction->id;
     }
+
+    public function delete(PermissionFunctionWork $model)
+    {
+        return $model->delete();
+    }
 }

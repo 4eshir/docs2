@@ -6,6 +6,7 @@ use backend\forms\TokensForm;
 use backend\models\forms\UserForm;
 use backend\models\search\SearchUser;
 use backend\services\PermissionTokenService;
+use common\components\traits\AccessControl;
 use common\models\work\UserWork;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\general\UserRepository;
@@ -21,6 +22,8 @@ use yii\web\Controller;
 
 class UserController extends Controller
 {
+    use AccessControl;
+
     private UserRepository $repository;
     private PeopleRepository $peopleRepository;
     private PermissionFunctionRepository $permissionRepository;
@@ -155,46 +158,24 @@ class UserController extends Controller
      */
     public function actionDelete($id)
     {
-        Logger::WriteLog(Yii::$app->user->identity->getId(), 'Удален пользователь '.$this->findModel($id)->username);
-        $this->findModel($id)->delete();
+        /** @var UserWork $model */
+        $model = $this->repository->get($id);
+        $permissions = $this->userPermissionRepository->getPermissionsByUser($id);
+        foreach ($permissions as $permission) {
+            $this->userPermissionRepository->delete($permission);
+        }
+        $this->repository->delete($model);
 
         return $this->redirect(['index']);
     }
 
-    public function actionDeleteRole($roleId, $modelId)
-    {
-        $role = UserRoleWork::find()->where(['id' => $roleId])->one();
-        $name = $role->role->name;
-        $role->delete();
-        $user = UserWork::find()->where(['id' => $modelId])->one();
-        Logger::WriteLog(Yii::$app->user->identity->getId(), 'Откреплена роль ' . $name . ' от пользователя '. $user->secondname . ' ' . $user->firstname);
-
-        return $this->redirect('index?r=user/update&id='.$modelId);
-    }
-
-
-    /**
-     * Finds the User model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return UserWork the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = UserWork::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
 
     public function beforeAction($action)
     {
-        if (Yii::$app->rubac->isGuest() || !Yii::$app->rubac->checkUserAccess(Yii::$app->rubac->authId(), get_class(Yii::$app->controller), $action)) {
-            Yii::$app->session->setFlash('error', 'У Вас недостаточно прав. Обратитесь к администратору для получения доступа');
-            $this->redirect(Yii::$app->request->referrer);
-            return false;
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
         }
 
         return parent::beforeAction($action);

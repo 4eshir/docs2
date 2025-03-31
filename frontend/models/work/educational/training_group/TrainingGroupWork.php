@@ -23,6 +23,7 @@ use yii\helpers\Url;
  * @property PeopleStampWork $teacherWork
  * @property TeacherGroupWork[] $teachersWork
  * @property TrainingGroupExpertWork[] $expertsWork
+ * @property GroupProjectThemesWork[] $groupProjectThemesWorks
  */
 
 class TrainingGroupWork extends TrainingGroup
@@ -278,6 +279,17 @@ class TrainingGroupWork extends TrainingGroup
         $this->protection_date = $protectionDate;
     }
 
+    public function getThemesProjectPretty()
+    {
+        $result = '';
+        foreach ($this->groupProjectThemesWorks as $groupProjectThemesWork) {
+            $color = $groupProjectThemesWork->confirm ? 'green' : 'red';
+            $result .= '<span style="color: ' . $color . '">' . $groupProjectThemesWork->projectThemeWork->name . '</span><br>';
+        }
+
+        return $result;
+    }
+
     public function beforeSave($insert)
     {
         if (!(Yii::$app instanceof yii\console\Application)) {
@@ -319,5 +331,10 @@ class TrainingGroupWork extends TrainingGroup
     public function getTrainingGroupExpertsWork()
     {
         return $this->hasMany(TrainingGroupExpertWork::class, ['training_group_id' => 'id']);
+    }
+
+    public function getGroupProjectThemesWorks()
+    {
+        return $this->hasMany(GroupProjectThemesWork::class, ['training_group_id' => 'id']);
     }
 }

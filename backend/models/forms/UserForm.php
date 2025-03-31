@@ -40,7 +40,7 @@ class UserForm extends Model
     /**
      * @param UserWork $entity
      * @param PeopleWork[] $peoples
-     * @param int[] $prevUserPermissions
+     * @param array $prevUserPermissions
      * @param PermissionFunctionWork[] $permissions
      * @param array $config
      */

@@ -54,4 +54,9 @@ class UserRepository
     {
         return $this->provider->save($user);
     }
+
+    public function delete(UserWork $model)
+    {
+        return $model->delete();
+    }
 }

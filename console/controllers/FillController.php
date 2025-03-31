@@ -137,12 +137,13 @@ class FillController extends Controller
         $fIds[51] = $this->functionRepository->save(PermissionFunctionWork::fill('Внутреннее перемещение мат. объектов по МОЛ', 'move_material_obj', 51));
         $fIds[52] = $this->functionRepository->save(PermissionFunctionWork::fill('Просмотр справочника организаций', 'view_dictionaries', 52));
         $fIds[53] = $this->functionRepository->save(PermissionFunctionWork::fill('Редактирование справочника организаций', 'edit_dictionaries', 53));
-        $fIds[54] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок учета достижений', 'get_achieve_errors', 54));
-        $fIds[55] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок электронного документооборота', 'get_journal_errors', 55));
-        $fIds[56] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок электронного журнала', 'get_document_errors', 56));
-        $fIds[57] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок материальных ценностей', 'get_material_errors', 57));
-        $fIds[58] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок своего отдела', 'get_branch_errors', 58));
-        $fIds[59] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок всех отделов', 'get_all_errors', 59));
+        $fIds[54] = $this->functionRepository->save(PermissionFunctionWork::fill('Подтверждение тем проектов', 'confirm_themes', 54));
+        $fIds[55] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок учета достижений', 'get_achieve_errors', 55));
+        $fIds[56] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок электронного документооборота', 'get_journal_errors', 56));
+        $fIds[57] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок электронного журнала', 'get_document_errors', 57));
+        $fIds[58] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок материальных ценностей', 'get_material_errors', 58));
+        $fIds[59] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок своего отдела', 'get_branch_errors', 59));
+        $fIds[60] = $this->functionRepository->save(PermissionFunctionWork::fill('Получение ошибок всех отделов', 'get_all_errors', 60));
     }
 
     private function createAdminRole()
@@ -206,5 +207,6 @@ class FillController extends Controller
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 57));
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 58));
         $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 59));
+        $this->templateFunctionRepository->save(PermissionTemplateFunctionWork::fill(8, 60));
     }
 }

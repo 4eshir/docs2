@@ -233,11 +233,17 @@ class RulesConfig
         ],
 
         'gen_report_query' => [
-
+            \backend\controllers\report\query\ForeignEventReportController::class => [
+                'foreign-event',
+                'download-debug-csv'
+            ]
         ],
 
         'gen_report_forms' => [
-
+            \backend\controllers\report\query\ManHoursReportController::class => [
+                'man-hours',
+                'download-debug-csv'
+            ]
         ],
 
         'view_doc_in' => [
@@ -371,13 +377,20 @@ class RulesConfig
         ],
 
         'view_users' => [
-            \frontend\controllers\user\UserController::class => [
-                'index'
+            \backend\controllers\UserController::class => [
+                'index',
+                'view'
             ]
         ],
 
         'edit_users' => [
-
+            \frontend\controllers\user\UserController::class => [
+                'create',
+                'update',
+                'tokens',
+                'delete-token',
+                'delete'
+            ]
         ],
 
         'edit_permissions' => [
@@ -385,11 +398,22 @@ class RulesConfig
         ],
 
         'create_certificates' => [
-
+            \frontend\controllers\educational\CertificateController::class => [
+                'index',
+                'view',
+                'download-archive',
+                'send-all',
+                'send-pdf',
+                'get-groups',
+                'get-participants'
+            ]
         ],
 
         'delete_certificates' => [
-
+            \frontend\controllers\educational\CertificateController::class => [
+                'create',
+                'generation-pdf'
+            ]
         ],
 
         'allow_base_admin' => [
@@ -408,11 +432,19 @@ class RulesConfig
         ],
 
         'view_certificate_template' => [
-
+            \backend\controllers\CertificateTemplatesController::class => [
+                'index',
+                'view',
+                'get-image'
+            ]
         ],
 
         'edit_certificate_template' => [
-
+            \backend\controllers\CertificateTemplatesController::class => [
+                'create-template',
+                'update',
+                'delete'
+            ]
         ],
 
         'view_material_obj' => [
@@ -482,6 +514,14 @@ class RulesConfig
                 'update',
                 'delete'
             ],
+        ],
+
+        'confirm_themes' => [
+            \frontend\controllers\educational\PitchController::class => [
+                'index',
+                'confirm-theme',
+                'decline-theme'
+            ]
         ]
     ];
 

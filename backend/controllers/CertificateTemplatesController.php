@@ -5,6 +5,7 @@ namespace backend\controllers;
 use backend\builders\CertificateTemplatesBuilder;
 use backend\forms\CertificateTemplatesForm;
 use backend\services\CertificateTemplatesService;
+use common\components\traits\AccessControl;
 use common\repositories\educational\CertificateTemplatesRepository;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -14,6 +15,8 @@ use yii\web\UploadedFile;
 
 class CertificateTemplatesController extends Controller
 {
+    use AccessControl;
+
     private CertificateTemplatesBuilder $builder;
     private CertificateTemplatesRepository $repository;
 
@@ -105,5 +108,16 @@ class CertificateTemplatesController extends Controller
         } else {
             throw new NotFoundHttpException('Файл не найден');
         }
+    }
+
+    public function beforeAction($action)
+    {
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
+        }
+
+        return parent::beforeAction($action);
     }
 }

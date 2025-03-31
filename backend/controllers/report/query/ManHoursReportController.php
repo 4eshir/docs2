@@ -8,6 +8,7 @@ use backend\invokables\CsvLoader;
 use backend\services\report\mock\ReportManHoursMockService;
 use backend\services\report\ReportFacade;
 use backend\services\report\ReportManHoursService;
+use common\components\traits\AccessControl;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\web\BadRequestHttpException;
@@ -15,6 +16,8 @@ use yii\web\Controller;
 
 class ManHoursReportController extends Controller
 {
+    use AccessControl;
+
     private ReportManHoursService $service;
 
     public function __construct(
@@ -64,5 +67,16 @@ class ManHoursReportController extends Controller
         else {
             throw new BadRequestHttpException('Для данного эндпоинта допустимы только POST-запросы');
         }
+    }
+
+    public function beforeAction($action)
+    {
+        $result = $this->checkActionAccess($action);
+        if ($result['url'] !== '') {
+            $this->redirect($result['url']);
+            return $result['status'];
+        }
+
+        return parent::beforeAction($action);
     }
 }
