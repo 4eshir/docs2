@@ -2,11 +2,13 @@
 
 namespace frontend\controllers\user;
 
+use common\models\work\ErrorsWork;
 use common\models\work\UserWork;
 use common\repositories\general\UserRepository;
 use common\repositories\rubac\PermissionFunctionRepository;
 use common\repositories\rubac\PermissionTokenRepository;
 use common\repositories\rubac\UserPermissionFunctionRepository;
+use common\services\general\errors\ErrorService;
 use DateTime;
 use DomainException;
 use frontend\forms\ChangePasswordForm;
@@ -21,6 +23,7 @@ class LkController extends Controller
     private PermissionFunctionRepository $permissionFunctionRepository;
     private PermissionTokenRepository $permissionTokenRepository;
     private UserPermissionFunctionRepository $userPermissionFunctionRepository;
+    private ErrorService $errorService;
     public function __construct(
         $id,
         $module,
@@ -28,6 +31,7 @@ class LkController extends Controller
         PermissionFunctionRepository $permissionFunctionRepository,
         PermissionTokenRepository $permissionTokenRepository,
         UserPermissionFunctionRepository $userPermissionFunctionRepository,
+        ErrorService $errorService,
         $config = []
     )
     {
@@ -36,6 +40,7 @@ class LkController extends Controller
         $this->permissionFunctionRepository = $permissionFunctionRepository;
         $this->permissionTokenRepository = $permissionTokenRepository;
         $this->userPermissionFunctionRepository = $userPermissionFunctionRepository;
+        $this->errorService = $errorService;
     }
 
     public function actionInfo(int $id)
@@ -109,6 +114,47 @@ class LkController extends Controller
             'users' => $users,
             'permissions' => $permissions,
             'activeTokens' => $activeTokens,
+        ]);
+    }
+
+    public function actionErrors($id)
+    {
+        //Ошибки в учебных группах
+        $errorsGroup = array_filter(
+            $this->errorService->getErrorsByUser($id), function (ErrorsWork $value) {
+                return $value->table_name === 'training_group';
+        });
+        //Ошибки в образовательных программах
+        $errorsProgram = array_filter(
+            $this->errorService->getErrorsByUser($id), function (ErrorsWork $value) {
+                return $value->table_name === 'training_program';
+        });
+        //Ошибки в приказах
+        $errorsOrder = array_filter(
+            $this->errorService->getErrorsByUser($id), function (ErrorsWork $value) {
+                return $value->table_name === 'document_order';
+        });
+        //Ошибки в мероприятиях
+        $errorsEvent = array_filter(
+            $this->errorService->getErrorsByUser($id), function (ErrorsWork $value) {
+                return $value->table_name === 'event';
+        });
+        //Ошибки в учете достижений
+        $errorsAchievement = array_filter(
+            $this->errorService->getErrorsByUser($id), function (ErrorsWork $value) {
+                return $value->table_name === 'foreign_event';
+        });
+        //ошибки в договорах
+        $errorsTreat = NULL;
+        $user = $this->userRepository->get($id);
+        return $this->render('errors', [
+            'user' => $user,
+            'errorsGroup' => $errorsGroup,
+            'errorsProgram' => $errorsProgram,
+            'errorsOrder' => $errorsOrder,
+            'errorsEvent' => $errorsEvent,
+            'errorsAchievement' => $errorsAchievement,
+            'errorsTreat' => $errorsTreat,
         ]);
     }
 }
