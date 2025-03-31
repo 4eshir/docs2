@@ -1,6 +1,8 @@
 <?php
 
 namespace common\models\scaffold;
+use frontend\models\work\general\PeopleStampWork;
+use frontend\models\work\order\DocumentOrderWork;
 use Yii;
 
 /**
@@ -17,11 +19,11 @@ use Yii;
  * @property int|null $extra_resp_method_id
  * @property int|null $extra_resp_info_stuff_id
  *
- * @property PeopleStamp $extraRespInfoStuff
- * @property PeopleStamp $extraRespInsert
- * @property PeopleStamp $extraRespMethod
- * @property DocumentOrder $order
- * @property PeopleStamp $respPeopleInfo
+ * @property PeopleStampWork $extraRespInfoStuff
+ * @property PeopleStampWork $extraRespInsert
+ * @property PeopleStampWork $extraRespMethod
+ * @property DocumentOrderWork $order
+ * @property PeopleStampWork $respPeopleInfo
  */
 class OrderEventGenerate extends \yii\db\ActiveRecord
 {
@@ -41,11 +43,11 @@ class OrderEventGenerate extends \yii\db\ActiveRecord
         return [
             [['order_id'], 'required'],
             [['order_id', 'purpose', 'doc_event', 'resp_people_info_id', 'extra_resp_insert_id', 'time_provision_day', 'time_insert_day', 'extra_resp_method_id', 'extra_resp_info_stuff_id'], 'integer'],
-            [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentOrder::class, 'targetAttribute' => ['order_id' => 'id']],
-            [['extra_resp_info_stuff_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['extra_resp_info_stuff_id' => 'id']],
-            [['extra_resp_insert_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['extra_resp_insert_id' => 'id']],
-            [['extra_resp_method_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['extra_resp_method_id' => 'id']],
-            [['resp_people_info_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['resp_people_info_id' => 'id']],
+            [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentOrderWork::class, 'targetAttribute' => ['order_id' => 'id']],
+            [['extra_resp_info_stuff_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['extra_resp_info_stuff_id' => 'id']],
+            [['extra_resp_insert_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['extra_resp_insert_id' => 'id']],
+            [['extra_resp_method_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['extra_resp_method_id' => 'id']],
+            [['resp_people_info_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['resp_people_info_id' => 'id']],
         ];
     }
 
@@ -75,7 +77,7 @@ class OrderEventGenerate extends \yii\db\ActiveRecord
      */
     public function getExtraRespInfoStuff()
     {
-        return $this->hasOne(PeopleStamp::class, ['id' => 'extra_resp_info_stuff_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'extra_resp_info_stuff_id']);
     }
 
     /**
@@ -85,7 +87,7 @@ class OrderEventGenerate extends \yii\db\ActiveRecord
      */
     public function getExtraRespInsert()
     {
-        return $this->hasOne(PeopleStamp::class, ['id' => 'extra_resp_insert_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'extra_resp_insert_id']);
     }
 
     /**
@@ -95,7 +97,7 @@ class OrderEventGenerate extends \yii\db\ActiveRecord
      */
     public function getExtraRespMethod()
     {
-        return $this->hasOne(PeopleStamp::class, ['id' => 'extra_resp_method_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'extra_resp_method_id']);
     }
 
     /**
@@ -105,7 +107,7 @@ class OrderEventGenerate extends \yii\db\ActiveRecord
      */
     public function getOrder()
     {
-        return $this->hasOne(DocumentOrder::class, ['id' => 'order_id']);
+        return $this->hasOne(DocumentOrderWork::class, ['id' => 'order_id']);
     }
 
     /**
@@ -115,6 +117,6 @@ class OrderEventGenerate extends \yii\db\ActiveRecord
      */
     public function getRespPeopleInfo()
     {
-        return $this->hasOne(PeopleStamp::class, ['id' => 'resp_people_info_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'resp_people_info_id']);
     }
 }

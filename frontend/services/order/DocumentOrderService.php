@@ -24,6 +24,7 @@ use common\repositories\general\PeopleStampRepository;
 use common\repositories\order\DocumentOrderRepository;
 use common\repositories\team\TeamRepository;
 use common\services\general\PeopleStampService;
+use frontend\components\creators\WordCreator;
 use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEvent;
 use frontend\events\general\FileDeleteEvent;
 use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
@@ -351,5 +352,23 @@ class DocumentOrderService
         }
 
         return $resultOrders;
+    }
+    public function generateOrder(DocumentOrderWork $order)
+    {
+        if ($order->type == DocumentOrderWork::ORDER_EVENT) {
+            return WordCreator::generateOrderEvent($order->id);
+        }
+        else if ($order->type != DocumentOrderWork::ORDER_EVENT && NomenclatureDictionary::getStatus($order->order_number) == NomenclatureDictionary::ORDER_ENROLL) {
+            return WordCreator::generateOrderTrainingEnroll($order->id);
+        }
+        else if ($order->type != DocumentOrderWork::ORDER_EVENT && NomenclatureDictionary::getStatus($order->order_number) == NomenclatureDictionary::ORDER_DEDUCT) {
+            return WordCreator::generateOrderTrainingDeduct($order->id);
+        }
+        else if ($order->type != DocumentOrderWork::ORDER_EVENT && NomenclatureDictionary::getStatus($order->order_number) == NomenclatureDictionary::ORDER_TRANSFER) {
+            return WordCreator::generateOrderTrainingTransfer($order->id);
+        }
+        else {
+            return NULL;
+        }
     }
 }

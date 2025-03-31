@@ -9,6 +9,7 @@ use common\components\traits\AccessControl;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\order\DocumentOrderRepository;
 use frontend\components\GroupParticipantWidget;
+use frontend\invokables\OrderLoader;
 use frontend\models\search\SearchOrderTraining;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderTrainingWork;
@@ -237,6 +238,15 @@ class OrderTrainingController extends DocumentController
                 'groupCheckOption' => $groupCheckOption,
             ]),
         ]);
+    }
+    public function actionGenerateOrder($id)
+    {
+        $model = $this->documentOrderRepository->get($id);
+        $loader = new OrderLoader(
+            $this->documentOrderService->generateOrder($model),
+            "Приказ №" . $model->order_number
+        );
+        $loader();
     }
     public function actionGetGroupParticipantsByBranch()
     {

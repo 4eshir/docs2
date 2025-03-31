@@ -18,6 +18,7 @@ use common\components\dictionaries\base\EventLevelDictionary;
 use common\components\dictionaries\base\EventTypeDictionary;
 use common\components\dictionaries\base\EventWayDictionary;
 use common\components\dictionaries\base\FocusDictionary;
+use common\components\dictionaries\base\GoalDictionary;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\dictionaries\base\OwnershipTypeDictionary;
 use common\components\dictionaries\base\ParticipationScopeDictionary;
@@ -87,6 +88,7 @@ class Yii {
  * @property LogRecordComponent $logRecord
  * @property ErrorDictionary $errors
  * @property RabbitMQ $rabbitmq
+ * @property GoalDictionary $goals
  */
 class __Application {
 }
