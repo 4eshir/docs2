@@ -186,7 +186,8 @@ class RulesConfig
                 'delete-file',
                 'act',
                 'delete-people',
-                'act-delete'
+                'act-delete',
+                'generate-order'
             ]
         ],
 

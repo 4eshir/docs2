@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Приказы о мероприя
                 'method' => 'post',
             ],
         ]) ?>
+        <?= Html::a('Сгенерировать документ', ['generate-order', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
     </p>
 
     <?= HtmlBuilder::createErrorsBlock(DocumentOrderWork::tableName(), $model->id) ?>
@@ -66,7 +67,10 @@ $this->params['breadcrumbs'][] = ['label' => 'Приказы о мероприя
             }],
         ],
     ]) ?>
+
     <?php if (!is_null($actTable)): ?>
         <?= $actTable; ?>
     <?php endif; ?>
+
+
 </div>

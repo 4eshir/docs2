@@ -19,6 +19,7 @@ use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\order\DocumentOrderRepository;
 use common\repositories\order\OrderEventGenerateRepository;
 use frontend\events\general\FileDeleteEvent;
+use frontend\invokables\OrderLoader;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\general\FilesWork;
 use frontend\models\work\order\DocumentOrderWork;
@@ -456,6 +457,15 @@ class OrderEventController extends DocumentController
         catch (DomainException $e) {
             return $e->getMessage();
         }
+    }
+    public function actionGenerateOrder($id)
+    {
+        $model = $this->documentOrderRepository->get($id);
+        $loader = new OrderLoader(
+            $this->documentOrderService->generateOrder($model),
+            "Приказ №" . $model->order_number
+        );
+        $loader();
     }
     public function beforeAction($action)
     {

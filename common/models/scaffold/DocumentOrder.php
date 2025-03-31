@@ -2,7 +2,9 @@
 
 namespace common\models\scaffold;
 
+use common\models\work\UserWork;
 use common\repositories\general\PeopleStampRepository;
+use frontend\models\work\general\PeopleStampWork;
 
 /**
  * This is the model class for table "document_order".
@@ -25,12 +27,12 @@ use common\repositories\general\PeopleStampRepository;
  * @property int|null $study_type
  * @property int|null $preamble
  *
- * @property PeopleStamp $bring
- * @property User $creator
- * @property PeopleStamp $executor
- * @property User $lastEdit
+ * @property PeopleStampWork $bring
+ * @property UserWork $creator
+ * @property PeopleStampWork $executor
+ * @property UserWork $lastEdit
  * @property LegacyResponsible[] $legacyResponsibles
- * @property PeopleStamp $signed
+ * @property PeopleStampWork $signed
  */
 class DocumentOrder extends \yii\db\ActiveRecord
 {
@@ -51,11 +53,11 @@ class DocumentOrder extends \yii\db\ActiveRecord
             [['order_copy_id', 'order_postfix', 'signed_id', 'bring_id', 'executor_id', 'creator_id', 'last_edit_id', 'type', 'state', 'nomenclature_id', 'study_type', 'preamble'], 'integer'],
             [['order_date'], 'safe'],
             [['order_number', 'order_name', 'key_words'], 'string', 'max' => 255],
-            [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['signed_id' => 'id']],
-            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['executor_id' => 'id']],
-            [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStamp::class, 'targetAttribute' => ['bring_id' => 'id']],
-            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['creator_id' => 'id']],
-            [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['last_edit_id' => 'id']],
+            [['signed_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['signed_id' => 'id']],
+            [['executor_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['executor_id' => 'id']],
+            [['bring_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['bring_id' => 'id']],
+            [['creator_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserWork::class, 'targetAttribute' => ['creator_id' => 'id']],
+            [['last_edit_id'], 'exist', 'skipOnError' => true, 'targetClass' => UserWork::class, 'targetAttribute' => ['last_edit_id' => 'id']],
         ];
     }
 
@@ -92,7 +94,7 @@ class DocumentOrder extends \yii\db\ActiveRecord
      */
     public function getBring()
     {
-        return $this->hasOne(PeopleStamp::class, ['id' => 'bring_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'bring_id']);
     }
 
     /**
@@ -102,7 +104,7 @@ class DocumentOrder extends \yii\db\ActiveRecord
      */
     public function getCreator()
     {
-        return $this->hasOne(User::class, ['id' => 'creator_id']);
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
     }
 
     /**
@@ -112,7 +114,7 @@ class DocumentOrder extends \yii\db\ActiveRecord
      */
     public function getExecutor()
     {
-        return $this->hasOne(PeopleStamp::class, ['id' => 'executor_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'executor_id']);
     }
 
     /**
@@ -122,7 +124,7 @@ class DocumentOrder extends \yii\db\ActiveRecord
      */
     public function getLastEdit()
     {
-        return $this->hasOne(User::class, ['id' => 'last_edit_id']);
+        return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
     }
 
     /**
@@ -142,6 +144,6 @@ class DocumentOrder extends \yii\db\ActiveRecord
      */
     public function getSigned()
     {
-        return $this->hasOne(PeopleStamp::class, ['id' => 'signed_id']);
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'signed_id']);
     }
 }

@@ -116,5 +116,8 @@ return [
         'errors' => [
             'class' => 'common\\components\\dictionaries\\base\\ErrorDictionary',
         ],
+        'goals' => [
+            'class' => 'common\components\dictionaries\base\GoalDictionary'
+        ]
     ],
 ];

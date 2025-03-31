@@ -2,6 +2,9 @@
 
 namespace common\models\scaffold;
 
+use frontend\models\work\general\PeopleStampWork;
+use frontend\models\work\general\PeopleWork;
+use frontend\models\work\order\DocumentOrderWork;
 use yii\db\ActiveRecord;
 
 /**
@@ -9,6 +12,9 @@ use yii\db\ActiveRecord;
  * @property int $id
  * @property int $people_id
  * @property int|null $order_id
+ *
+ * @property PeopleStampWork $people
+ * @property DocumentOrderWork $order
  */
 class OrderPeople extends ActiveRecord
 {
@@ -37,5 +43,12 @@ class OrderPeople extends ActiveRecord
             'order_id' => 'Order ID',
             'people_id' => 'People ID',
         ];
+    }
+
+    public function getOrder(){
+        return $this->hasOne(DocumentOrderWork::class, ['id' => 'order_id']);
+    }
+    public function getPeople(){
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'people_id']);
     }
 }
