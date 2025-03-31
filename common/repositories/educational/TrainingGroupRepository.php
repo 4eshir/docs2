@@ -190,8 +190,16 @@ class TrainingGroupRepository
         return TrainingGroupWork::find()->where(['id' => $id]);
     }
 
-    public function empty(){
+    public function empty()
+    {
         return TrainingGroupWork::find()->where(['id' => 0]);
+    }
+
+    public function getByProgramId(int $programId)
+    {
+        return TrainingGroupWork::find()
+            ->where(['training_program_id' => $programId])
+            ->all();
     }
 
     public function getAttachedGroupsByOrder($orderId, $status){

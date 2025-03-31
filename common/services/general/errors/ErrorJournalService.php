@@ -286,37 +286,6 @@ class ErrorJournalService
         }
     }
 
-    // Проверка на заполнение тематического плана группы
-    public function makeJournal_007($rowId)
-    {
-        /** @var TrainingGroupWork $group */
-        $lessons = $this->lessonRepository->getLessonsFromGroup($rowId);
-        $lessonThemes = $this->themeRepository->getByLessonIds(ArrayHelper::getColumn($lessons, 'id'));
-        if (count($lessonThemes) == 0) {
-            $this->errorsRepository->save(
-                ErrorsWork::fill(
-                    ErrorDictionary::JOURNAL_007,
-                    TrainingGroupWork::tableName(),
-                    $rowId,
-                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_007)->getErrorState(),
-                    $group->branch
-                )
-            );
-        }
-    }
-
-    public function fixJournal_007($errorId)
-    {
-        /** @var ErrorsWork $error */
-        /** @var TrainingGroupWork $group */
-        $error = $this->errorsRepository->get($errorId);
-        $lessons = $this->lessonRepository->getLessonsFromGroup($error->table_row_id);
-        $lessonThemes = $this->themeRepository->getByLessonIds(ArrayHelper::getColumn($lessons, 'id'));
-        if (count($lessonThemes) != 0) {
-            $this->errorsRepository->delete($error);
-        }
-    }
-
     // Проверка на отсутствие сертификатов
     public function makeJournal_008($rowId)
     {

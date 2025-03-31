@@ -4,6 +4,7 @@ namespace common\components\dictionaries\base;
 
 use common\models\Error;
 use common\services\general\errors\ErrorAchieveService;
+use common\services\general\errors\ErrorChangeableService;
 use common\services\general\errors\ErrorDocumentService;
 use common\services\general\errors\ErrorJournalService;
 use common\services\general\errors\ErrorMaterialService;
@@ -50,7 +51,6 @@ class ErrorDictionary extends BaseDictionary
     const JOURNAL_004 = 4;
     const JOURNAL_005 = 5;
     const JOURNAL_006 = 6;
-    const JOURNAL_007 = 7;
     const JOURNAL_008 = 8;
     const JOURNAL_009 = 9;
     const JOURNAL_010 = 10;
@@ -96,25 +96,27 @@ class ErrorDictionary extends BaseDictionary
     const JOURNAL_ERRORS = [
         self::JOURNAL_001, self::JOURNAL_002, self::JOURNAL_003,
         self::JOURNAL_004, self::JOURNAL_005, self::JOURNAL_006,
-        self::JOURNAL_007, self::JOURNAL_008, self::JOURNAL_009,
-        self::JOURNAL_010, self::JOURNAL_011, self::JOURNAL_012,
-        self::JOURNAL_013, self::JOURNAL_014, self::JOURNAL_015,
-        self::JOURNAL_016, self::JOURNAL_017, self::JOURNAL_018,
-        self::JOURNAL_019, self::JOURNAL_020, self::JOURNAL_021,
-        self::JOURNAL_022, self::JOURNAL_023, self::JOURNAL_024,
-        self::JOURNAL_025, self::JOURNAL_026, self::JOURNAL_027,
+        self::JOURNAL_008, self::JOURNAL_009, self::JOURNAL_010,
+        self::JOURNAL_011, self::JOURNAL_012, self::JOURNAL_013,
+        self::JOURNAL_014, self::JOURNAL_015, self::JOURNAL_016,
+        self::JOURNAL_017, self::JOURNAL_018, self::JOURNAL_019,
+        self::JOURNAL_020, self::JOURNAL_021, self::JOURNAL_022,
+        self::JOURNAL_023, self::JOURNAL_024, self::JOURNAL_025,
+        self::JOURNAL_026, self::JOURNAL_027,
     ];
 
     private ErrorMaterialService $materialService;
     private ErrorAchieveService $achieveService;
     private ErrorDocumentService $documentService;
     private ErrorJournalService $journalService;
+    private ErrorChangeableService $changeableService;
 
     public function __construct(
         ErrorMaterialService $materialService,
         ErrorAchieveService $achieveService,
         ErrorDocumentService $documentService,
-        ErrorJournalService $journalService
+        ErrorJournalService $journalService,
+        ErrorChangeableService $changeableService
     )
     {
         parent::__construct();
@@ -122,6 +124,7 @@ class ErrorDictionary extends BaseDictionary
         $this->achieveService = $achieveService;
         $this->documentService = $documentService;
         $this->journalService = $journalService;
+        $this->changeableService = $changeableService;
 
         $this->list = [
             self::MATERIAL_001 => new Error(
@@ -272,9 +275,10 @@ class ErrorDictionary extends BaseDictionary
 
             self::DOCUMENT_001 => new Error(
                 'ЭД001', 'В приказе отсутствует скан документа',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->documentService, 'makeDocument_001'],
                 [$this->documentService, 'fixDocument_001'],
+                [$this->changeableService, 'changeDocument_001'],
             ),
             self::DOCUMENT_002 => new Error(
                 'ЭД002', 'В приказе отсутствует редактируемый файл',
@@ -315,45 +319,45 @@ class ErrorDictionary extends BaseDictionary
 
             self::JOURNAL_001 => new Error(
                 'ЭЖ001', 'Не указан педагог в карточке группы',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_001'],
                 [$this->journalService, 'fixJournal_001'],
+                [$this->changeableService, 'changeJournal_001'],
             ),
             self::JOURNAL_002 => new Error(
                 'ЭЖ002', 'Не заполнено поле «Приказы» в карточке группы',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_002'],
                 [$this->journalService, 'fixJournal_002'],
+                [$this->changeableService, 'changeJournal_002'],
             ),
             self::JOURNAL_003 => new Error(
                 'ЭЖ003', 'Не заполнено поле «Фотоматериалы» в карточке группы',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_003'],
                 [$this->journalService, 'fixJournal_003'],
+                [$this->changeableService, 'changeJournal_003'],
             ),
             self::JOURNAL_004 => new Error(
                 'ЭЖ004', 'Не заполнено поле «Презентационные материалы» в карточке группы',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_004'],
                 [$this->journalService, 'fixJournal_004'],
+                [$this->changeableService, 'changeJournal_004'],
             ),
             self::JOURNAL_005 => new Error(
                 'ЭЖ005', 'Не заполнено поле «Рабочие материалы» в карточке группы',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_005'],
                 [$this->journalService, 'fixJournal_005'],
+                [$this->changeableService, 'changeJournal_005'],
             ),
             self::JOURNAL_006 => new Error(
                 'ЭЖ006', 'Объем расписания не равен объему программы в карточке группы',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_006'],
                 [$this->journalService, 'fixJournal_006'],
-            ),
-            self::JOURNAL_007 => new Error(
-                'ЭЖ007', 'В образовательной программе не заполнен учебно-тематический план ',
-                Error::TYPE_BASE,
-                [$this->journalService, 'makeJournal_007'],
-                [$this->journalService, 'fixJournal_007'],
+                [$this->changeableService, 'changeJournal_006'],
             ),
             self::JOURNAL_008 => new Error(
                 'ЭЖ008', 'Нет сведений о сертификатах об обучении в карточке группы',
@@ -363,9 +367,10 @@ class ErrorDictionary extends BaseDictionary
             ),
             self::JOURNAL_009 => new Error(
                 'ЭЖ009', 'В журнале нет сведений о явке учащихся',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_009'],
                 [$this->journalService, 'fixJournal_009'],
+                [$this->changeableService, 'changeJournal_009'],
             ),
             self::JOURNAL_010 => new Error(
                 'ЭЖ010', 'В образовательной программе не заполнено тематическое направление',
@@ -381,9 +386,10 @@ class ErrorDictionary extends BaseDictionary
             ),
             self::JOURNAL_012 => new Error(
                 'ЭЖ012', 'В образовательной программе количество академических часов не совпадает с учебно-тематическим планом',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_012'],
                 [$this->journalService, 'fixJournal_012'],
+                [$this->changeableService, 'changeJournal_012'],
             ),
             self::JOURNAL_013 => new Error(
                 'ЭЖ013', 'В образовательной программе не указаны составители',
@@ -411,9 +417,10 @@ class ErrorDictionary extends BaseDictionary
             ),
             self::JOURNAL_017 => new Error(
                 'ЭЖ017', 'Учебная группа должна находиться в архиве',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_017'],
                 [$this->journalService, 'fixJournal_017'],
+                [$this->changeableService, 'changeJournal_017'],
             ),
             self::JOURNAL_018 => new Error(
                 'ЭЖ018', 'В образовательной программе не указан отдел реализации',
@@ -435,21 +442,24 @@ class ErrorDictionary extends BaseDictionary
             ),
             self::JOURNAL_021 => new Error(
                 'ЭЖ021', 'В учебной группе отсутствует дата защиты',
-                Error::TYPE_BASE,
-                [$this->journalService, 'makeJournal_020'],
-                [$this->journalService, 'fixJournal_020'],
+                Error::TYPE_CHANGEABLE,
+                [$this->journalService, 'makeJournal_021'],
+                [$this->journalService, 'fixJournal_021'],
+                [$this->changeableService, 'changeJournal_021'],
             ),
             self::JOURNAL_022 => new Error(
                 'ЭЖ022', 'В учебной группе отсутствует тема проекта',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_022'],
                 [$this->journalService, 'fixJournal_022'],
+                [$this->changeableService, 'changeJournal_022'],
             ),
             self::JOURNAL_023 => new Error(
                 'ЭЖ023', 'В учебной группе отсутствует эксперт предстоящей защиты',
-                Error::TYPE_BASE,
+                Error::TYPE_CHANGEABLE,
                 [$this->journalService, 'makeJournal_023'],
                 [$this->journalService, 'fixJournal_023'],
+                [$this->changeableService, 'changeJournal_023'],
             ),
             self::JOURNAL_024 => new Error(
                 'ЭЖ024', 'Дата защиты раньше даты окончания занятий',

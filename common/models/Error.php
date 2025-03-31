@@ -146,4 +146,9 @@ class Error extends BaseObject
             return self::TYPE_CRITICAL;
         }
     }
+
+    public function isChangeable()
+    {
+        return $this->_type == self::TYPE_CHANGEABLE;
+    }
 }

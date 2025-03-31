@@ -719,11 +719,15 @@ class HtmlBuilder
         $errorsString = implode('<br>', array_map(function(ErrorsWork $error) {
             /** @var Error $errorTemplate */
             $errorTemplate = Yii::$app->errors->get($error->error);
-            return "<b>Ошибка $errorTemplate->code</b>: $errorTemplate->description";
+            $critImg = '';
+            if ($error->isCrititcal()) {
+                $critImg = '<img src="' . Yii::$app->basePath . '/web/' . FilePaths::ALERT_TRIANGLE . '" style="width: 25px">';
+            }
+            return "$critImg<b>Ошибка $errorTemplate->code</b>: $errorTemplate->description$critImg";
         }, $errors));
 
         return strlen($errorsString) > 0 ?
-            '<div class="alert alert-dismissible fade show alert-danger"  role="alert">
+            '<div class="alert alert-dismissible fade show alert-danger" role="alert">
                 '.$errorsString.'
             </div>' : '';
     }

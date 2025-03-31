@@ -27,6 +27,7 @@ class FilePaths
     public const SVG_CHECK = 'svg/do-circle.svg';
     public const SVG_CROSS = 'svg/dont-circle.svg';
     public const SVG_UP = 'svg/up.svg';
+    public const ALERT_TRIANGLE = 'img/alert-crit-error.jpg';
 
 
     public const CERTIFICATE_TEMPLATES = self::BASE_FILEPATH . '/certificate-templates/';

@@ -2,7 +2,9 @@
 
 namespace common\models\work;
 
+use common\components\dictionaries\base\ErrorDictionary;
 use common\helpers\StringFormatter;
+use common\models\Error;
 use common\models\scaffold\Errors;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\educational\TrainingGroupRepository;
@@ -110,5 +112,15 @@ class ErrorsWork extends Errors
         }
 
         return '';
+    }
+
+    public function setState(int $state = Error::TYPE_BASE)
+    {
+        $this->state = $state;
+    }
+
+    public function isCrititcal()
+    {
+        return $this->state == Error::TYPE_CRITICAL;
     }
 }

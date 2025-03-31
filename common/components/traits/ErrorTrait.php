@@ -50,5 +50,17 @@ trait ErrorTrait
             $errorEntity = Yii::$app->errors->get($error);
             $errorEntity->makeError($rowId);
         }
+
+        // В конце проверяем все ошибки на изменение их состояния (с обычного на критическое)
+        $newErrors = $this->errorsTraitRepository->getErrorsByTableRow($tableName, $rowId);
+
+        foreach ($newErrors as $error) {
+            /** @var ErrorsWork $error */
+            /** @var Error $errorEntity */
+            $errorEntity = Yii::$app->errors->get($error->error);
+            if ($errorEntity->isChangeable()) {
+                $errorEntity->changeState($error->id);
+            }
+        }
     }
 }

@@ -2,14 +2,26 @@
 
 namespace common\repositories\general;
 
+use common\models\Error;
 use common\models\work\ErrorsWork;
 use DomainException;
+use Yii;
 
 class ErrorsRepository
 {
     public function get(int $id)
     {
         return ErrorsWork::find()->where(['id' => $id])->one();
+    }
+
+    public function getChangeableErrors()
+    {
+        $errors = ErrorsWork::find()->all();
+        return array_filter($errors, function (ErrorsWork $error) {
+            /** @var Error $entity */
+            $entity = Yii::$app->errors->get($error->error);
+            return $entity->isChangeable();
+        });
     }
 
     public function getErrorsByTableRow(string $tableName, int $rowId)
