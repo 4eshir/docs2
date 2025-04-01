@@ -43,6 +43,7 @@ $userData = [
      */
     let currentIcon, IconTurnoutLink, IconNonAppearanceLink, IconDistantLink, IconDroppedLink, elements, svgData = '';
     let IconTurnout, IconNonAppearance, IconDistant, IconDropped;
+    let handlerReference = [];
 
     /**
      * Инициализация иконок
@@ -57,9 +58,9 @@ $userData = [
         saveSvgFile(IconTurnoutLink, IconNonAppearanceLink, IconDistantLink, IconDroppedLink);
         let cell = document.getElementsByClassName('attendance');
         Array.from(cell).forEach(oneCell => {
-            oneCell.addEventListener('click', function changeStatus() {
-                clickOneCell(oneCell);
-            });
+            const handler = eventHandler(oneCell);
+            oneCell.addEventListener('click', eventHandler(oneCell));
+            oneCell._handler = handler;
         });
     }
 
@@ -78,6 +79,17 @@ $userData = [
                 clickOneCell(cell);
             }
         });
+    }
+
+    /**
+     * Обертка-замыкание для передачи параметров
+     * @param oneCell
+     * @returns {(function(*): void)|*}
+     */
+    const eventHandler = (oneCell) => {
+        return function (event) {
+            clickOneCell(oneCell);
+        };
     }
 
     /**
@@ -184,12 +196,16 @@ $userData = [
         rows.forEach(row => {
             const firstCell = row.firstElementChild;
             const status = firstCell.getElementsByClassName('status-block');
-console.log(firstCell, status);
 
-            if (firstCell && status) {
+            if (firstCell && status.length > 0) {
                 Array.from(row.children).forEach(cell => {
                     cell.classList.add('status-block');
-                    cell.removeEventListener('click', function changeStatus(){});
+                    console.log(cell._handler);
+                    if (cell._handler) {
+                        cell.removeEventListener('click', cell._handler);
+                        delete cell._handler;
+                    }
+                    console.log(cell._handler);
                 });
             }
         });
