@@ -87,13 +87,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'summary' => false,
 
         'columns' => [
-            ['attribute' => 'name', 'encodeLabel' => false],
-            ['attribute' => 'datePeriod', 'encodeLabel' => false],
-            ['attribute' => 'eventLevelAndType', 'encodeLabel' => false, 'format' => 'raw'],
-            ['attribute' => 'address', 'encodeLabel' => false],
-            ['attribute' => 'participantCount', 'encodeLabel' => false],
+            ['attribute' => 'name', 'encodeLabel' => false, 'label' => 'Название<br>мероприятия'],
+            ['attribute' => 'datePeriod', 'encodeLabel' => false, 'label' => 'Период<br>проведения'],
+            ['attribute' => 'eventLevelAndType', 'label' => 'Уровень и Тип<br>мероприятия', 'encodeLabel' => false, 'format' => 'raw'],
+            ['attribute' => 'address', 'label' => 'Адрес<br>проведения', 'encodeLabel' => false],
+            ['attribute' => 'participantCount', 'label' => 'Кол-во<br>участников', 'encodeLabel' => false],
             ['attribute' => 'orderNameRaw', 'encodeLabel' => false, 'format' => 'raw'],
-            ['attribute' => 'eventWay', 'encodeLabel' => false],
+            ['attribute' => 'eventWay', 'label' => 'Формат<br>проведения', 'encodeLabel' => false],
             ['attribute' => 'regulationRaw', 'encodeLabel' => false, 'format' => 'raw'],
 
             ['class' => VerticalActionColumn::class],

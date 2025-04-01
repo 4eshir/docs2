@@ -4,6 +4,7 @@ namespace frontend\controllers\dictionaries;
 
 use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
+use common\helpers\ButtonsFormatter;
 use common\helpers\html\HtmlBuilder;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\act_participant\SquadParticipantRepository;
@@ -68,9 +69,16 @@ class ForeignEventParticipantsController extends Controller
         $searchModel = new SearchForeignEventParticipants();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sort);
 
+        $links = array_merge(
+            ButtonsFormatter::primaryCreateLink('участника'),
+            ButtonsFormatter::anyOneLink('Загрузить участников из файла', Yii::$app->frontUrls::PARTICIPANT_FILE_LOAD, ButtonsFormatter::BTN_SUCCESS)
+        );
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

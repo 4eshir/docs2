@@ -85,6 +85,7 @@ class ErrorJournalService
                     ErrorDictionary::JOURNAL_001,
                     TrainingGroupWork::tableName(),
                     $rowId,
+                    Yii::$app->errors->get(ErrorDictionary::JOURNAL_001)->getErrorState(),
                     $group->branch
                 )
             );
@@ -908,7 +909,7 @@ class ErrorJournalService
         /** @var TrainingGroupWork $group */
         $group = $this->groupRepository->get($rowId);
 
-        if ($group->finish_date >= $group->protection_date) {
+        if (!empty($group->protection_date) && $group->finish_date >= $group->protection_date) {
             $this->errorsRepository->save(
                 ErrorsWork::fill(
                     ErrorDictionary::JOURNAL_024,

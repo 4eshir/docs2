@@ -25,6 +25,7 @@ use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\educational\TrainingProgramRepository;
 use common\repositories\educational\VisitRepository;
 use common\services\DatabaseServiceInterface;
+use common\services\general\errors\ErrorService;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use DateTime;
@@ -82,6 +83,7 @@ class TrainingGroupService implements DatabaseServiceInterface
     private TrainingGroupFileNameGenerator $filenameGenerator;
     private PeopleStampService $peopleStampService;
     private JournalService $journalService;
+    private ErrorService $errorService;
 
     public function __construct(
         TrainingGroupRepository $trainingGroupRepository,
@@ -95,7 +97,8 @@ class TrainingGroupService implements DatabaseServiceInterface
         FileService $fileService,
         TrainingGroupFileNameGenerator $filenameGenerator,
         PeopleStampService $peopleStampService,
-        JournalService $journalService
+        JournalService $journalService,
+        ErrorService $errorService
     )
     {
         $this->trainingGroupRepository = $trainingGroupRepository;
@@ -110,6 +113,7 @@ class TrainingGroupService implements DatabaseServiceInterface
         $this->filenameGenerator = $filenameGenerator;
         $this->peopleStampService = $peopleStampService;
         $this->journalService = $journalService;
+        $this->errorService = $errorService;
     }
 
     public function convertBaseFormToModel(TrainingGroupBaseForm $form)
@@ -287,8 +291,11 @@ class TrainingGroupService implements DatabaseServiceInterface
         foreach ($modelTeachers as $teacher) {
             /** @var PeopleStamp $teacherStamp */
             /** @var TeacherGroupWork $teacher */
-            $teacherStamp = $this->peopleStampService->createStampFromPeople($teacher->peopleId);
-            $newTeachers[] = TeacherGroupWork::fill($teacherStamp, $form->id);
+            if ($teacher->peopleId) {
+                $teacherStamp = $this->peopleStampService->createStampFromPeople($teacher->peopleId);
+                $newTeachers[] = TeacherGroupWork::fill($teacherStamp, $form->id);
+            }
+
         }
         $newTeachers = array_unique($newTeachers);
 
@@ -547,10 +554,11 @@ class TrainingGroupService implements DatabaseServiceInterface
      *
      * @param array $actual список id учебных групп, которые требуется сделать актуальными
      * @param array $unactual список id учебных групп, которые требуется сделать архивными
-     * @return void
+     * @return array
      */
     public function setGroupArchive(array $actual, array $unactual)
     {
+        $errors = [];
         foreach ($actual as $actualId) {
             /** @var TrainingGroupWork $group */
             $group = $this->trainingGroupRepository->get($actualId);
@@ -561,9 +569,16 @@ class TrainingGroupService implements DatabaseServiceInterface
         foreach ($unactual as $unactualId) {
             /** @var TrainingGroupWork $group */
             $group = $this->trainingGroupRepository->get($unactualId);
-            $group->setArchive(TrainingGroupWork::IS_ARCHIVE);
-            $this->trainingGroupRepository->save($group);
+            if (!$this->errorService->isGroupRestrict($unactualId)) {
+                $group->setArchive(TrainingGroupWork::IS_ARCHIVE);
+                $this->trainingGroupRepository->save($group);
+            }
+            else {
+                $errors[] = "Невозможно добавить группу $group->number с ошибками в архив";
+            }
         }
+
+        return $errors;
     }
 
     public function refreshVisitsByParticipants(int $groupId)

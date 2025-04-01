@@ -45,6 +45,11 @@ class TrainingProgramRepository
         return TrainingProgramWork::find()->all();
     }
 
+    public function getAllActual()
+    {
+        return TrainingProgramWork::find()->where(['actual' => TrainingProgramWork::ACTUAL])->all();
+    }
+
     public function getByFocuses(array $focuses)
     {
         return TrainingProgramWork::find()->where(['IN', 'focus', $focuses])->all();

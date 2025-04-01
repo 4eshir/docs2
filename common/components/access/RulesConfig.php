@@ -128,7 +128,9 @@ class RulesConfig
         ],
 
         'forgive_study_errors' => [
-
+            \frontend\controllers\educational\TrainingGroupController::class => [
+                'amnesty'
+            ]
         ],
 
         'forgive_base_errors' => [

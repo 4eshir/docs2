@@ -4,6 +4,8 @@ namespace frontend\controllers\dictionaries;
 
 use common\components\traits\AccessControl;
 use common\controllers\DocumentController;
+use common\helpers\ButtonsFormatter;
+use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\general\FilesRepository;
 use common\services\general\files\FileService;
@@ -58,9 +60,13 @@ class AuditoriumController extends DocumentController
         $searchModel = new SearchAuditorium();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $links = ButtonsFormatter::primaryCreateLink('помещение');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

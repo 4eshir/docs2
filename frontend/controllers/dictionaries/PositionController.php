@@ -3,6 +3,8 @@
 namespace frontend\controllers\dictionaries;
 
 use common\components\traits\AccessControl;
+use common\helpers\ButtonsFormatter;
+use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\PositionRepository;
 use DomainException;
 use frontend\models\search\SearchPosition;
@@ -33,9 +35,13 @@ class PositionController extends Controller
         $searchModel = new SearchPosition();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $links = ButtonsFormatter::primaryCreateLink('должность');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

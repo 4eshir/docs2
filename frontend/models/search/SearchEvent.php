@@ -104,7 +104,7 @@ class SearchEvent extends Model implements SearchInterfaces
                     'scopesWork' => function ($query) {
                         $query->alias('scopes');
                     },
-                    'branchesWork' => function ($query) {
+                    'eventBranchWorks' => function ($query) {
                         $query->alias('branches');
                     },
                     'responsible1Work' => function ($query) {

@@ -3,6 +3,8 @@
 namespace frontend\controllers\dictionaries;
 
 use common\components\traits\AccessControl;
+use common\helpers\ButtonsFormatter;
+use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\CompanyRepository;
 use DomainException;
 use frontend\models\search\SearchCompany;
@@ -38,9 +40,13 @@ class CompanyController extends Controller
         $searchModel = new SearchCompany();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $links = ButtonsFormatter::primaryCreateLink('организацию');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

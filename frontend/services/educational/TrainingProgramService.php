@@ -258,8 +258,12 @@ class TrainingProgramService implements DatabaseServiceInterface
 
     public function attachAuthors(TrainingProgramWork $model, array $authors)
     {
+        $authors = array_unique($authors);
         foreach ($authors as $author) {
-            if (!StringFormatter::isEmpty($author)) {
+            $currentAuthors = array_map(function (AuthorProgramWork $authorProgram) {
+                return $authorProgram->authorWork->peopleWork->id;
+            }, $this->repository->getAuthors($model->id));
+            if (!StringFormatter::isEmpty($author) && !in_array($author, $currentAuthors)) {
                 $authorStamp = $this->peopleStampService->createStampFromPeople($author);
                 $model->recordEvent(new CreateAuthorProgramEvent($model->id, $authorStamp), AuthorProgramWork::class);
             }

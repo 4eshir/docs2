@@ -128,8 +128,10 @@ class Urls
      * Константы ForeignEventParticipants
      *
      * PARTICIPANT_VIEW - actionView
+     * PARTICIPANT_FILE_LOAD - actionFileLoad
      */
     const PARTICIPANT_VIEW = "dictionaries/foreign-event-participants/view";
+    const PARTICIPANT_FILE_LOAD = "dictionaries/foreign-event-participants/file-load";
 
     /**
      * Константы People
@@ -139,11 +141,34 @@ class Urls
     const PEOPLE_VIEW = "dictionaries/people/view";
 
     /**
+     * Константы Company
+     *
+     * COMPANY_VIEW - actionView
+     */
+    const COMPANY_VIEW = "dictionaries/company/view";
+
+    /**
+     * Константы Company
+     *
+     * POSITION_VIEW - actionView
+     */
+    const POSITION_VIEW = "dictionaries/position/view";
+
+    /**
+     * Константы Auditorium
+     *
+     * AUDITORIUM_VIEW - actionView
+     */
+    const AUDITORIUM_VIEW = "dictionaries/auditorium/view";
+
+    /**
      * Константы OrderMain
      *
      * ORDER_MAIN_VIEW - actionView
+     * ORDER_MAIN_RESERVE - actionReserve
      */
     const ORDER_MAIN_VIEW = "order/order-main/view";
+    const ORDER_MAIN_RESERVE = "order/order-main/reserve";
 
     /**
      * Константы OrderTraining

@@ -8,22 +8,22 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="position-search">
+<!--<div class="position-search">
 
-    <?php $form = ActiveForm::begin([
+    <?php /*$form = ActiveForm::begin([
         'action' => ['index'],
         'method' => 'get',
-    ]); ?>
+    ]); */?>
 
-    <?= $form->field($model, 'id') ?>
+    <?php /*= $form->field($model, 'id') */?>
 
-    <?= $form->field($model, 'name') ?>
+    <?php /*= $form->field($model, 'name') */?>
 
     <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) ?>
+        <?php /*= Html::submitButton('Search', ['class' => 'btn btn-primary']) */?>
+        <?php /*= Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) */?>
     </div>
 
-    <?php ActiveForm::end(); ?>
+    <?php /*ActiveForm::end(); */?>
 
-</div>
+</div>-->

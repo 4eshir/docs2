@@ -202,6 +202,7 @@ $this->params['breadcrumbs'][] = 'Группа '.$this->title;
     <p>
         <?= Html::a('Перенести темы занятий из ОП', ['create-lesson-themes', 'groupId' => $model->id], ['class' => 'btn btn-secondary']) ?>
         <?= Html::a('Скачать КУГ', ['download-plan', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Простить ошибки', ['amnesty', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
 
         <?= HtmlBuilder::createDualityButton(
             ['Архивировать', 'Разархивировать'],

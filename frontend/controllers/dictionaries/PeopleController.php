@@ -4,6 +4,8 @@ namespace frontend\controllers\dictionaries;
 
 use app\components\DynamicWidget;
 use common\components\traits\AccessControl;
+use common\helpers\ButtonsFormatter;
+use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use frontend\events\dictionaries\PeopleEventCreate;
 use frontend\events\dictionaries\PeoplePositionCompanyBranchEventCreate;
@@ -36,7 +38,8 @@ class PeopleController extends Controller
         PeopleService      $service,
         CompanyRepository  $companyRepository,
         PositionRepository $positionRepository,
-        $config = [])
+        $config = []
+    )
     {
         parent::__construct($id, $module, $config);
         $this->repository = $peopleRepository;
@@ -50,9 +53,13 @@ class PeopleController extends Controller
         $searchModel = new SearchPeople();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $links = ButtonsFormatter::primaryCreateLink('человека');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

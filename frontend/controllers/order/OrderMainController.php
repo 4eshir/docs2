@@ -6,7 +6,9 @@ use app\models\forms\OrderMainForm;
 use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
+use common\helpers\ButtonsFormatter;
 use common\helpers\ErrorAssociationHelper;
+use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\DocumentOrder;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\expire\ExpireRepository;
@@ -78,11 +80,25 @@ class OrderMainController extends DocumentController
     public function actionIndex(){
         $searchModel = new SearchOrderMain();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        $links = array_merge(
+            ButtonsFormatter::primaryCreateLink('приказ'),
+            ButtonsFormatter::anyOneLink('Добавить резерв', Yii::$app->frontUrls::ORDER_MAIN_RESERVE, ButtonsFormatter::BTN_SUCCESS),
+        );
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml
         ]);
     }
+
+    public function actionReserve()
+    {
+
+    }
+
     public function actionCreate(){
 
         $form = new OrderMainForm(

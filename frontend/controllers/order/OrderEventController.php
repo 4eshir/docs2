@@ -12,8 +12,10 @@ use app\models\work\order\OrderEventGenerateWork;
 use app\services\order\OrderEventGenerateService;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\traits\AccessControl;
+use common\helpers\ButtonsFormatter;
 use common\helpers\ErrorAssociationHelper;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\OrderEventGenerate;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\order\DocumentOrderRepository;
@@ -125,9 +127,14 @@ class OrderEventController extends DocumentController
     public function actionIndex() {
         $searchModel = new SearchOrderEvent();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        $links = ButtonsFormatter::primaryCreateLink('приказ');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

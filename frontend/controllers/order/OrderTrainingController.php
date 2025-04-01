@@ -6,6 +6,8 @@ use app\components\DynamicWidget;
 use app\events\document_order\DocumentOrderDeleteEvent;
 use app\models\forms\OrderTrainingForm;
 use common\components\traits\AccessControl;
+use common\helpers\ButtonsFormatter;
+use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\order\DocumentOrderRepository;
 use frontend\components\GroupParticipantWidget;
@@ -78,15 +80,24 @@ class OrderTrainingController extends DocumentController
         $this->documentOrderRepository = $documentOrderRepository;
         parent::__construct($id, $module, $fileService, $filesRepository, $config);
     }
-    public function actionIndex(){
+
+    public function actionIndex()
+    {
         $searchModel = new SearchOrderTraining();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        $links = ButtonsFormatter::primaryCreateLink('приказ');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml
         ]);
     }
-    public function actionView($id, $error = NULL){
+
+    public function actionView($id, $error = NULL)
+    {
         $model = $this->orderTrainingRepository->get($id);
         $modelResponsiblePeople = implode('<br>',
             $this->documentOrderService->createOrderPeopleArray(
@@ -104,7 +115,9 @@ class OrderTrainingController extends DocumentController
             'error' => $error
         ]);
     }
-    public function actionCreate(){
+
+    public function actionCreate()
+    {
         $model = new OrderTrainingWork();
         $form = new OrderTrainingForm(
             $this->peopleRepository->getOrderedList(),
@@ -142,6 +155,7 @@ class OrderTrainingController extends DocumentController
 
         ]);
     }
+
     public function actionUpdate($id, $error = NULL)
     {
         if ($this->lockWizard->lockObject($id, DocumentOrderWork::tableName(), Yii::$app->user->id)) {

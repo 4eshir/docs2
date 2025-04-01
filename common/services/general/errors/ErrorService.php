@@ -3,6 +3,7 @@
 
 namespace common\services\general\errors;
 
+use common\components\dictionaries\base\ErrorDictionary;
 use common\models\Error;
 use common\models\work\ErrorsWork;
 use common\models\work\UserWork;
@@ -150,6 +151,13 @@ class ErrorService
             $error->setAmnesty();
             $this->errorsRepository->save($error);
         }
+    }
+
+    public function isGroupRestrict(int $groupId)
+    {
+        /** @var ErrorsWork[] $errors */
+        $errors = $this->errorsRepository->getErrorsByTableRow(TrainingGroupWork::tableName(), $groupId);
+        return !((count($errors) == 0 || count($errors) == 1 && $errors[0]->error == ErrorDictionary::JOURNAL_017));
     }
 
 }

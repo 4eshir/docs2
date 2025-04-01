@@ -8,26 +8,27 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="foreign-event-participants-search">
+<!--<div class="foreign-event-participants-search">
 
-    <?php $form = ActiveForm::begin([
+    <?php /*$form = ActiveForm::begin([
         'action' => ['index'],
         'method' => 'get',
-    ]); ?>
+    ]); */?>
 
-    <?= $form->field($model, 'id') ?>
+    <?php /*= $form->field($model, 'id') */?>
 
-    <?= $form->field($model, 'firstname') ?>
+    <?php /*= $form->field($model, 'firstname') */?>
 
-    <?= $form->field($model, 'secondname') ?>
+    <?php /*= $form->field($model, 'secondname') */?>
 
-    <?= $form->field($model, 'patronymic') ?>
+    <?php /*= $form->field($model, 'patronymic') */?>
 
     <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) ?>
+        <?php /*= Html::submitButton('Search', ['class' => 'btn btn-primary']) */?>
+        <?php /*= Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) */?>
     </div>
 
-    <?php ActiveForm::end(); ?>
+    <?php /*ActiveForm::end(); */?>
 
 </div>
+-->
