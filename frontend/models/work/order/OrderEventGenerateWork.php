@@ -15,7 +15,8 @@ class OrderEventGenerateWork extends OrderEventGenerate
         $extraRespInsert,
         $timeInsertDay,
         $extraRespMethod,
-        $extraRespInfoStuff
+        $extraRespInfoStuff,
+        $documentDetails = null
 
     ){
         $entity = new static();
@@ -28,6 +29,7 @@ class OrderEventGenerateWork extends OrderEventGenerate
         $entity->time_insert_day = $timeInsertDay;
         $entity->extra_resp_method_id = $extraRespMethod;
         $entity->extra_resp_info_stuff_id = $extraRespInfoStuff;
+        $entity->document_details = $documentDetails;
         return $entity;
     }
     public function fillUpdate(
@@ -39,7 +41,9 @@ class OrderEventGenerateWork extends OrderEventGenerate
         $extraRespInsert,
         $timeInsertDay,
         $extraRespMethod,
-        $extraRespInfoStuff
+        $extraRespInfoStuff,
+        $documentDetails = null
+
     ){
         $this->order_id = $orderId;
         $this->purpose = $purpose;
@@ -50,5 +54,6 @@ class OrderEventGenerateWork extends OrderEventGenerate
         $this->time_insert_day = $timeInsertDay;
         $this->extra_resp_method_id = $extraRespMethod;
         $this->extra_resp_info_stuff_id = $extraRespInfoStuff;
+        $this->document_details = $documentDetails;
     }
 }

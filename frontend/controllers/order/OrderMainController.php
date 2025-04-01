@@ -96,7 +96,10 @@ class OrderMainController extends DocumentController
 
     public function actionReserve()
     {
-
+        $model = new OrderMainWork();
+        $this->service->createReserve($model);
+        $this->repository->save($model);
+        return $this->redirect(['index']);
     }
 
     public function actionCreate(){
