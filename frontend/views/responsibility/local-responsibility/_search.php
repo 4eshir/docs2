@@ -8,32 +8,32 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="local-responsibility-search">
+<!--<div class="local-responsibility-search">
 
-    <?php $form = ActiveForm::begin([
+    <?php /*$form = ActiveForm::begin([
         'action' => ['index'],
         'method' => 'get',
-    ]); ?>
+    ]); */?>
 
-    <?= $form->field($model, 'id') ?>
+    <?php /*= $form->field($model, 'id') */?>
 
-    <?= $form->field($model, 'responsibility_type_id') ?>
+    <?php /*= $form->field($model, 'responsibility_type_id') */?>
 
-    <?= $form->field($model, 'branch_id') ?>
+    <?php /*= $form->field($model, 'branch_id') */?>
 
-    <?= $form->field($model, 'auditorium_id') ?>
+    <?php /*= $form->field($model, 'auditorium_id') */?>
 
-    <?= $form->field($model, 'people_id') ?>
+    <?php /*= $form->field($model, 'people_id') */?>
 
-    <?php // echo $form->field($model, 'regulation_id') ?>
+    <?php /*// echo $form->field($model, 'regulation_id') */?>
 
-    <?php // echo $form->field($model, 'files') ?>
+    <?php /*// echo $form->field($model, 'files') */?>
 
     <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) ?>
+        <?php /*= Html::submitButton('Search', ['class' => 'btn btn-primary']) */?>
+        <?php /*= Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) */?>
     </div>
 
-    <?php ActiveForm::end(); ?>
+    <?php /*ActiveForm::end(); */?>
 
-</div>
+</div>-->

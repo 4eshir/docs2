@@ -2,13 +2,23 @@
 
 namespace frontend\models\work\order;
 
+use common\components\interfaces\FileInterface;
 use common\events\EventTrait;
 use common\helpers\files\FilesHelper;
 use common\models\scaffold\DocumentOrder;
-use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
+use common\models\work\UserWork;
+use frontend\models\work\general\OrderPeopleWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
+use Yii;
+
+/* @property PeopleStampWork $bringWork */
+/* @property PeopleStampWork $executorWork */
+/* @property UserWork $creatorWork */
+/* @property UserWork $lastUpdateWork */
+/* @property ExpireWork[] $expireWorks */
+/* @property OrderPeopleWork[] $orderPeopleWorks */
 
 class DocumentOrderWork extends DocumentOrder
 {
@@ -90,26 +100,6 @@ class DocumentOrderWork extends DocumentOrder
         }
     }
 
-    public function getCreatorWork()
-    {
-        return PeopleStampWork::findOne($this->creator_id);
-    }
-
-    public function getLastUpdateWork()
-    {
-        return PeopleStampWork::findOne($this->last_edit_id);
-    }
-
-    public function getBringWork()
-    {
-        return PeopleStampWork::findOne($this->bring_id);
-    }
-
-    public function getExecutorWork()
-    {
-        return PeopleStampWork::findOne($this->executor_id);
-    }
-
     public function getExecutorName()
     {
         $model = PeopleStampWork::findOne($this->executor_id);
@@ -121,7 +111,7 @@ class DocumentOrderWork extends DocumentOrder
         }
     }
 
-    public function getFileLinks($filetype)
+    public function getFileLinks($filetype) : array
     {
         if (!array_key_exists($filetype, FilesHelper::getFileTypes())) {
             throw new InvalidArgumentException('Неизвестный тип файла');
@@ -133,9 +123,6 @@ class DocumentOrderWork extends DocumentOrder
                 break;
             case FilesHelper::TYPE_DOC:
                 $addPath = FilesHelper::createAdditionalPath(DocumentOrderWork::tableName(), FilesHelper::TYPE_DOC);
-                break;
-            case FilesHelper::TYPE_APP:
-                $addPath = FilesHelper::createAdditionalPath(DocumentOrderWork::tableName(), FilesHelper::TYPE_APP);
                 break;
         }
         return FilesHelper::createFileLinks($this, $filetype, $addPath);
@@ -161,5 +148,47 @@ class DocumentOrderWork extends DocumentOrder
     public function isEvent()
     {
         return $this->type == DocumentOrderWork::ORDER_EVENT;
+    }
+
+    public function beforeSave($insert)
+    {
+        if(!(Yii::$app instanceof yii\console\Application)) {
+            if ($this->creator_id == null) {
+                $this->creator_id = Yii::$app->user->identity->getId();
+            }
+            $this->last_edit_id = Yii::$app->user->identity->getId();
+        }
+
+        return parent::beforeSave($insert);
+    }
+
+    public function getBringWork()
+    {
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'bring_id']);
+    }
+
+    public function getExecutorWork()
+    {
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'executor_id']);
+    }
+
+    public function getCreatorWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
+    }
+
+    public function getLastUpdateWork()
+    {
+        return $this->hasOne(UserWork::class, ['id' => 'last_edit_id']);
+    }
+
+    public function getExpireWorks()
+    {
+        return $this->hasMany(ExpireWork::class, ['active_regulation_id' => 'id']);
+    }
+
+    public function getOrderPeopleWork()
+    {
+        return $this->hasMany(OrderPeopleWork::class, ['order_id' => 'id']);
     }
 }

@@ -6,9 +6,16 @@ use common\events\EventTrait;
 use common\models\scaffold\Expire;
 use frontend\models\work\regulation\RegulationWork;
 
+/* @property RegulationWork $expireRegulationWork */
+/* @property DocumentOrderWork $expireOrderWork */
+
 class ExpireWork extends Expire
 {
     use EventTrait;
+
+    const DENY_TYPE = 1;
+    const CHANGE_TYPE = 2;
+
     public static function fill(
         $active_regulation_id,
         $expire_regulation_id,
@@ -54,5 +61,15 @@ class ExpireWork extends Expire
         $this->expire_order_id = $post['expireOrderId'];
         $this->document_type = DocumentOrderWork::ORDER_MAIN;
         $this->expire_type = $post['expireType'];
+    }
+
+    public function getExpireRegulationWork()
+    {
+        return $this->hasOne(RegulationWork::class, ['id' => 'expire_regulation_id']);
+    }
+
+    public function getExpireOrderWork()
+    {
+        return $this->hasOne(DocumentOrderWork::class, ['id' => 'expire_order_id']);
     }
 }

@@ -193,6 +193,9 @@ class OrderMainController extends DocumentController
         return $this->redirect(['index']);
     }
     public function actionView($id){
+        $links = ButtonsFormatter::updateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         $modelResponsiblePeople = implode('<br>',
             $this->documentOrderService->createOrderPeopleArray(
                 $this->orderPeopleRepository->getResponsiblePeople($id)
@@ -203,10 +206,16 @@ class OrderMainController extends DocumentController
                 $this->expireRepository->getExpireByActiveRegulationId($id)
             )
         );
+
+        /** @var OrderMainWork $model */
+        $model = $this->repository->get($id);
+        $model->checkFilesExist();
+
         return $this->render('view', [
-            'model' => $this->repository->get($id),
+            'model' => $model,
             'modelResponsiblePeople' => $modelResponsiblePeople,
-            'modelChangedDocuments' => $modelChangedDocuments
+            'modelChangedDocuments' => $modelChangedDocuments,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

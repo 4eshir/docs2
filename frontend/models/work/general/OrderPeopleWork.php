@@ -6,6 +6,8 @@ use common\models\scaffold\OrderPeople;
 
 use frontend\models\work\general\PeopleWork;
 
+/* @property PeopleStampWork $peopleStampWork */
+
 class OrderPeopleWork extends OrderPeople
 {
     public static function fill(
@@ -27,5 +29,10 @@ class OrderPeopleWork extends OrderPeople
     }
     public static function getByOrderId($id){
         return OrderPeopleWork::find()->where(['order_id' => $id])->all();
+    }
+
+    public function getPeopleStampWork()
+    {
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'people_id']);
     }
 }

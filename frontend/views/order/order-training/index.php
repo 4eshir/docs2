@@ -62,7 +62,6 @@ $tempArchive = $session->get("archiveIn");
     <?=
         GridView::widget([
             'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
             'summary' => false,
 
             'columns' => [

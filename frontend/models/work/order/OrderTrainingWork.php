@@ -3,6 +3,7 @@
 namespace frontend\models\work\order;
 
 use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
+use frontend\models\work\general\PeopleStampWork;
 use frontend\services\order\OrderMainService;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\events\EventTrait;
@@ -11,11 +12,11 @@ use common\repositories\order\OrderMainRepository;
 use frontend\models\work\general\PeopleWork;
 use Yii;
 /**
- * @property PeopleWork $correspondentWork
- * @property PeopleWork $creatorWork
- * @property PeopleWork $lastUpdateWork
- * @property PeopleWork $executorWork
- * @property PeopleWork $bringWork
+ * @property PeopleStampWork $correspondentWork
+ * @property PeopleStampWork $creatorWork
+ * @property PeopleStampWork $lastUpdateWork
+ * @property PeopleStampWork $executorWork
+ * @property PeopleStampWork $bringWork
  */
 class OrderTrainingWork extends DocumentOrderWork
 {

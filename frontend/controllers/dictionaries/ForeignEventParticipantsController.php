@@ -88,8 +88,12 @@ class ForeignEventParticipantsController extends Controller
         $model = $this->repository->get($id);
         $model->fillPersonalDataRestrict($this->personalDataRepository->getPersonalDataRestrict($id));
 
+        $links = ButtonsFormatter::updateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('view', [
             'model' => $model,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

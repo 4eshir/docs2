@@ -61,8 +61,8 @@ class Urls
      * FOREIGN_EVENT_VIEW - actionView
      * FOREIGN_EVENT_INDEX - actionIndex
      */
-    const FOREIGN_EVENT_VIEW = "event/foreign-event/index";
-    const FOREIGN_EVENT_INDEX = "event/foreign-event/view";
+    const FOREIGN_EVENT_VIEW = "event/foreign-event/view";
+    const FOREIGN_EVENT_INDEX = "event/foreign-event/index";
 
     /**
      * Константы TrainingProgram
@@ -160,6 +160,13 @@ class Urls
      * AUDITORIUM_VIEW - actionView
      */
     const AUDITORIUM_VIEW = "dictionaries/auditorium/view";
+
+    /**
+     * Константы LocalResponsibility
+     *
+     * LOCAL_RESPONSIBILITY_VIEW - actionView
+     */
+    const LOCAL_RESPONSIBILITY_VIEW = "responsibility/local-responsibility/view";
 
     /**
      * Константы OrderMain

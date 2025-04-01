@@ -1,14 +1,17 @@
 <?php
 
 use common\helpers\DateFormatter;
+use common\helpers\html\HtmlBuilder;
 use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
+use frontend\models\work\dictionaries\PersonInterface;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model ForeignEventParticipantsWork */
+/* @var $buttonsAct */
 
-$this->title = $model->getFIO(ForeignEventParticipantsWork::FIO_FULL);
+$this->title = $model->getFIO(PersonInterface::FIO_FULL);
 $this->params['breadcrumbs'][] = ['label' => 'Участники деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -48,63 +51,97 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="foreign-event-participants-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="substrate">
+        <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Вы действительно хотите удалить участника?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+        <div class="flexx space">
+            <div class="flexx">
+                <?= $buttonsAct ?>
+            </div>
+        </div>
+    </div>
 
-    <h4><u>Общая информация</u></h4>
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'firstname',
-            'surname',
-            'patronymic',
-            ['label' => 'Дата рождения', 'attribute' => 'birthdate', 'value' => function(ForeignEventParticipantsWork $model) {
-                return DateFormatter::format($model->birthdate, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
-            }],
-            ['attribute' => 'sex', 'value' => function(ForeignEventParticipantsWork $model) {
-                return $model->getSexString();
-            }],
-            'email',
-        ],
-    ]) ?>
-
-    <h4><u>Информация об участии в мероприятиях</u></h4>
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            ['attribute' => 'documents', 'format' => 'raw'],
-            ['attribute' => 'achievements', 'format' => 'raw'],
-            ['attribute' => 'participantEvents', 'format' => 'raw'],
-        ],
-    ]) ?>
-
-    <h4><u>Информация об участии в образовательных программах</u></h4>
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            ['attribute' => 'studies', 'format' => 'raw'],
-        ],
-    ]) ?>
-
-    <h4><u>Разглашение персональных данных</u></h4>
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            ['attribute' => 'personalData', 'value' => function(ForeignEventParticipantsWork $model) {
-                return $model->createRawPersonalData();
-            },
-            'format' => 'html', 'label' => false],
-        ],
-    ]) ?>
+    <div class="card">
+        <div class="card-block-1">
+            <div class="card-set">
+                <div class="card-head">Основное</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        ФИО
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getFIO(PersonInterface::FIO_FULL) ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Дата рождения
+                    </div>
+                    <div class="field-date">
+                        <?= DateFormatter::format($model->birthdate, DateFormatter::Ymd_dash, DateFormatter::dmY_dot) ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Пол
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getSexString() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        E-mail
+                    </div>
+                    <div class="field-date">
+                        <?= $model->email ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-2">
+            <div class="card-set">
+                <div class="card-head">Участие в мероприятиях</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Достижения
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getPrettyAchieves() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Мероприятия
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getPrettyEvents() ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Участие в образовательных программах</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Группы
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getPrettyGroups() ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Персональные данные</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Разглашение
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getPrettyPersonals() ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>

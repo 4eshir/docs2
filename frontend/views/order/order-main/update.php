@@ -15,7 +15,7 @@ use yii\helpers\Html;
 /* @var $docFiles */
 
 $this->title = 'Приказ об основной деятельности №' . $model->order_number;
-$this->params['breadcrumbs'][] = ['label' => 'Приказ об основной деятельности', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Приказы об основной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Редактирование';
 

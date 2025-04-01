@@ -72,24 +72,24 @@ $this->params['breadcrumbs'][] = $this->title;
             'summary' => false,
 
             'columns' => [
-                ['attribute' => 'fullNumber'],
-                ['attribute' => 'localDate',
+                ['attribute' => 'fullNumber', 'label' => '№ п/п'],
+                ['attribute' => 'localDate', 'label' => 'Дата<br>документа',
                     'value' => function(DocumentInWork $model){
                         return DateFormatter::format($model->local_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
                     },
                     'encodeLabel' => false,
                 ],
-                ['attribute' => 'realDate',
+                ['attribute' => 'realDate', 'label' => 'Дата входящего<br>документа',
                     'encodeLabel' => false,
                     'value' => function(DocumentInWork $model) {
                         return DateFormatter::format($model->real_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
                     },
                 ],
-                ['attribute' => 'realNumber', 'encodeLabel' => false],
+                ['attribute' => 'realNumber', 'encodeLabel' => false, 'label' => 'Рег. номер<br>входящего док.'],
 
-                ['attribute' => 'companyName', 'encodeLabel' => false],
-                ['attribute' => 'documentTheme', 'encodeLabel' => false],
-                ['attribute' => 'sendMethodName',
+                ['attribute' => 'companyName', 'encodeLabel' => false, 'label' => 'Наименование<br>корреспондента'],
+                ['attribute' => 'documentTheme', 'encodeLabel' => false, 'label' => 'Тема<br>документа'],
+                ['attribute' => 'sendMethodName', 'label' => 'Способ<br>получения', 'encodeLabel' => false,
                     'value' => function(DocumentInWork $model) {
                         return Yii::$app->sendMethods->get($model->send_method);
                     }

@@ -6,12 +6,16 @@ use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilePaths;
 use common\helpers\html\HtmlBuilder;
+use common\helpers\StringFormatter;
 use common\models\scaffold\ForeignEventParticipants;
 use common\models\scaffold\PersonalDataParticipant;
+use common\repositories\event\ParticipantAchievementRepository;
+use frontend\models\work\event\ParticipantAchievementWork;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\Url;
 
 /**
 * @property PersonalDataParticipantWork $personalDataParticipantWork
@@ -226,6 +230,41 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
     public function isFemale()
     {
         return $this->sex === 'Женский';
+    }
+
+    public function getPrettyAchieves()
+    {
+        $result = [];
+        /** @var ParticipantAchievementWork[] $achieves */
+        $achieves = (Yii::createObject(ParticipantAchievementRepository::class))->getByParticipantId($this->id);
+        foreach ($achieves as $achieve) {
+            $result[] = HtmlBuilder::createSubtitleAndClarification(
+                $achieve->achievement . ' - ' .
+                StringFormatter::stringAsLink(
+                    $achieve->actParticipantWork->foreignEventWork->name,
+                    Url::to([Yii::$app->frontUrls::FOREIGN_EVENT_VIEW, 'id' => $achieve->actParticipantWork->foreign_event_id])
+                ) .
+                " ({$achieve->actParticipantWork->foreignEventWork->end_date})",
+                ''
+            );
+        }
+
+        return HtmlBuilder::arrayToAccordion($result);
+    }
+
+    public function getPrettyEvents()
+    {
+
+    }
+
+    public function getPrettyGroups()
+    {
+
+    }
+
+    public function getPrettyPersonals()
+    {
+
     }
 
     public function getPersonalDataParticipantWork()

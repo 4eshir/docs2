@@ -23,7 +23,7 @@ use yii\helpers\Html;
 /* @var $id */
 
 $this->title = 'Изменить приказ об участии деятельности № ' . $model->order_number;
-$this->params['breadcrumbs'][] = ['label' => 'Приказ об участии', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Приказы об участии', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $id]];
 $this->params['breadcrumbs'][] = 'Редактирование';
 

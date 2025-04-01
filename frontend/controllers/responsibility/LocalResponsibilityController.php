@@ -4,6 +4,7 @@ namespace frontend\controllers\responsibility;
 
 use common\components\BaseConsts;
 use common\components\traits\AccessControl;
+use common\helpers\ButtonsFormatter;
 use common\helpers\html\HtmlBuilder;
 use common\repositories\dictionaries\AuditoriumRepository;
 use common\repositories\dictionaries\PeopleRepository;
@@ -86,9 +87,13 @@ class LocalResponsibilityController extends Controller
         $searchModel = new SearchLocalResponsibility();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $links = ButtonsFormatter::primaryCreateLink('ответственность');
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

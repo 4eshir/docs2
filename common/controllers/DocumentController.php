@@ -100,7 +100,6 @@ class DocumentController extends Controller
                 $zip->addFile($fileData['obj']->file, $filename);
             } else {
                 $filename = FilesHelper::getFilenameFromPath($fileData['obj']->filepath);
-                var_dump($path);
                 $content = file_get_contents($fileData['obj']->file);
                 $zip->addFromString($filename, $content);
             }
