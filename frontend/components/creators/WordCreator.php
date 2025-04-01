@@ -370,10 +370,10 @@ class WordCreator
 
         /* переменная цели и соответствия*/
         $purpose = Yii::$app->goals->get($supplement->purpose);
-        $invitation = '';
+        $invitations = ['', ' и в соответствии с Регламентом', ' и в соответствии с Письмом', ' и в соответствии с Положением'];
+        $invitation = $invitations[$supplement->doc_event].' '.$supplement->document_details;
         $section->addText('С целью '.$purpose.$invitation, null, array('align' => 'both', 'indentation' => array('hanging' => -700)));
         $section->addTextBreak(1);
-
         $section->addText('ПРИКАЗЫВАЮ:', array('lineHeight' => 1.0), array('spaceAfter' => 0));
         $section->addText('1.	Принять участие в мероприятии «'.$foreignEvent->name.'» (далее – мероприятие) и утвердить перечень учащихся, участвующих в мероприятии, и педагогов, ответственных за подготовку и контроль результатов участия в мероприятии, согласно Приложению к настоящему приказу.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
         $section->addText('2.	Назначить ответственным за сбор и предоставление информации об участии в мероприятии для внесения в Цифровую систему хранения документов ГАОУ АО ДО «РШТ» (далее – ЦСХД) '.$supplement->respPeopleInfo->getFullFio().'.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));

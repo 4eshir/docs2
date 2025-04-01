@@ -18,6 +18,7 @@ use Yii;
  * @property int|null $time_insert_day
  * @property int|null $extra_resp_method_id
  * @property int|null $extra_resp_info_stuff_id
+ * @property int|null $document_details
  *
  * @property PeopleStampWork $extraRespInfoStuff
  * @property PeopleStampWork $extraRespInsert
@@ -43,6 +44,7 @@ class OrderEventGenerate extends \yii\db\ActiveRecord
         return [
             [['order_id'], 'required'],
             [['order_id', 'purpose', 'doc_event', 'resp_people_info_id', 'extra_resp_insert_id', 'time_provision_day', 'time_insert_day', 'extra_resp_method_id', 'extra_resp_info_stuff_id'], 'integer'],
+            [['document_details'], 'text'],
             [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentOrderWork::class, 'targetAttribute' => ['order_id' => 'id']],
             [['extra_resp_info_stuff_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['extra_resp_info_stuff_id' => 'id']],
             [['extra_resp_insert_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['extra_resp_insert_id' => 'id']],
@@ -67,6 +69,7 @@ class OrderEventGenerate extends \yii\db\ActiveRecord
             'time_insert_day' => 'Time Insert Day',
             'extra_resp_method_id' => 'Extra Resp Method ID',
             'extra_resp_info_stuff_id' => 'Extra Resp Info Stuff ID',
+            'document_details' => 'Document Details',
         ];
     }
 

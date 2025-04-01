@@ -66,6 +66,7 @@ class DocumentOrderCopyController extends Controller
                     'extra_resp_insert_id' => $record['contributor_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['contributor_id']) : NULL,
                     'time_provision_day' => $record['information_deadline'],
                     'time_insert_day' => $record['input_deadline'],
+                    'document_details' => $record['document_details'],
                     'extra_resp_method_id' => $record['methodologist_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['methodologist_id']) : NULL,
                     'extra_resp_info_stuff_id' => $record['informant_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['informant_id']) : NULL,
                 ]

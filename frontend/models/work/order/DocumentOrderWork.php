@@ -29,7 +29,7 @@ class DocumentOrderWork extends DocumentOrder
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['order_date', 'order_name', 'bring_id', 'executor_id'], 'required'],
+            [['order_date', 'order_name'], 'required'],
             [['scanFile'], 'file', 'skipOnEmpty' => true,
                 'extensions' => 'png, jpg, pdf, zip, rar, 7z, tag, txt'],
             [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
