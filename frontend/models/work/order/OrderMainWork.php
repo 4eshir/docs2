@@ -90,7 +90,13 @@ class OrderMainWork extends DocumentOrderWork implements FileInterface
         $this->order_number = $numberPostfix['number'];
         $this->order_postfix = $numberPostfix['postfix'];
     }
-
+    public function createReserve()
+    {
+        $this->order_date = date('Y-m-d');
+        $this->order_name = 'Резерв';
+        $this->type = DocumentOrderWork::ORDER_MAIN;
+        $this->generateOrderNumber();
+    }
     public function beforeValidate()
     {
         $post = Yii::$app->request->post();

@@ -215,4 +215,8 @@ class OrderMainService {
         }
         return ['number' => $order_number, 'postfix' => $order_postfix];
     }
+    public function createReserve(OrderMainWork $model)
+    {
+        $model->createReserve();
+    }
 }

@@ -104,8 +104,7 @@ class JournalController extends Controller
                 $this->groupRepository->get($id)
             )
         );
-
-        var_dump($access->getAllowedLessonIds());
+        $allowedLessonsId = $access->getAllowedLessonIds();
 
         if ($form->load(Yii::$app->request->post())) {
             foreach ($form->participantLessons as $participantLesson) {
@@ -127,6 +126,7 @@ class JournalController extends Controller
 
         return $this->render('update', [
             'model' => $form,
+            'permissionsLessons' => $allowedLessonsId,
         ]);
     }
 

@@ -231,7 +231,8 @@ class RulesConfig
                 'update',
                 'delete',
                 'delete-file',
-                'delete-document'
+                'delete-document',
+                'reserve'
             ]
         ],
 
