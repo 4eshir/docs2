@@ -3,6 +3,7 @@
 use app\components\VerticalActionColumn;
 use common\helpers\html\HtmlCreator;
 use frontend\models\search\SearchAuditorium;
+use frontend\models\work\dictionaries\AuditoriumWork;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use kartik\export\ExportMenu;
@@ -69,12 +70,20 @@ $this->params['breadcrumbs'][] = $this->title;
         'summary' => false,
         'columns' => [
 
-            ['attribute' => 'name', 'label' => 'Глобальный<br>номер'],
-            ['attribute' => 'text', 'label' => 'Имя'],
-            ['attribute' => 'square', 'label' => 'Площадь<br>(кв.м.)'],
-            ['attribute' => 'auditoriumTypeString', 'label' => 'Тип помещения'],
-            ['attribute' => 'isEducation', 'label' => 'Предназначен<br>для обр. деят.'],
-            ['attribute' => 'branchName', 'label' => 'Название<br>отдела', 'format' => 'html'],
+            ['attribute' => 'name', 'label' => 'Глобальный<br>номер', 'encodeLabel' => false],
+            ['attribute' => 'text', 'label' => 'Имя', 'encodeLabel' => false],
+            ['attribute' => 'square', 'label' => 'Площадь<br>(кв.м.)', 'encodeLabel' => false],
+            ['attribute' => 'auditoriumTypeString', 'label' => 'Тип помещения', 'encodeLabel' => false,
+                'value' => function (AuditoriumWork $model) {
+                    return Yii::$app->auditoriumType->get($model->auditorium_type);
+                }
+            ],
+            ['attribute' => 'educationPretty', 'label' => 'Предназначен<br>для обр. деят.', 'encodeLabel' => false],
+            ['attribute' => 'branchName', 'label' => 'Название<br>отдела', 'format' => 'html', 'encodeLabel' => false,
+                'value' => function (AuditoriumWork $model) {
+                    return Yii::$app->branches->get($model->branch);
+                }
+            ],
 
             ['class' => VerticalActionColumn::class],
         ],

@@ -1,10 +1,14 @@
 <?php
 
+use app\components\VerticalActionColumn;
+use common\helpers\DateFormatter;
+use common\helpers\html\HtmlCreator;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\search\SearchForeignEvent;
 use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel SearchForeignEvent */
@@ -16,71 +20,91 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="foreign-event-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="substrate">
+        <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?php //echo Html::a('Добавить', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+        <div class="flexx space">
+            <div class="flexx">
 
-    <!--<div style="margin: 0 118%;">
-        <div class="" data-html="true" style="position: fixed; z-index: 101; width: 30px; height: 30px; padding: 5px 0 0 0; background: #09ab3f; color: white; text-align: center; display: inline-block; border-radius: 4px;" title="Желтый цвет - карточка учета достижений имеет ошибку">❔</div>
-    </div>-->
+                <div class="export-menu" style="margin: auto 0">
+                    <?php
 
-    <?php //echo $this->render('_search', ['model' => $searchModel]); ?>
+                    $gridColumns = [
+                        ['attribute' => 'name'],
+                        ['attribute' => 'companyString', 'label' => 'Организатор', 'value' => function (ForeignEventWork $model) {
+                            return $model->organizerWork->name;
+                        }],
+                        ['attribute' => 'begin_date', 'label' => 'Дата<br>начала', 'encodeLabel' => false, 'value' => function (ForeignEventWork $model) {
+                            return DateFormatter::format($model->begin_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
+                        }],
+                        ['attribute' => 'end_date', 'label' => 'Дата<br>окончания', 'encodeLabel' => false, 'value' => function (ForeignEventWork $model) {
+                            return DateFormatter::format($model->end_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
+                        }],
+                        ['attribute' => 'city', 'label' => 'Город'],
+                        ['attribute' => 'eventWayString', 'label' => 'Формат<br>проведения', 'encodeLabel' => false, 'value' => function(ForeignEventWork $model){
+                            return Yii::$app->eventWay->get($model->format);
+                        }],
+                        ['attribute' => 'eventLevelString', 'label' => 'Уровень', 'value' => function(ForeignEventWork $model){
+                            return Yii::$app->eventLevel->get($model->level);
+                        }],
 
-    <?php
+                        ['attribute' => 'teachers', 'label' => 'Педагоги','value' => function(ForeignEventWork $model){
+                            return $model->getTeachers(ForeignEventWork::VIEW_TYPE);
+                        }, 'format' => 'raw'],
 
-    $gridColumns = [
-        ['attribute' => 'name'],
-        ['attribute' => 'companyString'],
-        ['attribute' => 'start_date'],
-        ['attribute' => 'finish_date'],
-        ['attribute' => 'city'],
-        ['attribute' => 'eventWayString', 'value' => function(ForeignEventWork $model){
-            return Yii::$app->eventWay->get($model->format);
-        }],
-        ['attribute' => 'eventLevelString', 'value' => function(ForeignEventWork $model){
-            return Yii::$app->eventLevel->get($model->level);
-        }],
+                        ['attribute' => 'participantCount', 'format' => 'raw', 'label' => 'Кол-во<br>участников', 'encodeLabel' => false,
+                            'value' => function (ForeignEventWork $model) {
+                                return count($model->actParticipantWorks);
+                            }
+                        ],
+                        ['attribute' => 'winners', 'label' => 'Победители', 'value' => function(ForeignEventWork $model){
+                            return $model->getWinners();
+                        }],
+                        ['attribute' => 'prizes', 'label' => 'Призёры', 'value' => function(ForeignEventWork $model){
+                            return $model->getPrizes();
+                        }],
+                        ['attribute' => 'businessTrips', 'label' => 'Командировка', 'value' => function(ForeignEventWork $model){
+                            return $model->isTrip();
+                        }],
+                    ];
 
-        ['attribute' => 'teachersExport', 'contentOptions' => ['class' => 'text-nowrap'], 'value' => function(ForeignEventWork $model){
-            return $model->getTeachers(ForeignEventWork::EXPORT_TYPE);
-        }],
+                    echo ExportMenu::widget([
+                        'dataProvider' => $dataProvider,
+                        'columns' => $gridColumns,
 
-        ['attribute' => 'participantCount', 'format' => 'raw', 'label' => 'Кол-во участников', 'encodeLabel' => false],
-        ['attribute' => 'winners', 'contentOptions' => ['class' => 'text-nowrap'], 'value' => function(ForeignEventWork $model){
-            return $model->getWinners();
-        }],
-        ['attribute' => 'prizes', 'contentOptions' => ['class' => 'text-nowrap'], 'value' => function(ForeignEventWork $model){
-            return $model->getPrizes();
-        }],
-        ['attribute' => 'businessTrips', 'value' => function(ForeignEventWork $model){
-            return $model->isTrip();
-        }],
-    ];
+                        'options' => [
+                            'padding-bottom: 100px',
+                        ],
+                    ]);
 
-    echo '<b>Скачать файл </b>';
-    echo ExportMenu::widget([
-        'dataProvider' => $dataProvider,
-        'columns' => $gridColumns,
-        'options' => [
-            'padding-bottom: 100px',
-        ]
-    ]);
+                    ?>
+                </div>
+            </div>
 
-    ?>
+            <?= HtmlCreator::filterToggle() ?>
+        </div>
+    </div>
+
+    <?= $this->render('_search', ['searchModel' => $searchModel]) ?>
+
     <div style="margin-bottom: 10px">
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        'summary' => false,
         'columns' => [
             ['attribute' => 'name'],
-            ['attribute' => 'companyString', 'label' => 'Организатор'],
-            ['attribute' => 'start_date', 'label' => 'Дата начала'],
-            ['attribute' => 'finish_date', 'label' => 'Дата окончания'],
+            ['attribute' => 'companyString', 'label' => 'Организатор', 'value' => function (ForeignEventWork $model) {
+                return $model->organizerWork->name;
+            }],
+            ['attribute' => 'begin_date', 'label' => 'Дата<br>начала', 'encodeLabel' => false, 'value' => function (ForeignEventWork $model) {
+                return DateFormatter::format($model->begin_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
+            }],
+            ['attribute' => 'end_date', 'label' => 'Дата<br>окончания', 'encodeLabel' => false, 'value' => function (ForeignEventWork $model) {
+                return DateFormatter::format($model->end_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
+            }],
             ['attribute' => 'city', 'label' => 'Город'],
-            ['attribute' => 'eventWayString', 'label' => 'Формат проведения', 'value' => function(ForeignEventWork $model){
+            ['attribute' => 'eventWayString', 'label' => 'Формат<br>проведения', 'encodeLabel' => false, 'value' => function(ForeignEventWork $model){
                 return Yii::$app->eventWay->get($model->format);
             }],
             ['attribute' => 'eventLevelString', 'label' => 'Уровень', 'value' => function(ForeignEventWork $model){
@@ -89,22 +113,32 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ['attribute' => 'teachers', 'label' => 'Педагоги','value' => function(ForeignEventWork $model){
                 return $model->getTeachers(ForeignEventWork::VIEW_TYPE);
-            }],
+            }, 'format' => 'raw'],
 
-            ['attribute' => 'participantCount', 'format' => 'raw', 'label' => 'Кол-во участников', 'encodeLabel' => false],
+            ['attribute' => 'participantCount', 'format' => 'raw', 'label' => 'Кол-во<br>участников', 'encodeLabel' => false,
+                'value' => function (ForeignEventWork $model) {
+                    return count($model->actParticipantWorks);
+                }
+            ],
             ['attribute' => 'winners', 'label' => 'Победители', 'value' => function(ForeignEventWork $model){
                 return $model->getWinners();
             }],
             ['attribute' => 'prizes', 'label' => 'Призёры', 'value' => function(ForeignEventWork $model){
                 return $model->getPrizes();
             }],
-            ['attribute' => 'businessTrips', 'label' => 'Командировка', 'value' => function(ForeignEventWork $model){
-                return $model->isTrip();
-            }],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => VerticalActionColumn::class],
         ],
+        'rowOptions' => function ($model) {
+            return ['data-href' => Url::to([Yii::$app->frontUrls::FOREIGN_EVENT_VIEW, 'id' => $model->id])];
+        },
     ]); ?>
 
 
 </div>
+
+<?php
+$this->registerJs(<<<JS
+            let totalPages = "{$dataProvider->pagination->pageCount}"; 
+        JS, $this::POS_HEAD);
+?>

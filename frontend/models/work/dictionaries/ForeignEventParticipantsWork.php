@@ -9,8 +9,14 @@ use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\models\scaffold\ForeignEventParticipants;
 use common\models\scaffold\PersonalDataParticipant;
+use common\repositories\act_participant\ActParticipantRepository;
+use common\repositories\dictionaries\PersonalDataParticipantRepository;
+use common\repositories\educational\TrainingGroupParticipantRepository;
+use common\repositories\educational\TrainingGroupRepository;
 use common\repositories\event\ParticipantAchievementRepository;
+use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\event\ParticipantAchievementWork;
+use frontend\models\work\team\ActParticipantWork;
 use InvalidArgumentException;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -243,9 +249,8 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
                 StringFormatter::stringAsLink(
                     $achieve->actParticipantWork->foreignEventWork->name,
                     Url::to([Yii::$app->frontUrls::FOREIGN_EVENT_VIEW, 'id' => $achieve->actParticipantWork->foreign_event_id])
-                ) .
-                " ({$achieve->actParticipantWork->foreignEventWork->end_date})",
-                ''
+                ),
+                " ({$achieve->actParticipantWork->foreignEventWork->end_date})"
             );
         }
 
@@ -254,17 +259,50 @@ class ForeignEventParticipantsWork extends ForeignEventParticipants implements P
 
     public function getPrettyEvents()
     {
+        $result = [];
+        /** @var ActParticipantWork[] $acts */
+        $acts = (Yii::createObject(ActParticipantRepository::class))->getByParticipantId($this->id);
+        foreach ($acts as $act) {
+            $result[] = HtmlBuilder::createSubtitleAndClarification(
+                StringFormatter::stringAsLink(
+                    $act->foreignEventWork->name,
+                    Url::to([Yii::$app->frontUrls::FOREIGN_EVENT_VIEW, 'id' => $act->foreign_event_id])
+                ),
+                ''
+            );
+        }
 
+        return HtmlBuilder::arrayToAccordion($result);
     }
 
     public function getPrettyGroups()
     {
+        $result = [];
+        /** @var TrainingGroupParticipantWork[] $participants */
+        $participants = (Yii::createObject(TrainingGroupParticipantRepository::class))->getByParticipantIds([$this->id]);
+        foreach ($participants as $participant) {
+            $result[] = HtmlBuilder::createSubtitleAndClarification(
+                $participant->getFullGroupString(),
+                ''
+            );
+        }
 
+        return HtmlBuilder::arrayToAccordion($result);
     }
 
     public function getPrettyPersonals()
     {
+        $result = [];
+        /** @var PersonalDataParticipantWork[] $personals */
+        $personals = (Yii::createObject(PersonalDataParticipantRepository::class))->getPersonalDataByParticipantId($this->id);
+        foreach ($personals as $personal) {
+            $result[] = HtmlBuilder::createSubtitleAndClarification(
+                $personal->getPrettyStringStatus() . ' ',
+                Yii::$app->personalData->get($personal->personal_data)
+            );
+        }
 
+        return HtmlBuilder::arrayToAccordion($result);
     }
 
     public function getPersonalDataParticipantWork()

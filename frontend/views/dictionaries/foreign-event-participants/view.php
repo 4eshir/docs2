@@ -98,8 +98,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                 </div>
             </div>
+            <div class="card-set">
+                <div class="card-head">Участие в образовательных программах</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Группы
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getPrettyGroups() ?>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-block-2">
+        <div class="card-block-2" style="flex-basis: 60%;">
             <div class="card-set">
                 <div class="card-head">Участие в мероприятиях</div>
                 <div class="card-field flexx">
@@ -116,17 +127,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     </div>
                     <div class="field-date">
                         <?= $model->getPrettyEvents() ?>
-                    </div>
-                </div>
-            </div>
-            <div class="card-set">
-                <div class="card-head">Участие в образовательных программах</div>
-                <div class="card-field flexx">
-                    <div class="field-title">
-                        Группы
-                    </div>
-                    <div class="field-date">
-                        <?= $model->getPrettyGroups() ?>
                     </div>
                 </div>
             </div>

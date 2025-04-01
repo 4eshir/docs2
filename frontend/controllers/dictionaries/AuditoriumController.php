@@ -78,8 +78,16 @@ class AuditoriumController extends DocumentController
      */
     public function actionView($id)
     {
+        /** @var AuditoriumWork $model */
+        $model = $this->repository->get($id);
+        $model->checkFilesExist();
+
+        $links = ButtonsFormatter::updateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 
@@ -158,21 +166,6 @@ class AuditoriumController extends DocumentController
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the Auditorium model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return AuditoriumWork the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = AuditoriumWork::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
 
     public function beforeAction($action)
     {

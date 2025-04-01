@@ -4,6 +4,7 @@ namespace frontend\models\work\dictionaries;
 
 use common\models\scaffold\PersonalDataParticipant;
 use InvalidArgumentException;
+use Yii;
 
 class PersonalDataParticipantWork extends PersonalDataParticipant
 {
@@ -37,5 +38,12 @@ class PersonalDataParticipantWork extends PersonalDataParticipant
         }
 
         $this->status = $status;
+    }
+
+    public function getPrettyStringStatus()
+    {
+        $class = $this->isRestrict() ? 'error' : 'success';
+        $text = $this->isRestrict() ? 'Запрещено' : 'Разрешено';
+        return "<span class=\"badge badge-$class\">$text</span>";
     }
 }

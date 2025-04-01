@@ -13,6 +13,7 @@ use common\repositories\general\PeopleStampRepository;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\models\work\team\ActParticipantWork;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -21,6 +22,7 @@ use yii\helpers\ArrayHelper;
  * @property UserWork $creatorWork
  * @property UserWork $lastEditWork
  * @property CompanyWork $organizerWork
+ * @property ActParticipantWork[] $actParticipantWorks
  */
 class ForeignEventWork extends ForeignEvent
 {
@@ -156,5 +158,10 @@ class ForeignEventWork extends ForeignEvent
     public function getOrganizerWork()
     {
         return $this->hasOne(CompanyWork::class, ['id' => 'organizer_id']);
+    }
+
+    public function getActParticipantWorks()
+    {
+        return $this->hasMany(ActParticipantWork::class, ['foreign_event_id' => 'id']);
     }
 }

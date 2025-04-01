@@ -3,6 +3,7 @@
 namespace frontend\models\work\educational\training_group;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\components\dictionaries\base\StudyStatusDictionary;
+use common\helpers\DateFormatter;
 use common\helpers\files\FilePaths;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
@@ -198,6 +199,25 @@ class TrainingGroupParticipantWork extends TrainingGroupParticipant
     public function setParticipantId(int $participantId)
     {
         $this->participant_id = $participantId;
+    }
+
+    /**
+     * Возвращает строку для вывода в карточке участника деятельности
+     *
+     * @return string
+     */
+    public function getFullGroupString()
+    {
+        $result = '<span class="badge badge-secondary">' . Yii::$app->branches->get($this->trainingGroupWork->branch) . '</span>';
+        $startDate = DateFormatter::format($this->trainingGroupWork->start_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
+        $endDate = DateFormatter::format($this->trainingGroupWork->finish_date, DateFormatter::Ymd_dash, DateFormatter::dmy_dot);
+        $result .= " $startDate - $endDate | ";
+        $result .= StringFormatter::stringAsLink(
+            $this->trainingGroupWork->number,
+            Url::to([Yii::$app->frontUrls::TRAINING_GROUP_VIEW, 'id' => $this->training_group_id])
+        );
+
+        return $result;
     }
 
     public function getGroupProjectThemesWork()

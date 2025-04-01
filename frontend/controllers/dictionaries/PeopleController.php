@@ -77,12 +77,16 @@ class PeopleController extends Controller
         $studentAchievements = $this->service->getStudentAchievements($model);
         $responsibilities = $this->service->getResponsibilities($model);
 
+        $links = ButtonsFormatter::updateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('view', [
             'model' => $model,
             'groupsList' => $groupsList,
             'studentAchievements' => $studentAchievements,
             'responsibilities' => $responsibilities,
             'positions' => $positions,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

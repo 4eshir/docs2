@@ -6,6 +6,7 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model CompanyWork */
+/* @var $buttonsAct */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Организации', 'url' => ['index']];
@@ -14,60 +15,123 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="company-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="substrate">
+        <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Вы действительно хотите удалить данную организацию?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+        <div class="flexx space">
+            <div class="flexx">
+                <?= $buttonsAct ?>
+            </div>
+        </div>
+    </div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            ['label' => 'Тип организации', 'attribute' => 'company_type', 'value' => function($model){
-                return Yii::$app->companyType->get($model->company_type);
-            }],
-            ['label' => 'Название организации', 'attribute' => 'name'],
-            ['label' => 'Краткое название', 'attribute' => 'short_name'],
-            'editString',
-        ],
-    ]) ?>
-
-    <?php
-    if ($model->is_contractor)
-    {
-        echo '<h4><u>Информация по контрагенту</u></h4>';
-
-        echo DetailView::widget([
-            'model' => $model,
-            'attributes' => [
-                ['label' => 'ИНН организации', 'attribute' => 'inn'],
-                ['label' => 'Категория СМСП', 'attribute' => 'categorySmspString'],
-                'ownershipTypeString',
-                ['label' => 'Комментарий', 'attribute' => 'comment'],
-                'phone_number',
-                'email',
-                'okved',
-                'head_fio',
-                'site',
-            ],
-        ]);
-
-        echo '<h4><u>Связанные договора</u></h4>';
-
-        echo DetailView::widget([
-            'model' => $model,
-            'attributes' => [
-                ['label' => 'Договора', 'attribute' => 'contractArray', 'format' => 'raw'],
-            ],
-        ]);
-    }
-    ?>
+    <div class="card">
+        <div class="card-block-1">
+            <div class="card-set">
+                <div class="card-head">Основное</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Тип
+                    </div>
+                    <div class="field-date">
+                        <?= Yii::$app->companyType->get($model->company_type) ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Название
+                    </div>
+                    <div class="field-date">
+                        <?= $model->name ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Краткое название
+                    </div>
+                    <div class="field-date">
+                        <?= $model->short_name ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-2">
+            <div class="card-set">
+                <div class="card-head">Данные контрагента</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        ИНН
+                    </div>
+                    <div class="field-date">
+                        <?= $model->inn ? : '---' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        ОКВЭД
+                    </div>
+                    <div class="field-date">
+                        <?= $model->okved ? : '---' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Категория СМСП
+                    </div>
+                    <div class="field-date">
+                        <?= $model->category_smsp ? Yii::$app->categorySmsp->get($model->category_smsp) : '---' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Форма собственности
+                    </div>
+                    <div class="field-date">
+                        <?= $model->ownership_type ? Yii::$app->ownershipType->get($model->ownership_type) : '---' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        E-mail
+                    </div>
+                    <div class="field-date">
+                        <?= $model->email ? : '---' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        ФИО руководителя
+                    </div>
+                    <div class="field-date">
+                        <?= $model->head_fio ? : '---' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Номер телефона
+                    </div>
+                    <div class="field-date">
+                        <?= $model->phone_number ? : '---' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Сайт
+                    </div>
+                    <div class="field-date">
+                        <?= $model->site ? : '---' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Комментарий
+                    </div>
+                    <div class="field-date">
+                        <?= $model->comment ? : '---' ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
