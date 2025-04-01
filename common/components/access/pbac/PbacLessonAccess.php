@@ -31,12 +31,12 @@ class PbacLessonAccess implements PbacComponentInterface
     public function getAllowedLessonIds()
     {
         $lessons = $this->lessonRepository->getLessonsFromGroup($this->data->group->id);
-        /*if (
+        if (
             Yii::$app->rubac->checkPermission($this->data->user->id, 'edit_branch_groups') ||
             Yii::$app->rubac->checkPermission($this->data->user->id, 'edit_all_groups')
         ) {
             return ArrayHelper::getColumn($lessons, 'id');
-        }*/
+        }
 
         return ArrayHelper::getColumn(
             array_filter($lessons, function (TrainingGroupLessonWork $lesson) {

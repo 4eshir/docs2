@@ -158,6 +158,10 @@ class JournalForm extends Model
         return 1;
     }
 
+    public function isPermissionsLessonsID(array $permissionsLessons, int $lessonId) {
+        return array_search($lessonId, $permissionsLessons);
+    }
+
     /**
      * Красивое отображение успешного завершения
      * @param int $status

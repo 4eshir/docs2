@@ -11,6 +11,7 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model JournalForm */
 /* @var $buttonsAct */
+/* @var $permissionsLessons */
 
 $this->title = 'Редактирование журнала ' . $model->getTrainingGroupNumber();
 $this->params['breadcrumbs'][] = ['label' => 'Учебные группы', 'url' => [Yii::$app->frontUrls::TRAINING_GROUP_INDEX]];
@@ -43,7 +44,6 @@ $userData = [
      */
     let currentIcon, IconTurnoutLink, IconNonAppearanceLink, IconDistantLink, IconDroppedLink, elements, svgData = '';
     let IconTurnout, IconNonAppearance, IconDistant, IconDropped;
-    let handlerReference = [];
 
     /**
      * Инициализация иконок
@@ -58,9 +58,11 @@ $userData = [
         saveSvgFile(IconTurnoutLink, IconNonAppearanceLink, IconDistantLink, IconDroppedLink);
         let cell = document.getElementsByClassName('attendance');
         Array.from(cell).forEach(oneCell => {
-            const handler = eventHandler(oneCell);
-            oneCell.addEventListener('click', eventHandler(oneCell));
-            oneCell._handler = handler;
+            if (!oneCell.classList.contains('status-block')) {
+                const handler = eventHandler(oneCell);
+                oneCell.addEventListener('click', eventHandler(oneCell));
+                oneCell._handler = handler;
+            }
         });
     }
 
@@ -76,7 +78,9 @@ $userData = [
         rows.forEach(row => {
             const cell = row.cells[columnIndex]; // Находим нужную ячейку в строке
             if (cell) {
-                clickOneCell(cell);
+                if (!cell.classList.contains('status-block')) {
+                    clickOneCell(cell);
+                }
             }
         });
     }
@@ -164,8 +168,8 @@ $userData = [
 
 
     document.addEventListener('DOMContentLoaded', function () {
-        init();
         applyStatusBlockToRowCells();
+        init();
     });
 
     /**
@@ -199,13 +203,9 @@ $userData = [
 
             if (firstCell && status.length > 0) {
                 Array.from(row.children).forEach(cell => {
-                    cell.classList.add('status-block');
-                    console.log(cell._handler);
-                    if (cell._handler) {
-                        cell.removeEventListener('click', cell._handler);
-                        delete cell._handler;
+                    if (!cell.classList.contains('status-block')) {
+                        cell.classList.add('status-block');
                     }
-                    console.log(cell._handler);
                 });
             }
         });
@@ -300,7 +300,7 @@ $userData = [
                                 </div>
                             </td>
                             <?php foreach ($participantLesson->lessonIds as $index => $lesson): ?>
-                                <td class="status-participant attendance">
+                                <td class="status-participant attendance <?= array_search($lesson->lessonId, $permissionsLessons) ? '' : 'status-block' ?>">
                                     <?= $form->field($lesson, "[$participantLesson->trainingGroupParticipantId][$index]lessonId")
                                         ->hiddenInput(['value' => $lesson->lessonId])
                                         ->label(false) ?>
