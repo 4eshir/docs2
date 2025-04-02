@@ -35,6 +35,10 @@ class ButtonsFormatter
                     'method' => 'post',
                 ],
             ],
+            'Сгенерировать документ' => [
+                'url' => ['generate-order', 'id' => $id],
+                'class' => self::BTN_PRIMARY,
+            ],
         ];
     }
 
