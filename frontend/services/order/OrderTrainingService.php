@@ -2,6 +2,7 @@
 
 namespace frontend\services\order;
 
+use common\helpers\StringFormatter;
 use common\repositories\dictionaries\ForeignEventParticipantsRepository;
 use frontend\events\educational\training_group\CreateOrderTrainingGroupParticipantEvent;
 use frontend\events\educational\training_group\DeleteOrderTrainingGroupParticipantEvent;
@@ -21,9 +22,11 @@ use frontend\events\educational\training_group\DeleteTrainingGroupParticipantEve
 use frontend\events\general\FileCreateEvent;
 use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\UploadedFile;
 
 class OrderTrainingService
@@ -67,7 +70,9 @@ class OrderTrainingService
         $nomenclature = $parts[0];
         return NomenclatureDictionary::getStatus($nomenclature);
     }
-    public function getGroupTable(OrderTrainingWork $model) {
+
+    public function getGroupTable(OrderTrainingWork $model)
+    {
         /* @var $order OrderTrainingGroupParticipantWork */
         /* @var $group TrainingGroupWork */
         $inId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id), 'training_group_participant_in_id');
@@ -80,38 +85,50 @@ class OrderTrainingService
         }
         return implode("\n", $links);
     }
+
     public function getGroupParticipantTable(OrderTrainingWork $model, $status)
     {
         /* @var $order OrderTrainingGroupParticipantWork */
         /* @var $participant ForeignEventParticipantsWork */
         $inId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id), 'training_group_participant_in_id');
         $outId = ArrayHelper::getColumn($this->orderTrainingGroupParticipantRepository->getByOrderIds($model->id), 'training_group_participant_out_id');
-        $participantIds = array_unique(ArrayHelper::getColumn($this->trainingGroupParticipantRepository->getAll(ArrayHelper::merge($inId, $outId)), 'participant_id'));
-        $participants = $this->foreignEventParticipantsRepository->getParticipants($participantIds);
+
+        $participants = $this->trainingGroupParticipantRepository->getAll(ArrayHelper::merge($inId, $outId));
+
         $links = [];
         foreach ($participants as $participant) {
-            $links[] = Html::a($participant->getFullFio(), ['dictionaries/foreign-event-participants/view', 'id' => $participant->id]) . "<br>";
+            /** @var TrainingGroupParticipantWork $participant */
+            $links[] =
+                StringFormatter::stringAsLink($participant->participantWork->getFullFio(), Url::to([Yii::$app->frontUrls::PARTICIPANT_VIEW, 'id' => $participant->participant_id])) .
+                ' - учащийся группы ' .
+                StringFormatter::stringAsLink($participant->trainingGroupWork->number, Url::to([Yii::$app->frontUrls::TRAINING_GROUP_VIEW, 'id' => $participant->training_group_id]))
+                . "<br>";
+
         }
         return implode("\n", $links);
     }
+
     public function getGroupsEmptyDataProvider()
     {
        return new ActiveDataProvider([
            'query' => $this->trainingGroupRepository->empty()
        ]);
     }
+
     public function getParticipantEmptyDataProvider()
     {
         return new ActiveDataProvider([
             'query' => $this->trainingGroupParticipantRepository->empty()
         ]);
     }
+
     public function getGroupsDataProvider(OrderTrainingWork $model)
     {
         return new ActiveDataProvider([
             'query' => $this->trainingGroupRepository->getByBranchQuery($model->branch)
         ]);
     }
+
     public function getParticipantsDataProvider(OrderTrainingWork $model)
     {
         $status = $this->getStatus($model);

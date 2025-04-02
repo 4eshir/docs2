@@ -38,6 +38,11 @@ class UserRepository
         return $this->provider->getByUsername($username);
     }
 
+    public function findByEmail($email)
+    {
+        return $this->provider->getByEmail($email);
+    }
+
     public function changePassword($password, $userId)
     {
         $passwordHash = Yii::$app->security->generatePasswordHash($password);

@@ -35,6 +35,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <br>
     <div>
 
-        <?= Html::a('Забыли пароль?', \yii\helpers\Url::to(['site/forgot-password'])) ?>
+        <?= Html::a('Забыли пароль?', \yii\helpers\Url::to(['auth/forgot-password'])) ?>
     </div>
 </div>

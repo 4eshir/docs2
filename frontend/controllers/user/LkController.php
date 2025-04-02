@@ -11,6 +11,7 @@ use common\repositories\rubac\UserPermissionFunctionRepository;
 use common\services\general\errors\ErrorService;
 use DateTime;
 use DomainException;
+use frontend\forms\analytics\AnalyticErrorForm;
 use frontend\forms\ChangePasswordForm;
 use frontend\forms\TokenForm;
 use frontend\models\work\rubac\PermissionTokenWork;
@@ -82,7 +83,8 @@ class LkController extends Controller
             'user' => $user,
         ]);
     }
-    public function actionToken($id){
+    public function actionToken($id)
+    {
         $user = $this->userRepository->get($id);
         $users = $this->userRepository->getAll();
         $permissions = $this->permissionFunctionRepository->getAllPermissions();

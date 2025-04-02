@@ -189,13 +189,17 @@ class OrderMainController extends DocumentController
             return $this->redirect(Yii::$app->request->referrer ?: ['index']);
         }
     }
-    public function actionDelete($id){
+
+    public function actionDelete($id)
+    {
         $model = $this->documentOrderRepository->get($id);
         $this->documentOrderService->documentOrderDelete($model);
         $model->releaseEvents();
         return $this->redirect(['index']);
     }
-    public function actionView($id){
+
+    public function actionView($id)
+    {
         $links = ButtonsFormatter::updateDeleteLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 

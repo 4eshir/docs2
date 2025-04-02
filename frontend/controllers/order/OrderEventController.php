@@ -234,6 +234,9 @@ class OrderEventController extends DocumentController
     }
     public function actionView($id)
     {
+        $links = ButtonsFormatter::updateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         /* @var OrderEventWork $modelOrderEvent */
         /* @var ForeignEventWork $foreignEvent */
         $modelResponsiblePeople = implode('<br>',
@@ -249,7 +252,8 @@ class OrderEventController extends DocumentController
                 'model' => $modelOrderEvent,
                 'foreignEvent' => $foreignEvent,
                 'modelResponsiblePeople' => $modelResponsiblePeople,
-                'actTable' => $actTable
+                'actTable' => $actTable,
+                'buttonsAct' => $buttonHtml
             ]
         );
     }

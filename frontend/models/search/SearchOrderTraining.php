@@ -39,48 +39,14 @@ class SearchOrderTraining extends OrderTrainingWork
     {
         $this->load($params);
         $query = OrderEventWork::find()
-            ->where(['type' => DocumentOrderWork::ORDER_INIT])
-            ->andWhere(['IS NOT','study_type' , NULL])
+            ->where(['type' => DocumentOrderWork::ORDER_TRAINING])
             ->joinWith('bring');
-        if ($this->Date !== '' && $this->Date !== null) {
-            $dates = DateFormatter::splitDates($this->Date);
-            $query->andWhere(
-                ['BETWEEN', 'order_date',
-                    DateFormatter::format($dates[0], DateFormatter::dmy_dot, DateFormatter::Ymd_dash),
-                    DateFormatter::format($dates[1], DateFormatter::dmy_dot, DateFormatter::Ymd_dash)]);
-        }
-
-        if ($this->Date !== '' && $this->Date !== null) {
-            $dates = DateFormatter::splitDates($this->Date);
-            $query->andWhere(['BETWEEN', 'order_date', $dates[0], $dates[1]]);
-        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort'=> ['defaultOrder' => ['order_date' => SORT_DESC, 'order_number' => SORT_DESC, 'order_postfix' => SORT_DESC]]
         ]);
 
-        $dataProvider->sort->attributes['fullNumber'] = [
-            'asc' => ['order_number' => SORT_ASC, 'order_postfix' => SORT_ASC],
-            'desc' => ['order_number' => SORT_DESC, 'order_postfix' => SORT_DESC],
-        ];
-
-        $dataProvider->sort->attributes['orderDate'] = [
-            'asc' => ['order_date' => SORT_ASC],
-            'desc' => ['order_date' => SORT_DESC],
-        ];
-        $dataProvider->sort->attributes['executorName'] = [
-            'asc' => ['executor_id' => SORT_ASC],
-            'desc' => ['executor_id' => SORT_DESC],
-        ];
-        $dataProvider->sort->attributes['bringName'] = [
-            'asc' => ['bring_id' => SORT_ASC],
-            'desc' => ['bring_id' => SORT_DESC],
-        ];
-        $dataProvider->sort->attributes['orderName'] = [
-            'asc' => ['order_name' => SORT_ASC],
-            'desc' => ['order_name' => SORT_DESC],
-        ];
 
         if (!$this->validate()) {
             return $dataProvider;

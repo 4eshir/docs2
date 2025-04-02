@@ -135,9 +135,9 @@ class TrainingGroupParticipantRepository
         return $this->provider->delete($model);
     }
 
-    public function getAll($id)
+    public function getAll(array $ids = [])
     {
-        return TrainingGroupParticipantWork::find()->where(['id' => $id])->all();
+        return count($ids) > 0 ? TrainingGroupParticipantWork::find()->where(['IN', 'id', $ids])->all() : TrainingGroupParticipantWork::find()->all();
     }
 
     public function empty()

@@ -35,6 +35,7 @@ AppAsset::register($this);
     }
     else {
         $menuItems[] = ['label' => 'Личный кабинет', 'url' => ['/user/lk/info', 'id' => Yii::$app->user->identity->getId()]];
+        $menuItems[] = ['label' => 'АНАЛитика', 'url' => ['/analytics/errors', 'id' => Yii::$app->user->identity->getId()]];
         $menuItems[] = ['label' => 'Выйти', 'url' => ['/auth/logout']];
     }
 

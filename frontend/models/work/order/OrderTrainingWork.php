@@ -2,6 +2,7 @@
 
 namespace frontend\models\work\order;
 
+use common\models\work\UserWork;
 use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\services\order\OrderMainService;
@@ -13,8 +14,8 @@ use frontend\models\work\general\PeopleWork;
 use Yii;
 /**
  * @property PeopleStampWork $correspondentWork
- * @property PeopleStampWork $creatorWork
- * @property PeopleStampWork $lastUpdateWork
+ * @property UserWork $creatorWork
+ * @property UserWork $lastUpdateWork
  * @property PeopleStampWork $executorWork
  * @property PeopleStampWork $bringWork
  */

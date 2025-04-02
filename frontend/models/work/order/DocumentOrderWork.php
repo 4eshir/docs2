@@ -5,13 +5,16 @@ namespace frontend\models\work\order;
 use common\components\interfaces\FileInterface;
 use common\events\EventTrait;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\DocumentOrder;
 use common\models\work\UserWork;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\general\OrderPeopleWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
 use InvalidArgumentException;
 use Yii;
+use yii\helpers\Url;
 
 /* @property PeopleStampWork $bringWork */
 /* @property PeopleStampWork $executorWork */
@@ -35,6 +38,9 @@ class DocumentOrderWork extends DocumentOrder
     public $scanFile;
     public $docFiles;
     public $appFiles;
+
+    public $scanExist;
+    public $docExist;
 
     public function rules()
     {
@@ -187,8 +193,52 @@ class DocumentOrderWork extends DocumentOrder
         return $this->hasMany(ExpireWork::class, ['active_regulation_id' => 'id']);
     }
 
-    public function getOrderPeopleWork()
+    public function checkFilesExist()
+    {
+        $this->scanExist = count($this->getFileLinks(FilesHelper::TYPE_SCAN)) > 0;
+        $this->docExist = count($this->getFileLinks(FilesHelper::TYPE_DOC)) > 0;
+    }
+
+    public function getOrderPeopleWorks()
     {
         return $this->hasMany(OrderPeopleWork::class, ['order_id' => 'id']);
+    }
+
+    public function getPrettyResponsibles()
+    {
+        $result = [];
+        foreach ($this->orderPeopleWorks as $orderPeopleWork) {
+            $result[] = HtmlBuilder::createSubtitleAndClarification(
+                $orderPeopleWork->peopleStampWork->peopleWork->getFIO(PersonInterface::FIO_FULL),
+                ''
+            );
+        }
+
+        return HtmlBuilder::arrayToAccordion($result);
+    }
+
+    public function getKeyWords()
+    {
+        return $this->key_words;
+    }
+
+    public function getFullDoc()
+    {
+        $link = '#';
+        if ($this->docExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_DOC, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
+    }
+
+    public function getFullScan()
+    {
+        $link = '#';
+        if ($this->scanExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_SCAN, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
     }
 }

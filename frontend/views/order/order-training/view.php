@@ -1,6 +1,7 @@
 <?php
 
 use common\helpers\html\HtmlBuilder;
+use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderTrainingWork;
 use common\helpers\DateFormatter;
@@ -15,6 +16,8 @@ use yii\widgets\DetailView;
 /* @var $groups */
 /* @var $participants */
 /* @var $error */
+/* @var $buttonsAct */
+
 $this->title = $model->order_name;
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об образовательной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -31,74 +34,133 @@ $this->params['breadcrumbs'][] = $this->title;
             break;
     }
     ?>
-    <h1><?= Html::encode($this->title) ?></h1>
-    <p>
-        <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
 
-    <?= HtmlBuilder::createErrorsBlock(DocumentOrderWork::tableName(), $model->id) ?>
+    <div class="substrate">
+        <h1><?= Html::encode($this->title) ?></h1>
 
-    <?=
-    DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            ['label' => 'Регистрационный номер приказа', 'value' => function (OrderTrainingWork $model) {
-                return $model->getNumberPostfix();
-            }],
-            ['label' => 'Наименование приказа', 'attribute' => 'order_name'],
-            ['label' => 'Дата приказа', 'attribute' => 'order_date', 'value' => function (OrderTrainingWork $model) {
-                return DateFormatter::format($model->order_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
-            }],
-
-            ['label' => 'Проект вносит', 'attribute' => 'bring_id', 'value' => function (OrderTrainingWork $model) {
-                return $model->bringWork ? $model->bringWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
-            }],
-            ['label' => 'Исполнитель', 'attribute' => 'executor_id', 'value' => function (OrderTrainingWork $model) {
-                return $model->executorWork ? $model->executorWork->getFullFio() : '';
-            }],
-            ['label' => 'Ответственные', 'value' => $modelResponsiblePeople, 'format' => 'raw'],
-            ['label' => 'Скан документа', 'attribute' => 'scan', 'value' => function (OrderTrainingWork $model) {
-                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_SCAN), 'link'));
-            }, 'format' => 'raw'],
-            ['label' => 'Редактируемые документы', 'attribute' => 'doc', 'value' => function (OrderTrainingWork $model) {
-                return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_DOC), 'link'));
-            }, 'format' => 'raw'],
-            ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => function (OrderTrainingWork $model) {
-                return $model->creatorWork ? $model->creatorWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
-            }],
-            ['label' => 'Последний редактор', 'attribute' => 'last_update_id', 'value' => function (OrderTrainingWork $model) {
-                return $model->lastUpdateWork ? $model->lastUpdateWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
-            }],
-        ],
-    ]) ?>
-    <br>
-    <br>
-    <div>
-        <h3> Данные о приказе</h3>
+        <div class="flexx space">
+            <div class="flexx">
+                <?= $buttonsAct ?>
+            </div>
+        </div>
     </div>
-    <?=
-        DetailView::widget([
-            'model' => $model,
-            'attributes' => [
-                [
-                    'label' => 'Группы в приказе',
-                    'value' => $groups,
-                    'format' => 'raw'
+    <?= HtmlBuilder::createErrorsBlock(DocumentOrderWork::tableName(), $model->id) ?>
+    <div class="card">
+        <div class="card-block-1">
+            <div class="card-set">
+                <div class="card-head">Основное</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Рег. номер
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getNumberPostfix() ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Наименование приказа
+                    </div>
+                    <div class="field-date">
+                        <?= $model->order_name ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Дата приказа
+                    </div>
+                    <div class="field-date">
+                        <?= DateFormatter::format($model->order_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot) ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Образовательное</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Группы
+                    </div>
+                    <div class="field-date">
+                        <?= HtmlBuilder::createAccordion($groups) ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Обучающиеся
+                    </div>
+                    <div class="field-date">
+                        <?= HtmlBuilder::createAccordion($participants) ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">
+                    Ключевые слова
+                </div>
+                <div class="card-field">
+                    <div class="field-date">
+                        <?= $model->getKeyWords() ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-2">
+            <div class="card-set">
+                <div class="card-head">Сотрудники</div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Проект вносит
+                    </div>
+                    <div class="field-date">
+                        <?= $model->bringWork ? $model->bringWork->peopleWork->getFIO(PersonInterface::FIO_SURNAME_INITIALS) : '---' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Исполнитель
+                    </div>
+                    <div class="field-date">
+                        <?= $model->executorWork ? $model->executorWork->peopleWork->getFIO(PersonInterface::FIO_SURNAME_INITIALS) : '---' ?>
+                    </div>
+                </div>
+                <div class="card-field flexx">
+                    <div class="field-title">
+                        Ответственные
+                    </div>
+                    <div class="field-date">
+                        <?= $model->getPrettyResponsibles() ?>
+                    </div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Файлы</div>
+                <div class="flexx files-section space-around">
+                    <div class="file-block-center"><?= $model->getFullScan(); ?><div>Сканы</div></div>
+                    <div class="file-block-center"><?= $model->getFullDoc(); ?><div>Редактируемые</div></div>
+                </div>
+            </div>
+            <div class="card-set">
+                <div class="card-head">Свойства</div>
+                <div class="flexx">
+                    <div class="card-field flexx">
+                        <div class="field-title field-option">
+                            Создатель карточки
+                        </div>
+                        <div class="field-date">
+                            <?= $model->creatorWork->getFullName() ?>
+                        </div>
+                    </div>
+                    <div class="card-field flexx">
+                        <div class="field-title field-option">
+                            Последний редактор
+                        </div>
+                        <div class="field-date">
+                            <?= $model->lastUpdateWork->getFullName() ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                ],
-                [
-                    'label' => 'Обучающиеся',
-                    'value' => $participants,
-                    'format' => 'raw'
-                ],
-            ]
-        ]);
-    ?>
 </div>

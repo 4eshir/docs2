@@ -28,6 +28,16 @@ class UserMockProvider implements UserProviderInterface
         return null;
     }
 
+    public function getByEmail($email)
+    {
+        foreach ($this->users as $user) {
+            if ($user->email === $email) {
+                return $user;
+            }
+        }
+        return null;
+    }
+
     public function save(UserWork $user)
     {
         $this->addUser($user);

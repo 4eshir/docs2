@@ -98,6 +98,10 @@ class OrderTrainingController extends DocumentController
 
     public function actionView($id, $error = NULL)
     {
+        $links = ButtonsFormatter::updateDeleteLinks($id);
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
+        /** @var OrderTrainingWork $model */
         $model = $this->orderTrainingRepository->get($id);
         $modelResponsiblePeople = implode('<br>',
             $this->documentOrderService->createOrderPeopleArray(
@@ -107,12 +111,16 @@ class OrderTrainingController extends DocumentController
         $status = $this->orderTrainingService->getStatus($model);
         $groups = $this->orderTrainingService->getGroupTable($model) ;
         $participants = $this->orderTrainingService->getGroupParticipantTable($model, $status);
+
+        $model->checkFilesExist();
+
         return $this->render('view', [
             'model' => $model,
             'modelResponsiblePeople' => $modelResponsiblePeople,
             'groups' => $groups,
             'participants' => $participants,
-            'error' => $error
+            'error' => $error,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

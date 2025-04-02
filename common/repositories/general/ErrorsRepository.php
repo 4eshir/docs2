@@ -44,6 +44,7 @@ class ErrorsRepository
             $query = $query->andWhere(['branch' => $branch]);
         }
 
+        $query = $query->orderBy(['create_datetime' => SORT_DESC]);
         return $query->all();
     }
 
