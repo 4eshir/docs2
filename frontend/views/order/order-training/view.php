@@ -41,6 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?= Html::a('Сгенерировать документ', ['generate-order', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
     </p>
 
     <?= HtmlBuilder::createErrorsBlock(DocumentOrderWork::tableName(), $model->id) ?>
@@ -71,10 +72,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 return implode('<br>', ArrayHelper::getColumn($model->getFileLinks(FilesHelper::TYPE_DOC), 'link'));
             }, 'format' => 'raw'],
             ['label' => 'Создатель карточки', 'attribute' => 'creator_id', 'value' => function (OrderTrainingWork $model) {
-                return $model->creatorWork ? $model->creatorWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
+                return $model->creatorWork ? $model->creatorWork->getFullName() : '';
             }],
             ['label' => 'Последний редактор', 'attribute' => 'last_update_id', 'value' => function (OrderTrainingWork $model) {
-                return $model->lastUpdateWork ? $model->lastUpdateWork->getFIO(PeopleWork::FIO_SURNAME_INITIALS) : '';
+                return $model->lastUpdateWork ? $model->lastUpdateWork->getFullName() : '';
             }],
         ],
     ]) ?>

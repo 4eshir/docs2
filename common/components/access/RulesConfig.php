@@ -212,7 +212,8 @@ class RulesConfig
                 'set-name-order',
                 'get-group-by-branch',
                 'get-group-participants-by-branch',
-                'set-preamble'
+                'set-preamble',
+                'generate-order'
             ]
         ],
 
