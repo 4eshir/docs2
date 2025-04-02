@@ -147,7 +147,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             Создатель карточки
                         </div>
                         <div class="field-date">
-                            <?= $model->creatorWork->getFullName() ?>
+                            <?= $model->creatorWork ? $model->creatorWork->getFullName() : '---'?>
                         </div>
                     </div>
                     <div class="card-field flexx">
@@ -155,7 +155,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             Последний редактор
                         </div>
                         <div class="field-date">
-                            <?= $model->lastUpdateWork->getFullName() ?>
+                            <?= $model->lastUpdateWork ? $model->lastUpdateWork->getFullName() : '---' ?>
                         </div>
                     </div>
                 </div>

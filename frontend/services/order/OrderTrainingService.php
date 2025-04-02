@@ -100,7 +100,7 @@ class OrderTrainingService
             /** @var TrainingGroupParticipantWork $participant */
             $links[] =
                 StringFormatter::stringAsLink($participant->participantWork->getFullFio(), Url::to([Yii::$app->frontUrls::PARTICIPANT_VIEW, 'id' => $participant->participant_id])) .
-                ' - учащийся группы ' .
+                ' - группа ' .
                 StringFormatter::stringAsLink($participant->trainingGroupWork->number, Url::to([Yii::$app->frontUrls::TRAINING_GROUP_VIEW, 'id' => $participant->training_group_id]))
                 . "<br>";
 

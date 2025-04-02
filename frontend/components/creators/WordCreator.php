@@ -6,12 +6,18 @@ use common\components\dictionaries\base\BranchDictionary;
 use common\components\wizards\WordWizard;
 use common\helpers\common\BaseFunctions;
 use common\models\scaffold\ActParticipantBranch;
+use frontend\models\work\dictionaries\ForeignEventParticipantsWork;
 use frontend\models\work\dictionaries\PersonInterface;
+use frontend\models\work\dictionaries\PositionWork;
+use frontend\models\work\educational\training_group\OrderTrainingGroupParticipantWork;
+use frontend\models\work\educational\training_group\TeacherGroupWork;
 use frontend\models\work\educational\training_group\TrainingGroupExpertWork;
 use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
 use frontend\models\work\educational\training_group\TrainingGroupWork;
+use frontend\models\work\educational\training_program\TrainingProgramWork;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\general\OrderPeopleWork;
+use frontend\models\work\general\PeoplePositionCompanyBranchWork;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\team\ActParticipantWork;
 use frontend\models\work\team\SquadParticipantWork;
@@ -376,12 +382,12 @@ class WordCreator
         $section->addTextBreak(1);
         $section->addText('ПРИКАЗЫВАЮ:', array('lineHeight' => 1.0), array('spaceAfter' => 0));
         $section->addText('1.	Принять участие в мероприятии «'.$foreignEvent->name.'» (далее – мероприятие) и утвердить перечень учащихся, участвующих в мероприятии, и педагогов, ответственных за подготовку и контроль результатов участия в мероприятии, согласно Приложению к настоящему приказу.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
-        $section->addText('2.	Назначить ответственным за сбор и предоставление информации об участии в мероприятии для внесения в Цифровую систему хранения документов ГАОУ АО ДО «РШТ» (далее – ЦСХД) '.$supplement->respPeopleInfo->getFullFio().'.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+        $section->addText('2.	Назначить ответственным за сбор и предоставление информации об участии в мероприятии для внесения в Цифровую систему хранения документов ГАОУ АО ДО «РШТ» (далее – ЦСХД) '.$supplement->respPeopleInfo->getFIO(PersonInterface::FIO_SURNAME_INITIALS).'.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
         $section->addText('3.	Определить срок предоставления информации об участии в мероприятии: '.$supplement->time_provision_day.' рабочих дней со дня завершения мероприятия.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
-        $section->addText('4.	Назначить ответственным за внесение информации об участии в мероприятии в ЦСХД '.$supplement->extraRespInsert->getFullFio().'.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+        $section->addText('4.	Назначить ответственным за внесение информации об участии в мероприятии в ЦСХД '.$supplement->extraRespInsert->getFIO(PersonInterface::FIO_SURNAME_INITIALS).'.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
         $section->addText('5.	Определить срок для внесения информации об участии в мероприятии: '.$supplement->time_insert_day.' рабочих дней со дня завершения мероприятия.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
-        $section->addText('6.	Назначить ответственным за методический контроль подготовки учащихся к участию в мероприятии и информационное взаимодействие с организаторами мероприятия '.$supplement->extraRespMethod->getFullFio().'.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
-        $section->addText('7.	Назначить ответственным за информирование работников о настоящем приказе '.$supplement->extraRespInfoStuff->getFullFio().'.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+        $section->addText('6.	Назначить ответственным за методический контроль подготовки учащихся к участию в мероприятии и информационное взаимодействие с организаторами мероприятия '.$supplement->extraRespMethod->getFIO(PersonInterface::FIO_SURNAME_INITIALS).'.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+        $section->addText('7.	Назначить ответственным за информирование работников о настоящем приказе '.$supplement->extraRespInfoStuff->getFIO(PersonInterface::FIO_SURNAME_INITIALS).'.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
         $section->addText('8.	Контроль исполнения приказа оставляю за собой.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
 
         $section->addTextBreak(2);
@@ -402,18 +408,18 @@ class WordCreator
         $cell = $table->addCell(6000);
         $cell->addText('Проект вносит:');
         $cell = $table->addCell(12000);
-        $cell->addText($order->bring->getFullFio(), null, array('align' => 'right'));
+        $cell->addText($order->bring->getFIO(PersonInterface::FIO_SURNAME_INITIALS), null, array('align' => 'right'));
         $table->addRow();
         $cell = $table->addCell(6000);
         $cell->addText('Исполнитель:');
         $cell = $table->addCell(12000);
-        $cell->addText($order->executor->getFullFio(), null, array('align' => 'right'));
+        $cell->addText($order->executor->getFIO(PersonInterface::FIO_SURNAME_INITIALS), null, array('align' => 'right'));
 
         $section->addText('Ознакомлены:');
         $table = $section->addTable();
         for ($i = 0; $i != count($res); $i++, $c++)
         {
-            $fio = $res[$i]->people->getFullFio();
+            $fio = $res[$i]->people->getFIO(PersonInterface::FIO_SURNAME_INITIALS);
 
             $table->addRow();
             $cell = $table->addCell(8000);
@@ -501,7 +507,7 @@ class WordCreator
             $cell = $table->addCell(1000);
             $cell->addText($key+1, array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
             $cell = $table->addCell(4000);
-            $cell->addText($oneActPart->participantWork->getFullFio(), array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+            $cell->addText($oneActPart->participantWork->getFIO(PersonInterface::FIO_SURNAME_INITIALS), array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
             $cell = $table->addCell(3000);
             $cell->addText($oneActPart->actParticipantWork->nomination, array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
             $cell = $table->addCell(3000);
@@ -513,9 +519,9 @@ class WordCreator
                 $cell->addText(Yii::$app->branches->get($branch->branch), array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
 
             $cell = $table->addCell(4000);
-            $cell->addText($oneActPart->actParticipantWork->teacherWork->getFullFio(), array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+            $cell->addText($oneActPart->actParticipantWork->teacherWork->getFIO(PersonInterface::FIO_SURNAME_INITIALS), array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
             if ($oneActPart->actParticipantWork->teacher2_id != null)
-                $cell->addText($oneActPart->actParticipantWork->teacher2Work->getFullFio(), array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+                $cell->addText($oneActPart->actParticipantWork->teacher2Work->getFIO(PersonInterface::FIO_SURNAME_INITIALS), array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
 
         }
         $text = 'Пр.' . date("Ymd", strtotime($order->order_date)) . '_' . $order->order_number . $order->order_copy_id . $order->order_postfix . '_' . substr($order->order_name, 0, 35);
@@ -529,6 +535,7 @@ class WordCreator
     }
     public static function generateOrderTrainingEnroll($orderId)
     {
+        /* @var $group TrainingGroupWork */
         ini_set('memory_limit', '512M');
 
         $inputData = new PhpWord();
@@ -539,23 +546,374 @@ class WordCreator
             'marginLeft' => WordWizard::convertMillimetersToTwips(30),
             'marginBottom' => WordWizard::convertMillimetersToTwips(20),
             'marginRight' => WordWizard::convertMillimetersToTwips(15) ));
+        $table = $section->addTable();
+        $table->addRow();
+        $cell = $table->addCell(7000);
+        $cell->addText('РЕГИОНАЛЬНЫЙ', array('name' => 'Calibri', 'size' => '14'), array('spaceAfter' => 0));
+        $cell = $table->addCell(5000, array('borderSize' => 2, 'borderColor' => 'white', 'borderBottomColor' => 'red'));
+        $cell->addText(' ШКОЛЬНЫЙ', array('name' => 'Calibri', 'size' => '14'), array('spaceAfter' => 0));
+        $cell = $table->addCell(18000, array('valign' => 'bottom', 'borderSize' => 2, 'borderColor' => 'white', 'borderBottomColor' => 'red'));
+        $cell->addText('  414000, г. Астрахань, ул. Адмиралтейская, д. 21, помещение № 66', array('name' => 'Calibri', 'size' => '9', 'color' => 'red'), array( 'align' => 'right', 'spaceAfter' => 0));
+        $table->addRow();
+        $cell = $table->addCell(7000);
+        $cell->addImage(Yii::$app->basePath.'/upload/templates/logo.png', array('width'=>100, 'height'=>40, 'align'=>'left'));
+        $cell = $table->addCell(5000, array('valign' => 'top'));
+        $cell->addText('ТЕХНОПАРК', array('name' => 'Calibri', 'size' => '14'), array('align' => 'center'));
+        $cell = $table->addCell(18000);
+        $cell->addText(' +7 8512 442428 • schooltech@astrobl.ru • www.школьныйтехнопарк.рф', array('name' => 'Calibri', 'size' => '9', 'color' => 'red'), array('align' => 'right', 'spaceAfter' => 0));
+        //----------
+        $section->addTextBreak(1);
+        $section->addText('ПРИКАЗ', array('bold' => true), array('align' => 'center'));
+        $section->addTextBreak(1);
 
-        $section->addText('Министерство образования и науки Астраханской области', array('lineHeight' => 1.0), array('align' => 'center', 'spaceAfter' => 0));
-        $section->addText('государственное автономное образовательное учреждение', array('lineHeight' => 1.0), array('align' => 'center', 'spaceAfter' => 0));
-        $section->addText('Астраханской области дополнительного образования', array('lineHeight' => 1.0), array('align' => 'center', 'spaceAfter' => 0));
-        $section->addText('«Региональный школьный технопарк»', array('bold' => true, 'lineHeight' => 1.0), array('align' => 'center', 'spaceAfter' => 0));
-        $section->addText('ГАОУ АО ДО «РШТ»', array('bold' => true, 'lineHeight' => 1.0), array('align' => 'center', 'spaceAfter' => 0));
-        $section->addText('ПРИКАЗ', array('bold' => true, 'lineHeight' => 1.0), array('align' => 'center', 'spaceAfter' => 0));
+        /*----------------*/
+        $order = DocumentOrderWork::find()->where(['id' => $orderId])->one();
+        //$groups = OrderGroupWork::find()->where(['document_order_id' => $order->id])->all(); //все группы связанные с приказом
+        $trGParticipantId = ArrayHelper::getColumn(OrderTrainingGroupParticipantWork::find()->where(['order_id' => $order->id])->all(), 'training_group_participant_in_id');
+        $groupsId = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['IN', 'id',  $trGParticipantId])->all(), 'training_group_id');
+        $groups = TrainingGroupWork::find()->where(['IN', 'id', $groupsId])->all();
+        $pastaAlDente = OrderTrainingGroupParticipantWork::find();
+        $program = TrainingProgramWork::find();
+        $teacher = TeacherGroupWork::find();
+        $trG = TrainingGroupWork::find(); //все группы
+        $part = ForeignEventParticipantsWork::find();
+        $gPart = TrainingGroupParticipantWork::find();
+        $res = OrderPeopleWork::find()->where(['order_id' => $order->id])->all();
+        $pos = PeoplePositionCompanyBranchWork::find();
+        $positionName = PositionWork::find();
+
+        $table = $section->addTable();
+        $table->addRow();
+        $cell = $table->addCell(6000);
+        $cell->addText('«' . date("d", strtotime($order->order_date)) . '» '
+            . WordWizard::Month(date("m", strtotime($order->order_date))) . ' '
+            . date("Y", strtotime($order->order_date)) . ' г.');
+        $cell = $table->addCell(12000);
+        $text = '№ ' . $order->order_number . '/' . $order->order_copy_id;
+        if ($order->order_postfix !== NULL)
+            $text .= '/' .  $order->order_postfix;
+        $cell->addText($text, null, array('align' => 'right'));
+        $section->addTextBreak(1);
+
+        $table = $section->addTable();
+        $table->addRow();
+        $cell = $table->addCell(12000);
+        $cell->addText($order->order_name, null, array('align' => 'left'));
+        $cell = $table->addCell(6000);
+        $cell->addTextBreak(1);
+        $section->addTextBreak(1);
+
+        $countGroup = count($groups);
+
+        $groupsID = [];
+        foreach ($groups as $group)
+            $groupsID[] = $group->id;
+        $allGroups = $trG->where(['in', 'id', $groupsID])->all();
+        $programsID = [];
+        foreach ($allGroups as $oneGroup)
+            $programsID[] = $oneGroup->training_program_id;
+        $countProgram = count($program->where(['in', 'id', $programsID])->all());
+
+        $teachersID = [];
+        foreach ($groups as $group)
+        {
+            $trGs = $teacher->where(['training_group_id' => $group->id])->all();
+            foreach ($trGs as $trGr)
+                $teachersID [] = $trGr->teacher_id;
+        }
+        $countTeacher = count(array_unique($teachersID));
+
+        if ($trG->where(['id' => $groups[0]->id])->one()->budget === 1)
+        {
+            $text = 'В соответствии с ч. 1 ст. 53 Федерального закона от 29.12.2012                    № 273-ФЗ «Об образовании в Российской Федерации», Правилами приема обучающихся в государственное автономное образовательное учреждение Астраханской области дополнительного образования «Региональный школьный технопарк» на обучение по дополнительным общеразвивающим программам, на основании заявлений о приеме на обучение по ';
+            if ($countProgram == 1)
+                $text .= 'дополнительной общеразвивающей программе';
+            else
+                $text .= 'дополнительным общеразвивающим программам';
+        }
+        else
+            $text = 'В соответствии с ч. 1, ч. 2 ст. 53 Федерального закона от 29.12.2012                    № 273-ФЗ «Об образовании в Российской Федерации», Положением об оказании платных дополнительных образовательных услуг в государственном автономном образовательном учреждении Астраханской области дополнительного образования «Региональный школьный технопарк», на основании договоров об оказании дополнительных платных образовательных услуг и представленных документов';
+        $section->addText($text, array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0, 'indentation' => array('hanging' => -700)));
+
+        $section->addText('ПРИКАЗЫВАЮ:', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+
+        $text = '          1.	Зачислить обучающихся с «' . date("d", strtotime($order->order_date)) . '» ' . WordWizard::Month(date("m", strtotime($order->order_date))) . ' ' . date("Y", strtotime($order->order_date)) . ' г.';
+        if ($countGroup == 1)
+            $text .= ' в учебную группу ';
+        else
+            $text .= ' в учебные группы ';
+        $text .= 'ГАОУ АО ДО «РШТ» на обучение по ';
+        if ($countProgram == 1)
+            $text .= 'дополнительной общеразвивающей программе ';
+        else
+            $text .= 'дополнительным общеразвивающим программам ';
+        $text .= 'согласно Приложению № 1 к настоящему приказу.';
+        $section->addText($text, array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+
+        if ($countTeacher == 1)
+            $text = '          2.	Назначить руководителем ';
+        else
+            $text = '          2.	Назначить руководителями ';
+        if ($countGroup == 1)
+            $text .= 'учебной группы ';
+        else
+            $text .= 'учебных групп ';
+        if ($countTeacher == 1)
+            $text .= 'работника ГАОУ АО ДО «РШТ», указанного в Приложении № 1 к настоящему приказу.';
+        else
+            $text .= 'работников ГАОУ АО ДО «РШТ», указанных в Приложении № 1 к настоящему приказу.';
+        $section->addText($text, array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+
+        if ($order->executor_id == $order->bring_id)
+            $text = '          3.	Назначить работника, ответственного за организацию образовательного процесса и контроль соблюдения расписания ';
+        else
+            $text = '          3.	Назначить работников, ответственных за организацию образовательного процесса и контроль соблюдения расписания ';
+        if ($countGroup == 1)
+            $text .= 'учебной группы согласно Приложению № 2 к настоящему приказу.';
+        else
+            $text .= 'учебных групп согласно Приложению № 2 к настоящему приказу.';
+        $section->addText($text, array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+
+        if ($countTeacher === 1)
+            $text = '          4.	Руководителю ';
+        else
+            $text = '          4.	Руководителям ';
+        if ($countGroup == 1)
+            $text .= 'учебной группы ';
+        else
+            $text .= 'учебных групп ';
+        $text .= 'проводить с обучающимися инструктажи по технике безопасности в соответствии с ';
+        if ($countProgram == 1)
+            $text .= 'дополнительной общеразвивающей программой.';
+        else
+            $text .= 'дополнительными общеразвивающими программами.';
+        $section->addText($text, array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+
+        if ($order->executor_id == $order->bring_id)
+            $text = '          5.	Назначить работника, ответственного за своевременное ознакомление ';
+        else
+            $text = '          5.	Назначить работников, ответственных за своевременное ознакомление ';
+        if ($countTeacher === 1)
+            $text .= 'руководителя ';
+        else
+            $text .= 'руководителей ';
+        if ($countGroup == 1)
+            $text .= 'учебной группы ';
+        else
+            $text .= 'учебных групп ';
+        $text .= 'с настоящим приказом согласно Приложению № 2 к настоящему приказу.';
+
+        $section->addText($text, array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+        $section->addText('          6.	Контроль исполнения приказа оставляю за собой.', array('lineHeight' => 1.0), array('align' => 'both', 'spaceAfter' => 0));
+
         $section->addTextBreak(2);
 
+        $table = $section->addTable();
+        $table->addRow();
+        $cell = $table->addCell(6000);
+        $cell->addText('Директор');
+        $cell = $table->addCell(12000);
+        $cell->addText('В.В. Войков', null, array('align' => 'right'));
 
-        $text = ' ';
+
+        $section = $inputData->addSection(array('marginTop' => WordWizard::convertMillimetersToTwips(20),
+            'marginLeft' => WordWizard::convertMillimetersToTwips(30),
+            'marginBottom' => WordWizard::convertMillimetersToTwips(20),
+            'marginRight' => WordWizard::convertMillimetersToTwips(15) ));
+        $table = $section->addTable();
+        $table->addRow();
+        $cell = $table->addCell(6000);
+        $cell->addText('Проект вносит:');
+        $cell = $table->addCell(12000);
+        $cell->addText($order->bring->getFIO(PersonInterface::FIO_SURNAME_INITIALS), null, array('align' => 'right'));
+        $table->addRow();
+        $cell = $table->addCell(6000);
+        $cell->addText('Исполнитель:');
+        $cell = $table->addCell(12000);
+        $cell->addText($order->executor->getFIO(PersonInterface::FIO_SURNAME_INITIALS), null, array('align' => 'right'));
+
+        $section->addText('Ознакомлены:');
+        $table = $section->addTable();
+        for ($i = 0; $i != count($res); $i++, $c++)
+        {
+            $fio = $res[$i]->people->getFIO(PersonInterface::FIO_SURNAME_INITIALS);
+
+            $table->addRow();
+            $cell = $table->addCell(8000);
+            $cell->addText('«___» __________ 20___ г.');
+            $cell = $table->addCell(5000);
+            $cell->addText('    ________________/', null, array('align' => 'right'));
+            $cell = $table->addCell(5000);
+            $cell->addText($fio . '/');
+        }
+
+
+        $section = $inputData->addSection(array('marginTop' => WordWizard::convertMillimetersToTwips(20),
+            'marginLeft' => WordWizard::convertMillimetersToTwips(30),
+            'marginBottom' => WordWizard::convertMillimetersToTwips(20),
+            'marginRight' => WordWizard::convertMillimetersToTwips(15) ));
+        $table = $section->addTable();
+        $table->addRow();
+        $cell = $table->addCell(10000);
+        $cell->addText('', null, array('spaceAfter' => 0));
+        $cell = $table->addCell(8000);
+        $cell->addText('Приложение №1', array('size' => '12'), array('align' => 'left', 'spaceAfter' => 0));
+        $table->addRow();
+        $cell = $table->addCell(10000);
+        $cell->addText('', null, array('spaceAfter' => 0));
+        $cell = $table->addCell(8000);
+        $cell->addText('к приказу ГАОУ АО ДО «РШТ»', array('size' => '12'), array('align' => 'left', 'spaceAfter' => 0));
+        $table->addRow();
+        $cell = $table->addCell(10000);
+        $cell->addText('', null, array('spaceAfter' => 0));
+        $cell = $table->addCell(8000);
+        $text = '№ ' . $order->order_number . '/' . $order->order_copy_id;
+        if ($order->order_postfix !== NULL)
+            $text .= '/' .  $order->order_postfix;
+        $cell->addText('от «' . date("d", strtotime($order->order_date)) . '» '
+            . WordWizard::Month(date("m", strtotime($order->order_date))) . ' '
+            . date("Y", strtotime($order->order_date)) . ' г. '
+            . $text, array('size' => '12'), array('align' => 'left', 'spaceAfter' => 0));
+        $section->addTextBreak(1);
+        foreach ($groups as $group)
+        {
+            $trGroup = $trG->where(['id' => $group->id])->one();
+            $section->addText('Идентификатор учебной группы: ' . $trGroup->number);
+
+            $teacherTrG = $teacher->where(['training_group_id' => $group->id])->all();
+            $text = 'Руководитель учебной группы: ';
+
+            foreach ($teacherTrG as $trg)
+            {
+                $post = [];
+                $pPosB = $pos->where(['people_id' => $trg->teacher_id])->all();
+                foreach ($pPosB as $posOne)
+                {
+                    $post [] = $posOne->position_id;
+                }
+                $post = array_unique($post);    // выкинули все повторы
+                $post = array_intersect($post, [15, 16, 35, 44]);   // оставили только преподские должности
+
+                if (count($post) > 0)
+                {
+                    $posName = $positionName->where(['id' => $post[0]])->one();
+                    $text .= mb_strtolower($posName->name) . ' ' . $trg->teacherWork->getFIO(PersonInterface::FIO_SURNAME_INITIALS) . ', ';
+                }
+                else
+                    $text .= $trg->teacherWork->getFIO(PersonInterface::FIO_SURNAME_INITIALS) . ', ';
+            }
+            $text = mb_substr($text, 0, -2);
+            $section->addText($text);
+
+            $programTrG = $program->where(['id' => $trGroup->training_program_id])->one();
+            $section->addText('Дополнительная общеразвивающая программа: «' . $programTrG->name . '»');
+            $section->addText('Направленность: ' . mb_strtolower(Yii::$app->focus->get($programTrG->focus)));
+
+            $section->addText('Форма обучения: очная (в случаях, установленных законодательными актами, возможно применение электронного обучения, дистанционных образовательных технологий).');
+
+            $section->addText('Срок освоения (ак.ч.): ' . $programTrG->capacity);
+
+            $section->addText('Обучающиеся: ');
+            $localParticipants = ArrayHelper::getColumn(TrainingGroupParticipantWork::find()->where(['training_group_id' => $group->id])->all(), 'id');
+            $pasta = $pastaAlDente->where(['order_id' => $order->id])->andWhere(['IN', 'training_group_participant_in_id', $localParticipants ])->all();
+            for ($i = 0; $i < count($pasta); $i++)
+            {
+                $groupParticipant = $gPart->where(['id' => $pasta[$i]->training_group_participant_in_id])->one();
+                $participant = $part->where(['id' => $groupParticipant->participant_id])->one();
+                $section->addText($i+1 . '. ' . $participant->getFullFio());
+            }
+            $section->addTextBreak(2);
+        }
+
+        $section = $inputData->addSection(array('marginTop' => WordWizard::convertMillimetersToTwips(20),
+            'marginLeft' => WordWizard::convertMillimetersToTwips(30),
+            'marginBottom' => WordWizard::convertMillimetersToTwips(20),
+            'marginRight' => WordWizard::convertMillimetersToTwips(15) ));
+        $table = $section->addTable();
+        $table->addRow();
+        $cell = $table->addCell(10000);
+        $cell->addText('', null, array('spaceAfter' => 0));
+        $cell = $table->addCell(8000);
+        $cell->addText('Приложение №2', array('size' => '12'), array('align' => 'left', 'spaceAfter' => 0));
+        $table->addRow();
+        $cell = $table->addCell(10000);
+        $cell->addText('', null, array('spaceAfter' => 0));
+        $cell = $table->addCell(8000);
+        $cell->addText('к приказу ГАОУ АО ДО «РШТ»', array('size' => '12'), array('align' => 'left', 'spaceAfter' => 0));
+        $table->addRow();
+        $cell = $table->addCell(10000);
+        $cell->addText('', null, array('spaceAfter' => 0));
+        $cell = $table->addCell(8000);
+        $text = '№ ' . $order->order_number . '/' . $order->order_copy_id;
+        if ($order->order_postfix !== NULL)
+            $text .= '/' .  $order->order_postfix;
+        $cell->addText('от «' . date("d", strtotime($order->order_date)) . '» '
+            . WordWizard::Month(date("m", strtotime($order->order_date))) . ' '
+            . date("Y", strtotime($order->order_date)) . ' г. '
+            . $text, array('size' => '12'), array('align' => 'left', 'spaceAfter' => 0));
+        $section->addTextBreak(2);
+
+        $section->addText('Список работников, ответственных за организацию образовательного процесса и контроль соблюдения расписания учебных групп', array('bold' => true), array('align' => 'center'));
+        $section->addTextBreak(1);
+
+        $table = $section->addTable(array('borderColor' => '000000', 'borderSize' => '6'));
+        $table->addRow();
+        $cell = $table->addCell(1000);
+        $cell->addText('№', array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+        $cell = $table->addCell(4000);
+        $cell->addText('Ф.И.О. ответственного работника', array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+        $cell = $table->addCell(4000);
+        $cell->addText('Должность', array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+        $cell = $table->addCell(9000);
+        $cell->addText('Зона ответственности', array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+        $table->addRow();
+        $cell = $table->addCell(1000);
+        $cell->addText('1', array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+        $cell = $table->addCell(4000);
+        $posOne = $pos->where(['people_id' => $order->executor_id])->one();
+        $cell->addText($order->executor->getFIO(PersonInterface::FIO_SURNAME_INITIALS) . '. ', array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+        $cell = $table->addCell(3000);
+        $cell->addText(mb_strtolower(mb_substr($posOne->position->name, 0, 1)) . mb_substr($posOne->position->name, 1), array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+        $cell = $table->addCell(10000);
+        $text = '- контроль соблюдения расписания ';
+        if ($countGroup == 1)
+            $text .= 'учебной группы и соответствия тематики проводимых учебных занятий ';
+        else
+            $text .= 'учебных групп и соответствия тематики проводимых учебных занятий ';
+        if ($countProgram == 1)
+            $text .= 'дополнительной общеразвивающей программе';
+        else
+            $text .= 'дополнительным общеразвивающим программам';
+        $cell->addText($text, array('size' => '12'), array('align' => 'both', 'spaceAfter' => 0));
+        $table->addRow();
+        $cell = $table->addCell(1000);
+        $cell->addText('2', array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+        $cell = $table->addCell(4000);
+        $posOne = $pos->where(['people_id' => $order->bring_id])->one();
+        $cell->addText($order->bring->getFIO(PersonInterface::FIO_SURNAME_INITIALS) . '. ', array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+        $cell = $table->addCell(4000);
+        $cell->addText(mb_strtolower(mb_substr($posOne->position->name, 0, 1)) . mb_substr($posOne->position->name, 1), array('size' => '12'), array('align' => 'center', 'spaceAfter' => 0));
+        $cell = $table->addCell(9000);
+        $text = '- своевременное ознакомление ';
+        if ($countTeacher == 1)
+            $text .= 'руководителя ';
+        else
+            $text .= 'руководителей ';
+        if ($countGroup == 1)
+            $text .= 'учебной группы с настоящим приказом';
+        else
+            $text .= 'учебных групп с настоящим приказом';
+        $cell->addText($text, array('size' => '12'), array('align' => 'both', 'spaceAfter' => 0));
+
+
+        $text = 'Пр.' . date("Ymd", strtotime($order->order_date)) . '_' . $order->order_number . $order->order_copy_id . $order->order_postfix . '_' . mb_substr($order->order_name, 0, 20);
         header("Content-Description: File Transfer");
         header('Content-Disposition: attachment; filename="' . $text . '.docx"');
         header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         header('Content-Transfer-Encoding: binary');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Expires: 0');
+
 
         return $inputData;
     }
