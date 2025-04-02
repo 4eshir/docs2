@@ -41,7 +41,7 @@ class AuthController extends Controller
             $user = $this->userRepository->findByEmail($model->username);
             /** @var UserWork $user */
             if ($user && $user->validatePassword($model->password)) {
-                $duration = $model->rememberMe ? 3600 * 24 * 365 : 3600 * 12;
+                $duration = 3600 * 12;
                 Yii::$app->user->login($user, $duration);
                 return
                     Yii::$app->session->get('previous_url') ?

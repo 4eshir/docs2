@@ -16,9 +16,11 @@ class AppAsset extends AssetBundle
         'css/customized.css',
         'css/viewCard.css',
         'css/media.css',
+        'css/login.css',
     ];
     public $js = [
         'js/customized.js',
+        'js/login.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

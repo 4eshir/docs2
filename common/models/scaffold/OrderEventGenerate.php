@@ -44,7 +44,7 @@ class OrderEventGenerate extends \yii\db\ActiveRecord
         return [
             [['order_id'], 'required'],
             [['order_id', 'purpose', 'doc_event', 'resp_people_info_id', 'extra_resp_insert_id', 'time_provision_day', 'time_insert_day', 'extra_resp_method_id', 'extra_resp_info_stuff_id'], 'integer'],
-            [['document_details'], 'text'],
+            [['document_details'], 'string'],
             [['order_id'], 'exist', 'skipOnError' => true, 'targetClass' => DocumentOrderWork::class, 'targetAttribute' => ['order_id' => 'id']],
             [['extra_resp_info_stuff_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['extra_resp_info_stuff_id' => 'id']],
             [['extra_resp_insert_id'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['extra_resp_insert_id' => 'id']],

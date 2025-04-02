@@ -7,34 +7,35 @@
 use yii\bootstrap5\ActiveForm;
 use yii\helpers\Html;
 
-$this->title = 'Авторизация в системе';
+$this->title = 'Авторизация';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
+<link rel="stylesheet" href="login.css">
 
+<div class="login-container">
+    <div class="login-block1">
+        <h1 class="login-header"><?= Html::encode($this->title) ?></h1>
+        <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
 
-    <div class="row">
-        <div class="col-lg-5">
-            <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
+        <?= $form->field($model, 'username')->textInput(['autofocus' => true, 'placeholder' => 'E-mail', 'class' => 'form-control login-input'])->label(false) ?>
+        <?= $form->field($model, 'password')->passwordInput(['placeholder' => 'Пароль', 'class' => 'form-control login-input'])->label(false) ?>
 
-            <?= $form->field($model, 'username')->textInput(['autofocus' => true])->label('Логин') ?>
-
-            <?= $form->field($model, 'password')->passwordInput()->label('Пароль') ?>
-
-            <?= $form->field($model, 'rememberMe')->checkbox()->label('Запомнить меня') ?>
-
-            <div class="form-group">
-                <?= Html::submitButton('Войти', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-            </div>
-
-            <?php ActiveForm::end(); ?>
+        <div class="forgot-password-block">
+            <?= Html::a('Забыли пароль?', \yii\helpers\Url::to(['auth/forgot-password'])) ?>
         </div>
-    </div>
-    <br>
-    <div>
 
-        <?= Html::a('Забыли пароль?', \yii\helpers\Url::to(['auth/forgot-password'])) ?>
+        <div class="form-group submit-login-block">
+            <?= Html::submitButton('Войти', ['class' => 'btn btn-primary btn-login', 'name' => 'login-button']) ?>
+        </div>
+
+        <?php ActiveForm::end(); ?>
+    </div>
+    <div class="login-block2">
+        <div class="text-login-form">
+            <h2><b>Добро пожаловать в ЦСХД!</b></h2>
+            <hr>
+            <p>Для входа используйте свою рабочую почту с доменом @schooltech.ru</p>
+        </div>
     </div>
 </div>
