@@ -9,7 +9,12 @@ class LogRecordComponent
 
     public function checkBlock($key)
     {
-        return !Yii::$app->redis->executeCommand('EXISTS', [$key]);
+        if (Yii::$app->redis->isConnected()) {
+            return !Yii::$app->redis->executeCommand('EXISTS', [$key]);
+        }
+        else {
+            return true;
+        }
     }
     public function block($key, $time)
     {
