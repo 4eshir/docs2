@@ -2,6 +2,7 @@
 
 use common\models\work\ErrorsWork;
 use common\models\work\UserWork;
+use frontend\forms\ErrorsForm;
 use frontend\models\work\rubac\PermissionTokenWork;
 use yii\data\ArrayDataProvider;
 use yii\grid\GridView;
@@ -11,13 +12,7 @@ use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $user UserWork */
-/* @var $errorsGroup */
-/* @var $errorsProgram */
-/* @var $errorsOrder */
-/* @var $errorsEvent */
-/* @var $errorsAchievement */
-/* @var $errorsTreat */
-/* @var $errorsInvoice */
+/* @var $form ErrorsForm */
 ?>
 
 <div style="width:100%; height:1px; clear:both;"></div>
@@ -27,7 +22,7 @@ use yii\widgets\ActiveForm;
         <h3>Ошибки в учебных группах</h3>
         <?= GridView::widget([
             'dataProvider' => new ArrayDataProvider([
-                'allModels' => $errorsGroup,
+                'allModels' => $form->errorsGroup,
                 'pagination' => false,
             ]),
             'columns' => [
@@ -58,7 +53,7 @@ use yii\widgets\ActiveForm;
         <h3>Ошибки в образовательных программах</h3>
         <?= GridView::widget([
             'dataProvider' => new ArrayDataProvider([
-                'allModels' => $errorsProgram,
+                'allModels' => $form->errorsProgram,
                 'pagination' => false,
             ]),
             'columns' => [
@@ -89,7 +84,7 @@ use yii\widgets\ActiveForm;
         <h3>Ошибки в приказах</h3>
         <?= GridView::widget([
             'dataProvider' => new ArrayDataProvider([
-                'allModels' => $errorsOrder,
+                'allModels' => $form->errorsOrder,
                 'pagination' => false,
             ]),
             'columns' => [
@@ -120,7 +115,7 @@ use yii\widgets\ActiveForm;
         <h3>Ошибки в мероприятиях</h3>
         <?= GridView::widget([
             'dataProvider' => new ArrayDataProvider([
-                'allModels' => $errorsEvent,
+                'allModels' => $form->errorsEvent,
                 'pagination' => false,
             ]),
             'columns' => [
@@ -151,7 +146,7 @@ use yii\widgets\ActiveForm;
         <h3>Ошибки в учёте достижений</h3>
         <?= GridView::widget([
             'dataProvider' => new ArrayDataProvider([
-                'allModels' => $errorsAchievement,
+                'allModels' => $form->errorsAchievement,
                 'pagination' => false,
             ]),
             'columns' => [
@@ -182,7 +177,7 @@ use yii\widgets\ActiveForm;
         <h3>Ошибки в договорах</h3>
         <?= GridView::widget([
             'dataProvider' => new ArrayDataProvider([
-                'allModels' => $errorsTreat,
+                'allModels' => $form->errorsTreat,
                 'pagination' => false,
             ]),
             'columns' => [

@@ -33,7 +33,7 @@ use yii\widgets\DetailView;
             ]),
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
-                'name'
+                ['attribute' => 'name', 'label' => 'Разрешение']
             ],
         ]) ?>
     </div>

@@ -13,6 +13,7 @@ use DateTime;
 use DomainException;
 use frontend\forms\analytics\AnalyticErrorForm;
 use frontend\forms\ChangePasswordForm;
+use frontend\forms\ErrorsForm;
 use frontend\forms\TokenForm;
 use frontend\models\work\rubac\PermissionTokenWork;
 use Yii;
@@ -121,42 +122,12 @@ class LkController extends Controller
 
     public function actionErrors($id)
     {
-        //Ошибки в учебных группах
-        $errorsGroup = array_filter(
-            $this->errorService->getErrorsByUser($id), function (ErrorsWork $value) {
-                return $value->table_name === 'training_group';
-        });
-        //Ошибки в образовательных программах
-        $errorsProgram = array_filter(
-            $this->errorService->getErrorsByUser($id), function (ErrorsWork $value) {
-                return $value->table_name === 'training_program';
-        });
-        //Ошибки в приказах
-        $errorsOrder = array_filter(
-            $this->errorService->getErrorsByUser($id), function (ErrorsWork $value) {
-                return $value->table_name === 'document_order';
-        });
-        //Ошибки в мероприятиях
-        $errorsEvent = array_filter(
-            $this->errorService->getErrorsByUser($id), function (ErrorsWork $value) {
-                return $value->table_name === 'event';
-        });
-        //Ошибки в учете достижений
-        $errorsAchievement = array_filter(
-            $this->errorService->getErrorsByUser($id), function (ErrorsWork $value) {
-                return $value->table_name === 'foreign_event';
-        });
-        //ошибки в договорах
-        $errorsTreat = NULL;
+        $errors = $this->errorService->getErrorsByUser($id);
+        $form = new ErrorsForm($errors);
         $user = $this->userRepository->get($id);
         return $this->render('errors', [
             'user' => $user,
-            'errorsGroup' => $errorsGroup,
-            'errorsProgram' => $errorsProgram,
-            'errorsOrder' => $errorsOrder,
-            'errorsEvent' => $errorsEvent,
-            'errorsAchievement' => $errorsAchievement,
-            'errorsTreat' => $errorsTreat,
+            'form' => $form,
         ]);
     }
 }
