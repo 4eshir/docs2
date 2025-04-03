@@ -96,6 +96,7 @@ class Urls
     const TRAINING_GROUP_ARCHIVE = "educational/training-group/archive";
     const LESSON_THEMES_CREATE = "educational/training-group/create-lesson-themes";
     const JOURNAL_DELETE = "educational/training-group/delete-journal";
+    const PITCH = "educational/pitch";
 
     /**
      * Константы TrainingProgram
@@ -121,8 +122,10 @@ class Urls
      * Константы Certificate
      *
      * CERTIFICATE_VIEW - actionView
+     * CERTIFICATE_INDEX - actionIndex
      */
     const CERTIFICATE_VIEW = "educational/certificate/view";
+    const CERTIFICATE_INDEX = "educational/certificate/index";
 
     /**
      * Константы ForeignEventParticipants
@@ -137,57 +140,78 @@ class Urls
      * Константы People
      *
      * PEOPLE_VIEW - actionView
+     * PEOPLE_INDEX - actionIndex
      */
     const PEOPLE_VIEW = "dictionaries/people/view";
+    const PEOPLE_INDEX = "dictionaries/people/index";
 
     /**
      * Константы Company
      *
      * COMPANY_VIEW - actionView
+     * COMPANY_INDEX - actionIndex
      */
     const COMPANY_VIEW = "dictionaries/company/view";
+    const COMPANY_INDEX = "dictionaries/company/index";
 
     /**
-     * Константы Company
+     * Константы Position
      *
      * POSITION_VIEW - actionView
+     * POSITION_INDEX - actionIndex
      */
     const POSITION_VIEW = "dictionaries/position/view";
+    const POSITION_INDEX = "dictionaries/position/index";
 
     /**
      * Константы Auditorium
      *
      * AUDITORIUM_VIEW - actionView
+     * AUDITORIUM_INDEX - actionIndex
      */
     const AUDITORIUM_VIEW = "dictionaries/auditorium/view";
+    const AUDITORIUM_INDEX = "dictionaries/auditorium/index";
 
     /**
      * Константы LocalResponsibility
      *
      * LOCAL_RESPONSIBILITY_VIEW - actionView
+     * LOCAL_RESPONSIBILITY_INDEX - actionIndex
      */
     const LOCAL_RESPONSIBILITY_VIEW = "responsibility/local-responsibility/view";
+    const LOCAL_RESPONSIBILITY_INDEX = "responsibility/local-responsibility/index";
 
     /**
      * Константы OrderMain
      *
      * ORDER_MAIN_VIEW - actionView
      * ORDER_MAIN_RESERVE - actionReserve
+     * ORDER_INDEX - actionIndex
      */
     const ORDER_MAIN_VIEW = "order/order-main/view";
     const ORDER_MAIN_RESERVE = "order/order-main/reserve";
+    const ORDER_MAIN_INDEX = "order/order-main/index";
 
     /**
      * Константы OrderTraining
      *
      * ORDER_TRAINING_VIEW - actionView
+     * ORDER_TRAINING_INDEX - actionIndex
      */
     const ORDER_TRAINING_VIEW = "order/order-training/view";
+    const ORDER_TRAINING_INDEX = "order/order-training/index";
 
     /**
      * Константы OrderEvent
      *
      * ORDER_EVENT_VIEW - actionView
+     * ORDER_EVENT_INDEX - actionIndex
      */
     const ORDER_EVENT_VIEW = "order/order-event/view";
+    const ORDER_EVENT_INDEX = "order/order-event/index";
+
+    /**
+     *
+     */
+    const ANALITIC_ERRORS_INDEX = "analytics/errors";
 }

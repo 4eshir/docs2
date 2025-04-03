@@ -59,13 +59,6 @@ $tempArchive = $session->get("archiveIn");
 
     <?= $this->render('_search', ['searchModel' => $searchModel]) ?>
 
-    <p>
-        <?= Html::a('Добавить приказ по основной деятельности', ['create'], ['class' => 'btn btn-success', 'style' => 'display: inline-block;']) ?>
-        <?= Html::a('Добавить образовательный приказ', ['create'], ['class' => 'btn btn-warning', 'style' => 'display: inline-block;']) ?>
-        <?= Html::a('Добавить приказ об участии', ['order/order-event/create'], ['class' => 'btn btn-success', 'style' => 'display: inline-block;']) ?>
-        <?= Html::a('Добавить резерв', ['reserve'], ['class' => 'btn btn-secondary','style' => 'display: inline-block;',]) ?>
-    </p>
-
     <?=
         GridView::widget([
             'dataProvider' => $dataProvider,

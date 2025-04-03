@@ -7,7 +7,7 @@
         width: 100%;
     }
 
-    .card {
+    .card, .block-card {
         flex-direction: column;
     }
 
@@ -58,5 +58,13 @@
     #toTopButton {
         bottom: 3em;
         right: 1em;
+    }
+
+    .index-card {
+        width: 100%;
+    }
+
+    .index-card:nth-child(2) {
+        margin-top: 2em;
     }
 }

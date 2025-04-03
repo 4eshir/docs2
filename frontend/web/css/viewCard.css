@@ -203,11 +203,11 @@ a:has(.tooltip-span) {
 }
 
 .status-participant svg{
-    width: 1.5em;
-    height: 1.5em;
+    width: 2em;
+    height: 2em;
 }
 
-.btn-resize {
+.btn-resize, .add-item-act, .remove-item-act {
     margin-right: 0.5em;
     width: 2.2em;
     font-size: 1.2em;
@@ -222,4 +222,55 @@ a:has(.tooltip-span) {
 
 .status-block, .status-active {
     margin-right: 0.5em;
+}
+
+.icon-button, .button-icon {
+    text-align: center;
+    align-items: center;
+}
+
+.icon-button svg {
+    width: 2em;
+    margin-left: 1em;
+}
+
+.button-icon svg {
+    width: 2em;
+    margin-right: 1em;
+}
+
+.journal-edit .button-icon {
+    margin: auto 1em;
+}
+
+.control-label {
+    font-weight: 500;
+}
+
+.lessons-date:hover {
+    border: 1px solid var(--border-color);
+}
+
+.icons-container {
+    margin-top: 1em;
+}
+
+.project-participant {
+    width: 12em;
+}
+
+.project-participant div {
+    padding-top: 0.3em;
+}
+
+.success-checkbox label{
+    font-size: 0;
+}
+
+.sticky-cell {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 99;
+    background: white;
 }

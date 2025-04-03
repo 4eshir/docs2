@@ -376,7 +376,7 @@ a:hover {
     justify-content: space-around;
 }
 
-.substrate, .breadcrumb, .control-unit {
+.substrate, .breadcrumb, .control-unit, .index-card, .field-backing {
     background-color: white;
     border-radius: var(--border-radius);
     padding: 1em;
@@ -700,7 +700,7 @@ input[type="checkbox"] {
     z-index: 99;
 }
 
-#toTopButton svg {
+#toTopButton svg, .index-title svg {
     width: 2em;
     height: 2em;
 }

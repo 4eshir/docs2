@@ -721,7 +721,8 @@ class HtmlBuilder
             $errorTemplate = Yii::$app->errors->get($error->error);
             $critImg = '';
             if ($error->isCrititcal()) {
-                $critImg = '<img src="' . FilePaths::ALERT_TRIANGLE . '" style="width: 25px">';
+                $critImg = self::paintSVG(FilePaths::SVG_ALERT_WARNING, self::SVG_CRITICAL_COLOR);
+                //$critImg = '<img src="' . FilePaths::ALERT_TRIANGLE . '" style="width: 25px">';
             }
             return "$critImg<b>Ошибка $errorTemplate->code</b>: $errorTemplate->description$critImg";
         }, $errors));
