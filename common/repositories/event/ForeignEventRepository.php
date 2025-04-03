@@ -66,4 +66,8 @@ class ForeignEventRepository
         }
         return $model->id;
     }
+
+    public function existByOrderId($orderId){
+        return ForeignEventWork::find()->where(['order_participant_id' => $orderId])->exists();
+    }
 }

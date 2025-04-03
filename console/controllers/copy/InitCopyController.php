@@ -160,7 +160,7 @@ class InitCopyController extends Controller
         $this->actionDeleteCharacteristicObject();
         $this->actionDeleteComplex();
         $this->actionDeleteEntry();
-        $this->actionDeleteErrors();
+        //$this->actionDeleteErrors();
         $this->actionDeleteForeignEventParticipants();
         $this->actionDeletePatchnotes();
         $this->actionDeletePosition();
@@ -174,7 +174,7 @@ class InitCopyController extends Controller
         $this->actionCopyCharacteristicObject();
         $this->actionCopyComplex();
         $this->actionCopyEntry();
-        $this->actionCopyErrors();
+        //$this->actionCopyErrors();
         $this->actionCopyForeignEventParticipants();
         $this->actionCopyPatchnotes();
         $this->actionCopyPosition();

@@ -277,6 +277,7 @@ class OrderEventController extends DocumentController
                 $this->actParticipantService->createActTable($modelForeignEvent->id),
                 $this->documentOrderService->getUploadedFilesTables($modelOrderEvent),
             );
+
             $form->orderEventForm->fillExtraInfo($this->orderEventGenerateRepository->getByOrderId($id));
             $this->documentOrderService->setResponsiblePeople(ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'), $form->orderEventForm);
             $orderNumber = $form->orderEventForm->order_number;
@@ -312,39 +313,74 @@ class OrderEventController extends DocumentController
                 $this->documentOrderService->getPeopleStamps($modelOrderEvent);
                 $this->orderEventRepository->save($modelOrderEvent);
                 $generateInfo = $this->orderEventGenerateRepository->getByOrderId($id);
-                $generateInfo->fillUpdate(
-                    $modelOrderEvent->id,
-                    $form->orderEventForm->purpose,
-                    $form->orderEventForm->docEvent,
-                    $form->orderEventForm->respPeopleInfo,
-                    $form->orderEventForm->timeProvisionDay,
-                    $form->orderEventForm->extraRespInsert,
-                    $form->orderEventForm->timeInsertDay,
-                    $form->orderEventForm->extraRespMethod,
-                    $form->orderEventForm->extraRespInfoStuff,
-                    $form->orderEventForm->documentDetails
-                );
+                if ($this->orderEventGenerateRepository->existsByOrderId($id)) {
+                    $generateInfo->fillUpdate(
+                        $modelOrderEvent->id,
+                        $form->orderEventForm->purpose,
+                        $form->orderEventForm->docEvent,
+                        $form->orderEventForm->respPeopleInfo,
+                        $form->orderEventForm->timeProvisionDay,
+                        $form->orderEventForm->extraRespInsert,
+                        $form->orderEventForm->timeInsertDay,
+                        $form->orderEventForm->extraRespMethod,
+                        $form->orderEventForm->extraRespInfoStuff,
+                        $form->orderEventForm->documentDetails
+                    );
+                }
+                else {
+                    $generateInfo = OrderEventGenerateWork::fill(
+                        $modelOrderEvent->id,
+                        $form->orderEventForm->purpose,
+                        $form->orderEventForm->docEvent,
+                        $form->orderEventForm->respPeopleInfo,
+                        $form->orderEventForm->timeProvisionDay,
+                        $form->orderEventForm->extraRespInsert,
+                        $form->orderEventForm->timeInsertDay,
+                        $form->orderEventForm->extraRespMethod,
+                        $form->orderEventForm->extraRespInfoStuff,
+                        $form->orderEventForm->documentDetails
+                    );
+                }
                 $this->orderEventGenerateService->setPeopleStamp($generateInfo);
                 $this->orderEventGenerateRepository->save($generateInfo);
                 $this->documentOrderService->saveFilesFromModel($modelOrderEvent);
                 $this->orderPeopleService->updateOrderPeopleEvent(
                     ArrayHelper::getColumn($this->orderPeopleRepository->getResponsiblePeople($id), 'people_id'),
                     $post["OrderEventForm"]["responsible_id"], $modelOrderEvent);
-                $modelForeignEvent->fillUpdate(
-                    $form->orderEventForm->eventName,
-                    $form->orderEventForm->organizer_id,
-                    $form->orderEventForm->dateBegin,
-                    $form->orderEventForm->dateEnd,
-                    $form->orderEventForm->city,
-                    $form->orderEventForm->eventWay,
-                    $form->orderEventForm->eventLevel,
-                    $form->orderEventForm->minister,
-                    $form->orderEventForm->minAge,
-                    $form->orderEventForm->maxAge,
-                    $form->orderEventForm->keyEventWords,
-                    $modelOrderEvent->id,
-                    $form->orderEventForm->actFiles
-                );
+                if($this->foreignEventRepository->existByOrderId($id)) {
+                    $modelForeignEvent->fillUpdate(
+                        $form->orderEventForm->eventName,
+                        $form->orderEventForm->organizer_id,
+                        $form->orderEventForm->dateBegin,
+                        $form->orderEventForm->dateEnd,
+                        $form->orderEventForm->city,
+                        $form->orderEventForm->eventWay,
+                        $form->orderEventForm->eventLevel,
+                        $form->orderEventForm->minister,
+                        $form->orderEventForm->minAge,
+                        $form->orderEventForm->maxAge,
+                        $form->orderEventForm->keyEventWords,
+                        $modelOrderEvent->id,
+                        $form->orderEventForm->actFiles
+                    );
+                }
+                else {
+                    $modelForeignEvent = ForeignEventWork::fill(
+                        $form->orderEventForm->eventName,
+                        $form->orderEventForm->organizer_id,
+                        $form->orderEventForm->dateBegin,
+                        $form->orderEventForm->dateEnd,
+                        $form->orderEventForm->city,
+                        $form->orderEventForm->eventWay,
+                        $form->orderEventForm->eventLevel,
+                        $form->orderEventForm->minister,
+                        $form->orderEventForm->minAge,
+                        $form->orderEventForm->maxAge,
+                        $form->orderEventForm->keyEventWords,
+                        $modelOrderEvent->id,
+                        $form->orderEventForm->actFiles
+                    );
+                }
                 $this->foreignEventRepository->save($modelForeignEvent);
                 $modelForeignEvent->checkModel(ErrorAssociationHelper::getForeignEventErrorsList(), ForeignEventWork::tableName(), $modelForeignEvent->id);
                 $this->actParticipantService->addActParticipant($acts, $modelForeignEvent->id);
