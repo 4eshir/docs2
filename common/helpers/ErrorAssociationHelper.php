@@ -9,12 +9,20 @@ class ErrorAssociationHelper
 {
     public static function getDocumentInErrorsList()
     {
-        return [];
+        return [
+            ErrorDictionary::DOCUMENT_011,
+            ErrorDictionary::DOCUMENT_012,
+            ErrorDictionary::DOCUMENT_013,
+        ];
     }
 
     public static function getDocumentOutErrorsList()
     {
-        return [];
+        return [
+            ErrorDictionary::DOCUMENT_008,
+            ErrorDictionary::DOCUMENT_009,
+            ErrorDictionary::DOCUMENT_010,
+        ];
     }
 
     public static function getOrderMainErrorsList()

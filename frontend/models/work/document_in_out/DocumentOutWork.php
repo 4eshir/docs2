@@ -3,6 +3,7 @@
 namespace frontend\models\work\document_in_out;
 
 use common\components\interfaces\FileInterface;
+use common\components\traits\ErrorTrait;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -33,7 +34,7 @@ use yii\helpers\Url;
  */
 class DocumentOutWork extends DocumentOut implements FileInterface
 {
-    use EventTrait;
+    use EventTrait, ErrorTrait;
     /**
      * Имена файлов для сохранения в БД
      */
@@ -121,6 +122,8 @@ class DocumentOutWork extends DocumentOut implements FileInterface
     public function setValuesForUpdate()
     {
         $this->correspondent_id = $this->correspondentWork->people_id;
+        $this->executor_id = $this->executorWork->people_id;
+        $this->signed_id = $this->signedWork->people_id;
         $this->document_name = 'NAME';
         $this->setIsAnswer();
     }

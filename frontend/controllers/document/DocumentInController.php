@@ -6,6 +6,7 @@ use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
 use common\helpers\ButtonsFormatter;
+use common\helpers\ErrorAssociationHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\SortHelper;
 use common\helpers\StringFormatter;
@@ -124,6 +125,7 @@ class DocumentInController extends DocumentController
             $this->service->getFilesInstances($model);
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
+            $model->checkModel(ErrorAssociationHelper::getDocumentInErrorsList(), DocumentInWork::tableName(), $model->id);
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -195,6 +197,7 @@ class DocumentInController extends DocumentController
                 $this->service->getFilesInstances($model);
                 $this->service->saveFilesFromModel($model);
                 $model->releaseEvents();
+                $model->checkModel(ErrorAssociationHelper::getDocumentInErrorsList(), DocumentInWork::tableName(), $model->id);
                 return $this->redirect(['view', 'id' => $model->id]);
             }
 

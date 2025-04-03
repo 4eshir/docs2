@@ -2,6 +2,7 @@
 
 namespace frontend\forms\event;
 
+use common\helpers\DateFormatter;
 use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\order\OrderEventWork;
@@ -178,7 +179,7 @@ class ForeignEventForm extends Model
                 array_merge(['Педагог'], ArrayHelper::getColumn($squads, 'actParticipantWork.teachers')),
                 array_merge(['Направленность'], ArrayHelper::getColumn($squads, 'actParticipantWork.focusName')),
                 array_merge(['Номинация'], ArrayHelper::getColumn($squads, 'actParticipantWork.nomination')),
-                array_merge(['Команда'], ArrayHelper::getColumn($squads, 'participantWork.teamNameWork.name')),
+                array_merge(['Команда'], ArrayHelper::getColumn($squads, 'actParticipantWork.teamNameWork.name')),
                 array_merge(['Форма реализации'], ArrayHelper::getColumn($squads, 'actParticipantWork.formName')),
             ],
             [
@@ -330,6 +331,14 @@ class ForeignEventForm extends Model
                     ['modelId' => array_fill(0, count($docLink), $this->id), 'fileId' => ArrayHelper::getColumn($docLink, 'id')])
             ]
         );
+    }
+
+    public function getEventPeriod()
+    {
+        return
+            DateFormatter::format($this->startDate, DateFormatter::Ymd_dash, DateFormatter::dmY_dot)
+            . ' - ' .
+            DateFormatter::format($this->endDate, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
     }
 
     public function save()

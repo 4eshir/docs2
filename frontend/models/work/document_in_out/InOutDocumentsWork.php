@@ -8,6 +8,7 @@ use frontend\models\work\general\PeopleWork;
 
 /**
  * @property PeopleStampWork $responsibleWork
+ * @property DocumentInWork $documentInWork
  */
 class InOutDocumentsWork extends InOutDocuments
 {
@@ -83,5 +84,10 @@ class InOutDocumentsWork extends InOutDocuments
     public function getResponsibleWork()
     {
         return $this->hasOne(PeopleStampWork::class, ['id' => 'responsible_id']);
+    }
+
+    public function getDocumentInWork()
+    {
+        return $this->hasOne(DocumentInWork::class, ['id' => 'document_in_id']);
     }
 }

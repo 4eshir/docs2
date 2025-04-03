@@ -44,6 +44,12 @@ class ErrorDictionary extends BaseDictionary
     const DOCUMENT_005 = 37;
     const DOCUMENT_006 = 57;
     const DOCUMENT_007 = 58;
+    const DOCUMENT_008 = 59;
+    const DOCUMENT_009 = 60;
+    const DOCUMENT_010 = 61;
+    const DOCUMENT_011 = 62;
+    const DOCUMENT_012 = 63;
+    const DOCUMENT_013 = 64;
 
     const JOURNAL_001 = 1;
     const JOURNAL_002 = 2;
@@ -82,7 +88,9 @@ class ErrorDictionary extends BaseDictionary
     const DOCUMENT_ERRORS = [
         self::DOCUMENT_001, self::DOCUMENT_002, self::DOCUMENT_003,
         self::DOCUMENT_004, self::DOCUMENT_005, self::DOCUMENT_006,
-        self::DOCUMENT_007,
+        self::DOCUMENT_007, self::DOCUMENT_008, self::DOCUMENT_009,
+        self::DOCUMENT_010, self::DOCUMENT_011, self::DOCUMENT_012,
+        self::DOCUMENT_013
     ];
 
     const ACHIEVE_ERRORS = [
@@ -315,6 +323,43 @@ class ErrorDictionary extends BaseDictionary
                 Error::TYPE_BASE,
                 [$this->documentService, 'makeDocument_007'],
                 [$this->documentService, 'fixDocument_007'],
+            ),
+            self::DOCUMENT_008 => new Error(
+                'ЭД008', 'В исходящем письме отсутствует скан документа',
+                Error::TYPE_BASE,
+                [$this->documentService, 'makeDocument_008'],
+                [$this->documentService, 'fixDocument_008'],
+            ),
+            self::DOCUMENT_009 => new Error(
+                'ЭД009', 'В исходящем письме отсутствует редактируемый файл',
+                Error::TYPE_BASE,
+                [$this->documentService, 'makeDocument_009'],
+                [$this->documentService, 'fixDocument_009'],
+            ),
+            self::DOCUMENT_010 => new Error(
+                'ЭД010', 'В исходящем письме отсутствуют ключевые слова',
+                Error::TYPE_BASE,
+                [$this->documentService, 'makeDocument_010'],
+                [$this->documentService, 'fixDocument_010'],
+            ),
+            self::DOCUMENT_011 => new Error(
+                'ЭД011', 'Во входящем письме отсутствует скан документа',
+                Error::TYPE_BASE,
+                [$this->documentService, 'makeDocument_011'],
+                [$this->documentService, 'fixDocument_011'],
+            ),
+            self::DOCUMENT_012 => new Error(
+                'ЭД012', 'Во входящем письме отсутствуют ключевые слова',
+                Error::TYPE_BASE,
+                [$this->documentService, 'makeDocument_012'],
+                [$this->documentService, 'fixDocument_012'],
+            ),
+            self::DOCUMENT_013 => new Error(
+                'ЭД013', 'На входящее письмо ожидается ответ',
+                Error::TYPE_CHANGEABLE,
+                [$this->documentService, 'makeDocument_013'],
+                [$this->documentService, 'fixDocument_013'],
+                [$this->changeableService, 'changeDocument_013'],
             ),
 
             self::JOURNAL_001 => new Error(

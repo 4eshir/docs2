@@ -3,6 +3,7 @@
 namespace frontend\models\work\document_in_out;
 
 use common\components\interfaces\FileInterface;
+use common\components\traits\ErrorTrait;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
@@ -31,7 +32,7 @@ use yii\helpers\Url;
  */
 class DocumentInWork extends DocumentIn implements FileInterface
 {
-    use EventTrait;
+    use EventTrait, ErrorTrait;
 
     /**
      * Имена файлов для сохранения в БД

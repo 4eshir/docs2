@@ -245,4 +245,9 @@ class ErrorChangeableService
             $this->errorsRepository->save($error);
         }
     }
+
+    public function changeDocument_013($errorId)
+    {
+
+    }
 }

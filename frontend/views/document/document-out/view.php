@@ -1,6 +1,8 @@
 <?php
 
+use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
+use frontend\models\work\document_in_out\DocumentOutWork;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -25,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-
+    <?= HtmlBuilder::createErrorsBlock(DocumentOutWork::tableName(), $model->id) ?>
     <div class="card">
         <div class="card-block-1">
             <div class="card-set">

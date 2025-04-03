@@ -214,7 +214,7 @@ class ActParticipantWork extends ActParticipant
 
     public function getActString()
     {
-        $name = $this->team_name_id ? "Команда: {$this->teamNameWork->name}" : $this->squadParticipants[0]->participantWork->getFullFio();
+        $name = $this->team_name_id ? "Команда: {$this->teamNameWork->name}" : $this->squadParticipantsWork[0]->participantWork->getFullFio();
         return $name. ' (' . $this->getString(). ')';
     }
 

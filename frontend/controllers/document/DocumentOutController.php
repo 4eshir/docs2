@@ -6,6 +6,7 @@ use common\components\wizards\LockWizard;
 use common\helpers\ButtonsFormatter;
 use common\helpers\common\HeaderWizard;
 use common\helpers\DateFormatter;
+use common\helpers\ErrorAssociationHelper;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\SortHelper;
@@ -130,6 +131,8 @@ class DocumentOutController extends Controller
             $this->service->getFilesInstances($model);
             $this->service->saveFilesFromModel($model);
             $model->releaseEvents();
+            $model->checkModel(ErrorAssociationHelper::getDocumentOutErrorsList(), DocumentOutWork::tableName(), $model->id);
+            $this->service->checkDocumentInErrors($model->id);
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -180,6 +183,8 @@ class DocumentOutController extends Controller
                 $this->service->getFilesInstances($model);
                 $this->service->saveFilesFromModel($model);
                 $model->releaseEvents();
+                $model->checkModel(ErrorAssociationHelper::getDocumentOutErrorsList(), DocumentOutWork::tableName(), $model->id);
+                $this->service->checkDocumentInErrors($model->id);
                 return $this->redirect(['view', 'id' => $model->id]);
             }
             return $this->render('update', [

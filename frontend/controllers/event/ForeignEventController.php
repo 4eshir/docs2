@@ -5,7 +5,9 @@ namespace frontend\controllers\event;
 use common\components\traits\AccessControl;
 use common\components\wizards\LockWizard;
 use common\controllers\DocumentController;
+use common\helpers\ButtonsFormatter;
 use common\helpers\ErrorAssociationHelper;
+use common\helpers\html\HtmlBuilder;
 use common\Model;
 use common\repositories\dictionaries\PeopleRepository;
 use common\repositories\event\ParticipantAchievementRepository;
@@ -103,8 +105,17 @@ class ForeignEventController extends DocumentController
     public function actionView($id)
     {
         $form = new ForeignEventForm($id);
+        $form->event->checkFilesExist();
+
+        $links = array_merge(
+            ButtonsFormatter::updateDeleteLinks($id),
+            ButtonsFormatter::anyOneLink('Простить ошибки', 'amnesty', ButtonsFormatter::BTN_WARNING)
+        );
+        $buttonHtml = HtmlBuilder::createGroupButton($links);
+
         return $this->render('view',[
-            'model' => $form
+            'model' => $form,
+            'buttonsAct' => $buttonHtml
         ]);
     }
 

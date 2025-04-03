@@ -2,15 +2,19 @@
 
 namespace frontend\services\document;
 
+use common\helpers\ErrorAssociationHelper;
 use common\helpers\files\filenames\DocumentOutFileNameGenerator;
 use common\helpers\files\FilesHelper;
 use common\helpers\html\HtmlBuilder;
+use common\repositories\document_in_out\InOutDocumentsRepository;
 use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
 use common\services\general\PeopleStampService;
 use frontend\controllers\document\DocumentOutController;
 use frontend\events\general\FileCreateEvent;
+use frontend\models\work\document_in_out\DocumentInWork;
 use frontend\models\work\document_in_out\DocumentOutWork;
+use frontend\models\work\document_in_out\InOutDocumentsWork;
 use PhpParser\Comment\Doc;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
@@ -18,16 +22,19 @@ use yii\web\UploadedFile;
 
 class DocumentOutService implements DatabaseServiceInterface
 {
+    private InOutDocumentsRepository $inOutDocumentsRepository;
     private FileService $fileService;
     private PeopleStampService $peopleStampService;
     private DocumentOutFileNameGenerator $filenameGenerator;
 
     public function __construct(
+        InOutDocumentsRepository $inOutDocumentsRepository,
         FileService $fileService,
         PeopleStampService $peopleStampService,
         DocumentOutFileNameGenerator $filenameGenerator
     )
     {
+        $this->inOutDocumentsRepository = $inOutDocumentsRepository;
         $this->fileService = $fileService;
         $this->peopleStampService = $peopleStampService;
         $this->filenameGenerator = $filenameGenerator;
@@ -173,5 +180,13 @@ class DocumentOutService implements DatabaseServiceInterface
         );
 
         return ['scan' => $scanFiles, 'doc' => $docFiles, 'app' => $appFiles];
+    }
+
+    // Повторная проверка на ошибки связанного входящего документа
+    public function checkDocumentInErrors($documentOutId)
+    {
+        /** @var InOutDocumentsWork $answer */
+        $answer = $this->inOutDocumentsRepository->getByDocumentOutId($documentOutId);
+        $answer->documentInWork->checkModel(ErrorAssociationHelper::getDocumentInErrorsList(), DocumentInWork::tableName(), $answer->document_in_id);
     }
 }

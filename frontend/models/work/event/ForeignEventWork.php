@@ -6,22 +6,30 @@ use common\components\traits\ErrorTrait;
 use common\events\EventTrait;
 use common\helpers\DateFormatter;
 use common\helpers\files\FilesHelper;
+use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\ForeignEvent;
+use common\models\scaffold\PeopleStamp;
 use common\models\work\UserWork;
 use common\repositories\act_participant\ActParticipantRepository;
 use common\repositories\general\PeopleStampRepository;
 use frontend\models\work\dictionaries\CompanyWork;
 use frontend\models\work\general\PeopleStampWork;
 use frontend\models\work\general\PeopleWork;
+use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\team\ActParticipantWork;
 use InvalidArgumentException;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 /**
  * @property UserWork $creatorWork
  * @property UserWork $lastEditWork
  * @property CompanyWork $organizerWork
+ * @property PeopleStampWork $escortWork
+ * @property DocumentOrderWork $orderBusinessTripWork
+ * @property DocumentOrderWork $orderParticipantWork
+ * @property DocumentOrderWork $addOrderParticipantWork
  * @property ActParticipantWork[] $actParticipantWorks
  */
 class ForeignEventWork extends ForeignEvent
@@ -32,6 +40,8 @@ class ForeignEventWork extends ForeignEvent
     const VIEW_TYPE = 2;
 
     public $actFiles;
+
+    public $docExist;
 
     public static function fill(
         $name,
@@ -89,6 +99,12 @@ class ForeignEventWork extends ForeignEvent
         $this->order_participant_id = $orderParticipantId;
         $this->actFiles = $actFiles;
     }
+
+    public function checkFilesExist()
+    {
+        $this->docExist = count($this->getFileLinks(FilesHelper::TYPE_DOC)) > 0;
+    }
+
     public function beforeValidate()
     {
         $this->begin_date = DateFormatter::format($this->begin_date, DateFormatter::dmY_dot, DateFormatter::Ymd_dash);
@@ -145,9 +161,24 @@ class ForeignEventWork extends ForeignEvent
         return !is_null($this->order_business_trip_id);
     }
 
+    public function getFullDoc()
+    {
+        $link = '#';
+        if ($this->docExist) {
+            $link = Url::to(['get-files', 'classname' => self::class, 'filetype' => FilesHelper::TYPE_DOC, 'id' => $this->id]);
+        }
+
+        return HtmlBuilder::createSVGLink($link);
+    }
+
     public function getCreatorWork()
     {
         return $this->hasOne(UserWork::class, ['id' => 'creator_id']);
+    }
+
+    public function getEscortWork()
+    {
+        return $this->hasOne(PeopleStampWork::class, ['id' => 'escort_id']);
     }
 
     public function getLastEditWork()
@@ -163,5 +194,20 @@ class ForeignEventWork extends ForeignEvent
     public function getActParticipantWorks()
     {
         return $this->hasMany(ActParticipantWork::class, ['foreign_event_id' => 'id']);
+    }
+
+    public function getOrderBusinessTripWork()
+    {
+        return $this->hasOne(DocumentOrderWork::class, ['id' => 'order_business_trip_id']);
+    }
+
+    public function getOrderParticipantWork()
+    {
+        return $this->hasOne(DocumentOrderWork::class, ['id' => 'order_participant_id']);
+    }
+
+    public function getAddOrderParticipantWork()
+    {
+        return $this->hasOne(DocumentOrderWork::class, ['id' => 'add_order_participant_id']);
     }
 }
