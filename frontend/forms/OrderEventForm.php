@@ -53,6 +53,7 @@ class OrderEventForm extends Model {
     //Дополнительная информация для генерации приказа
     public $purpose;
     public $docEvent;
+    public $documentDetails;
     public $respPeopleInfo;
     public $timeProvisionDay;
     public $extraRespInsert;
@@ -90,7 +91,7 @@ class OrderEventForm extends Model {
                 'purpose' ,'docEvent', 'respPeopleInfo', 'timeProvisionDay', 'extraRespInsert', 'timeInsertDay', 'extraRespMethod', 'extraRespInfoStuff'], 'integer'],
             [['order_date'], 'safe'],
             [['order_number', 'order_name'], 'string', 'max' => 64],
-            [['key_words', 'keyEventWords'], 'string', 'max' => 512],
+            [['key_words', 'keyEventWords', 'documentDetails'], 'string', 'max' => 512],
             [['eventName' ,'dateBegin', 'dateEnd', 'city'], 'string'],
             [['docFiles'], 'file', 'skipOnEmpty' => true, 'maxFiles' => 10,
                 'extensions' => 'xls, xlsx, doc, docx, zip, rar, 7z, tag, txt']
@@ -188,6 +189,7 @@ class OrderEventForm extends Model {
         $this->timeInsertDay = $model->time_insert_day;
         $this->extraRespMethod = (PeopleStampWork::findOne($model->extra_resp_method_id))->people_id;
         $this->extraRespInfoStuff = (PeopleStampWork::findOne($model->extra_resp_info_stuff_id))->people_id;
+        $this->documentDetails = $model->document_details;
 
     }
     public function setValuesForUpdate()

@@ -583,7 +583,15 @@ use yii\widgets\DetailView;
             '1' => 'Регламент',
             '2' => 'Письмо',
             '3' => 'Положение',
-        ], ['itemOptions' => ['class' => 'radio-inline']])->label('Документ о мероприятии') ?>
+        ],
+        [
+            'itemOptions' => [
+                    'class' => 'radio-inline'],
+                    'id' => 'doc-event-radio'
+        ])->label('Документ о мероприятии') ?>
+        <div id = "document_details" style="display: none;">
+            <?= $form->field($model, 'documentDetails')->textInput()->label('Описание документа для вставки в приказ') ?>
+        </div>
         <div id="extra_resp_info_id">
             <?php
             $params = [
@@ -1027,3 +1035,24 @@ use yii\widgets\DetailView;
     // Вызывает updateOptions каждые 2000 миллисекунд (2 секунды)
    // setInterval(updateOptions, 2000);
 </script>
+<?php
+    $js = <<<JS
+    $(document).ready(function() {
+        // Обработчик изменения выбора радио-кнопок
+        $('input[name="OrderEventForm[docEvent]"]').change(function() {
+            if ($(this).val() === '1' || $(this).val() === '2' || $(this).val() === '3') {
+                $('#document_details').show();
+            } else {
+                $('#document_details').hide();
+                $('#document_details input').val(''); // Очищаем поле при скрытии
+            }
+        });
+        // Проверяем при загрузке страницы, если уже что-то выбрано
+        var selected = $('input[name="OrderEventForm[docEvent]"]:checked').val();
+        if (selected === '1' || selected === '2' || selected === '3') {
+            $('#document_details').show();
+        }
+    });
+    JS;
+    $this->registerJs($js);
+?>

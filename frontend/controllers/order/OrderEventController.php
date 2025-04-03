@@ -191,7 +191,8 @@ class OrderEventController extends DocumentController
                 $form->orderEventForm->extraRespInsert,
                 $form->orderEventForm->timeInsertDay,
                 $form->orderEventForm->extraRespMethod,
-                $form->orderEventForm->extraRespInfoStuff
+                $form->orderEventForm->extraRespInfoStuff,
+                $form->orderEventForm->documentDetails
             );
             $this->orderEventGenerateService->setPeopleStamp($generateInfo);
             $this->orderEventGenerateRepository->save($generateInfo);
@@ -320,7 +321,8 @@ class OrderEventController extends DocumentController
                     $form->orderEventForm->extraRespInsert,
                     $form->orderEventForm->timeInsertDay,
                     $form->orderEventForm->extraRespMethod,
-                    $form->orderEventForm->extraRespInfoStuff
+                    $form->orderEventForm->extraRespInfoStuff,
+                    $form->orderEventForm->documentDetails
                 );
                 $this->orderEventGenerateService->setPeopleStamp($generateInfo);
                 $this->orderEventGenerateRepository->save($generateInfo);
