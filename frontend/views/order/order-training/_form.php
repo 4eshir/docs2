@@ -26,15 +26,8 @@ use yii\widgets\Pjax;
 /* @var $groupCheckOption */
 /* @var $groupParticipantOption */
 ?>
-<style>
-    .bordered-div {
-        border: 2px solid #000; /* Черная рамка */
-        padding: 10px;          /* Отступы внутри рамки */
-        border-radius: 5px;    /* Скругленные углы (по желанию) */
-        margin: 10px 0;        /* Отступы сверху и снизу */
-    }
-</style>
-<div class="order-training-form">
+
+<div class="order-training-form  field-backing">
     <?php $form = ActiveForm::begin(); ?>
 <?php if($model->id == NULL) {?>
     <?=
@@ -175,7 +168,7 @@ use yii\widgets\Pjax;
     <?php endif; ?>
     <div class="form-group">
         <?= Html::submitButton('Сохранить', [
-            'class' => 'btn btn-success',
+            'class' => 'btn btn-primary',
             'onclick' => 'prepareAndSubmit();' // Подготовка скрытых полей перед отправкой
         ]) ?>
 

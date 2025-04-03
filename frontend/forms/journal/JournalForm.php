@@ -6,6 +6,7 @@ use common\helpers\files\FilePaths;
 use common\helpers\html\HtmlBuilder;
 use common\helpers\StringFormatter;
 use common\Model;
+use common\models\scaffold\GroupProjectThemes;
 use common\models\scaffold\TrainingGroupParticipant;
 use common\repositories\educational\GroupProjectThemesRepository;
 use common\repositories\educational\TrainingGroupLessonRepository;
@@ -202,6 +203,23 @@ class JournalForm extends Model
                 $partContent,
                 $participant->getFIO(PersonInterface::FIO_FULL)
             );
+    }
+
+    /**
+     * Возвращает подтвержденные темы занятий для кнопок
+     * @return array|null[]|string|string[]
+     */
+    public function getProjectThemeName()
+    {
+        return $this->availableThemes ? array_map(function (GroupProjectThemes  $theme) {
+            if ($theme->confirm == 1) {
+                return [
+                    'value' => $theme->id,
+                    'name' => HtmlBuilder::paintSVG(FilePaths::SVG_PROJECT) . ' ' . $theme->projectThemeWork->name
+                ];
+            }
+            return '';
+        }, $this->availableThemes) : '';
     }
 
     /**

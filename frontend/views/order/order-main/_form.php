@@ -4,6 +4,7 @@ use app\components\DropDownDocument;
 use app\components\DropDownResponsiblePeopleWidget;
 use app\components\DynamicWidget;
 use common\components\dictionaries\base\NomenclatureDictionary;
+use common\helpers\DateFormatter;
 use frontend\models\work\order\OrderMainWork;
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
@@ -27,15 +28,8 @@ use yii\widgets\DetailView;
 /* @var $scanFile */
 /* @var $docFiles */
 ?>
-<style>
-    .bordered-div {
-        border: 2px solid #000; /* Черная рамка */
-        padding: 10px;          /* Отступы внутри рамки */
-        border-radius: 5px;    /* Скругленные углы (по желанию) */
-        margin: 10px 0;        /* Отступы сверху и снизу */
-    }
-</style>
-<div class="order-main-form">
+
+<div class="order-main-form field-backing">
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
         'dateFormat' => 'php:d.m.Y',
@@ -48,20 +42,16 @@ use yii\widgets\DetailView;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]])->label('Дата приказа') ?>
 
     <div id="archive-2" class="col-xs-4">
-        <?=
-        DetailView::widget([
-            'model' => $model,
-            'attributes' => [
-                ['label' => 'Код и номенклатура приказа', 'value' =>
-                    NomenclatureDictionary::ADMIN_ORDER . ' Приказы директора по основной деятельности'
-                ],
-            ]
-        ]);?>
+        <label class="control-label">Код и номенклатура приказа</label>
+        <select class="form-control" disabled>
+            <option selected><?= NomenclatureDictionary::ADMIN_ORDER ?> Приказы директора по основной деятельности</option>
+        </select>
     </div>
+
     <?php   if($model->id == NULL){?>
     <?= $form->field($model, 'archive')->checkbox(['id' => 'study_type', 'onchange' => 'checkArchive()']) ?>
     <div id="archive" class="col-xs-4"<?= $model->study_type == 0 ? 'hidden' : '' ?>>
@@ -129,10 +119,9 @@ use yii\widgets\DetailView;
             <?php foreach ($modelExpire as $i => $expire): ?>
                 <div class="item-act panel panel-default"><!-- widgetBody -->
                     <div class="panel-heading">
-                        <h3 class="panel-title pull-left"></h3>
                         <div class="pull-right">
                             <button type="button" class="add-item-act btn btn-success btn-xs" ><i class="glyphicon glyphicon-plus">+</i></button>
-                            <button type="button" class="remove-item-act btn btn-danger btn-xs"><i class="glyphicon glyphicon-minus">-</i></button>
+                            <button type="button" class="remove-item-act btn btn-warning btn-xs"><i class="glyphicon glyphicon-minus">-</i></button>
                         </div>
                         <div class="clearfix"></div>
                         <div class="panel-body">
@@ -177,7 +166,7 @@ use yii\widgets\DetailView;
         <?= $docFiles; ?>
     <?php endif; ?>
     <div class="form-group">
-        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-primary']) ?>
     </div>
     <?php ActiveForm::end(); ?>
 </div>

@@ -18,33 +18,11 @@ $this->params['breadcrumbs'][] = ['label' => 'Учебные группы', 'url
 $this->params['breadcrumbs'][] = ['label' => 'Группа ' . $model->getTrainingGroupNumber(), 'url' => [Yii::$app->frontUrls::TRAINING_GROUP_VIEW, 'id' => $model->groupId]];
 $this->params['breadcrumbs'][] = ['label' => 'Электронный журнал', 'url' => [Yii::$app->frontUrls::JOURNAL_VIEW, 'id' => $model->groupId]];
 $this->params['breadcrumbs'][] = $this->title;
-$userData = [
-    'name' => 'John Doe',
-    'age' => 30,
-    'email' => 'john.doe@example.com'
-];
+
+$this->registerJsFile('@web/js/journal.js', ['position' => $this::POS_HEAD]);
 ?>
 
 <script>
-    /**
-     * Изменение размеров окна электронного журнала
-     * @param step
-     */
-    function resize(step) {
-        let table = document.getElementById("journal");
-
-        if(table) {
-            table.style.height = table.offsetHeight + step + "px";
-        }
-    }
-</script>
-<script>
-    /**
-     * Глобальные переменные
-     */
-    let currentIcon, IconTurnoutLink, IconNonAppearanceLink, IconDistantLink, IconDroppedLink, elements, svgData = '';
-    let IconTurnout, IconNonAppearance, IconDistant, IconDropped;
-
     /**
      * Инициализация иконок
      */
@@ -53,9 +31,11 @@ $userData = [
         IconNonAppearanceLink = '<?= Url::base(true) .'/'. FilePaths::SVG_NON_APPEARANCE ?>';
         IconDistantLink = '<?= Url::base(true) .'/'. FilePaths::SVG_DISTANT ?>';
         IconDroppedLink = '<?= Url::base(true) .'/'. FilePaths::SVG_DROPPED ?>';
+        IconProjectLink = '<?= Url::base(true) .'/'. FilePaths::SVG_PROJECT ?>';
         elements = document.getElementsByTagName('input');
+        elementsProject = document.getElementsByTagName('select');
 
-        saveSvgFile(IconTurnoutLink, IconNonAppearanceLink, IconDistantLink, IconDroppedLink);
+        saveSvgFile(IconTurnoutLink, IconNonAppearanceLink, IconDistantLink, IconDroppedLink, IconProjectLink);
         let cell = document.getElementsByClassName('attendance');
         Array.from(cell).forEach(oneCell => {
             if (!oneCell.classList.contains('status-block')) {
@@ -65,169 +45,7 @@ $userData = [
             }
         });
     }
-
-    /**
-     * Функция обновления данных по столбцам
-     * @param header
-     * @param columnIndex
-     */
-    function clickOneCellThead(header, columnIndex)
-    {
-        const table = header.closest('table'); // Определяем количество строк в таблице
-        const rows = table.querySelectorAll('tbody tr'); // Проходим по каждой строке и обновляем соответствующую ячейку
-        rows.forEach(row => {
-            const cell = row.cells[columnIndex]; // Находим нужную ячейку в строке
-            if (cell) {
-                if (!cell.classList.contains('status-block')) {
-                    clickOneCell(cell);
-                }
-            }
-        });
-    }
-
-    /**
-     * Обертка-замыкание для передачи параметров
-     * @param oneCell
-     * @returns {(function(*): void)|*}
-     */
-    const eventHandler = (oneCell) => {
-        return function (event) {
-            clickOneCell(oneCell);
-        };
-    }
-
-    /**
-     * Функция обновления данных новым статусом
-     * @param oneCell
-     */
-    function clickOneCell(oneCell)
-    {
-        let statusValue = 3;
-
-        switch (currentIcon) {
-            case IconTurnoutLink:
-                statusValue = 0;
-                svgData = IconTurnout;
-                break;
-            case IconNonAppearanceLink:
-                statusValue = 1;
-                svgData = IconNonAppearance;
-                break;
-            case IconDistantLink:
-                statusValue = 2;
-                svgData = IconDistant;
-                break;
-            case IconDroppedLink:
-                statusValue = 3;
-                svgData = IconDropped;
-                break;
-        }
-
-        let oldSVG = oneCell.getElementsByTagName('svg');
-        if (oldSVG.length > 0 && currentIcon) {
-            oldSVG[0].remove();
-        }
-        oneCell.innerHTML += svgData;
-
-        let statusCell = oneCell.getElementsByClassName('status')[0];
-        statusCell.value = statusValue;
-    }
-
-    /**
-     * Сохранение загруженных svg в переменные
-     * @param IconTurnoutLink
-     * @param IconNonAppearanceLink
-     * @param IconDistantLink
-     * @param IconDroppedLink
-     * @returns {Promise<void>}
-     */
-    async function saveSvgFile(IconTurnoutLink, IconNonAppearanceLink, IconDistantLink, IconDroppedLink) {
-        IconTurnout = await loadSvgFile(IconTurnoutLink);
-        IconNonAppearance = await loadSvgFile(IconNonAppearanceLink);
-        IconDistant = await loadSvgFile(IconDistantLink);
-        IconDropped = await loadSvgFile(IconDroppedLink);
-    }
-
-    /**
-     * Загрузка svg
-     * @param filePath
-     * @returns {Promise<null|string>}
-     */
-    async function loadSvgFile(filePath) {
-        try {
-            const response = await fetch(filePath); // Загружаем файл
-            if (!response.ok) {
-                console.error(response);
-            }
-            return await response.text();
-        } catch (error) {
-            console.error(error.message);
-            return null;
-        }
-    }
-
-
-    document.addEventListener('DOMContentLoaded', function () {
-        applyStatusBlockToRowCells();
-        init();
-    });
-
-    /**
-     * Функция для изменения иконки и сохранения её состояния
-     * @param iconLink
-     */
-    function changeCursorAndSaveIcon(iconLink) {
-        let cursor = 'url('+iconLink+') 0 0, auto';
-        if (iconLink === currentIcon) {
-            cursor = 'default';
-            currentIcon = '';
-        } else {
-            currentIcon = iconLink;
-        }
-        document.body.style.cursor = cursor;
-
-        Array.from(elements).forEach(element => {
-            element.style.cursor = cursor;
-        });
-    }
-
 </script>
-<script>
-    function applyStatusBlockToRowCells() {
-        const table = document.getElementById('journal-tbody');
-        const rows = table.querySelectorAll('tr');
-
-        rows.forEach(row => {
-            const firstCell = row.firstElementChild;
-            const status = firstCell.getElementsByClassName('status-block');
-
-            if (firstCell && status.length > 0) {
-                Array.from(row.children).forEach(cell => {
-                    if (!cell.classList.contains('status-block')) {
-                        cell.classList.add('status-block');
-                    }
-                });
-            }
-        });
-    }
-</script>
-<style>
-    .icon-button {
-        text-align: center;
-        align-items: center;
-    }
-    .icon-button svg {
-        width: 2em;
-        margin-left: 1em;
-    }
-    .control-label {
-        margin-bottom: 1em;
-        font-weight: 500;
-    }
-    .lessons-date:hover {
-        border: 1px solid var(--border-color);
-    }
-    </style>
 
 <div class="journal-edit">
 
@@ -249,11 +67,19 @@ $userData = [
     <div class="control-unit">
         <div class="control-label">Выберите статус одной из кнопок расположенных ниже и нажмите на ячейки или столбцы, в которые необходимо установить значение</div>
         <div class="icons-container flexx space-around">
-            <!-- Иконки для выбора -->
-            <div class="icon-button flexx btn-secondary btn" onclick="changeCursorAndSaveIcon(IconTurnoutLink)">Явка<?= HtmlBuilder::paintSVG(FilePaths::SVG_TURNOUT)?></div>
-            <div class="icon-button flexx btn-secondary btn" onclick="changeCursorAndSaveIcon(IconNonAppearanceLink)">Неявка<?= HtmlBuilder::paintSVG(FilePaths::SVG_NON_APPEARANCE)?></div>
-            <div class="icon-button flexx btn-secondary btn" onclick="changeCursorAndSaveIcon(IconDistantLink)">Дистант<?= HtmlBuilder::paintSVG(FilePaths::SVG_DISTANT)?></div>
-            <div class="icon-button flexx btn-secondary btn" onclick="changeCursorAndSaveIcon(IconDroppedLink)">Нет данных<?= HtmlBuilder::paintSVG(FilePaths::SVG_DROPPED)?></div>
+            <div class="icon-button flexx btn-secondary btn" onclick="changeCursorAndSaveIcon(IconTurnoutLink, event)">Явка<?= HtmlBuilder::paintSVG(FilePaths::SVG_TURNOUT)?></div>
+            <div class="icon-button flexx btn-secondary btn" onclick="changeCursorAndSaveIcon(IconNonAppearanceLink, event)">Неявка<?= HtmlBuilder::paintSVG(FilePaths::SVG_NON_APPEARANCE)?></div>
+            <div class="icon-button flexx btn-secondary btn" onclick="changeCursorAndSaveIcon(IconDistantLink, event)">Дистант<?= HtmlBuilder::paintSVG(FilePaths::SVG_DISTANT)?></div>
+            <div class="icon-button flexx btn-secondary btn" onclick="changeCursorAndSaveIcon(IconDroppedLink, event)">Нет данных<?= HtmlBuilder::paintSVG(FilePaths::SVG_DROPPED)?></div>
+        </div>
+        <div class="icons-container flexx space-around" style="display: <?= $model->isProjectCertificate() ? 'flex' : 'none';?>">
+            <?php
+            foreach($model->getProjectThemeName() as $theme) {
+                if ($theme != '') {
+                    echo '<div class="button-icon flexx btn-secondary btn" onclick="changeCursorAndSaveIcon(IconProjectLink, event)" data-value="'.$theme['value'].'">' . $theme['name'] .'</div>';
+                }
+            }
+            ?>
         </div>
     </div>
 
@@ -278,13 +104,13 @@ $userData = [
                         <th colspan="<?= $model->getLessonsCount() ?>">Расписание</th>
                         <th colspan="<?= $model->getColspanControl() ?>">Итоговый контроль</th>
                     </tr>
-                    <tr>
+                    <tr class="sticky-cell">
                         <td>учащегося</td>
                         <?php foreach ($model->getDateLessons() as $key => $dateLesson) {
                             echo '<td class="lessons-date" onclick="clickOneCellThead(this, '.($key+1).')"> '.$dateLesson.'</td>';
                         }
                         ?>
-                        <td style="display: <?= $model->isProjectCertificate() ? 'block' : 'none';?>">Тема проекта</td>
+                        <td style="display: <?= $model->isProjectCertificate() ? 'block' : 'none';?>" onclick="clickOneCellThead(this, <?= ($model->getLessonsCount() + 1)?>)">Тема проекта</td>
                         <td style="display: <?= $model->isControlWorkCertificate() ? 'block' : 'none';?>">Оценка</td>
                         <td>Успешное завершение</td>
                     </tr>
@@ -293,8 +119,8 @@ $userData = [
                     <tbody id="journal-tbody">
                     <?php foreach ($model->participantLessons as $participantLesson): ?>
                         <tr>
-                            <td>
-                                <div class="flexx space">
+                            <td class="sticky-cell">
+                                <div class="flexx space-around">
                                     <?= $model->getParticipantIcons($participantLesson->participant); ?>
                                     <?= $model->getPrettyParticipant($participantLesson->participant); ?>
                                 </div>
@@ -315,16 +141,21 @@ $userData = [
                                     <?= $lesson->getPrettyStatus() ?>
                                 </td>
                             <?php endforeach; ?>
-                            <td style="display: <?= $model->isProjectCertificate() ? 'block' : 'none';?>">
+                            <td class="project-participant attendance" style="display: <?= $model->isProjectCertificate() ? 'block' : 'none';?>">
                                 <?= $form->field($participantLesson, "[$participantLesson->trainingGroupParticipantId]groupProjectThemeId")->dropDownList(
-                                    ArrayHelper::map($model->availableThemes, 'id', 'projectThemeWork.name'),
+                                    ArrayHelper::map(
+                                            array_filter($model->availableThemes, function ($theme) {
+                                                return $theme['confirm'] === 1;
+                                            }),
+                                            'id',
+                                            'projectThemeWork.name'),
                                     ['prompt' => '']
                                 )->label(false) ?>
                             </td>
-                            <td class="status-participant" style="display: <?= $model->isControlWorkCertificate() ? 'block' : 'none';?>">
+                            <td class="status-participant" style="display: <?= $model->isControlWorkCertificate() ? 'flex' : 'none';?>">
                                 <?= $form->field($participantLesson, "[$participantLesson->trainingGroupParticipantId]points")->textInput(['type' => 'number'])->label(false) ?>
                             </td>
-                            <td class="status-participant">
+                            <td class="status-participant success-checkbox">
                                 <?= $form->field($participantLesson, "[$participantLesson->trainingGroupParticipantId]successFinishing")->checkbox()->label(false) ?>
                             </td>
                         </tr>
