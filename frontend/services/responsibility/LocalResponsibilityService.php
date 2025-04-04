@@ -9,7 +9,9 @@ use common\repositories\responsibility\LegacyResponsibleRepository;
 use common\repositories\responsibility\LocalResponsibilityRepository;
 use common\services\DatabaseServiceInterface;
 use common\services\general\files\FileService;
+use common\services\general\PeopleStampService;
 use frontend\events\general\FileCreateEvent;
+use frontend\forms\ResponsibilityForm;
 use frontend\models\work\responsibility\LegacyResponsibleWork;
 use frontend\models\work\responsibility\LocalResponsibilityWork;
 use yii\web\UploadedFile;
@@ -20,18 +22,21 @@ class LocalResponsibilityService implements DatabaseServiceInterface
     private ResponsibilityFileNameGenerator $filenameGenerator;
     private LocalResponsibilityRepository $responsibilityRepository;
     private LegacyResponsibleRepository $legacyRepository;
+    private PeopleStampService $peopleStampService;
 
     public function __construct(
         FileService $fileService,
         ResponsibilityFileNameGenerator $filenameGenerator,
         LocalResponsibilityRepository $responsibilityRepository,
-        LegacyResponsibleRepository $legacyRepository
+        LegacyResponsibleRepository $legacyRepository,
+        PeopleStampService $peopleStampService
     )
     {
         $this->fileService = $fileService;
         $this->filenameGenerator = $filenameGenerator;
         $this->responsibilityRepository = $responsibilityRepository;
         $this->legacyRepository = $legacyRepository;
+        $this->peopleStampService = $peopleStampService;
     }
 
     public function getFilesInstances(LocalResponsibilityWork $model)
@@ -84,5 +89,16 @@ class LocalResponsibilityService implements DatabaseServiceInterface
     public function isAvailableDelete($id)
     {
         // TODO: Implement isAvailableDelete() method.
+    }
+
+    public function getPeopleStamps(ResponsibilityForm $model)
+    {
+        $peopleStampId = null;
+        if ($model->peopleStampId !== "") {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->peopleStampId);
+            $model->peopleStampId = $peopleStampId;
+        }
+
+        return $peopleStampId;
     }
 }
