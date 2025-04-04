@@ -30,7 +30,7 @@ class ResponsibilityForm extends Model
     public function rules()
     {
         return [
-            [['orderId'] , 'required'],
+            [['orderId', 'peopleStampId'] , 'required'],
             [['responsibilityType', 'branch', 'auditoriumId', 'quant', 'peopleStampId', 'regulationId', 'orderId'], 'integer'],
             [['auditoriumId'], 'exist', 'skipOnError' => true, 'targetClass' => AuditoriumWork::class, 'targetAttribute' => ['auditoriumId' => 'id']],
             [['peopleStampId'], 'exist', 'skipOnError' => true, 'targetClass' => PeopleStampWork::class, 'targetAttribute' => ['peopleStampId' => 'id']],

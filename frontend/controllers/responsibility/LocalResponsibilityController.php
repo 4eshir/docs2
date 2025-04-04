@@ -129,13 +129,11 @@ class LocalResponsibilityController extends Controller
         $regulations = $this->regulationRepository->getAll();
 
         if ($model->load(Yii::$app->request->post())) {
-            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->peopleStampId);
-            $model->peopleStampId = $peopleStampId;
             $model->getFilesInstances($model);
             if (!$model->validate()) {
                 throw new DomainException('Ошибка валидации. Проблемы: ' . json_encode($model->getErrors()));
             }
-
+            $peopleStampId = $this->service->getPeopleStamps($model);
             if ($peopleStampId) {
                 $modelResponsibility = LocalResponsibilityWork::fill(
                     $model->responsibilityType,

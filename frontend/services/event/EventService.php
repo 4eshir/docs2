@@ -203,9 +203,14 @@ class EventService implements DatabaseServiceInterface
 
     public function getPeopleStamps(EventWork $model)
     {
-        $peopleStampId = $this->peopleStampService->createStampFromPeople($model->responsible1_id);
-        $model->responsible1_id = $peopleStampId;
-        $peopleStampId = $this->peopleStampService->createStampFromPeople($model->responsible2_id);
-        $model->responsible2_id = $peopleStampId;
+        if ($model->responsible1_id !== "") {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->responsible1_id);
+            $model->responsible1_id = $peopleStampId;
+        }
+
+        if ($model->responsible2_id !== "") {
+            $peopleStampId = $this->peopleStampService->createStampFromPeople($model->responsible2_id);
+            $model->responsible2_id = $peopleStampId;
+        }
     }
 }
