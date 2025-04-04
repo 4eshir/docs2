@@ -71,7 +71,7 @@ $this->title = 'My Yii Application';
     <div class="block-card flexx space-around">
         <div class="index-card">
             <div class="index-title">
-                <?= HtmlBuilder::paintSVG(FilePaths::SVG_ALERT_DANGER); ?>
+                <?= HtmlBuilder::paintSVG(FilePaths::SVG_ANALYTIC); ?>
                 Аналитика
             </div>
             <div>
