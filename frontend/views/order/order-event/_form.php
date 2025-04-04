@@ -1,6 +1,7 @@
 <?php
 use app\components\DynamicWidget;
 use common\components\dictionaries\base\NomenclatureDictionary;
+use common\helpers\DateFormatter;
 use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
@@ -453,7 +454,7 @@ use yii\widgets\DetailView;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]])->label('Дата приказа') ?>
     <?=
     DetailView::widget([
@@ -493,7 +494,7 @@ use yii\widgets\DetailView;
             'clientOptions' => [
                 'changeMonth' => true,
                 'changeYear' => true,
-                'yearRange' => '2000:2100',
+                'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
             ]])->label('Дата начала') ?>
         <?= $form->field($model, 'dateEnd')->widget(DatePicker::class, [
             'dateFormat' => 'php:d.m.Y',
@@ -506,7 +507,7 @@ use yii\widgets\DetailView;
             'clientOptions' => [
                 'changeMonth' => true,
                 'changeYear' => true,
-                'yearRange' => '2000:2100',
+                'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
             ]])->label('Дата окончания') ?>
         <?= $form->field($model, 'city')->textInput()->label('Город') ?>
         <?= $form->field($model, 'eventWay')->dropDownList(Yii::$app->eventWay->getList(), ['prompt' => '---'])

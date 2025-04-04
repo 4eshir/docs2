@@ -1,5 +1,6 @@
 <?php
 
+use common\helpers\DateFormatter;
 use common\widgets\select_search\SelectSearch;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -35,7 +36,7 @@ use yii\widgets\ActiveForm;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]])->label('Дата поступления документа') ?>
 
     <?= $form->field($model, 'real_date')->widget(DatePicker::class, [
@@ -49,7 +50,7 @@ use yii\widgets\ActiveForm;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]])->label('Дата входящего документа') ?>
 
     <?= $form->field($model, 'real_number')->textInput()->label('Регистрационный номер входящего документа') ?>
@@ -144,7 +145,7 @@ use yii\widgets\ActiveForm;
             'clientOptions' => [
                 'changeMonth' => true,
                 'changeYear' => true,
-                'yearRange' => '2000:2100',
+                'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
             ]])->label('Крайний срок ответа') ?>
     </div>
     <div id="nameAnswer" class="col-xs-4" <?= $model->needAnswer == 0 ? 'hidden' : '' ?>>

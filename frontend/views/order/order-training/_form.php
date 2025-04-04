@@ -42,7 +42,7 @@ use yii\widgets\Pjax;
             'clientOptions' => [
                 'changeMonth' => true,
                 'changeYear' => true,
-                'yearRange' => '2000:2100',
+                'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]])->label('Дата приказа');
     ?>
     <?=
@@ -64,25 +64,33 @@ use yii\widgets\Pjax;
             ])->label('Код и описание номенклатуры');
         ?>
         <?php } else {
-            echo DetailView::widget([
-                'model' => $model,
-                'attributes' => [
-                    ['label' => 'Дата приказа', 'attribute' => 'order_date', 'value' => function (OrderTrainingWork $model) {
-                        return DateFormatter::format($model->order_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot);
-                    }],
-                    ['label' => 'Код и номенклатура приказа', 'value' => function (OrderTrainingWork $model) {
-                        return $model->getOrderType();
-                    }],
-                    ['label' => 'Номер приказа', 'value' => function (OrderTrainingWork $model) {
-                        return $model->getNumberPostfix();
-                    }],
-                    ['label' => 'Отдел', 'value' => function (OrderTrainingWork $model) {
-                        return Yii::$app->branches->get($model->branch);
-                    }],
-                ],
-            ]);
+                echo '<div class="form-group col-xs-4">
+                        <label class="control-label">Дата приказа</label>
+                        <select class="form-control" disabled>
+                            <option selected>'.DateFormatter::format($model->order_date, DateFormatter::Ymd_dash, DateFormatter::dmY_dot).'</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-xs-4">
+                        <label class="control-label">Код и номенклатура приказа</label>
+                        <select class="form-control" disabled>
+                            <option selected>'.$model->getOrderType().'</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-xs-4">
+                        <label class="control-label">Номер приказа</label>
+                        <select class="form-control" disabled>
+                            <option selected>'.$model->getNumberPostfix().'</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-xs-4">
+                        <label class="control-label">Отдел</label>
+                        <select class="form-control" disabled>
+                            <option selected>'.Yii::$app->branches->get($model->branch).'</option>
+                        </select>
+                    </div>';
         }
     ?>
+
     <div>
         <div id = 'preamble' style="display:none" >
             <?=
@@ -142,7 +150,7 @@ use yii\widgets\Pjax;
             ->label('Кто исполняет');
         ?>
     </div>
-    <div class = "bordered-div">
+    <div>
         <?= $form->field($model, "responsible_id")->widget(Select2::classname(), [
             'data' => ArrayHelper::map($people,'id','fullFio'),
             'size' => Select2::LARGE,
