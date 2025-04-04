@@ -1,7 +1,6 @@
 <?php
 
 use common\helpers\DateFormatter;
-use common\widgets\select_search\SelectSearch;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;

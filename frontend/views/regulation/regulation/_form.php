@@ -1,9 +1,11 @@
 <?php
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
+use common\helpers\DateFormatter;
+use frontend\models\work\order\OrderMainWork;
 use frontend\models\work\regulation\RegulationWork;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -13,7 +15,7 @@ use yii\widgets\ActiveForm;
 ?>
 
 
-<div class="regulation-form">
+<div class="regulation-form field-backing">
 
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'date')->widget(\yii\jui\DatePicker::class, [
@@ -34,13 +36,13 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
 
     <?php
-    /*$orders = \app\models\work\DocumentOrderWork::find()->where(['!=', 'order_name', 'Резерв'])->all();
-    $items = \yii\helpers\ArrayHelper::map($orders,'id','fullName');*/
+    $orders = OrderMainWork::find()->where(['!=', 'order_name', 'Резерв'])->all();
+    $items = ArrayHelper::map($orders,'id','fullName');
     $params = [
         'prompt' => '---'
     ];
 
-    echo $form->field($model, "order_id")->dropDownList([1 => 'boobs'],$params)->label('Приказ');
+    echo $form->field($model, "order_id")->dropDownList($items,$params)->label('Приказ');
 
     ?>
 
@@ -57,7 +59,7 @@ use yii\widgets\ActiveForm;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]]) ?>
 
     <?= $form->field($model, 'par_council_date')->widget(\yii\jui\DatePicker::class, [
@@ -71,7 +73,7 @@ use yii\widgets\ActiveForm;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]]) ?>
 
 
@@ -86,7 +88,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'regulation_type')->hiddenInput(['value' => RegulationTypeDictionary::TYPE_REGULATION])->label(false) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

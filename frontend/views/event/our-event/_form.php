@@ -1,11 +1,11 @@
 <?php
 
+use common\helpers\DateFormatter;
 use frontend\models\work\event\EventWork;
 use frontend\models\work\general\PeopleWork;
 use frontend\models\work\regulation\RegulationWork;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 
@@ -38,54 +38,8 @@ use yii\widgets\ActiveForm;
 <script src="/scripts/sisyphus/sisyphus.js"></script>
 <script src="/scripts/sisyphus/sisyphus.min.js"></script>
 
-<style type="text/css">
-    .checkList{
-        border: 1px solid #dddddd;
-        border-radius: 4px;
-        padding: 15px;
-        margin-bottom: 15px;
-    }
 
-    .checkBlock{
-        max-height: 400px;
-        overflow-y: scroll;
-        margin-right: -15px;
-        margin-bottom: -15px;
-        margin-top: -15px;
-
-        padding-top: 10px;
-    }
-
-    .checkHeader{
-        background: #f5f5f5;
-        border-bottom: 1px solid #dddddd;
-        margin-top: -15px;
-        margin-left: -15px;
-        margin-right: -15px;
-        margin-bottom: 15px;
-        line-height: 2em;
-    }
-
-    .noPM{
-        margin: 0;
-        padding: 0;
-        line-height: 3;
-        padding-left: 15px;
-    }
-</style>
-
-
-<!--<div id="all_scopes" style="display: none;"><?php
-/*    $sc = EventScopeWork::find()->where(['event_id' => $model->id])->all();
-    $res = '';
-    foreach ($sc as $one)
-        $res .= $one->participation_scope_id.' ';
-    $res = substr($res, 0, -1);
-    echo $res;
-    */?>
-</div>-->
-
-<div class="event-form">
+<div class="event-form field-backing">
 
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
 
@@ -102,7 +56,7 @@ use yii\widgets\ActiveForm;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]])->label('Дата начала мероприятия') ?>
 
     <?= $form->field($model, 'finish_date')->widget(\yii\jui\DatePicker::class, [
@@ -116,7 +70,7 @@ use yii\widgets\ActiveForm;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]])->label('Дата окончания мероприятия') ?>
 
     <?= $form->field($model, 'event_type')->dropDownList(Yii::$app->eventType->getList(), [])->label('Тип мероприятия'); ?>
@@ -148,10 +102,9 @@ use yii\widgets\ActiveForm;
                 <?= $form->field($model, 'child_rst_participants_count')->textInput(['value' => $model->child_rst_participants_count == null ? 0 : $model->child_rst_participants_count]) ?>
                 <?= $form->field($model, 'age_left_border')->textInput(['value' => $model->age_left_border == null ? 5 : $model->age_left_border]) ?>
                 <?= $form->field($model, 'age_right_border')->textInput(['value' => $model->age_right_border == null ? 18 : $model->age_right_border]) ?>
-                <br>
+
                 <?= $form->field($model, 'teacher_participants_count')->textInput(['value' => $model->teacher_participants_count == null ? 0 : $model->teacher_participants_count]) ?>
                 <?= $form->field($model, 'other_participants_count')->textInput(['value' => $model->other_participants_count == null ? 0 : $model->other_participants_count]) ?>
-
             </div>
         </div>
     </div>
@@ -173,43 +126,25 @@ use yii\widgets\ActiveForm;
                     return "<div 'class'='col-sm-12'><label><input class='sc' type='checkbox' {$checked} name='{$name}'value='{$value}'> {$label}</label></div>";
                 }])->label(false) ?>
         </div>
-
     </div>
 
     <?= $form->field($model, 'key_words')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'comment')->textInput(['maxlength' => true]) ?>
 
-    <?php
-/*    $orders = \app\models\work\DocumentOrderWork::find()->all();
-    $items = \yii\helpers\ArrayHelper::map($orders,'id','fullName');
-    $params = [
-        'prompt' => 'Нет'
-    ];
-
-    echo $form->field($model, 'order_id')->dropDownList($items,$params)->label('Приказ по мероприятию');
-
-    */?>
-
     <?= $form->field($model, 'regulation_id')->dropDownList(ArrayHelper::map($regulations, 'id', 'name'), ['prompt' => 'Нет'])->label('Положение по мероприятию'); ?>
 
-    <div class="row">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4><i class="glyphicon glyphicon-envelope"></i>Отчетные мероприятия</h4></div>
-            <i>Coming soon</i>
-            </div>
+    <div class="checkList">
+        <div class="checkHeader">
+            <h4 class="noPM">Образовательные программы</h4>
+        </div>
+
+        <div class="checkBlock">
+            <?= $form->field($model, 'contains_education')->radioList(array(0 => 'Не содержит',
+                1 => 'Содержит'), ['value'=>$model->contains_education ])->label('') ?>
         </div>
     </div>
 
-    <div class="row">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4><i class="glyphicon glyphicon-envelope"></i>Связанные учебные группы</h4></div>
-            <i>Coming soon</i>
-        </div>
-    </div>
-
-    <?= $form->field($model, 'contains_education')->radioList(array(0 => 'Не содержит образовательных программ',
-                                                                           1 => 'Содержит образовательные программы'), ['value'=>$model->contains_education ])->label('') ?>
 
     <?= $form->field($model, 'protocolFiles[]')->fileInput(['multiple' => true]) ?>
 
@@ -236,7 +171,7 @@ use yii\widgets\ActiveForm;
     <?php endif; ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

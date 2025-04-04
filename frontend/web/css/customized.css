@@ -31,6 +31,7 @@
     --accordion-btn-dark: #BAC1C9;
 
     --svg-distant: #0074B2;
+    --thead-color: #f5f7f9;
 }
 
 *, :after, :before {
@@ -345,7 +346,7 @@ a:hover {
     border: 1px solid var(--border-color);
     padding: 1em;
     margin-top: 1em;
-    background-color: #f5f7f9;
+    background-color: var(--thead-color);
 }
 
 .dropdown-item.active, .dropdown-item:active {

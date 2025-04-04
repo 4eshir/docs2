@@ -5,11 +5,8 @@ use frontend\models\work\dictionaries\PersonInterface;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderTrainingWork;
 use common\helpers\DateFormatter;
-use common\helpers\files\FilesHelper;
-use frontend\models\work\general\PeopleWork;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+
 /* @var $this yii\web\View */
 /* @var $model OrderTrainingWork */
 /* @var $modelResponsiblePeople */

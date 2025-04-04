@@ -100,5 +100,39 @@ select.is-valid + .select2-container--krajee-bs4 .select2-selection--single, .ha
     display: none;
 }
 
+.checkList{
+    border: 1px solid var(--bs-border-color-translucent);
+    border-radius: var(--border-radius);
+    margin-bottom: 1em;
+}
 
+.checkBlock{
+    max-height: 20em;
+    overflow-y: scroll;
+    padding: 1em 1em 0;
+}
+
+.checkHeader{
+    background: var(--thead-color);
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    line-height: 2em;
+}
+
+.noPM{
+    margin: 0;
+    padding: 0;
+    line-height: 2.5;
+    padding-left: 0.75em;
+}
+
+.field-eventwork-contains_education {
+    display: flex;
+}
+
+.regulation-create .form-group, .regulation-update .form-group,
+.event-create .form-group, .event-update .form-group {
+    margin-bottom: 1em;
+}
 

@@ -1,8 +1,5 @@
 <?php
 
-use app\components\DropDownDocument;
-use app\components\DropDownResponsiblePeopleWidget;
-use app\components\DynamicWidget;
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\helpers\DateFormatter;
 use frontend\models\work\order\OrderMainWork;
@@ -10,11 +7,8 @@ use kartik\select2\Select2;
 use kidzen\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\web\View;
-use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use yii\jui\DatePicker;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model OrderMainWork */

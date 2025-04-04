@@ -1,7 +1,6 @@
 <?php
 
 use common\components\wizards\AlertMessageWizard;
-use common\helpers\html\HtmlBuilder;
 use common\models\scaffold\DocumentIn;
 use yii\helpers\Html;
 

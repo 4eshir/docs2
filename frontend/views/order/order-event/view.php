@@ -7,12 +7,8 @@ use frontend\models\work\event\ForeignEventWork;
 use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\OrderEventWork;
 use common\helpers\DateFormatter;
-use common\helpers\files\FilesHelper;
-use frontend\models\work\general\PeopleWork;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model OrderEventWork */

@@ -13,7 +13,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="regulation-create">
 
-    <h3><?= Html::encode($this->title) ?></h3>
+    <div class="substrate">
+        <h3><?= Html::encode($this->title) ?></h3>
+    </div>
 
     <?= $this->render('_form', [
         'model' => $model,

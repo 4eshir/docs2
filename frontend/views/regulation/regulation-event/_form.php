@@ -1,11 +1,11 @@
 <?php
 
 use common\components\dictionaries\base\RegulationTypeDictionary;
+use common\helpers\DateFormatter;
 use frontend\models\work\regulation\RegulationWork;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -16,7 +16,7 @@ use yii\widgets\ActiveForm;
 ?>
 
 
-<div class="regulation-form">
+<div class="regulation-form field-backing">
 
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'date')->widget(\yii\jui\DatePicker::class, [
@@ -30,7 +30,7 @@ use yii\widgets\ActiveForm;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]])->label('Дата положения') ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
@@ -58,7 +58,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'regulation_type')->hiddenInput(['value' => RegulationTypeDictionary::TYPE_EVENT])->label(false) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

@@ -1,6 +1,5 @@
 <?php
 
-
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -16,8 +15,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="document-out-create">
 
-    <h3><?= Html::encode($this->title) ?></h3>
-    <br>
+    <div class="substrate">
+        <h3><?= Html::encode($this->title) ?></h3>
+    </div>
 
     <?= $this->render('_form', [
         'model' => $model,

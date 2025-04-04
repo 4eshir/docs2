@@ -6,12 +6,7 @@ use frontend\models\work\order\DocumentOrderWork;
 use frontend\models\work\order\ExpireWork;
 use frontend\models\work\order\OrderMainWork;
 use common\helpers\DateFormatter;
-use common\helpers\files\FilesHelper;
-use common\helpers\StringFormatter;
-use frontend\models\work\general\PeopleWork;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model OrderMainWork */

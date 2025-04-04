@@ -1,8 +1,9 @@
 <?php
 
+use frontend\models\work\order\OrderMainWork;
 use yii\helpers\Html;
 
-/* @var $model \app\models\work\order\OrderMainWork */
+/* @var $model OrderMainWork */
 /* @var $people */
 /* @var $modelExpire */
 /* @var $orders */
@@ -13,8 +14,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
     <div class="">
 
-        <h3><?= Html::encode($this->title) ?></h3>
-        <br>
+        <div class="substrate">
+            <h3><?= Html::encode($this->title) ?></h3>
+        </div>
 
         <?= $this->render('_form', [
             'model' => $model,

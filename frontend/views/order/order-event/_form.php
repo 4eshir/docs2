@@ -1,5 +1,5 @@
 <?php
-use app\components\DynamicWidget;
+
 use common\components\dictionaries\base\NomenclatureDictionary;
 use common\helpers\DateFormatter;
 use kartik\select2\Select2;
@@ -27,6 +27,7 @@ use yii\widgets\DetailView;
 /* @var $participants */
 /* @var $company */
 /* @var $id */
+
 ?>
 
 <style>
@@ -441,7 +442,7 @@ use yii\widgets\DetailView;
         margin: 10px 0;        /* Отступы сверху и снизу */
     }
 </style>
-<div class="order-event-form">
+<div class="order-event-form field-backing">
     <?php $form = ActiveForm::begin(['id' => 'dynamic-form']); ?>
     <?= $form->field($model, 'order_date')->widget(DatePicker::class, [
         'dateFormat' => 'php:d.m.Y',
@@ -896,7 +897,7 @@ use yii\widgets\DetailView;
 <?php endif; ?>
 <div class="form-group">
     <?= Html::submitButton('Сохранить', [
-        'class' => 'btn btn-success',
+        'class' => 'btn btn-primary',
         'onclick' => 'prepareAndSubmit();' // Подготовка скрытых полей перед отправкой
     ]) ?>
     <?php ActiveForm::end(); ?>

@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -13,10 +14,13 @@ $this->title = 'Добавить приказ об образовательно�
 $this->params['breadcrumbs'][] = ['label' => 'Приказы об образовательной деятельности', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="order-training-create">
 
-    <h3><?= Html::encode($this->title) ?></h3>
-    <br>
+    <div class="substrate">
+        <h3><?= Html::encode($this->title) ?></h3>
+    </div>
+
     <?= $this->render('_form', [
         'model' => $model,
         'people' => $people,

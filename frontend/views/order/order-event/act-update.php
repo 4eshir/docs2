@@ -1,5 +1,13 @@
 <?php
 
+use frontend\models\work\team\ActParticipantWork;
+use kartik\select2\Select2;
+use kidzen\dynamicform\DynamicFormWidget;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use yii\widgets\DetailView;
+
 /* @var $modelActs */
 /* @var $this yii\web\View */
 /* @var $people */
@@ -10,14 +18,6 @@
 /* @var $tables */
 /* @var $participants */
 /* @var $orderId */
-use frontend\models\work\team\ActParticipantWork;
-use kartik\select2\Select2;
-use kidzen\dynamicform\DynamicFormWidget;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\widgets\ActiveForm;
-use yii\widgets\DetailView;
 
 $this->title = 'Изменить акт об участии ';
 $this->params['breadcrumbs'][] = ['label' => 'Приказ об участии', 'url' => ['view', 'id' => $orderId]];

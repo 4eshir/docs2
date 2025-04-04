@@ -15,7 +15,10 @@ use yii\helpers\Html;
 <div style="width:100%; height:1px; clear:both;"></div>
 <div>
     <div>
-        <h3>Ошибки в учебных группах</h3>
+        <div class="substrate">
+            <h3>Ошибки в учебных группах</h3>
+        </div>
+
         <?= GridView::widget([
                 'summary' => false,
                 'dataProvider' => new ArrayDataProvider([

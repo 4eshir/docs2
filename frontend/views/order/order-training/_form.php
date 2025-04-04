@@ -3,17 +3,12 @@
 use frontend\components\GroupParticipantWidget;
 use frontend\models\work\order\OrderTrainingWork;
 use common\helpers\DateFormatter;
-use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
-use frontend\models\work\educational\training_group\TrainingGroupWork;
 use kartik\select2\Select2;
-use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\jui\DatePicker;
 use yii\widgets\ActiveForm;
-use yii\widgets\DetailView;
-use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $model OrderTrainingWork */
@@ -27,7 +22,7 @@ use yii\widgets\Pjax;
 /* @var $groupParticipantOption */
 ?>
 
-<div class="order-training-form  field-backing">
+<div class="order-training-form field-backing">
     <?php $form = ActiveForm::begin(); ?>
 <?php if($model->id == NULL) {?>
     <?=

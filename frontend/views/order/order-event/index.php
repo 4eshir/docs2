@@ -2,7 +2,6 @@
 
 use app\components\VerticalActionColumn;
 use common\helpers\html\HtmlCreator;
-use kartik\daterange\DateRangePicker;
 use kartik\export\ExportMenu;
 use yii\grid\GridView;
 use yii\helpers\Html;
