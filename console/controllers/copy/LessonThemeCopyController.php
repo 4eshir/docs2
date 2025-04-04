@@ -21,6 +21,7 @@ class LessonThemeCopyController extends Controller
     }
 
     public function actionCopyLessonTheme(){
+        ini_set('memory_limit', '1024M');
         $query = Yii::$app->old_db->createCommand("SELECT * FROM lesson_theme");
         $command = Yii::$app->db->createCommand();
         foreach ($query->queryAll() as $record) {
