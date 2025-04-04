@@ -31,8 +31,6 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
         <h3><?= Html::encode($this->title) ?></h3>
     </div>
 
-    <br>
-
     <?= $this->render('_form', [
         'model' => $model,
         'correspondentList' => $correspondentList,

@@ -1,5 +1,6 @@
 <?php
 
+use common\helpers\DateFormatter;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -37,7 +38,7 @@ use yii\widgets\ActiveForm;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]])->label('Дата документа') ?>
     <?= $form->field($model, 'document_theme')->textInput(['maxlength' => true])->label('Тема документа') ?>
 
@@ -158,7 +159,7 @@ use yii\widgets\ActiveForm;
         'clientOptions' => [
             'changeMonth' => true,
             'changeYear' => true,
-            'yearRange' => '2000:2100',
+            'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
         ]])->label('Дата отправки') ?>
     <?= $form->field($model, 'key_words')->textInput(['maxlength' => true])->label('Ключевые слова') ?>
     <?= $form->field($model, 'isAnswer')->checkbox(['id' => 'isAnswer', 'onchange' => 'checkAnswer()']) ?>
@@ -174,7 +175,7 @@ use yii\widgets\ActiveForm;
             'clientOptions' => [
                 'changeMonth' => true,
                 'changeYear' => true,
-                'yearRange' => '2000:2100',
+                'yearRange' => DateFormatter::DEFAULT_STUDY_YEAR_RANGE,
             ]])->label('Крайний срок ответа')?>
     </div>
     -->

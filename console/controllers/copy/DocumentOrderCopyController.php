@@ -2,6 +2,7 @@
 
 namespace console\controllers\copy;
 
+use common\components\dictionaries\base\NomenclatureDictionary;
 use common\services\general\PeopleStampService;
 use console\helper\FileTransferHelper;
 use frontend\models\work\order\DocumentOrderWork;
@@ -42,7 +43,7 @@ class DocumentOrderCopyController extends Controller
                     'key_words' => $record['key_words'],
                     'creator_id' => $record['creator_id'],
                     'last_edit_id' => $record['last_edit_id'],
-                    'type' => $record['type'],
+                    'type' => $this->setType($record),
                     'state' => $record['state'],
                     'nomenclature_id' => $record['nomenclature_id'],
                     'study_type' => $record['study_type'],
@@ -84,12 +85,30 @@ class DocumentOrderCopyController extends Controller
     }
     public function actionDeleteAll()
     {
-        $this->actionDeleteDocumentOrder();
         $this->actionDeleteDocumentOrderSupplement();
+        $this->actionDeleteDocumentOrder();
     }
     public function actionCopyAll()
     {
         $this->actionOrderCopy();
         $this->actionCopyDocumentOrderSupplement();
+    }
+    public function setType($record){
+        if ($record['type'] == DocumentOrderWork::ORDER_EVENT && $record['order_number'] == NomenclatureDictionary::ADMIN_ORDER){
+            return DocumentOrderWork::ORDER_EVENT;
+        }
+        else if($record['order_number'] != '02-02' && $record['order_number'] != '01-04'){
+            return DocumentOrderWork::ORDER_TRAINING;
+        }
+        else if($record['type'] != DocumentOrderWork::ORDER_EVENT &&
+            ($record['order_number'] == NomenclatureDictionary::ADMIN_ORDER || $record['order_number'] == '01-04')){
+            return DocumentOrderWork::ORDER_MAIN;
+        }
+        else {
+            return DocumentOrderWork::ORDER_MAIN;
+        }
+
+
+
     }
 }

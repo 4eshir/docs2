@@ -34,6 +34,7 @@ class FilePaths
     public const SVG_DOCUMENT_FLOW = 'svg/document-flow.svg';
     public const SVG_DIRECTORY = 'svg/directory.svg';
     public const SVG_EDUCATIONAL = 'svg/educational.svg';
+    public const SVG_ANALYTIC = 'svg/analytic.svg';
 
 
     public const CERTIFICATE_TEMPLATES = self::BASE_FILEPATH . '/certificate-templates/';

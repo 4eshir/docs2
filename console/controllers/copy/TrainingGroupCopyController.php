@@ -36,7 +36,7 @@ class TrainingGroupCopyController extends Controller
                     'id' => $record['id'],
                     'number' => $record['number'],
                     'training_program_id' => $record['training_program_id'],
-                    'teacher_id' => $record['teacher_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['teacher_id']) : NULL,
+                    //'teacher_id' => $record['teacher_id'] != '' ? $this->peopleStampService->createStampFromPeople($record['teacher_id']) : NULL,
                     'start_date' => $record['start_date'],
                     'finish_date' => $record['finish_date'],
                     'open' => $record['open'],
@@ -189,7 +189,7 @@ class TrainingGroupCopyController extends Controller
                 [
                     'id' => $record['id'],
                     'participant_id' => $record['participant_id'],
-                    'certificat_number' => $record['certificat_number'],
+                    //'certificat_number' => $record['certificat_number'],
                     'send_method' => $record['send_method_id'],
                     'training_group_id' => $record['training_group_id'],
                     'status' => $this->transferStatus($record['status']), //???

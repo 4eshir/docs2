@@ -26,4 +26,7 @@ class OrderEventGenerateRepository
         }
         return $model->id;
     }
+    public function existsByOrderId($orderId){
+        return OrderEventGenerate::find()->where(['order_id' => $orderId])->exists();
+    }
 }

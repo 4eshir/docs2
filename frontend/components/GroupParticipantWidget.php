@@ -2,8 +2,6 @@
 
 namespace frontend\components;
 
-use frontend\models\work\educational\training_group\TrainingGroupParticipantWork;
-use frontend\models\work\educational\training_group\TrainingGroupWork;
 use yii\base\Widget;
 use yii\helpers\Url;
 

@@ -35,13 +35,28 @@ class ButtonsFormatter
                     'method' => 'post',
                 ],
             ],
+        ];
+    }
+    public static function generateOrderLinks(int $id, string $customUpdateUrl = 'update') {
+        return [
+            'Редактировать' => [
+                'url' => [$customUpdateUrl, 'id' => $id],
+                'class' => self::BTN_PRIMARY,
+            ],
+            'Удалить' => [
+                'url' => ['delete', 'id' => $id],
+                'class' => self::BTN_DANGER,
+                'data' => [
+                    'confirm' => 'Вы уверены, что хотите удалить этот элемент?',
+                    'method' => 'post',
+                ],
+            ],
             'Сгенерировать документ' => [
                 'url' => ['generate-order', 'id' => $id],
                 'class' => self::BTN_PRIMARY,
             ],
         ];
     }
-
     /**
      * Две кнопки с классом primary
      *

@@ -33,8 +33,10 @@ $this->registerJsFile('@web/js/activity-locker.js', ['depends' => [\yii\web\Jque
 
     <?= AlertMessageWizard::showRedisConnectMessage() ?>
 
-    <h3><?= Html::encode($this->title) ?></h3>
-    <br>
+    <div class="substrate">
+        <h3><?= Html::encode($this->title) ?></h3>
+    </div>
+
     <?= $this->render('_form', [
             'model' => $model,
             'people' => $people,

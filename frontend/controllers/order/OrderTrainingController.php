@@ -98,7 +98,7 @@ class OrderTrainingController extends DocumentController
 
     public function actionView($id, $error = NULL)
     {
-        $links = ButtonsFormatter::updateDeleteLinks($id);
+        $links = ButtonsFormatter::generateOrderLinks($id);
         $buttonHtml = HtmlBuilder::createGroupButton($links);
 
         /** @var OrderTrainingWork $model */
